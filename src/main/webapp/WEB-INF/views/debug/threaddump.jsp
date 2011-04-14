@@ -1,5 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="threadDump" class="deng.hellowebapp.ThreadDumpBean" scope="request"/>
+<jsp:useBean id="threadDump" class="myschedule.web.servlet.ThreadDumpBean" scope="request"/>
 
 <html>
 <body>

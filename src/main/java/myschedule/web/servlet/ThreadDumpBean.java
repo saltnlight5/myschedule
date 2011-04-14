@@ -1,4 +1,4 @@
-package deng.hellowebapp;
+package myschedule.web.servlet;
 
 import java.io.Serializable;
 import java.util.*;
