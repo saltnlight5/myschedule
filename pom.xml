@@ -87,7 +87,7 @@
 		</dependency>
 		
 		
-		<!-- Testing libraries
+		<!-- Testing libraries -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -106,7 +106,6 @@
 			<version>1.8.5</version> 
 			<scope>test</scope>
 		</dependency>
-		-->
 		
 		<!-- Spring development libraries 
 		We would use jcl-over-slf4j instead of common-logging.
