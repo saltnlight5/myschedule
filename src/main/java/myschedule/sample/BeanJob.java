@@ -1,9 +1,10 @@
-package myschedule.service;
+package myschedule.sample;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** BeanJob
+/** 
+ * A plain java bean that can be called by scheduler as job execution.
  *
  * @author Zemian Deng
  */

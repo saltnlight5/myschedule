@@ -1,4 +1,4 @@
-package myschedule.service;
+package myschedule.sample;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -6,7 +6,8 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** SimpleJob
+/** 
+ * A simple quartz job that just log a message when invoked.
  *
  * @author Zemian Deng
  */
