@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
+ * A thread dump bean for debugging purpose only.
+ * 
  * This class is originally from: http://www.javaspecialists.eu/archive/Issue132.html
  */
 public class ThreadDumpBean implements Serializable

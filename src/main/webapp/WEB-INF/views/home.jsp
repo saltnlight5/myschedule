@@ -6,7 +6,8 @@
 </head>
 <body>
 <h1>
-	Hello world!
+	Scheduler Manager
 </h1>
+<p><a href="scheduler/list-scheduled-jobs">See a list of scheduled jobs</a>
 </body>
 </html>

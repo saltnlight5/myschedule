@@ -11,6 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Just a demo hello servlet.
+ *
+ * @author Zemian Deng
+ */
 public class HelloServlet extends HttpServlet {
 	
 	private static Logger logger = LoggerFactory.getLogger(HelloServlet.class);
