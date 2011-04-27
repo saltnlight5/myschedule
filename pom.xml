@@ -45,33 +45,8 @@
 		</plugins>
 
 	</build>
-	
-	<repositories>
-		<repository>
-			<id>sonatype_oss_nexus_repo</id>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>sonatype_oss_nexus_repo</id>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
-		<!-- Common libraries for general application development -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
-		</dependency>
 		
 		<!-- Logging libraries -->
 		<dependency>
@@ -100,19 +75,13 @@
 			<version>1.2</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>  
-			<version>1.8.5</version> 
-			<scope>test</scope>
-		</dependency>
 		
 		<!-- Spring development libraries 
 		We would use jcl-over-slf4j instead of common-logging.
 		-->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
+			<artifactId>spring-core</artifactId>
 			<version>3.0.5.RELEASE</version>
 			<exclusions>
 				<exclusion>
@@ -135,6 +104,16 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>3.0.5.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>3.0.5.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>3.0.5.RELEASE</version>
 		</dependency>
@@ -151,7 +130,8 @@
 		    <artifactId>jsp-api</artifactId>
 		    <version>2.1</version>
 	        <scope>provided</scope>
-		</dependency>		
+		</dependency>
+		<!--
 		<dependency>
 	        <groupId>javax.servlet</groupId>
 	        <artifactId>jstl</artifactId>
@@ -162,7 +142,15 @@
             <artifactId>standard</artifactId>
             <version>1.1.2</version>
         </dependency>
-
+		-->
+		
+		<!-- Quartz library -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.8.5</version>
+		</dependency>
+		
 	</dependencies>
 	
 </project>
