@@ -1,4 +1,4 @@
-package myschedule.experiment;
+package myschedule.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,19 +7,20 @@ import java.util.Map;
 
 import org.junit.Test;
 
-/** UtilsTest
+/** 
+ * ObjectUtilsTest
  *
  * @author Zemian Deng
  */
-public class UtilsTest {
+public class ObjectUtilsTest {
 
 	@Test
 	public void testDump() throws Exception {
 		//Utils.dump(System.getProperties());
-		Utils.dump(getMapSample());
-		Utils.dump(getList());
-		Utils.dump(new String[]{});
-		Utils.dump(new String[]{"a", "B"});
+		ObjectUtils.dump(getMapSample());
+		ObjectUtils.dump(getListSample());
+		ObjectUtils.dump(new String[]{});
+		ObjectUtils.dump(new String[]{"a", "B"});
 	}
 	
 	public Map<String, String> getMapSample() {
@@ -31,7 +32,7 @@ public class UtilsTest {
 		return map;
 	}
 	
-	public List<String> getList() {
+	public List<String> getListSample() {
 		List<String> list = new ArrayList<String>();
 		list.add("one");
 		list.add("two");

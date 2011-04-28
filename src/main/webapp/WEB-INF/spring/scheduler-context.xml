@@ -14,7 +14,7 @@ http://static.springsource.org/spring/docs/current/reference/scheduling.html#sch
 	
 	<!-- Job1 -->
 	<bean name="job1" class="org.springframework.scheduling.quartz.JobDetailBean">
-	  <property name="jobClass" value="myschedule.service.SimpleJob" />
+	  <property name="jobClass" value="myschedule.sample.SimpleJob" />
 	  <property name="jobDataAsMap">
 	    <map>
 	      <entry key="timeout" value="5" />
@@ -30,7 +30,7 @@ http://static.springsource.org/spring/docs/current/reference/scheduling.html#sch
 	</bean>	
 	
 	<!-- Job2 -->
-	<bean name="beanJob" class="myschedule.service.BeanJob">	
+	<bean name="beanJob" class="myschedule.sample.BeanJob">	
 	</bean>	
 	<bean name="job2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="beanJob" />

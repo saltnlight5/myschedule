@@ -3,12 +3,18 @@ package myschedule.web.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import myschedule.service.SchedulerService;
+import myschedule.service.ObjectUtils;
+import myschedule.service.ObjectUtils.Getter;
 
+import org.quartz.Scheduler;
+import org.quartz.SchedulerMetaData;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +32,19 @@ public class SchedulerController {
 	
 	@Resource
 	private SchedulerService schedulerService;
+	
+	@RequestMapping(value="/show", method=RequestMethod.GET)
+	public ModelMap showScheduler() throws Exception {
+		Scheduler scheduler = schedulerService.getScheduler();
+		SchedulerMetaData schedulerMetaData = scheduler.getMetaData();
+		Map<String, String> schedulerMap = new HashMap<String, String>();
+		List<Getter> getters = ObjectUtils.getGetters(schedulerMetaData);
+		for (Getter getter : getters)
+			schedulerMap.put(getter.getPropName(), ObjectUtils.getGetterStrValue(getter));
+		ModelMap modelMap = new ModelMap();
+		modelMap.addAttribute("schedulerMap", schedulerMap);
+		return modelMap;
+	}
 	
 	@RequestMapping(value="/list-triggers", method=RequestMethod.GET)
 	public ModelMap listTriggers() {

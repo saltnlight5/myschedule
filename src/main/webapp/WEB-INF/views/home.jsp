@@ -6,8 +6,8 @@
 </head>
 <body>
 <h1>
-	Scheduler Manager
+	Welcome to MySchedule WebApp
 </h1>
-<p><a href="scheduler/list-scheduled-jobs">See a list of scheduled jobs</a>
+<p><a href="scheduler/show">Scheduler Info</a>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package myschedule.experiment;
+package myschedule.service;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,13 +11,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Utils
+/** 
+ * ObjectUtils
  *
  * @author Zemian Deng
  */
-public class Utils {
+public class ObjectUtils {
 	
-	private static Logger logger = LoggerFactory.getLogger(Utils.class);
+	private static Logger logger = LoggerFactory.getLogger(ObjectUtils.class);
 	
 	/**
 	 * Generate a stacktrace with method call stack and log it.
@@ -32,9 +33,19 @@ public class Utils {
 	}
 	
 	public static class Getter {
-		public Object object;
-		public Method method;
-		public String propName;
+		private Object object;
+		private Method method;
+		private String propName;
+		
+		public String getPropName() {
+			return propName;
+		}
+		public Method getMethod() {
+			return method;
+		}
+		public Object getObject() {
+			return object;
+		}
 	}
 	
 	/**
@@ -49,11 +60,12 @@ public class Utils {
 			upToClass = Object.class;
 		List<Getter> getters = new ArrayList<Getter>();
 		Class<?> objCls = object.getClass();
-		Class<?> parentCls = objCls.getSuperclass();
+		Class<?> parentCls = objCls;
 		Class<?> rootCls = Object.class;
 		while (parentCls != null && !parentCls.equals(rootCls)) {
 			Method[] methods = parentCls.getMethods();
 			for (Method method : methods) {
+				//logger.info(method.getName() + ", params.length=" + method.getParameterTypes().length);
 				if (method.getParameterTypes().length > 0)
 					continue; // skip any non-zero param methods.
 
@@ -69,12 +81,13 @@ public class Utils {
 				} if (methodName.length() >= 3 && methodName.startsWith("is")) {
 					propName = methodName.substring(2, 3).toLowerCase() + methodName.substring(3);
 				}
-				
+				//logger.info(method.getName() + ", propName=" + propName);
 				if (propName != null) {
 					Getter getter = new Getter();
 					getter.object = object;
 					getter.propName = propName;
 					getter.method = method;
+					getters.add(getter);
 				}
 			}
 			if (parentCls.equals(upToClass)) {
@@ -84,6 +97,10 @@ public class Utils {
 			}
 		}
 		return getters;
+	}
+	
+	public static List<Getter> getGetters(Object object) {
+		return getGetters(object, Object.class);
 	}
 	
 	public static Object getGetterValue(Getter getter) {
