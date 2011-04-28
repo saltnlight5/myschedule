@@ -8,6 +8,8 @@
 <h1>
 	Welcome to MySchedule WebApp
 </h1>
-<p><a href="scheduler/show">Scheduler Info</a>
+<div>
+<a href="scheduler/show">Scheduler Info</a>
+</div>
 </body>
 </html>

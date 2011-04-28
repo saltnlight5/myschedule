@@ -5,6 +5,9 @@
 	<title>Scheduler</title>
 </head>
 <body>
+<div>
+<a href="show">Scheduler Info</a>
+</div>
 <h1>
 	List of Scheduled Jobs
 </h1>

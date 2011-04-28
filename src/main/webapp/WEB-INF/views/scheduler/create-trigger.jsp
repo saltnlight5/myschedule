@@ -5,20 +5,31 @@
 	<title>Scheduler</title>
 </head>
 <body>
+<h1>
+	Create Jobs/Trigger Processed
+</h1>
 <div>
 <a href="list-scheduled-jobs">List of scheduled jobs</a>
 <a href="show">Scheduler Info</a>
 </div>
-<h1>
-	List of Next ${ maxCount } FireTimes for Trigger ${ triggerGroup }.${ triggerName }
-</h1>
+
+<div>
+<p>${ formSubmitStatus }</p>
 <table>
-	<c:forEach items="${ fireTimes }" var="time" varStatus="status">
+	<tr>
+		<td> No. </td>
+		<td> BeanId </td>
+		<td> GROUP.TRIGGER_NAME </td>
+	</tr>
+	<c:forEach items="${ triggers }" var="item" varStatus="status">
 	<tr>
 		<td> ${ status.index + 1 }</td>
-		<td> ${ time }</td>
+		<td> ${ item.key }</td>
+		<td> ${ item.value.group }.${ item.value.name }</td>
 	</tr>
 	</c:forEach>
 </table>
+</div>
+
 </body>
 </html>

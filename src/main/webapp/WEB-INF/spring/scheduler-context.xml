@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-These sample beans are from Spring ref manual
-http://static.springsource.org/spring/docs/current/reference/scheduling.html#scheduling-quartz
--->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
@@ -12,44 +8,8 @@ http://static.springsource.org/spring/docs/current/reference/scheduling.html#sch
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
-	<!-- Job1 -->
-	<bean name="job1" class="org.springframework.scheduling.quartz.JobDetailBean">
-	  <property name="jobClass" value="myschedule.sample.SimpleJob" />
-	  <property name="jobDataAsMap">
-	    <map>
-	      <entry key="timeout" value="5" />
-	    </map>
-	  </property>
-	</bean>
-	<bean id="job1Trigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-	    <property name="jobDetail" ref="job1" />
-	    <!-- 10 seconds -->
-	    <property name="startDelay" value="10000" />
-	    <!-- repeat every 50 seconds -->
-	    <property name="repeatInterval" value="50000" />
-	</bean>	
-	
-	<!-- Job2 -->
-	<bean name="beanJob" class="myschedule.sample.BeanJob">	
-	</bean>	
-	<bean name="job2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" ref="beanJob" />
-		<property name="targetMethod" value="run" />
-	</bean>
-	<bean id="job2Trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-	    <property name="jobDetail" ref="job2" />
-	    <!-- run every morning at 6 AM -->
-	    <property name="cronExpression" value="0 0 6 * * ?" />
-	</bean>
-	
 	<!-- Scheduler -->
 	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-	    <property name="triggers">
-	        <list>
-	            <ref bean="job1Trigger" />
-	            <ref bean="job2Trigger" />
-	        </list>
-	    </property>
 	</bean>
 	
 	<!-- MySchedule Application Service -->

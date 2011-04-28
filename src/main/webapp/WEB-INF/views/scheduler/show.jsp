@@ -5,7 +5,10 @@
 	<title>Scheduler</title>
 </head>
 <body>
+<div>
 <a href="list-scheduled-jobs">List of scheduled jobs</a>
+<a href="create-trigger-form">Create Jobs</a>
+</div>
 <h1>
 	Scheduler Information
 </h1>

@@ -1,8 +1,5 @@
 package myschedule.service;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-
 import java.util.List;
 
 import myschedule.service.ObjectUtils.Getter;

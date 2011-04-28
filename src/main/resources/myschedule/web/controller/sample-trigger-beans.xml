@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<bean name="simpleJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass" value="myschedule.sample.SimpleJob" />
+	  <property name="jobDataAsMap">
+	    <map>
+	      <entry key="color" value="green" />
+	    </map>
+	  </property>
+	</bean>	
+	<bean id="simpleJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	    <property name="jobDetail" ref="simpleJob" />
+	    <property name="startDelay" value="10000" />
+	    <property name="repeatInterval" value="50000" />
+	</bean>
+	
+</beans>
