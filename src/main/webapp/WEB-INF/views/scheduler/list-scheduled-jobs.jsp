@@ -2,7 +2,34 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Scheduler</title>
+<style type="text/css">
+table.sample {
+	border-width: 1px;
+	border-spacing: 2px;
+	border-style: outset;
+	border-color: gray;
+	border-collapse: collapse;
+	background-color: white;
+}
+table.sample th {
+	border-width: 1px;
+	padding: 1px;
+	border-style: inset;
+	border-color: gray;
+	background-color: white;
+	-moz-border-radius: ;
+}
+table.sample td {
+	vertical-align: top;
+	border-width: 1px;
+	padding: 1px;
+	border-style: inset;
+	border-color: gray;
+	background-color: white;
+	-moz-border-radius: ;
+}
+</style>
+<title>Scheduler</title>
 </head>
 <body>
 <div>
@@ -11,7 +38,7 @@
 <h1>
 	List of Scheduled Jobs
 </h1>
-<table>
+<table class="sample">
 	<tr>
 		<td> GROUP.TRIGGER_NAME </td>
 		<td> NEXT FIRE TIME </td>

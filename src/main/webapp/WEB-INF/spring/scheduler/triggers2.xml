@@ -37,5 +37,22 @@
 	    <!-- run every morning at 6 AM -->
 	    <property name="cronExpression" value="0 0 6 * * ?" />
 	</bean>
-		
+	
+	<!-- Few more sample of triggers that point to job1 -->
+	<bean id="job1Trigger2" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	    <property name="jobDetail" ref="job1" />
+	    <property name="cronExpression" value="0 0 8 ? * MON-FRI" />
+	</bean>	
+	<bean id="job1Trigger3" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	    <property name="jobDetail" ref="job1" />
+	    <property name="cronExpression" value="0 0 8 ? * FRI/L" />
+	</bean>
+	<bean id="job1Trigger4" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	    <property name="jobDetail" ref="job1" />
+	    <property name="cronExpression" value="0 0 17 1,2,3 JAN-JUN ?" />
+	</bean>
+	<bean id="job1Trigger5" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	    <property name="jobDetail" ref="job1" />
+	    <property name="cronExpression" value="0 0 12 ? * SUN#2" />
+	</bean>
 </beans>

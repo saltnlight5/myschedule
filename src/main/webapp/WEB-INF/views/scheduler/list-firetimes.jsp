@@ -6,8 +6,8 @@
 </head>
 <body>
 <div>
-<a href="list-scheduled-jobs">List of scheduled jobs</a>
-<a href="show">Scheduler Info</a>
+<a href="${ pageContext.request.contextPath }/scheduler/list-scheduled-jobs">List of scheduled jobs</a>
+<a href="${ pageContext.request.contextPath }/scheduler/show">Scheduler Info</a>
 </div>
 <h1>
 	List of Next ${ maxCount } FireTimes for Trigger ${ triggerGroup }.${ triggerName }

@@ -48,12 +48,21 @@ public class SchedulerController {
 	
 	private String sampleTriggerBeans;
 	
+	protected ClassLoader getClassLoader() {
+		return Thread.currentThread().getContextClassLoader();
+	}
+	
 	@RequestMapping(value="/create-trigger-form", method=RequestMethod.GET)
 	public ModelMap createTriggerForm() throws Exception {
 		if (sampleTriggerBeans == null) {
-			String res = "/myschedule/web/controller/sample-trigger-beans.xml";
-			URL url = Thread.currentThread().getContextClassLoader().getResource(res);
-			sampleTriggerBeans = IOUtils.toString(url.openStream());
+			// TODO: Need to fix this. 
+			// Res is not accessible by Spring class loader, so url is always null.
+			String res = "WEB-INF/spring/scheduler/triggers.xml";
+			URL url = getClassLoader().getResource(res);
+			if (url != null)
+				sampleTriggerBeans = IOUtils.toString(url.openStream());
+			else
+				sampleTriggerBeans = "";
 		}
 		ModelMap modelMap = new ModelMap();
 		modelMap.addAttribute("sampleTriggerBeans", sampleTriggerBeans);
