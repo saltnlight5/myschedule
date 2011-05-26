@@ -1,6 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="threadDump" class="myschedule.web.servlet.ThreadDumpBean" scope="request"/>
-
+<%@ page import="java.util.*" %>
+<%
+Comparator<Thread> threadComparator = new Comparator<Thread>()
+{
+	public int compare(Thread o1, Thread o2)
+	{
+		int result = o1.getName().compareTo(o2.getName());
+		if (result == 0) {
+			Long id1 = o1.getId();
+			Long id2 = o2.getId();
+			return id1.compareTo(id2);
+		}
+		return result;
+	}
+};
+Map<Thread, StackTraceElement[]> traces = new TreeMap<Thread, StackTraceElement[]>(threadComparator);
+traces.putAll(Thread.getAllStackTraces());
+%>
 <html>
 <body>
 <h2>Thread Summary:</h2>
