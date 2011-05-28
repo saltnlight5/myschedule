@@ -24,10 +24,4 @@
 			</list>
 		</property>
 	</bean>
-	
-	<!-- MySchedule Application Service -->
-	<bean name="schedulerService" class="myschedule.service.SchedulerService">
-		<property name="scheduler" ref="quartzScheduler"></property>
-	</bean>
-		
 </beans>

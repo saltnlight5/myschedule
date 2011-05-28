@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerMetaData;
 import org.quartz.Trigger;
 
 /**
- * Provide scheduling service to application using Quartz scheduler.
+ * Provide Quartz scheduling service to application.
  *
  * @author Zemian Deng
  */
@@ -20,28 +23,53 @@ public class SchedulerService {
 		this.scheduler = scheduler;
 	}
 	
-	public Scheduler getScheduler() {
-		return scheduler;
+	public SchedulerMetaData getSchedulerMetaData() {
+		try {
+			return scheduler.getMetaData();
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
-	/**
-	 * Get all trigger names in a list that contains group and name pair of array object.
-	 */
-	public List<String[]> getTriggerNames()
-	{
+	public List<JobDetail> getJobDetails() {
 		try {
-			List<String[]> list = new ArrayList<String[]>();
-			String[] triggerGroups = scheduler.getTriggerGroupNames();
-			for (String triggerGroup : triggerGroups) {
-				String[] triggerNames = scheduler.getTriggerNames(triggerGroup);
-				for (String triggerName : triggerNames) {
-					String[] pair = new String[2];
-					pair[0] = triggerName;
-					pair[1] = triggerGroup;
-					list.add(pair);
+			List<JobDetail> jobs = new ArrayList<JobDetail>();
+			String[] jobGroups = scheduler.getJobGroupNames();
+			for (String jobGroup : jobGroups) {
+				String[] jobNames = scheduler.getJobNames(jobGroup);
+				for (String jobName : jobNames) {
+					JobDetail jobDetail = scheduler.getJobDetail(jobName, jobGroup);
+					jobs.add(jobDetail);
 				}
 			}
-			return list;
+			return jobs;
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Trigger[] getTriggers(JobDetail jobDetail) {
+		try {
+			Trigger[] triggers = scheduler.getTriggersOfJob(jobDetail.getName(), jobDetail.getGroup());
+			return triggers;
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public JobDetail getJobDetail(String jobName, String jobGroup)
+	{	
+		try {
+			return scheduler.getJobDetail(jobName, jobGroup);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Trigger getTrigger(String triggerName, String triggerGroup)
+	{	
+		try {
+			return scheduler.getTrigger(triggerName, triggerGroup);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -69,14 +97,5 @@ public class SchedulerService {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public List<Date> getNextFireTimes(String triggerName, String triggerGroup, Date startTime, int maxCount)
-	{	
-		try {
-			Trigger trigger = scheduler.getTrigger(triggerName, triggerGroup);
-			return getNextFireTimes(trigger, startTime, maxCount);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+
 }

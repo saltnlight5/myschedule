@@ -1,4 +1,4 @@
-package myschedule.sample;
+package myschedule.job.sample;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

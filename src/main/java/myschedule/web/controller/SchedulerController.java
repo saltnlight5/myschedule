@@ -1,212 +1,141 @@
 package myschedule.web.controller;
 
-import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
 import myschedule.service.ObjectUtils;
 import myschedule.service.ObjectUtils.Getter;
 import myschedule.service.SchedulerService;
+import myschedule.web.controller.JobsPageData.JobInfo;
 
-import org.apache.commons.io.IOUtils;
-import org.quartz.Scheduler;
+import org.quartz.JobDetail;
+import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
+import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.scheduling.quartz.CronTriggerBean;
-import org.springframework.scheduling.quartz.SimpleTriggerBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-import org.xml.sax.InputSource;
+import org.springframework.web.bind.annotation.RequestParam;
 
-/** HomeController
+/** 
+ * Scheduler web controller.
  *
  * @author Zemian Deng
  */
 @Controller
 @RequestMapping(value="/scheduler")
 public class SchedulerController {
-	
-	private static Logger logger = LoggerFactory.getLogger(SchedulerController.class);
+	protected static Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 	
 	@Resource
-	private SchedulerService schedulerService;
-	
-	private String sampleTriggerBeans;
-	
-	protected ClassLoader getClassLoader() {
-		return Thread.currentThread().getContextClassLoader();
+	protected SchedulerService schedulerService;
+			
+	/** Show DashboardPageData. */
+	@RequestMapping(value="/dashboard", method=RequestMethod.GET)
+	public ModelMap dashboard() {
+		DashboardPageData data = new DashboardPageData();
+		data.setSchedulerInfo(getSchedulerInfo());
+		return new ModelMap("data", data);
+	}
+
+	/** Show JobsPageData. */
+	@RequestMapping(value="/jobs", method=RequestMethod.GET)
+	public ModelMap jobs() {
+		JobsPageData data = new JobsPageData();
+		data.setSchedulerSummary(getSchedulerSummary());
+		data.setJobs(getSchedulerJobs());
+		return new ModelMap("data", data);
 	}
 	
-	@RequestMapping(value="/create-trigger-form", method=RequestMethod.GET)
-	public ModelMap createTriggerForm() throws Exception {
-		if (sampleTriggerBeans == null) {
-			// TODO: Need to fix this. 
-			// Res is not accessible by Spring class loader, so url is always null.
-			String res = "WEB-INF/spring/scheduler/triggers.xml";
-			URL url = getClassLoader().getResource(res);
-			if (url != null)
-				sampleTriggerBeans = IOUtils.toString(url.openStream());
-			else
-				sampleTriggerBeans = "";
-		}
-		ModelMap modelMap = new ModelMap();
-		modelMap.addAttribute("sampleTriggerBeans", sampleTriggerBeans);
-		return modelMap;
+	/** Show TriggerPageData. */
+	@RequestMapping(value="/trigger", method=RequestMethod.GET)
+	public ModelMap jobNextFireTimes(
+			@RequestParam String triggerName,
+			@RequestParam String triggerGroup,
+			@RequestParam int nextFireTimesRequested) {
+		TriggerPageData data = new TriggerPageData();
+		data.setNextFireTimesRequested(nextFireTimesRequested);
+		data.setTrigger(getTrigger(triggerName, triggerGroup));
+		data.setJobDetail(getJobDetail(data.getTrigger()));
+		data.setNextFireTimes(getNextFireTimes(data.getTrigger(), nextFireTimesRequested));
+		return new ModelMap("data", data);
 	}
-	
-	@RequestMapping(value="/create-trigger", method=RequestMethod.POST)
-	public ModelMap createTrigger(
-			@ModelAttribute("form") CreateTriggerForm form) throws Exception {
-		
-		StringReader reader = new StringReader(form.getText());
-		InputSource inSource = new InputSource(reader);
-		GenericApplicationContext ctx = new GenericApplicationContext();
-		XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);  
-		xmlReader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
-		xmlReader.loadBeanDefinitions(inSource);
-		ctx.refresh();
-		
-		Scheduler scheduler = schedulerService.getScheduler();
-		
-		// Add all simple triggers
-		Map<String, SimpleTriggerBean> simpleTriggers = ctx.getBeansOfType(SimpleTriggerBean.class);
-		for (Map.Entry<String, SimpleTriggerBean> entry : simpleTriggers.entrySet()) {
-			logger.info("Adding SimpleTrigger beanId=" + entry.getKey());
-			SimpleTriggerBean trigger = entry.getValue();
-			scheduler.scheduleJob(trigger.getJobDetail(), trigger);
-		}
-		
-		// Add all cron triggers
-		Map<String, CronTriggerBean> cronTriggers = ctx.getBeansOfType(CronTriggerBean.class);
-		for (Map.Entry<String, CronTriggerBean> entry : cronTriggers.entrySet()) {
-			logger.info("Adding CronTrigger beanId=" + entry.getKey());
-			CronTriggerBean trigger = entry.getValue();
-			scheduler.scheduleJob(trigger.getJobDetail(), trigger);
-		}
-		
-		ModelMap modelMap = new ModelMap();
-		modelMap.addAttribute("formSubmitStatus", simpleTriggers.size() + " triggers has been added.");
-		modelMap.addAttribute("triggers", simpleTriggers);
-		return modelMap;
-	}
-	
-	public static class CreateTriggerForm {
-		private String text;
-		public String getText() {
-			return text;
-		}
-		public void setText(String text) {
-			this.text = text;
-		}
-	}
-	
-	@RequestMapping(value="/show", method=RequestMethod.GET)
-	public ModelMap showScheduler() throws Exception {
-		Scheduler scheduler = schedulerService.getScheduler();
-		SchedulerMetaData schedulerMetaData = scheduler.getMetaData();
-		Map<String, String> schedulerMap = new HashMap<String, String>();
+
+	protected TreeMap<String, String> getSchedulerInfo() {
+		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
 		List<Getter> getters = ObjectUtils.getGetters(schedulerMetaData);
-		for (Getter getter : getters)
-			schedulerMap.put(getter.getPropName(), ObjectUtils.getGetterStrValue(getter));
-		ModelMap modelMap = new ModelMap();
-		modelMap.addAttribute("schedulerMap", schedulerMap);
-		return modelMap;
+		for (Getter getter : getters) {
+			String key = getter.getPropName();
+			if (key.length() >= 1) {
+				if (key.equals("summary")) // skip this field.
+					continue;
+				key = key.substring(0, 1).toUpperCase() + key.substring(1);
+				String value = ObjectUtils.getGetterStrValue(getter);
+				schedulerInfo.put(key, value);
+			} else {
+				logger.warn("Skipped a scheduler info key length less than 1 char. Key=" + key);
+			}
+		}
+		logger.debug("Scheduler info map has " + schedulerInfo.size() + " items.");
+		return schedulerInfo;
+	}
+
+	protected String getSchedulerSummary() {
+		try {
+			return schedulerService.getSchedulerMetaData().getSummary();
+		} catch (SchedulerException e) {
+			throw new RuntimeException("Failed to get scheduler summary.", e);
+		}
 	}
 	
-	@RequestMapping(value="/list-triggers", method=RequestMethod.GET)
-	public ModelMap listTriggers() {
-		List<String[]> triggerNames = schedulerService.getTriggerNames();
-		ModelMap modelMap = new ModelMap();
-		modelMap.addAttribute("triggerNames", triggerNames);
-		return modelMap;
+	protected List<JobInfo> getSchedulerJobs() {
+		List<JobInfo> jobs = new ArrayList<JobInfo>();
+		List<JobDetail> jobDetails = schedulerService.getJobDetails();
+		logger.debug("Found " + jobDetails.size() + " jobDetials.");
+		for (JobDetail jobDetail : jobDetails) {
+			JobInfo job = new JobInfo();
+			jobs.add(job);
+			job.setJobDetail(jobDetail);
+			Trigger[] triggers = schedulerService.getTriggers(jobDetail);
+			logger.debug("JobDetail " + jobDetail.getFullName() + " has " + triggers.length + " triggers.");
+			if (triggers.length > 0) {
+				job.setTrigger(triggers[0]);
+				
+				// For each extra trigger, we create another JobInfo for display
+				for (int i = 1; i < triggers.length; i++) {
+					job = new JobInfo();
+					jobs.add(job);
+					job.setJobDetail(jobDetail);
+					job.setTrigger(triggers[i]);
+				}
+			}
+		}
+		Collections.sort(jobs);
+		logger.debug("Found " + jobs.size() + " jobs");
+		return jobs;
 	}
 	
-	@RequestMapping(value="/list-scheduled-jobs", method=RequestMethod.GET)
-	public ModelMap listScheduledJobs() {
-		List<ScheduledJobPageData> scheduledJobs = new ArrayList<ScheduledJobPageData>();
-		List<String[]> triggerNames = schedulerService.getTriggerNames();
-		for (String[] pair : triggerNames) {
-			ScheduledJobPageData sj = new ScheduledJobPageData();
-			sj.triggerName = pair[0];
-			sj.triggerGroup = pair[1];
-			sj.nextFireTime = schedulerService.getNextFireTimes(sj.triggerName, sj.triggerGroup, new Date(), 1).get(0);
-			scheduledJobs.add(sj);
-		}
-		
-		// sort the data for pretty display
-		Collections.sort(scheduledJobs);
-		
-		ModelMap modelMap = new ModelMap();
-		modelMap.addAttribute("scheduledJobs", scheduledJobs);
-		return modelMap;
+	protected JobDetail getJobDetail(Trigger trigger) {
+		String jobName = trigger.getJobName();
+		String jobGroup = trigger.getJobGroup();
+		return schedulerService.getJobDetail(jobName, jobGroup);
 	}
 	
-	@RequestMapping(value="/list-firetimes/{triggerName}/{triggerGroup}/{maxCount}", method=RequestMethod.GET)
-	public ModelAndView listNextFireTimes(
-			@PathVariable String triggerName,
-			@PathVariable String triggerGroup,
-			@PathVariable int maxCount) {
-		
-		List<Date> fireTimes = schedulerService.getNextFireTimes(triggerName, triggerGroup, new Date(), maxCount);
-		ModelMap modelMap = new ModelMap();
-		modelMap.addAttribute("triggerName", triggerName);
-		modelMap.addAttribute("triggerGroup", triggerGroup);
-		modelMap.addAttribute("maxCount", maxCount);
-		modelMap.addAttribute("fireTimes", fireTimes);
-		
-		return new ModelAndView("scheduler/list-firetimes", modelMap);
+	protected Trigger getTrigger(String triggerName, String triggerGroup) {
+		return schedulerService.getTrigger(triggerName, triggerGroup);
 	}
-	
-	public static class ScheduledJobPageData implements Comparable<ScheduledJobPageData>{
-		private String triggerGroup;
-		private String triggerName;
-		private Date nextFireTime;
-		
-		/**
-		 * Getter.
-		 * @return the triggerGroup - String
-		 */
-		public String getTriggerGroup() {
-			return triggerGroup;
-		}		
-		/**
-		 * Getter.
-		 * @return the triggerName - String
-		 */
-		public String getTriggerName() {
-			return triggerName;
-		}
-		/**
-		 * Getter.
-		 * @return the nextFireTime - Date
-		 */
-		public Date getNextFireTime() {
-			return nextFireTime;
-		}
-		/**
-		 * Override @see java.lang.Comparable#compareTo(java.lang.Object) method.
-		 * @param o
-		 * @return
-		 */
-		@Override
-		public int compareTo(ScheduledJobPageData that) {
-			return triggerGroup.compareTo(that.triggerGroup) +
-				triggerName.compareTo(that.triggerName);
-		}
+
+	protected List<Date> getNextFireTimes(Trigger trigger, int nextFireTimesRequested) {
+		List<Date> fireTimes = schedulerService.getNextFireTimes(trigger, new Date(), nextFireTimesRequested);
+		return fireTimes;
 	}
 }
