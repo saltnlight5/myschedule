@@ -98,4 +98,30 @@ public class SchedulerService {
 		}
 	}
 
+	/**
+	 * Delete trigger and the job associated with it.
+	 * @param name
+	 * @param group
+	 */
+	public void deleteTrigger(String triggerName, String groupName) {
+		try {
+			scheduler.unscheduleJob(triggerName, groupName);
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Delete the job.
+	 * @param name
+	 * @param group
+	 */
+	public void deleteJob(String jobName, String groupName) {
+		try {
+			scheduler.deleteJob(jobName, groupName);
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

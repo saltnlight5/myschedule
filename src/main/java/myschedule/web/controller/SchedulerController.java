@@ -2,7 +2,6 @@ package myschedule.web.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /** 
  * Scheduler web controller.
@@ -75,20 +73,6 @@ public class SchedulerController {
 		return new ModelMap("data", data);
 	}
 	
-	/** Show TriggerPageData. */
-	@RequestMapping(value="/job-firetimes", method=RequestMethod.GET)
-	public ModelMap jobNextFireTimes(
-			@RequestParam String triggerName,
-			@RequestParam String triggerGroup,
-			@RequestParam int nextFireTimesRequested) {
-		TriggerPageData data = new TriggerPageData();
-		data.setNextFireTimesRequested(nextFireTimesRequested);
-		data.setTrigger(getTrigger(triggerName, triggerGroup));
-		data.setJobDetail(getJobDetail(data.getTrigger()));
-		data.setNextFireTimes(getNextFireTimes(data.getTrigger(), nextFireTimesRequested));
-		return new ModelMap("data", data);
-	}
-
 	protected String getSchedulerSummary() {
 		try {
 			return schedulerService.getSchedulerMetaData().getSummary();
@@ -124,18 +108,4 @@ public class SchedulerController {
 		return jobs;
 	}
 	
-	protected JobDetail getJobDetail(Trigger trigger) {
-		String jobName = trigger.getJobName();
-		String jobGroup = trigger.getJobGroup();
-		return schedulerService.getJobDetail(jobName, jobGroup);
-	}
-	
-	protected Trigger getTrigger(String triggerName, String triggerGroup) {
-		return schedulerService.getTrigger(triggerName, triggerGroup);
-	}
-
-	protected List<Date> getNextFireTimes(Trigger trigger, int nextFireTimesRequested) {
-		List<Date> fireTimes = schedulerService.getNextFireTimes(trigger, new Date(), nextFireTimesRequested);
-		return fireTimes;
-	}
 }

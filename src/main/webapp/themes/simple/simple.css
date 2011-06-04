@@ -9,6 +9,13 @@
 	padding-right: 20px;
 }
 
+#submenu li {
+	display: inline;
+	list-style-type: none;
+	padding-right: 15px;
+	font-size: small;
+}
+
 table.simple {
 	border-width: 1px;
 	border-spacing: 2px;

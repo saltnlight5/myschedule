@@ -1,1 +1,1 @@
-<% response.sendRedirect(request.getContextPath() + "/scheduler/dashboard"); %>
+<% response.sendRedirect(application.getAttribute("actionPath") + "/scheduler/dashboard"); %>
