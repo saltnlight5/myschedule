@@ -6,28 +6,28 @@ import java.util.List;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
-public class TriggerPageData {
-	private int nextFireTimesRequested;	
+public class JobFireTimesPageData {
+	private int fireTimesCount;	
 	private List<Date> nextFireTimes;
 	private JobDetail jobDetail;
 	private Trigger trigger;
 		
 	/**
 	 * Getter.
-	 * @return the nextFireTimesRequested - int
+	 * @return the fireTimesCount - int
 	 */
-	public int getNextFireTimesRequested() {
-		return nextFireTimesRequested;
+	public int getFireTimesCount() {
+		return fireTimesCount;
 	}
-
+	
 	/**
 	 * Setter
-	 * @param nextFireTimesRequested int, the nextFireTimesRequested to set
+	 * @param fireTimesCount int, the fireTimesCount to set
 	 */
-	public void setNextFireTimesRequested(int nextFireTimesRequested) {
-		this.nextFireTimesRequested = nextFireTimesRequested;
+	public void setFireTimesCount(int fireTimesCount) {
+		this.fireTimesCount = fireTimesCount;
 	}
-
+	
 	/**
 	 * Getter.
 	 * @return the trigger - Trigger

@@ -1,12 +1,13 @@
 package myschedule.web.controller;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import myschedule.service.SchedulerService;
+import myschedule.service.XmlJobLoader;
 
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
@@ -59,14 +60,52 @@ public class JobController {
 	
 	@RequestMapping(value="/create", method=RequestMethod.GET)
 	public ModelMap create() {
-		return new ModelMap("data", Collections.EMPTY_MAP);
+		ModelMap data = new ModelMap();
+		return new ModelMap("data", data);
 	}
 	
 	@RequestMapping(value="/load", method=RequestMethod.GET)
 	public ModelMap load() {
-		return new ModelMap("data", Collections.EMPTY_MAP);
+		ModelMap data = new ModelMap();
+		data.put("xml", "");
+		return new ModelMap("data", data);
 	}
 	
+	@RequestMapping(value="/load-process", method=RequestMethod.POST)
+	public ModelMap loadProcess(@RequestParam String xml) {
+		JobLoadPageData data = new JobLoadPageData();
+		XmlJobLoader loader = schedulerService.loadJobs(xml);
+		data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
+		data.setOverWriteExistingData(loader.isOverWriteExistingData());
+		data.setJobGroupsToNeverDelete(loader.getJobGroupsToNeverDelete());
+		data.setTriggerGroupsToNeverDelete(loader.getTriggerGroupsToNeverDelete());
+		data.setLoadedJobs(toFullNameJobDetailList(loader.getLoadedJobs()));
+		data.setLoadedTriggers(toFullNameTriggerList(loader.getLoadedTriggers()));
+		return new ModelMap("data", data);
+	}
+	
+	/**
+	 * @param loadedTriggers
+	 * @return
+	 */
+	private List<String> toFullNameTriggerList(List<Trigger> triggers) {
+		List<String> list = new ArrayList<String>();
+		for (Trigger trigger : triggers)
+			list.add(trigger.getFullName());
+		return list;
+	}
+
+	/**
+	 * @param loadedJobs
+	 * @return
+	 */
+	private List<String> toFullNameJobDetailList(List<JobDetail> jobDetails) {
+		List<String> list = new ArrayList<String>();
+		for (JobDetail jobDetail : jobDetails)
+			list.add(jobDetail.getFullName());
+		return list;
+	}
+
 	/** Show TriggerPageData. */
 	@RequestMapping(value="/firetimes", method=RequestMethod.GET)
 	public ModelMap firetimes(
@@ -74,8 +113,8 @@ public class JobController {
 			@RequestParam String triggerGroup,
 			@RequestParam int fireTimesCount) {
 		logger.info("Getting next " + fireTimesCount + " fire times for trigger name=" + triggerName + ", group=" + triggerGroup);
-		TriggerPageData data = new TriggerPageData();
-		data.setNextFireTimesRequested(fireTimesCount);
+		JobFireTimesPageData data = new JobFireTimesPageData();
+		data.setFireTimesCount(fireTimesCount);
 		data.setTrigger(getTrigger(triggerName, triggerGroup));
 		data.setJobDetail(getJobDetail(data.getTrigger()));
 		data.setNextFireTimes(getNextFireTimes(data.getTrigger(), fireTimesCount));

@@ -12,7 +12,7 @@ related beans should go into dispatcher-servlet-context.xml instead.
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
 	<!-- Define a quartzScheduler bean -->
-	<import resource="scheduler/scheduler-with-jobs.xml"/>
+	<import resource="scheduler/scheduler.xml"/>
 	
 	<!-- MySchedule scheduler service -->
 	<bean name="schedulerService" class="myschedule.service.SchedulerService">

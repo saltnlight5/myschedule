@@ -1,5 +1,7 @@
 package myschedule.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -120,6 +122,23 @@ public class SchedulerService {
 		try {
 			scheduler.deleteJob(jobName, groupName);
 		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Load job scheduling data xml using XMLSchedulingDataProcessor.
+	 * @param xml
+	 * @return XMLSchedulingDataProcessor instance will contain all the jobs parse in xml.
+	 */
+	public XmlJobLoader loadJobs(String xml) {
+		try {
+			XmlJobLoader xmlJobLoader = new XmlJobLoader();
+			String systemId = null;
+			InputStream istream = new ByteArrayInputStream(xml.getBytes());
+			xmlJobLoader.processStreamAndScheduleJobs(istream, systemId, scheduler);
+			return xmlJobLoader;
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

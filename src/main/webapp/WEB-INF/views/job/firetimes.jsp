@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/views/header.inc" %>
 
-<h1>Next ${ data.nextFireTimesRequested } FireTimes </h1>
+<h1>Next ${ data.fireTimesCount } FireTimes </h1>
 <p id="info">Showing trigger details on job ${ data.jobDetail.fullName } - Trigger ${ data.trigger.fullName }</p>
 
 <table class="simple">
