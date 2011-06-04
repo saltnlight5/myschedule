@@ -17,7 +17,7 @@
 		<td> ${ job.jobDetail.fullName } </td>
 		<td> ${ job.trigger.fullName } </td>
 		<td> ${ job.trigger.nextFireTime } </td>
-		<td><a href="trigger?triggerName=${ job.trigger.name }&triggerGroup=${ job.trigger.group }&nextFireTimesRequested=20">More Next FireTime</a></td>
+		<td><a href="job-firetimes?triggerName=${ job.trigger.name }&triggerGroup=${ job.trigger.group }&nextFireTimesRequested=20">More Next FireTime</a></td>
 		</c:when>
 		<c:otherwise>
 		<td> ${ job.jobDetail.fullName } </td>

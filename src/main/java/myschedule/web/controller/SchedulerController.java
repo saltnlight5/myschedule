@@ -76,7 +76,7 @@ public class SchedulerController {
 	}
 	
 	/** Show TriggerPageData. */
-	@RequestMapping(value="/trigger", method=RequestMethod.GET)
+	@RequestMapping(value="/job-firetimes", method=RequestMethod.GET)
 	public ModelMap jobNextFireTimes(
 			@RequestParam String triggerName,
 			@RequestParam String triggerGroup,
