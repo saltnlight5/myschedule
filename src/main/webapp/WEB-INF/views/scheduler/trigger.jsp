@@ -1,14 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ include file="/WEB-INF/views/common.inc" %>
+<%@ include file="/WEB-INF/views/header.inc" %>
 
-<div>
-<a href="${ contextPath }/scheduler/dashboard">Dashboard</a>
-<a href="${ contextPath }/scheduler/jobs">Jobs</a>
-</div>
+<h1>Next ${ data.nextFireTimesRequested } FireTimes </h1>
+<p>Job ${ data.jobDetail.fullName } - Trigger ${ data.trigger.fullName }</p>
 
-<h1>Job ${ data.jobDetail.fullName } - Trigger ${ data.trigger.fullName }</h1>
-
-<h2>Next ${ data.nextFireTimesRequested } FireTimes </h2>
 <table class="simple">
 	<c:forEach items="${ data.nextFireTimes }" var="time" varStatus="status">
 	<tr>

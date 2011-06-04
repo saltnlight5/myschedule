@@ -37,35 +37,12 @@ public class SchedulerController {
 	
 	@Resource
 	protected SchedulerService schedulerService;
-			
-	/** Show DashboardPageData. */
-	@RequestMapping(value="/dashboard", method=RequestMethod.GET)
-	public ModelMap dashboard() {
-		DashboardPageData data = new DashboardPageData();
-		data.setSchedulerInfo(getSchedulerInfo());
-		return new ModelMap("data", data);
-	}
 
-	/** Show JobsPageData. */
-	@RequestMapping(value="/jobs", method=RequestMethod.GET)
-	public ModelMap jobs() {
-		JobsPageData data = new JobsPageData();
-		data.setSchedulerSummary(getSchedulerSummary());
-		data.setJobs(getSchedulerJobs());
-		return new ModelMap("data", data);
-	}
-	
-	/** Show TriggerPageData. */
-	@RequestMapping(value="/trigger", method=RequestMethod.GET)
-	public ModelMap jobNextFireTimes(
-			@RequestParam String triggerName,
-			@RequestParam String triggerGroup,
-			@RequestParam int nextFireTimesRequested) {
-		TriggerPageData data = new TriggerPageData();
-		data.setNextFireTimesRequested(nextFireTimesRequested);
-		data.setTrigger(getTrigger(triggerName, triggerGroup));
-		data.setJobDetail(getJobDetail(data.getTrigger()));
-		data.setNextFireTimes(getNextFireTimes(data.getTrigger(), nextFireTimesRequested));
+	/** Show scheduler status page */
+	@RequestMapping(value="/status", method=RequestMethod.GET)
+	public ModelMap index() {
+		SchedulerStatusPageData data = new SchedulerStatusPageData();
+		data.setSchedulerInfo(getSchedulerInfo());
 		return new ModelMap("data", data);
 	}
 
@@ -87,6 +64,29 @@ public class SchedulerController {
 		}
 		logger.debug("Scheduler info map has " + schedulerInfo.size() + " items.");
 		return schedulerInfo;
+	}
+	
+	/** Show JobsPageData. */
+	@RequestMapping(value="/jobs", method=RequestMethod.GET)
+	public ModelMap jobs() {
+		JobsPageData data = new JobsPageData();
+		data.setSchedulerSummary(getSchedulerSummary());
+		data.setJobs(getSchedulerJobs());
+		return new ModelMap("data", data);
+	}
+	
+	/** Show TriggerPageData. */
+	@RequestMapping(value="/trigger", method=RequestMethod.GET)
+	public ModelMap jobNextFireTimes(
+			@RequestParam String triggerName,
+			@RequestParam String triggerGroup,
+			@RequestParam int nextFireTimesRequested) {
+		TriggerPageData data = new TriggerPageData();
+		data.setNextFireTimesRequested(nextFireTimesRequested);
+		data.setTrigger(getTrigger(triggerName, triggerGroup));
+		data.setJobDetail(getJobDetail(data.getTrigger()));
+		data.setNextFireTimes(getNextFireTimes(data.getTrigger(), nextFireTimesRequested));
+		return new ModelMap("data", data);
 	}
 
 	protected String getSchedulerSummary() {

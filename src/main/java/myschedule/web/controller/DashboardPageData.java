@@ -1,25 +1,23 @@
 package myschedule.web.controller;
 
-import java.util.TreeMap;
 
 public class DashboardPageData {
-	private TreeMap<String, String> schedulerInfo;
-
+	private String schedulerSummary;
+	
 	/**
 	 * Getter.
-	 * @return the schedulerInfo - TreeMap<String,String>
+	 * @return the schedulerSummary - String
 	 */
-	public TreeMap<String, String> getSchedulerInfo() {
-		return schedulerInfo;
-	}
-
-	/**
-	 * Setter
-	 * @param schedulerInfo TreeMap<String,String>, the schedulerInfo to set
-	 */
-	public void setSchedulerInfo(TreeMap<String, String> schedulerInfo) {
-		this.schedulerInfo = schedulerInfo;
+	public String getSchedulerSummary() {
+		return schedulerSummary;
 	}
 	
+	/**
+	 * Setter
+	 * @param schedulerSummary String, the schedulerSummary to set
+	 */
+	public void setSchedulerSummary(String schedulerSummary) {
+		this.schedulerSummary = schedulerSummary;
+	}	
 	
 }

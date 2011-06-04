@@ -1,6 +1,14 @@
-<html>
-<head>
-<style type="text/css">
+/* 
+ * Simple Theme: Html CSS styling 
+ */
+
+/* Horizontal List */
+#menu li {
+	display: inline;
+	list-style-type: none;
+	padding-right: 20px;
+}
+
 table.simple {
 	border-width: 1px;
 	border-spacing: 2px;
@@ -30,7 +38,3 @@ table.simple td {
 	white-space:pre;
 	font-family:courier new;
 }
-</style>
-<title>Scheduler</title>
-</head>
-<body>

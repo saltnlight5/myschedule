@@ -23,7 +23,7 @@
 	
 	<!-- Spring MVC Dispatcher Servlet -->
 	<servlet>
-		<servlet-name>springDispatcherServlet</servlet-name>
+		<servlet-name>mainDispatcherServlet</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
@@ -33,8 +33,8 @@
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>springDispatcherServlet</servlet-name>
-		<url-pattern>/</url-pattern>
+		<servlet-name>mainDispatcherServlet</servlet-name>
+		<url-pattern>/main/*</url-pattern>
 	</servlet-mapping>
 	
 </web-app>
