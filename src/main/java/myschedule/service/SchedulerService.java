@@ -150,5 +150,21 @@ public class SchedulerService {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
+	public void standby() {
+		try {
+			scheduler.standby();
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void start() {
+		try {
+			scheduler.start();
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 }

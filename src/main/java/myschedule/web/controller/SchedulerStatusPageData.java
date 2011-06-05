@@ -4,26 +4,25 @@ import java.util.TreeMap;
 
 public class SchedulerStatusPageData {
 	private TreeMap<String, String> schedulerInfo;
-	private boolean schedulerStarted;
 	private String schedulerName;
-	
+	private boolean schedulerInStandbyMode;
 	
 	/**
 	 * Getter.
-	 * @return the schedulerStarted - boolean
+	 * @return the schedulerInStandbyMode - boolean
 	 */
-	public boolean isSchedulerStarted() {
-		return schedulerStarted;
+	public boolean isSchedulerInStandbyMode() {
+		return schedulerInStandbyMode;
 	}
-
+	
 	/**
 	 * Setter
-	 * @param schedulerStarted boolean, the schedulerStarted to set
+	 * @param schedulerInStandbyMode boolean, the schedulerInStandbyMode to set
 	 */
-	public void setSchedulerStarted(boolean schedulerStarted) {
-		this.schedulerStarted = schedulerStarted;
+	public void setSchedulerInStandbyMode(boolean schedulerInStandbyMode) {
+		this.schedulerInStandbyMode = schedulerInStandbyMode;
 	}
-
+	
 	/**
 	 * Getter.
 	 * @return the schedulerName - String

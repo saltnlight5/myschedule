@@ -74,11 +74,11 @@ public class ObjectUtils {
 					continue; // skip getClass method.
 				
 				String propName = null;
-				if (methodName.length() >= 4 && methodName.startsWith("get")) {
+				if (methodName.length() >= 4 && methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3))) {
 					propName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);		
-				} else if (methodName.length() >= 4 && methodName.startsWith("has")) {
+				} else if (methodName.length() >= 4 && methodName.startsWith("has") && Character.isUpperCase(methodName.charAt(3))) {
 					propName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
-				} if (methodName.length() >= 3 && methodName.startsWith("is")) {
+				} if (methodName.length() >= 3 && methodName.startsWith("is") && Character.isUpperCase(methodName.charAt(2))) {
 					propName = methodName.substring(2, 3).toLowerCase() + methodName.substring(3);
 				}
 				//logger.info(method.getName() + ", propName=" + propName);

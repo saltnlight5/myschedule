@@ -38,15 +38,36 @@ public class SchedulerController {
 
 	/** Show scheduler status page */
 	@RequestMapping(value="/status", method=RequestMethod.GET)
-	public ModelMap index() {
+	public ModelMap status() {
+		return getSchedulerStatusPage();
+	}
+
+	@RequestMapping(value="/standby", method=RequestMethod.GET)
+	public String standby() {
+		schedulerService.standby();
+		return "redirect:status";
+	}
+	
+	@RequestMapping(value="/start", method=RequestMethod.GET)
+	public String start() {
+		schedulerService.start();
+		return "redirect:status";
+	}
+
+	/**
+	 * @return
+	 */
+	private ModelMap getSchedulerStatusPage() {
 		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
 		SchedulerStatusPageData data = new SchedulerStatusPageData();
 		data.setSchedulerName(schedulerMetaData.getSchedulerName());
-		data.setSchedulerStarted(schedulerMetaData.isStarted());
-		if (schedulerMetaData.isStarted())
+		data.setSchedulerInStandbyMode(schedulerMetaData.isInStandbyMode());
+		if (!schedulerMetaData.isInStandbyMode()) {
 			data.setSchedulerInfo(getSchedulerInfo(schedulerMetaData));
+		}
 		return new ModelMap("data", data);
 	}
+
 
 	protected TreeMap<String, String> getSchedulerInfo(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();

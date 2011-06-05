@@ -1,13 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ include file="/WEB-INF/views/header.inc" %>
-
-<div id="submenu">	
-<ul>
-<li><a href="${ actionPath }/job/create">Create New Job</a></li>
-<li><a href="${ actionPath }/job/load">Load Job Scheduling Data</a></li>
-</ul>
-</div>
+<%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
 <h1>Scheduled Jobs</h1>
 
