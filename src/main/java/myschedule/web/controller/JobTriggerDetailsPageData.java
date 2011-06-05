@@ -6,12 +6,63 @@ import java.util.List;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
-public class JobFireTimesPageData {
+public class JobTriggerDetailsPageData {
 	private int fireTimesCount;	
 	private List<Date> nextFireTimes;
 	private JobDetail jobDetail;
 	private Trigger trigger;
+	private boolean jobDetailShouldRecover;
+	private List<String> jobListenerNames;
+	private List<String> triggerListenerNames;
 		
+	/**
+	 * Getter.
+	 * @return the jobListenerNames - List<String>
+	 */
+	public List<String> getJobListenerNames() {
+		return jobListenerNames;
+	}
+
+	/**
+	 * Setter
+	 * @param jobListenerNames List<String>, the jobListenerNames to set
+	 */
+	public void setJobListenerNames(List<String> jobListenerNames) {
+		this.jobListenerNames = jobListenerNames;
+	}
+
+	/**
+	 * Getter.
+	 * @return the triggerListenerNames - List<String>
+	 */
+	public List<String> getTriggerListenerNames() {
+		return triggerListenerNames;
+	}
+
+	/**
+	 * Setter
+	 * @param triggerListenerNames List<String>, the triggerListenerNames to set
+	 */
+	public void setTriggerListenerNames(List<String> triggerListenerNames) {
+		this.triggerListenerNames = triggerListenerNames;
+	}
+
+	/**
+	 * Getter.
+	 * @return the jobDetailShouldRecover - boolean
+	 */
+	public boolean isJobDetailShouldRecover() {
+		return jobDetailShouldRecover;
+	}
+	
+	/**
+	 * Setter
+	 * @param jobDetailShouldRecover boolean, the jobDetailShouldRecover to set
+	 */
+	public void setJobDetailShouldRecover(boolean jobDetailShouldRecover) {
+		this.jobDetailShouldRecover = jobDetailShouldRecover;
+	}
+	
 	/**
 	 * Getter.
 	 * @return the fireTimesCount - int

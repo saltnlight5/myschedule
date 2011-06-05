@@ -26,7 +26,7 @@
 		<td> ${ job.trigger.fullName } </td>
 		<td> ${ job.trigger.nextFireTime } </td>
 		<td>
-			<a href="${ actionPath }/job/firetimes?triggerName=${ job.trigger.name }&triggerGroup=${ job.trigger.group }&fireTimesCount=20">More Next FireTime</a>
+			<a href="${ actionPath }/job/details?type=trigger&name=${ job.trigger.name }&group=${ job.trigger.group }&fireTimesCount=20">More Details</a>
 		</td>
 		</c:when>
 		<c:otherwise>
@@ -36,7 +36,9 @@
 		<td> ${ job.jobDetail.fullName } </td>
 		<td> No Trigger Assigned.</td>
 		<td> N/A </td>
-		<td> N/A </td>
+		<td>
+			<a href="${ actionPath }/job/details?type=job&name=${ job.trigger.name }&group=${ job.trigger.group }">More Details</a>
+		</td>
 		</c:otherwise>
 		</c:choose>
 	</tr>

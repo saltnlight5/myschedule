@@ -23,11 +23,11 @@ Scheduler has not yet started!
 </p>
 </c:when>
 <c:otherwise>
-<table class="simple">
+<table class="simple datalist">
 	<c:forEach items="${ data.schedulerInfo }" var="item" varStatus="status">
 	<tr>
 		<td> ${ item.key }</td>
-		<td class="plaintext"> ${ item.value }</td>
+		<td> ${ item.value }</td>
 	</tr>
 	</c:forEach>
 </table>

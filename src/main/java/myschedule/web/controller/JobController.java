@@ -1,6 +1,7 @@
 package myschedule.web.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -125,29 +126,47 @@ public class JobController {
 		return list;
 	}
 
-	/** Show TriggerPageData. */
-	@RequestMapping(value="/firetimes", method=RequestMethod.GET)
-	public ModelMap firetimes(
-			@RequestParam String triggerName,
-			@RequestParam String triggerGroup,
+	/** Show Job and Trigger and FireTimes Details */
+	@RequestMapping(value="/details", method=RequestMethod.GET)
+	public ModelMap details(
+			@RequestParam String type,
+			@RequestParam String name,
+			@RequestParam String group,
 			@RequestParam int fireTimesCount) {
-		logger.info("Getting next " + fireTimesCount + " fire times for trigger name=" + triggerName + ", group=" + triggerGroup);
-		JobFireTimesPageData data = new JobFireTimesPageData();
-		data.setFireTimesCount(fireTimesCount);
-		data.setTrigger(getTrigger(triggerName, triggerGroup));
-		data.setJobDetail(getJobDetail(data.getTrigger()));
-		data.setNextFireTimes(getNextFireTimes(data.getTrigger(), fireTimesCount));
+		logger.info("Getting " + type + " name=" + name + ", group=" + group + "[fireTimesCount=" + fireTimesCount + "]");
+		JobTriggerDetailsPageData data = null;
+		if ("trigger".equals(type)) {
+			data = getJobTriggerDetailsPageData(name, group, fireTimesCount);
+		} else if ("job".equals(type)) {
+			data = getJobTriggerDetailsPageDataByJobOnly(name, group);
+		}
 		return new ModelMap("data", data);
 	}
 
-	protected JobDetail getJobDetail(Trigger trigger) {
+	private JobTriggerDetailsPageData getJobTriggerDetailsPageData(String name, String group, int fireTimesCount) {
+		Trigger trigger = schedulerService.getTrigger(name, group);
 		String jobName = trigger.getJobName();
 		String jobGroup = trigger.getJobGroup();
-		return schedulerService.getJobDetail(jobName, jobGroup);
+		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
+		
+		JobTriggerDetailsPageData data = new JobTriggerDetailsPageData();
+		data.setFireTimesCount(fireTimesCount);
+		data.setTrigger(trigger);
+		data.setTriggerListenerNames(Arrays.asList(trigger.getTriggerListenerNames()));
+		data.setNextFireTimes(getNextFireTimes(data.getTrigger(), fireTimesCount));
+		data.setJobDetail(jobDetail);		
+		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
+		data.setJobListenerNames(Arrays.asList(jobDetail.getJobListenerNames()));
+		return data;
 	}
-	
-	protected Trigger getTrigger(String triggerName, String triggerGroup) {
-		return schedulerService.getTrigger(triggerName, triggerGroup);
+
+	private JobTriggerDetailsPageData getJobTriggerDetailsPageDataByJobOnly(String name, String group) {
+		JobDetail jobDetail = schedulerService.getJobDetail(name, group);
+		JobTriggerDetailsPageData data = new JobTriggerDetailsPageData();
+		data.setJobDetail(jobDetail);
+		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
+		data.setJobListenerNames(Arrays.asList(jobDetail.getJobListenerNames()));
+		return data;
 	}
 
 	protected List<Date> getNextFireTimes(Trigger trigger, int fireTimesCount) {

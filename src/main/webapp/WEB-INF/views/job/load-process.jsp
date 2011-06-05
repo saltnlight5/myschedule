@@ -5,10 +5,10 @@
 <h1>Load Job Scheduling Data</h1>
 <p id="info">Job loaded successfully.</p>
 
-<table class="simple">
+<table class="simple datalist">
 	<tr>
 		<td> LOADED JOBS </td>
-		<td class="plaintext">
+		<td>
 			<c:forEach items="${ data.loadedJobs }" var="item" varStatus="status">
 			${ item }
 			</c:forEach>
@@ -16,7 +16,7 @@
 	</tr>
 	<tr>
 		<td> LOADED TRIGGERS </td>
-		<td class="plaintext">
+		<td>
 			<c:forEach items="${ data.loadedTriggers }" var="item" varStatus="status">
 			${ item }
 			</c:forEach>
