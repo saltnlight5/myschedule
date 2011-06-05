@@ -118,7 +118,7 @@
 			<version>3.0.5.RELEASE</version>
 		</dependency>
 				
-		<!-- Java Servlet -->
+		<!-- Servlet and JSP -->
 		<dependency>
 	        <groupId>javax.servlet</groupId>
 	        <artifactId>servlet-api</artifactId>
@@ -131,19 +131,20 @@
 		    <version>2.1</version>
 	        <scope>provided</scope>
 		</dependency>
+		<!-- Note: Tomcat6 (webapp-2.5) still require these jars to be packaged at runtime! -->
 		<dependency>
 	        <groupId>javax.servlet</groupId>
 	        <artifactId>jstl</artifactId>
-	        <version>1.1.2</version>
-	        <scope>provided</scope>
-		</dependency> 
+	        <version>1.2</version>
+	        <scope>runtime</scope>
+		</dependency>
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
             <version>1.1.2</version>
-	        <scope>provided</scope>
+	        <scope>runtime</scope>
         </dependency>
-				
+		 		
 		<!-- Quartz library -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
