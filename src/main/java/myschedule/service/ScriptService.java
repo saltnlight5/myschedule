@@ -1,5 +1,7 @@
 package myschedule.service;
 
+import java.io.File;
+
 import groovy.lang.GroovyShell;
 
 /** 
@@ -16,6 +18,17 @@ public class ScriptService {
 		@SuppressWarnings("unchecked")
 		T ret = (T)object;
 		return ret;
+	}
+
+	public <T> T runScript(File file) {
+		try {
+			Object object = groovyShell.evaluate(file);
+			@SuppressWarnings("unchecked")
+			T ret = (T)object;
+			return ret;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 }
