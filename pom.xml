@@ -61,18 +61,17 @@
 			<scope>runtime</scope>
 		</dependency>
 		
-		
 		<!-- Testing libraries -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
 			<version>1.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
 		
@@ -150,6 +149,35 @@
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
 			<version>1.8.5</version>
+		</dependency>
+		<!-- Quartz 1.8 JobStoreTx DataSource Pool -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+	      	<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Quartz - Oracle and JDBC Driver-->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-oracle</artifactId>
+			<version>1.8.5</version>
+	      	<scope>runtime</scope>
+		</dependency>
+	    <dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc5</artifactId>
+			<version>11.2.0</version>
+			<scope>runtime</scope>
+	    </dependency>
+	    
+		<!-- Optional MySql JDBC Driver -->
+	    <dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.16</version>
+	      	<scope>runtime</scope>
 		</dependency>
 		
 		<!-- Apache Commons -->		
