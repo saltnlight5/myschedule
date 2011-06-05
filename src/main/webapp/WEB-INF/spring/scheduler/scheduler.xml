@@ -22,7 +22,8 @@
 			<util:properties location="${myschedule.quartz.config:/WEB-INF/spring/scheduler/quartz.properties}"></util:properties>
 		</constructor-arg>
 	</bean>
-	<bean id="quartzScheduler" class="org.quartz.Scheduler" destroy-method="shutdown"
+	<bean id="quartzScheduler" class="org.quartz.Scheduler" 
+		init-method="start" destroy-method="shutdown"
 		factory-bean="quartzSchedulerFactory" factory-method="getScheduler">
 	</bean>
 	

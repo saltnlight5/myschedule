@@ -39,13 +39,16 @@ public class SchedulerController {
 	/** Show scheduler status page */
 	@RequestMapping(value="/status", method=RequestMethod.GET)
 	public ModelMap index() {
+		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
 		SchedulerStatusPageData data = new SchedulerStatusPageData();
-		data.setSchedulerInfo(getSchedulerInfo());
+		data.setSchedulerName(schedulerMetaData.getSchedulerName());
+		data.setSchedulerStarted(schedulerMetaData.isStarted());
+		if (schedulerMetaData.isStarted())
+			data.setSchedulerInfo(getSchedulerInfo(schedulerMetaData));
 		return new ModelMap("data", data);
 	}
 
-	protected TreeMap<String, String> getSchedulerInfo() {
-		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+	protected TreeMap<String, String> getSchedulerInfo(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
 		List<Getter> getters = ObjectUtils.getGetters(schedulerMetaData);
 		for (Getter getter : getters) {
