@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /** 
- * HomeController is the landing/default page for the application.
+ * Scheduler Jobs Controller.
  *
  * @author Zemian Deng
  */
@@ -70,17 +70,28 @@ public class JobController {
 	}
 	
 	@RequestMapping(value="/create-process", method=RequestMethod.POST)
-	public ModelMap createProcess(
-			@RequestParam String jobDetailScript,
-			@RequestParam String triggerScript) {
-		logger.info("Creating new job with Groovy.");
-		JobDetail jobDetail = scriptService.run(jobDetailScript);
-		Trigger trigger = scriptService.run(triggerScript);
-		Date fireTime = schedulerService.scheduleJob(jobDetail, trigger);
+	public ModelMap createProcess(@RequestParam String groovyScriptText) {
+		logger.debug("Running Groovy Script Text.");
+		Object ret = scriptService.run(groovyScriptText);
+		if (!(ret instanceof List) && ((List<?>)ret).size() < 2) {
+			throw new RuntimeException("Groovy script did not return [jobDetail, trigger ...] list.");
+		}
+		
+		List<?> resultList = (List<?>)ret;
+		JobDetail jobDetail = (JobDetail)resultList.get(0);
+		List<Trigger> triggers = new ArrayList<Trigger>();
+		for (int i=1; i< resultList.size(); i++) {
+			Trigger trigger = (Trigger)resultList.get(i);
+			triggers.add(trigger);
+			logger.info("Scheduling new job to scheduler: " +
+					"trigger=" + trigger.getFullJobName() + 
+					", job=" + trigger.getFullJobName());
+			schedulerService.scheduleJob(jobDetail, trigger);
+		}
+		
 		ModelMap data = new ModelMap();
 		data.put("jobDetail", jobDetail);
-		data.put("trigger", trigger);
-		data.put("fireTime", fireTime);
+		data.put("triggers", triggers);
 		return new ModelMap("data", data);
 	}
 	

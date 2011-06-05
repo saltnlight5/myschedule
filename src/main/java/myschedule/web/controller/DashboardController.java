@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /** 
- * HomeController is the landing/default page for the application.
+ * This is the home page controller.
  *
  * @author Zemian Deng
  */

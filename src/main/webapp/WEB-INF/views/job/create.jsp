@@ -9,6 +9,18 @@ You need two items to create a job: JobDetail and Trigger. This form allow you t
 return these two objects, and it will be added to scheduler upon success submission.
 </p>
 
+<p id="info">
+Enter groovy script to return an list one <code>org.quartz.JobDetail</code> and one or 
+more <code>org.quartz.Trigger</code> instances. Example:
+</p>
+
+<pre><code>
+jobDetail = new org.quartz.JobDetail('job1', 'group1', myschedule.job.sample.SimpleJob.class)
+trigger = new org.quartz.CronTrigger('trigger1', 'group1', '0 * * * * ?')
+[jobDetail, trigger]
+</code></pre>
+</p>
+
 <p id="warning">
 Warning: Groovy is a full featured programming language on top of Java. There is no 
 restriction on what you can do with Groovy here. So do not do anything destructive such
@@ -16,23 +28,8 @@ as deleting files on system!
 </p>
 
 <form method="post" action="${ actionPath }/job/create-process">
-
-<p id="label">
-Enter groovy script to return an <code>org.quartz.JobDetail</code> instance. 
-<br>
-Eg: <span class="plaintext">new org.quartz.JobDetail('job1', 'group1', myschedule.job.sample.SimpleJob.class)</span>
-</p>
-<textarea name="jobDetailScript" cols="78" rows="5">${ data.jobDetailScript }</textarea>
+<textarea name="groovyScriptText" cols="78" rows="10">${ data.groovyScriptText }</textarea>
 <br/>
-
-<p id="label">
-Enter groovy script to return an <code>org.quartz.Trigger</code> instance.
-<br>
-Eg: <span class="plaintext">new org.quartz.CronTrigger('trigger1', 'group1', "0 * * * * ?")</span>
-</p>
-<textarea name="triggerScript" cols="78" rows="5">${ data.triggerScript }</textarea>
-<br/>
-
 <input type="submit" value="Submit"></input>
 </form>
 
