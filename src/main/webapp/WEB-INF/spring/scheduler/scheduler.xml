@@ -8,8 +8,22 @@
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
-	<!-- Scheduler -->
+	<!-- Allow sys prop placeholder -->
+	<context:property-placeholder/>
+	
+	<!-- Spring wrapped Quartz Scheduler
 	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	</bean> 
+	-->
+	
+	<!-- Plain Quartz Scheduler using Factory -->
+	<bean id="quartzSchedulerFactory" class="org.quartz.impl.StdSchedulerFactory">
+		<constructor-arg>
+			<util:properties location="${myschedule.quartz.config:/WEB-INF/spring/scheduler/quartz.properties}"></util:properties>
+		</constructor-arg>
+	</bean>
+	<bean id="quartzScheduler" class="org.quartz.Scheduler" destroy-method="shutdown"
+		factory-bean="quartzSchedulerFactory" factory-method="getScheduler">
 	</bean>
 	
 	<!-- MySchedule Application Service -->

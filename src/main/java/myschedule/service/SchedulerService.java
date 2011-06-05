@@ -25,6 +25,14 @@ public class SchedulerService {
 		this.scheduler = scheduler;
 	}
 	
+	public Date scheduleJob(JobDetail jobDetail, Trigger trigger) {
+		try {
+			return scheduler.scheduleJob(jobDetail, trigger);
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public SchedulerMetaData getSchedulerMetaData() {
 		try {
 			return scheduler.getMetaData();

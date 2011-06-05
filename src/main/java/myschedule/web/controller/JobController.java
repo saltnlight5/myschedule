@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import myschedule.service.SchedulerService;
+import myschedule.service.ScriptService;
 import myschedule.service.XmlJobLoader;
 
 import org.quartz.JobDetail;
@@ -31,6 +32,9 @@ public class JobController {
 	
 	@Resource
 	protected SchedulerService schedulerService;
+	
+	@Resource
+	protected ScriptService scriptService;
 	
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
 	public ModelMap delete(
@@ -61,6 +65,21 @@ public class JobController {
 	@RequestMapping(value="/create", method=RequestMethod.GET)
 	public ModelMap create() {
 		ModelMap data = new ModelMap();
+		return new ModelMap("data", data);
+	}
+	
+	@RequestMapping(value="/create-process", method=RequestMethod.POST)
+	public ModelMap createProcess(
+			@RequestParam String jobDetailScript,
+			@RequestParam String triggerScript) {
+		logger.info("Creating new job with Groovy.");
+		JobDetail jobDetail = scriptService.run(jobDetailScript);
+		Trigger trigger = scriptService.run(triggerScript);
+		Date fireTime = schedulerService.scheduleJob(jobDetail, trigger);
+		ModelMap data = new ModelMap();
+		data.put("jobDetail", jobDetail);
+		data.put("trigger", trigger);
+		data.put("fireTime", fireTime);
 		return new ModelMap("data", data);
 	}
 	

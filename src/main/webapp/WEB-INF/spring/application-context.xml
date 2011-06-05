@@ -18,6 +18,8 @@ related beans should go into dispatcher-servlet-context.xml instead.
 	<bean name="schedulerService" class="myschedule.service.SchedulerService">
 		<property name="scheduler" ref="quartzScheduler"></property>
 	</bean>
-		
+	
+	<bean name="scriptService" class="myschedule.service.ScriptService">
+	</bean>
 		
 </beans>
