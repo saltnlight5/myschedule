@@ -1,8 +1,10 @@
 import org.quartz.*
 import myschedule.job.sample.*
 
-// Create a simple job that just does logging when fire.
-result = [new JobDetail('job1', SimpleJob.class)]
+// Generate jobs: every_christmas_morning
+trigger = new CronTrigger('every_christmas', 'DEFAULT', '0 0 0 25 DEC ?')
+quartzScheduler.scheduleJob(jobDetail, trigger)
+logger.info("job scheduled " + jobDetail.fullName)
 
 // Generate jobs: every_sec_for_1_min
 (1 .. 2).each { i -> 
@@ -11,7 +13,10 @@ result = [new JobDetail('job1', SimpleJob.class)]
 	endTime = new Date(startTime.getTime() + 1 * 60 * 1000) // 1 min later.
 	repeatCount = 0
 	repeatInterval = 0
-	result.add(new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)) 
+	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
+	jobDetail = new JobDetail(name, SimpleJob.class)
+	quartzScheduler.scheduleJob(jobDetail, trigger) 
+	logger.info("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: onetime_start_in_30_secs
@@ -21,7 +26,10 @@ result = [new JobDetail('job1', SimpleJob.class)]
 	endTime = null
 	repeatCount = 0
 	repeatInterval = 0
-	result.add(new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)) 
+	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
+	jobDetail = new JobDetail(name, SimpleJob.class)
+	quartzScheduler.scheduleJob(jobDetail, trigger)
+	logger.info("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_min
@@ -31,7 +39,10 @@ result = [new JobDetail('job1', SimpleJob.class)]
 	endTime = null
 	repeatCount = -1
 	repeatInterval = 1 * 60 * 1000
-	result.add(new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)) 
+	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
+	jobDetail = new JobDetail(name, SimpleJob.class)
+	quartzScheduler.scheduleJob(jobDetail, trigger)
+	logger.info("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_hour_with_endtime
@@ -41,24 +52,34 @@ result = [new JobDetail('job1', SimpleJob.class)]
 	endTime = new Date(startTime.getTime() + 24 * 60 * 60 * 1000) // 24 hours later.
 	repeatCount = -1
 	repeatInterval = 1 * 60 * 1000
-	result.add(new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)) 
+	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
+	jobDetail = new JobDetail(name, SimpleJob.class)
+	quartzScheduler.scheduleJob(jobDetail, trigger)
+	logger.info("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_day_at_0750AM
 (1 .. 10).each { i -> 
 	name = 'every_day_at_0750AM' + i
 	cron = '0 50 7 * * ?'
-	result.add(new CronTrigger(name, 'DEFAULT', cron)) 
+	trigger = new CronTrigger(name, 'DEFAULT', cron)
+	jobDetail = new JobDetail(name, SimpleJob.class)
+	quartzScheduler.scheduleJob(jobDetail, trigger)
+	logger.info("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_MON_to_FRI_at_5pm
 (1 .. 10).each { i -> 
 	name = 'every_MON_to_FRI_at_5pm' + i
 	cron = '0 0 17 ? * MON-FRI'
-	result.add(new CronTrigger(name, 'DEFAULT', cron)) 
+	trigger = new CronTrigger(name, 'DEFAULT', cron)
+	jobDetail = new JobDetail(name, SimpleJob.class)
+	quartzScheduler.scheduleJob(jobDetail, trigger)
+	logger.info("job scheduled " + jobDetail.fullName)
 }
 
-// Generate jobs: every_christmas_morning
-result.add(new CronTrigger('every_christmas', 'DEFAULT', '0 0 0 25 DEC ?')) 
-
-return result
+// Create a simple job that has no trigger associate it.
+jobDetail = new JobDetail('job_with_trigger', SimpleJob.class)
+jobDetail.setDurability(true)
+quartzScheduler.addJob(jobDetail, false) // Do not replace existing job
+logger.info("job scheduled " + jobDetail.fullName)

@@ -5,7 +5,7 @@ import java.util.List;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
-public class JobsPageData {
+public class JobListPageData {
 	private String schedulerSummary;	
 	private List<JobInfo> jobs;
 		

@@ -1,4 +1,4 @@
-<div id="menu">
+<div class="menu">
 <ul>
 <li><a href="${ mainPath }/index">Home</a></li>
 <li><a href="${ mainPath }/scheduler/index">Scheduler</a></li>

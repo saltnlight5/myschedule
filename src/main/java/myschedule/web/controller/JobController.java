@@ -10,9 +10,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import myschedule.service.SchedulerService;
-import myschedule.service.ScriptingService;
 import myschedule.service.XmlJobLoader;
-import myschedule.web.controller.JobsPageData.JobInfo;
+import myschedule.web.controller.JobListPageData.JobInfo;
 
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
@@ -38,10 +37,7 @@ public class JobController {
 	
 	@Resource
 	private SchedulerService schedulerService;
-	
-	@Resource
-	private ScriptingService scriptingService;
-	
+		
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
 		return "redirect:list";
@@ -50,7 +46,7 @@ public class JobController {
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public ModelMap list() {
-		JobsPageData data = new JobsPageData();
+		JobListPageData data = new JobListPageData();
 		data.setJobs(getSchedulerJobs());
 		return new ModelMap("data", data);
 	}
@@ -203,53 +199,5 @@ public class JobController {
 			job.setTriggerInfo(sb.toString());
 		} 
 	}
-
-	//
-	// Scripting 
-	// =========
-
-	@RequestMapping(value="/scripting/run", method=RequestMethod.GET)
-	public ModelMap create() {
-		ModelMap data = new ModelMap();
-		return new ModelMap("data", data);
-	}
 	
-	@RequestMapping(value="/scripting/run", method=RequestMethod.POST)
-	public ModelMap createPost(@RequestParam String groovyScriptText) {
-		logger.debug("Running Groovy Script Text.");
-		Object ret = scriptingService.run(groovyScriptText);
-		if (!(ret instanceof List) && ((List<?>)ret).size() < 2) {
-			throw new RuntimeException("Groovy script did not return [jobDetail, trigger ...] list.");
-		}
-		
-		List<?> resultList = (List<?>)ret;
-		if (resultList.size() < 2)
-			throw new RuntimeException("Groovy script did not return [jobDetail, trigger ...] list.");
-
-		List<Trigger> triggers = new ArrayList<Trigger>(); // Saved list for page data display.
-		
-		// Add the first pair set.
-		JobDetail jobDetail = (JobDetail)resultList.get(0);
-		Trigger trigger = (Trigger)resultList.get(1);
-		logger.info("Scheduling new trigger=" + trigger.getFullJobName() + 
-				", and new job=" + trigger.getFullJobName());
-		schedulerService.scheduleJob(jobDetail, trigger);
-		triggers.add(trigger);
-		
-		// Add the rest of trigger to the same jobDetail if there are any.
-		for (int i=2; i< resultList.size(); i++) {
-			trigger = (Trigger)resultList.get(i);
-			trigger.setJobName(jobDetail.getName());
-			trigger.setJobGroup(jobDetail.getGroup());
-			logger.info("Scheduling new trigger=" + trigger.getFullJobName() + 
-					", with job=" + trigger.getFullJobName());
-			schedulerService.scheduleJob(trigger);
-			triggers.add(trigger);
-		}
-		
-		ModelMap data = new ModelMap();
-		data.put("jobDetail", jobDetail);
-		data.put("triggers", triggers);
-		return new ModelMap("data", data);
-	}
 }

@@ -19,7 +19,7 @@ related beans should go into dispatcher-servlet-context.xml instead.
 		<property name="scheduler" ref="quartzScheduler"></property>
 	</bean>
 	
-	<bean name="scriptingService" class="myschedule.service.ScriptingService">
+	<bean name="scriptingService" class="myschedule.service.GroovyScriptingService">
 	</bean>
 		
 </beans>

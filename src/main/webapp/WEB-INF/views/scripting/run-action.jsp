@@ -2,13 +2,13 @@
 <%@ include file="/WEB-INF/views/header.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
-<h1>Create New Job</h1>
-<p id="info">Job ${ data.jobDetail.fullName } has been scheduled.</p>
+<h1>Scheduler Scripting</h1>
+<p class="info">Your script has been run successfully.</p>
 
-<ul>
-<c:forEach items="${ data.triggers }" var="item">
-<li>Trigger: ${ item.fullName }</li> 
-</c:forEach>
-</ul>
+<c:if test="${ not empty data.scriptingOutput }">
+<p class="info">The last object it evaluated output is: 
+<span class="plaintext">${ data.scriptingOutput }</span>
+</p>
+</c:if>
 
 <%@ include file="/WEB-INF/views/footer.inc" %>

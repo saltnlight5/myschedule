@@ -8,6 +8,6 @@
 
 <%@ include file="/WEB-INF/views/menu.inc" %>
 
-<div id="divider"/>
+<div class="divider"/>
 
-<div id="body">
+<div class="body">

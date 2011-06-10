@@ -6,7 +6,7 @@
 
 <c:choose>
 <c:when test="${ data.schedulerInStandbyMode }">
-<p id="warning">
+<p class="warning">
 Scheduler has not yet started!
 </p>
 </c:when>

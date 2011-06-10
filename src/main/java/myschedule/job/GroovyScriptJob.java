@@ -1,8 +1,10 @@
 package myschedule.job;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
-import myschedule.service.ScriptingService;
+import myschedule.service.GroovyScriptingService;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -15,8 +17,17 @@ import org.slf4j.LoggerFactory;
 /** 
  * Quartz job to evaluate any Groovy script text or file from the data map.
  * 
- * If "GroovyScriptText" is found, it will ignore the "GroovyScriptFile".
- *
+ * <p>If "GroovyScriptText" is found, it will ignore the "GroovyScriptFile".
+ * 
+ * <p>The following variables are expose to the script automatically:
+ * 
+ * <pre>
+ *   jobExecutionContext - instance of JobExecutionContext when job is run.
+ *   logger - a SLF4J logger
+ *   groovyScriptText - groovy script source if "GroovyScriptText" is used.
+ *   groovyScriptFile - groovy script source if "GroovyScriptFile" is used.
+ * </pre>
+ * 
  * @author Zemian Deng
  */
 public class GroovyScriptJob implements Job {
@@ -29,12 +40,12 @@ public class GroovyScriptJob implements Job {
 
 	/**
 	 * Run the job to evaluate the Groovy script text.
-	 * @param context
+	 * @param jobExecutionContext
 	 * @throws JobExecutionException
 	 */
 	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
-		JobDetail jobDetail = context.getJobDetail();
+	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+		JobDetail jobDetail = jobExecutionContext.getJobDetail();
 		logger.info("Running Groovy Script Job: " + jobDetail.getFullName());
 		JobDataMap dataMap = jobDetail.getJobDataMap();
 		String scriptText = dataMap.getString(GROOVY_SCRIPT_TEXT_KEY);
@@ -48,15 +59,20 @@ public class GroovyScriptJob implements Job {
 			}
 		}
 		
-		ScriptingService scriptService = new ScriptingService();
+		GroovyScriptingService scriptService = new GroovyScriptingService();
+		Map<String, Object> variables = new HashMap<String, Object>();
+		variables.put("jobExecutionContext", jobExecutionContext);
+		variables.put("logger", logger);
 		Object result = null;
 		if (filename == null) {
 			logger.debug("Running script text.");
-			result = scriptService.run(scriptText);
+			variables.put("groovyScriptText", scriptText);
+			result = scriptService.run(scriptText, variables);
 		} else {
 			File file = new File(filename);
 			logger.debug("Running script file=" + file);
-			result = scriptService.runScript(file);
+			variables.put("groovyScriptFile", file);
+			result = scriptService.runScript(file, variables);
 		}
 		logger.info("Groovy script " + (filename == null ? "text" : filename) + 
 				" evaluated. Result: " + result);

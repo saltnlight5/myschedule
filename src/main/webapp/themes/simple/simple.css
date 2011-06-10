@@ -3,13 +3,13 @@
  */
 
 /* Horizontal List */
-#menu li {
+.menu li {
 	display: inline;
 	list-style-type: none;
 	padding-right: 20px;
 }
 
-#submenu li {
+.submenu li {
 	display: inline;
 	list-style-type: none;
 	padding-right: 15px;

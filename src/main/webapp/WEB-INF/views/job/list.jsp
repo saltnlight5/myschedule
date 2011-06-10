@@ -5,7 +5,7 @@
 
 <h1>Scheduled Jobs</h1>
 
-<p id="info">${ fn:length(data.jobs) } jobs found.</p>
+<p class="info">${ fn:length(data.jobs) } jobs found.</p>
 
 <table class="simple">
 	<tr>
