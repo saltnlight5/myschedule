@@ -1,4 +1,4 @@
-</div> <!-- #body -->
+</div> <!-- div.container -->
 
 <div class="footer">
 <p class="productInfo">MySchedule - A Quartz Dashboard by <a href="mailto:saltnlight5@gmail.com">Zemian Deng</a></p>

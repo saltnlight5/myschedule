@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
 <h1>Job Deleted</h1>
-<p class="info">Job ${ data.jobDetail.fullName } has been deleted.</p>
+<div class="success">Job ${ data.jobDetail.fullName } has been deleted.</div>
 
 <ul>
 <c:forEach items="${ data.triggers }" var="item">

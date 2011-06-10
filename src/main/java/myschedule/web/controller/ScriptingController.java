@@ -1,5 +1,7 @@
 package myschedule.web.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +26,11 @@ import org.springframework.web.context.ServletContextAware;
  * <p>The following variables are expose to the script automatically:
  * 
  * <pre>
- *   quartzScheduler - instance of JobExecutionContext when job is run.
- *   servletContext - the ServletContext of this webapp.
- *   logger - a SLF4J logger
+ *   webOut - An instance of java.io.PrintWriter to allow script to display output to web page after Run.
+ *   quartzScheduler - An instance of org.quartz.Scheduler scheduler in this application.
+ *   servletContext - The ServletContext of this webapp.
+ *   logger - An instance of org.slf4j.Logger with name="myschedule.web.controller.ScriptingController".
+ *            The logger output will only appear in the server side, not web page.
  * </pre>
  * 
  * @author Zemian Deng
@@ -57,9 +61,16 @@ public class ScriptingController implements ServletContextAware {
 	@RequestMapping(value="run-action", method=RequestMethod.POST)
 	public ModelMap runAction(@RequestParam String groovyScriptText) {
 		logger.debug("Running Groovy Script Text.");
-		Object scriptingOutput = scriptingService.run(groovyScriptText, getScriptingVariables());
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		PrintWriter webOut = new PrintWriter(outStream);
+		Map<String, Object> variables = getScriptingVariables();
+		variables.put("webOut", webOut);
+		Object scriptingOutput = scriptingService.run(groovyScriptText, variables );
+		webOut.close();
+		String webOutResult = outStream.toString();
 		ModelMap data = new ModelMap();
 		data.put("scriptingOutput", scriptingOutput);
+		data.put("webOutResult", webOutResult);
 		return new ModelMap("data", data);
 	}
 

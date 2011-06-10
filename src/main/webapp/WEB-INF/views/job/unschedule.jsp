@@ -3,10 +3,11 @@
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
 <h1>Unscheduled Job</h1>
-<p class="info">Trigger ${ data.trigger.fullName } has been removed.</p>
+<div class="success">Trigger ${ data.trigger.fullName } has been removed.</div>
 <c:if test="${ empty data.jobDetail }">
-<p class="info">The JobDetails ${ data.trigger.jobName }.${ data.trigger.jobGroup } 
-has no more trigger associated with it, so it was also removed by scheduler!</p>
+
+<div class="info">The JobDetails ${ data.trigger.jobName }.${ data.trigger.jobGroup } 
+has no more trigger associated with it, so it was also removed by scheduler!</div>
 </c:if>
 
 <%@ include file="/WEB-INF/views/footer.inc" %>

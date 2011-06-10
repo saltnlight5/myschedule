@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
  * <p>The following variables are expose to the script automatically:
  * 
  * <pre>
- *   jobExecutionContext - instance of JobExecutionContext when job is run.
- *   logger - a SLF4J logger
- *   groovyScriptText - groovy script source if "GroovyScriptText" is used.
- *   groovyScriptFile - groovy script source if "GroovyScriptFile" is used.
+ *   jobExecutionContext - instance of org.quartz.JobExecutionContext when job is run.
+ *   logger - instance of org.slf4j.Logger with name="myschedule.job.GroovyScriptJob".
+ *   groovyScriptText - Groovy script source if "GroovyScriptText" is used.
+ *   groovyScriptFile - Groovy script source if "GroovyScriptFile" is used.
  * </pre>
  * 
  * @author Zemian Deng

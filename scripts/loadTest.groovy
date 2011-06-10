@@ -4,7 +4,7 @@ import myschedule.job.sample.*
 // Generate jobs: every_christmas_morning
 trigger = new CronTrigger('every_christmas', 'DEFAULT', '0 0 0 25 DEC ?')
 quartzScheduler.scheduleJob(jobDetail, trigger)
-logger.info("job scheduled " + jobDetail.fullName)
+webOut.println("job scheduled " + jobDetail.fullName)
 
 // Generate jobs: every_sec_for_1_min
 (1 .. 2).each { i -> 
@@ -16,7 +16,7 @@ logger.info("job scheduled " + jobDetail.fullName)
 	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
 	jobDetail = new JobDetail(name, SimpleJob.class)
 	quartzScheduler.scheduleJob(jobDetail, trigger) 
-	logger.info("job scheduled " + jobDetail.fullName)
+	webOut.println("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: onetime_start_in_30_secs
@@ -29,7 +29,7 @@ logger.info("job scheduled " + jobDetail.fullName)
 	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
 	jobDetail = new JobDetail(name, SimpleJob.class)
 	quartzScheduler.scheduleJob(jobDetail, trigger)
-	logger.info("job scheduled " + jobDetail.fullName)
+	webOut.println("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_min
@@ -42,7 +42,7 @@ logger.info("job scheduled " + jobDetail.fullName)
 	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
 	jobDetail = new JobDetail(name, SimpleJob.class)
 	quartzScheduler.scheduleJob(jobDetail, trigger)
-	logger.info("job scheduled " + jobDetail.fullName)
+	webOut.println("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_hour_with_endtime
@@ -55,7 +55,7 @@ logger.info("job scheduled " + jobDetail.fullName)
 	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
 	jobDetail = new JobDetail(name, SimpleJob.class)
 	quartzScheduler.scheduleJob(jobDetail, trigger)
-	logger.info("job scheduled " + jobDetail.fullName)
+	webOut.println("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_day_at_0750AM
@@ -65,7 +65,7 @@ logger.info("job scheduled " + jobDetail.fullName)
 	trigger = new CronTrigger(name, 'DEFAULT', cron)
 	jobDetail = new JobDetail(name, SimpleJob.class)
 	quartzScheduler.scheduleJob(jobDetail, trigger)
-	logger.info("job scheduled " + jobDetail.fullName)
+	webOut.println("job scheduled " + jobDetail.fullName)
 }
 
 // Generate jobs: every_MON_to_FRI_at_5pm
@@ -75,11 +75,11 @@ logger.info("job scheduled " + jobDetail.fullName)
 	trigger = new CronTrigger(name, 'DEFAULT', cron)
 	jobDetail = new JobDetail(name, SimpleJob.class)
 	quartzScheduler.scheduleJob(jobDetail, trigger)
-	logger.info("job scheduled " + jobDetail.fullName)
+	webOut.println("job scheduled " + jobDetail.fullName)
 }
 
 // Create a simple job that has no trigger associate it.
 jobDetail = new JobDetail('job_with_trigger', SimpleJob.class)
 jobDetail.setDurability(true)
 quartzScheduler.addJob(jobDetail, false) // Do not replace existing job
-logger.info("job scheduled " + jobDetail.fullName)
+webOut.println("job scheduled " + jobDetail.fullName)

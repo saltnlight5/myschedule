@@ -4,6 +4,6 @@
 
 <h1>MyScheduler</h1>
 
-<p class="plaintext">${ data.schedulerSummary }</p>
+<div class="plaintext">${ data.schedulerSummary }</div>
 
 <%@ include file="/WEB-INF/views/footer.inc" %>

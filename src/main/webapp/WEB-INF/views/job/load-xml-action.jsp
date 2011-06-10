@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
 <h1>Load Job Scheduling Data</h1>
-<p class="info">Job loaded successfully.</p>
+<div class="success">Job loaded successfully.</div>
 
 <table class="simple datalist">
 	<tr>
