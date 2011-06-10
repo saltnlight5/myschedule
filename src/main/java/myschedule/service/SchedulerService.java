@@ -3,6 +3,7 @@ package myschedule.service;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import org.quartz.Trigger;
  */
 public class SchedulerService {
 	
-	private Scheduler scheduler;
+	protected Scheduler scheduler;
 	
 	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
@@ -28,6 +29,17 @@ public class SchedulerService {
 	public Date scheduleJob(JobDetail jobDetail, Trigger trigger) {
 		try {
 			return scheduler.scheduleJob(jobDetail, trigger);
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Schedule new trigger to existing job.
+	 */
+	public void scheduleJob(Trigger trigger) {
+		try {
+			scheduler.scheduleJob(trigger);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}
@@ -58,10 +70,10 @@ public class SchedulerService {
 		}
 	}
 	
-	public Trigger[] getTriggers(JobDetail jobDetail) {
+	public List<Trigger> getTriggers(JobDetail jobDetail) {
 		try {
 			Trigger[] triggers = scheduler.getTriggersOfJob(jobDetail.getName(), jobDetail.getGroup());
-			return triggers;
+			return Arrays.asList(triggers);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}
@@ -113,22 +125,13 @@ public class SchedulerService {
 	 * @param name
 	 * @param group
 	 */
-	public void deleteTrigger(String triggerName, String groupName) {
+	public Trigger uncheduleJob(String triggerName, String triggerGroup) {
 		try {
-			scheduler.unscheduleJob(triggerName, groupName);
-		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * Delete the job.
-	 * @param name
-	 * @param group
-	 */
-	public void deleteJob(String jobName, String groupName) {
-		try {
-			scheduler.deleteJob(jobName, groupName);
+			Trigger trigger = scheduler.getTrigger(triggerName, triggerGroup);
+			boolean success = scheduler.unscheduleJob(triggerName, triggerGroup);
+			if (!success)
+				throw new SchedulerException("Failed to unschedule job. Trigger name=" + triggerName + ", group=" + triggerGroup);
+			return trigger;
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}
@@ -162,6 +165,20 @@ public class SchedulerService {
 	public void start() {
 		try {
 			scheduler.start();
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * @param jobDetail
+	 * @return
+	 */
+	public List<Trigger> deleteJob(String jobName, String jobGroup) {
+		try {
+			Trigger[] triggers = scheduler.getTriggersOfJob(jobName, jobGroup);
+			scheduler.deleteJob(jobName, jobGroup);
+			return Arrays.asList(triggers);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);
 		}

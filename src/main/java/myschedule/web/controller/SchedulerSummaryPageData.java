@@ -1,12 +1,28 @@
 package myschedule.web.controller;
 
-import java.util.TreeMap;
 
-public class SchedulerStatusPageData {
-	private TreeMap<String, String> schedulerInfo;
+public class SchedulerSummaryPageData {
+	
+	private String schedulerSummary;
 	private String schedulerName;
 	private boolean schedulerInStandbyMode;
+		
+	/**
+	 * Getter.
+	 * @return the schedulerSummary - String
+	 */
+	public String getSchedulerSummary() {
+		return schedulerSummary;
+	}
 	
+	/**
+	 * Setter
+	 * @param schedulerSummary String, the schedulerSummary to set
+	 */
+	public void setSchedulerSummary(String schedulerSummary) {
+		this.schedulerSummary = schedulerSummary;
+	}	
+
 	/**
 	 * Getter.
 	 * @return the schedulerInStandbyMode - boolean
@@ -38,22 +54,5 @@ public class SchedulerStatusPageData {
 	public void setSchedulerName(String schedulerName) {
 		this.schedulerName = schedulerName;
 	}
-
-	/**
-	 * Getter.
-	 * @return the schedulerInfo - TreeMap<String,String>
-	 */
-	public TreeMap<String, String> getSchedulerInfo() {
-		return schedulerInfo;
-	}
-
-	/**
-	 * Setter
-	 * @param schedulerInfo TreeMap<String,String>, the schedulerInfo to set
-	 */
-	public void setSchedulerInfo(TreeMap<String, String> schedulerInfo) {
-		this.schedulerInfo = schedulerInfo;
-	}
-	
 	
 }

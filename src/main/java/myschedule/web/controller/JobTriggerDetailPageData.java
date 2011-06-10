@@ -6,45 +6,18 @@ import java.util.List;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
-public class JobTriggerDetailsPageData {
-	private int fireTimesCount;	
+public class JobTriggerDetailPageData {
+	private int fireTimesCount;
 	private List<Date> nextFireTimes;
 	private JobDetail jobDetail;
-	private Trigger trigger;
+	private List<Trigger> triggers;
 	private boolean jobDetailShouldRecover;
-	private List<String> jobListenerNames;
-	private List<String> triggerListenerNames;
-		
+	
 	/**
-	 * Getter.
-	 * @return the jobListenerNames - List<String>
+	 * Get the first trigger in the list.
 	 */
-	public List<String> getJobListenerNames() {
-		return jobListenerNames;
-	}
-
-	/**
-	 * Setter
-	 * @param jobListenerNames List<String>, the jobListenerNames to set
-	 */
-	public void setJobListenerNames(List<String> jobListenerNames) {
-		this.jobListenerNames = jobListenerNames;
-	}
-
-	/**
-	 * Getter.
-	 * @return the triggerListenerNames - List<String>
-	 */
-	public List<String> getTriggerListenerNames() {
-		return triggerListenerNames;
-	}
-
-	/**
-	 * Setter
-	 * @param triggerListenerNames List<String>, the triggerListenerNames to set
-	 */
-	public void setTriggerListenerNames(List<String> triggerListenerNames) {
-		this.triggerListenerNames = triggerListenerNames;
+	public Trigger getFirstTrigger() {
+		return triggers.get(0);
 	}
 
 	/**
@@ -81,18 +54,18 @@ public class JobTriggerDetailsPageData {
 	
 	/**
 	 * Getter.
-	 * @return the trigger - Trigger
+	 * @return the triggers - List<Trigger>
 	 */
-	public Trigger getTrigger() {
-		return trigger;
+	public List<Trigger> getTriggers() {
+		return triggers;
 	}
-
+	
 	/**
 	 * Setter
-	 * @param trigger Trigger, the trigger to set
+	 * @param triggers List<Trigger>, the triggers to set
 	 */
-	public void setTrigger(Trigger trigger) {
-		this.trigger = trigger;
+	public void setTriggers(List<Trigger> triggers) {
+		this.triggers = triggers;
 	}
 	
 	/**

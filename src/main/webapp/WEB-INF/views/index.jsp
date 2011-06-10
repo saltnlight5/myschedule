@@ -1,1 +1,0 @@
-<% response.sendRedirect(application.getAttribute("actionPath") + "/scheduler/dashboard"); %>

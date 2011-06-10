@@ -1,7 +1,8 @@
 <div id="menu">
 <ul>
-<li><a href="${ actionPath }/dashboard/index">Dashboard</a></li>
-<li><a href="${ actionPath }/scheduler/status">Scheduler</a></li>
-<li><a href="${ actionPath }/scheduler/jobs">Jobs</a></li>
+<li><a href="${ mainPath }/index">Home</a></li>
+<li><a href="${ mainPath }/scheduler/index">Scheduler</a></li>
+<li><a href="${ mainPath }/job/index">Jobs</a></li>
+<li><a href="${ mainPath }/scripting/index">Scripting</a></li>
 </ul>
 </div>

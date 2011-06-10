@@ -2,7 +2,7 @@ package myschedule.job;
 
 import java.io.File;
 
-import myschedule.service.ScriptService;
+import myschedule.service.ScriptingService;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GroovyScriptJob implements Job {
 	
-	private static Logger logger = LoggerFactory.getLogger(GroovyScriptJob.class);
+	protected static Logger logger = LoggerFactory.getLogger(GroovyScriptJob.class);
 	
 	public static final String GROOVY_SCRIPT_TEXT_KEY = "GroovyScriptText";
 	
@@ -48,7 +48,7 @@ public class GroovyScriptJob implements Job {
 			}
 		}
 		
-		ScriptService scriptService = new ScriptService();
+		ScriptingService scriptService = new ScriptingService();
 		Object result = null;
 		if (filename == null) {
 			logger.debug("Running script text.");

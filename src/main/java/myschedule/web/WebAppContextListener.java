@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
  */
 public class WebAppContextListener implements ServletContextListener {
 	
-	private static Logger logger = LoggerFactory.getLogger(WebAppContextListener.class);
-	
-	public static final String SPRING_DISPATCHER_URL_PREFIX = "/main";
+	private static Logger logger = LoggerFactory.getLogger(WebAppContextListener.class);	
+	public static final String MAIN_PATH = "/main";
+	public static final String VIEWS_PATH = "/WEB-INF/views";
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
@@ -26,8 +26,11 @@ public class WebAppContextListener implements ServletContextListener {
 		ctx.setAttribute("contextPath", contextPath);
 		logger.info("Set attribute contextPath=" + ctx.getAttribute("contextPath"));
 		
-		ctx.setAttribute("actionPath", contextPath + SPRING_DISPATCHER_URL_PREFIX);
+		ctx.setAttribute("mainPath", contextPath + MAIN_PATH);
 		logger.info("Set attribute actionPath=" + ctx.getAttribute("actionPath"));
+		
+		ctx.setAttribute("viewsPath", contextPath + VIEWS_PATH);
+		logger.info("Set attribute viewsPath=" + ctx.getAttribute("viewsPath"));
 		
 		logger.info("Web application initialized.");
 	}

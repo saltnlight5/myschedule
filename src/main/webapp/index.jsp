@@ -1,1 +1,1 @@
-<% response.sendRedirect(request.getContextPath() + "/main/dashboard/index"); %>
+<% response.sendRedirect(application.getAttribute("mainPath") + "/index"); %>

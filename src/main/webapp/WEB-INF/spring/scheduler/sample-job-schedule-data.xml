@@ -5,45 +5,46 @@
 
 	<schedule>
 	
-        <!-- Run this job every 1.5 sec forever -->
+        <!-- A simple job that just do logging. -->
 		<job>
-			<name>my_job1</name>
+			<name>simpleJob</name>
 			<group>DEFAULT</group>
 			<job-class>myschedule.job.sample.SimpleJob</job-class>
 		</job>
+		
 		<trigger>
 			<simple>
-				<name>my_job1</name>
+				<name>onetime_job</name>
 				<group>DEFAULT</group>
-				<job-name>my_job1</job-name>
+				<job-name>simpleJob</job-name>
 				<job-group>DEFAULT</job-group>
-				<repeat-count>-1</repeat-count>
-				<repeat-interval>1500</repeat-interval>
+				<repeat-count>0</repeat-count>
+				<repeat-interval>0</repeat-interval>
 			</simple>
 		</trigger>
 		
-        <!-- Run this job every night at 4:30 am -->
-		<job>
-			<name>my_job2</name>
-			<group>DEFAULT</group>
-			<description>Just a example.</description>
-			<job-class>myschedule.job.sample.SimpleJob</job-class>
-			<job-data-map>
-				<entry>
-					<key>color</key>
-					<value>RED</value>
-				</entry>
-			</job-data-map>
-		</job>
 		<trigger>
 			<cron>
-				<name>my_job2</name>
+				<name>memorial_day</name>
 				<group>DEFAULT</group>
-				<job-name>my_job2</job-name>
+				<job-name>simpleJob</job-name>
 				<job-group>DEFAULT</job-group>
-				<cron-expression>0 30 4 * * ?</cron-expression>
+				<cron-expression>0 0 0 ? MAY MONL</cron-expression>
 			</cron>
 		</trigger>
+		
+		
+		<!-- Bug: Current schema disallow '5#4' entry? 
+		<trigger>
+			<cron>
+				<name>thanksgiving_day</name>
+				<group>DEFAULT</group>
+				<job-name>simpleJob</job-name>
+				<job-group>DEFAULT</job-group>
+				<cron-expression>0 0 0 ? NOV THU#4</cron-expression>
+			</cron>
+		</trigger>
+		-->
 		
 	</schedule>
 	

@@ -1,7 +1,5 @@
 package myschedule.web.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -10,12 +8,9 @@ import javax.annotation.Resource;
 import myschedule.service.ObjectUtils;
 import myschedule.service.ObjectUtils.Getter;
 import myschedule.service.SchedulerService;
-import myschedule.web.controller.JobsPageData.JobInfo;
 
-import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
-import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -31,45 +26,48 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping(value="/scheduler")
 public class SchedulerController {
-	protected static Logger logger = LoggerFactory.getLogger(SchedulerController.class);
+	private static Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 	
 	@Resource
-	protected SchedulerService schedulerService;
+	private SchedulerService schedulerService;
+	
+	@RequestMapping(value="/index", method=RequestMethod.GET)
+	public String index() {
+		return "redirect:summary";
+	}
 
-	/** Show scheduler status page */
-	@RequestMapping(value="/status", method=RequestMethod.GET)
-	public ModelMap status() {
-		return getSchedulerStatusPage();
+	@RequestMapping(value="/summary", method=RequestMethod.GET)
+	public ModelMap schedulerSummary() {
+		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+		SchedulerSummaryPageData data = new SchedulerSummaryPageData();
+		populateSummaryPageData(data, schedulerMetaData);
+		return new ModelMap("data", data);
+	}
+
+	@RequestMapping(value="/detail", method=RequestMethod.GET)
+	public ModelMap detail() {
+		SchedulerDetailPageData data = new SchedulerDetailPageData();
+		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+		populateSummaryPageData(data, schedulerMetaData);
+		if (!schedulerMetaData.isInStandbyMode()) {
+			data.setSchedulerDetail(getSchedulerDetail(schedulerMetaData));
+		}
+		return new ModelMap("data", data);
 	}
 
 	@RequestMapping(value="/standby", method=RequestMethod.GET)
 	public String standby() {
 		schedulerService.standby();
-		return "redirect:status";
+		return "redirect:detail";
 	}
 	
 	@RequestMapping(value="/start", method=RequestMethod.GET)
 	public String start() {
 		schedulerService.start();
-		return "redirect:status";
+		return "redirect:detail";
 	}
 
-	/**
-	 * @return
-	 */
-	private ModelMap getSchedulerStatusPage() {
-		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
-		SchedulerStatusPageData data = new SchedulerStatusPageData();
-		data.setSchedulerName(schedulerMetaData.getSchedulerName());
-		data.setSchedulerInStandbyMode(schedulerMetaData.isInStandbyMode());
-		if (!schedulerMetaData.isInStandbyMode()) {
-			data.setSchedulerInfo(getSchedulerInfo(schedulerMetaData));
-		}
-		return new ModelMap("data", data);
-	}
-
-
-	protected TreeMap<String, String> getSchedulerInfo(SchedulerMetaData schedulerMetaData) {
+	private TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
 		List<Getter> getters = ObjectUtils.getGetters(schedulerMetaData);
 		for (Getter getter : getters) {
@@ -87,49 +85,16 @@ public class SchedulerController {
 		logger.debug("Scheduler info map has " + schedulerInfo.size() + " items.");
 		return schedulerInfo;
 	}
-	
-	/** Show JobsPageData. */
-	@RequestMapping(value="/jobs", method=RequestMethod.GET)
-	public ModelMap jobs() {
-		JobsPageData data = new JobsPageData();
-		data.setSchedulerSummary(getSchedulerSummary());
-		data.setJobs(getSchedulerJobs());
-		return new ModelMap("data", data);
-	}
-	
-	protected String getSchedulerSummary() {
+
+	private void populateSummaryPageData(SchedulerSummaryPageData data, SchedulerMetaData schedulerMetaData) {
+		data.setSchedulerName(schedulerMetaData.getSchedulerName());
+		data.setSchedulerInStandbyMode(schedulerMetaData.isInStandbyMode());
 		try {
-			return schedulerService.getSchedulerMetaData().getSummary();
+			data.setSchedulerSummary(schedulerMetaData.getSummary());
 		} catch (SchedulerException e) {
-			throw new RuntimeException("Failed to get scheduler summary.", e);
+			logger.error("Failed to get scheduler summary.", e);
+			data.setSchedulerSummary("NO_DATA!");
 		}
 	}
-	
-	protected List<JobInfo> getSchedulerJobs() {
-		List<JobInfo> jobs = new ArrayList<JobInfo>();
-		List<JobDetail> jobDetails = schedulerService.getJobDetails();
-		logger.debug("Found " + jobDetails.size() + " jobDetials.");
-		for (JobDetail jobDetail : jobDetails) {
-			JobInfo job = new JobInfo();
-			jobs.add(job);
-			job.setJobDetail(jobDetail);
-			Trigger[] triggers = schedulerService.getTriggers(jobDetail);
-			logger.debug("JobDetail " + jobDetail.getFullName() + " has " + triggers.length + " triggers.");
-			if (triggers.length > 0) {
-				job.setTrigger(triggers[0]);
-				
-				// For each extra trigger, we create another JobInfo for display
-				for (int i = 1; i < triggers.length; i++) {
-					job = new JobInfo();
-					jobs.add(job);
-					job.setJobDetail(jobDetail);
-					job.setTrigger(triggers[i]);
-				}
-			}
-		}
-		Collections.sort(jobs);
-		logger.debug("Found " + jobs.size() + " jobs");
-		return jobs;
-	}
-	
+
 }

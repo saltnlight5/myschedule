@@ -5,13 +5,13 @@ import java.io.File;
 import groovy.lang.GroovyShell;
 
 /** 
- * GroovyScriptService
+ * Provide Groovy scripting service to the scheduler.
  *
  * @author Zemian Deng
  */
-public class ScriptService {
+public class ScriptingService {
 
-	private GroovyShell groovyShell = new GroovyShell();
+	protected GroovyShell groovyShell = new GroovyShell();
 
 	public <T> T run(String scriptText) {
 		Object object = groovyShell.evaluate(scriptText);

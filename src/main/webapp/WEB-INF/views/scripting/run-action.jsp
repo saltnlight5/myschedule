@@ -3,12 +3,12 @@
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
 <h1>Create New Job</h1>
-<p id="info">
-Job ${ data.jobDetail.fullName } has been scheduled with
-<c:forEach items="${ data.triggers }" var="item">
-Trigger ${ item.fullName } 
-</c:forEach>
+<p id="info">Job ${ data.jobDetail.fullName } has been scheduled.</p>
 
-</p>
+<ul>
+<c:forEach items="${ data.triggers }" var="item">
+<li>Trigger: ${ item.fullName }</li> 
+</c:forEach>
+</ul>
 
 <%@ include file="/WEB-INF/views/footer.inc" %>

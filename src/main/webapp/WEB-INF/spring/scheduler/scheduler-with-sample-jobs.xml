@@ -8,6 +8,28 @@
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
+	<!-- 
+	Sample Job Set #1
+	=================
+	
+	<bean name="simpleJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass" value="myschedule.job.sample.SimpleJob" />
+	  <property name="jobDataAsMap">
+	    <map>
+	      <entry key="color" value="green" />
+	    </map>
+	  </property>
+	</bean>	
+	<bean id="simpleJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	    <property name="jobDetail" ref="simpleJob" />
+	    <property name="startDelay" value="10000" />
+	    <property name="repeatInterval" value="50000" />
+	</bean>
+	-->
+	
+	<!-- 
+	Sample Job Set #2
+	================= -->
 	<!-- Job1 -->
 	<bean name="job1" class="org.springframework.scheduling.quartz.JobDetailBean">
 	  <property name="jobClass" value="myschedule.job.sample.SimpleJob" />
@@ -54,5 +76,21 @@
 	<bean id="job1Trigger5" class="org.springframework.scheduling.quartz.CronTriggerBean">
 	    <property name="jobDetail" ref="job1" />
 	    <property name="cronExpression" value="0 0 12 ? * SUN#2" />
+	</bean>
+	
+	<!-- 
+	Scheduler 
+	========= -->
+	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="job1Trigger"/>
+				<ref bean="job2Trigger"/>
+				<ref bean="job1Trigger2"/>
+				<ref bean="job1Trigger3"/>
+				<ref bean="job1Trigger4"/>
+				<ref bean="job1Trigger5"/>
+			</list>
+		</property>
 	</bean>
 </beans>

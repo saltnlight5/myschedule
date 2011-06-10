@@ -6,7 +6,9 @@
 <p id="info">
 You need two items to create a job: JobDetail and Trigger. This form allow you to use 
 <a href="http://groovy.codehaus.org">Groovy</a> script to
-return these two objects, and it will be added to scheduler upon success submission.
+return these two objects, and it will be added to scheduler upon success submission. You
+may also have more than one triggers in the end of the list, and they all will be add for 
+the same job.
 </p>
 
 <p id="info">
@@ -27,7 +29,7 @@ restriction on what you can do with Groovy here. So do not do anything destructi
 as deleting files on system!
 </p>
 
-<form method="post" action="${ actionPath }/job/create-process">
+<form method="post" action="${ actionPath }/job/create-action">
 <textarea name="groovyScriptText" cols="78" rows="10">${ data.groovyScriptText }</textarea>
 <br/>
 <input type="submit" value="Submit"></input>

@@ -42,12 +42,30 @@ public class JobsPageData {
 	}
 
 	public static class JobInfo implements Comparable<JobInfo> {
+		
 		private JobDetail jobDetail;
 		private Trigger trigger;
+		private String triggerInfo;
 		
 		@Override
 		public int compareTo(JobInfo that) {
 			return jobDetail.getFullName().compareTo(that.getJobDetail().getFullName());
+		}
+		
+		/**
+		 * Getter.
+		 * @return the triggerInfo - String
+		 */
+		public String getTriggerInfo() {
+			return triggerInfo;
+		}
+		
+		/**
+		 * Setter
+		 * @param triggerInfo String, the triggerInfo to set
+		 */
+		public void setTriggerInfo(String triggerInfo) {
+			this.triggerInfo = triggerInfo;
 		}
 		
 		/**
