@@ -17,7 +17,7 @@ public class WebAppContextListener implements ServletContextListener {
 	private static Logger logger = LoggerFactory.getLogger(WebAppContextListener.class);	
 	public static final String MAIN_PATH = "/main";
 	public static final String VIEWS_PATH = "/WEB-INF/views";
-	public static final String MY_SCHEDULE_VERSION = "myschedule-1.1.1";
+	public static final String MY_SCHEDULE_VERSION = "myschedule-1.1.2";
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
