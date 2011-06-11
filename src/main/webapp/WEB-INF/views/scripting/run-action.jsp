@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/views/header.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
+<div class="content">
 <h1>Scheduler Scripting</h1>
 <div class="success">Your script has been run successfully.</div>
 
@@ -19,4 +20,5 @@
 </c:if>
 -->
 
+</div><!-- div.content -->
 <%@ include file="/WEB-INF/views/footer.inc" %>

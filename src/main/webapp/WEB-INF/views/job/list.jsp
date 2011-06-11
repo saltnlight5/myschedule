@@ -2,12 +2,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ include file="/WEB-INF/views/header.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
+<div class="content">
 
 <h1>Scheduled Jobs</h1>
 
-<div class="info">${ fn:length(data.jobs) } jobs found.</div>
+<table class="center">
+<tr><td>
 
-<table class="simple">
+<div class="padvertext">${ fn:length(data.jobs) } jobs found.</div>
+<table class="outlined">
 	<tr>
 		<td> JOB NAME </td>
 		<td> TRIGGER NAME </td>
@@ -41,4 +44,9 @@
 	</c:forEach>
 </table>
 
+</td></tr>
+</table><!-- table.center -->
+
+
+</div><!-- div.content -->
 <%@ include file="/WEB-INF/views/footer.inc" %>

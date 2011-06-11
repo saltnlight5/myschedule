@@ -15,4 +15,4 @@
 
 <div class="header">
 <%@ include file="/WEB-INF/views/menu.inc" %>
-</div>
+</div><!-- div.header-->

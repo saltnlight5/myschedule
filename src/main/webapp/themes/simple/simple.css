@@ -5,7 +5,7 @@ body {
 	text-align: center;
 	margin: 0;
 	padding: 0;
-	background-color: #363942;
+	background-color: #FFFFFF;
 	color: #000000;
 	font-family: Arial, Helvetica, sans-serif; 
 	font-size: 13px;
@@ -13,48 +13,38 @@ body {
 
 .container {
 	margin: 15px auto;
-	text-align: left;
-	background-color: #FFFFFF;
-	border: 1px solid #000000;
-	padding: 0px;
-	width: 850px;
-}
-
-.header {
-	min-height: 80px;
-	border-bottom: 1px solid #000000;
-	margin-bottom: 15px;
-	padding: 15px;
-}
-
-.header h1 {
-	position: relative;
-	vertical-align: center;
-	color: #000000;
-	margin-bottom: -10px;
-}
-
-.subheading {
-	color: #000000;
-}
-
-.sidebar {
-	border-left: 1px solid #000000;
-	margin: 0 0 15px 15px;
-	padding: 0px 15px 15px 15px;
-	float: right;
-	width: 175px;
+	text-align: center;
+	/* background-color: #FFFFFF;
+	border: 1px solid #000000; 
+	-moz-border-radius: 5px;*/
+	padding: 50px;
+	width: 90%;
 }
 
 .content {
-	padding: 0 15px;
 }
 
-.footer {
-	clear: both;
-	border-top: 1px solid #000000;
-	padding: 15px;
-	margin-top: 15px;
+.fixedwidthpane {
+	width: 800px;
+}
+
+.leftpane {
+	vertical-align: top;
+	text-align: left;
+}
+
+.centerpane {	
+	margin-left:auto; 
+	margin-right:auto;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.padvertext {
+	vertical-align: top;
+	text-align: left;
+	padding-bottom: 15px;
+	padding-top: 15px;		
 }
 
 /* Horizontal Menu/List */
@@ -71,36 +61,40 @@ body {
 	font-size: small;
 }
 
-/** Simple outlined table */
-table.simple {
+/** No border table for center pre text align */
+table.center {
+	border: 0px;
+	margin-left:auto; 
+	margin-right:auto;
+}
+
+/** outlined data table */
+table.outlined {
 	border-width: 1px;
 	border-spacing: 2px;
 	border-style: outset;
 	border-color: gray;
 	border-collapse: collapse;
-	background-color: white;
+	margin-left:auto; 
+	margin-right:auto;
 }
-table.simple th {
+table.outlined th {
 	border-width: 1px;
 	padding: 1px;
 	border-style: inset;
 	border-color: gray;
-	background-color: white;
-	-moz-border-radius: ;
 }
-table.simple td {
+table.outlined td {
 	vertical-align: top;
-	border-width: 1px;
 	padding: 1px;
+	border-width: 1px;
 	border-style: inset;
 	border-color: gray;
-	background-color: white;
-	-moz-border-radius: ;
 }
 
 table.datalist td + td {
-	white-space:pre;
-	font-family:courier new;
+	white-space: pre;
+	font-family: courier new;
 }
 
 /** Plain text/monospaced */
@@ -140,4 +134,12 @@ table.datalist td + td {
 .validation {
 	color: #D63301;
 	background-color: #FFCCBA;
+}
+
+/** Footer text */
+.footer {
+	clear: both;
+	border-top: 1px solid #000000;
+	padding: 15px;
+	margin-top: 15px;
 }

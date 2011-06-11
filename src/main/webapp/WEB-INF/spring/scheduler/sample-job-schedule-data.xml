@@ -1,51 +1,25 @@
 <?xml version='1.0' encoding='utf-8'?>
-<job-scheduling-data version="1.8" xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData" 
+<job-scheduling-data version="1.8" 
+	xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd">
 
-	<schedule>
-	
-        <!-- A simple job that just do logging. -->
+	<schedule>	
 		<job>
-			<name>simpleJob</name>
+			<name>onetime_job</name>
 			<group>DEFAULT</group>
 			<job-class>myschedule.job.sample.SimpleJob</job-class>
-		</job>
-		
+		</job>		
 		<trigger>
 			<simple>
 				<name>onetime_job</name>
 				<group>DEFAULT</group>
-				<job-name>simpleJob</job-name>
+				<job-name>onetime_job</job-name>
 				<job-group>DEFAULT</job-group>
 				<repeat-count>0</repeat-count>
 				<repeat-interval>0</repeat-interval>
 			</simple>
-		</trigger>
-		
-		<trigger>
-			<cron>
-				<name>memorial_day</name>
-				<group>DEFAULT</group>
-				<job-name>simpleJob</job-name>
-				<job-group>DEFAULT</job-group>
-				<cron-expression>0 0 0 ? MAY MONL</cron-expression>
-			</cron>
-		</trigger>
-		
-		
-		<!-- Bug: Current schema disallow '5#4' entry? 
-		<trigger>
-			<cron>
-				<name>thanksgiving_day</name>
-				<group>DEFAULT</group>
-				<job-name>simpleJob</job-name>
-				<job-group>DEFAULT</job-group>
-				<cron-expression>0 0 0 ? NOV THU#4</cron-expression>
-			</cron>
-		</trigger>
-		-->
-		
+		</trigger>		
 	</schedule>
 	
 </job-scheduling-data>

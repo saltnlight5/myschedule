@@ -1,11 +1,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/views/header.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
+<div class="content">
 
 <h1>Job Detail and Its Associated Triggers</h1>
 
 <h2>Job : ${ data.jobDetail.fullName }</h2>
-<table class="simple datalist">
+<table class="outlined datalist">
 	<tr><td>Name</td><td>${ data.jobDetail.name }</td></tr>
 	<tr><td>Group</td><td>${ data.jobDetail.group }</td></tr>
 	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
@@ -26,4 +27,5 @@
 	<%@ include file="/WEB-INF/views/job/trigger-detail.inc" %>
 </c:forEach>
 
+</div><!-- div.content -->
 <%@ include file="/WEB-INF/views/footer.inc" %>

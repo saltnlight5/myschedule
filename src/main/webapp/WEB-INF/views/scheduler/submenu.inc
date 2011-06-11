@@ -11,4 +11,4 @@
 </c:otherwise>
 </c:choose>
 </ul>
-</div>
+</div><!-- div.submenu -->
