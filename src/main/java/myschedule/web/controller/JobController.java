@@ -182,22 +182,29 @@ public class JobController {
 	
 	private void populateJobInfo(JobInfo job, Trigger trigger) {
 		job.setTrigger(trigger);
+
+		StringBuilder sb = new StringBuilder();
+		SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 		if (trigger instanceof CronTrigger) {
-			job.setTriggerInfo("Cron=" + ((CronTrigger)trigger).getCronExpression());
+			CronTrigger cronTrigger = (CronTrigger)trigger;
+			sb.append("Cron=" + cronTrigger.getCronExpression());
 		} else if (trigger instanceof SimpleTrigger) {
 			SimpleTrigger simpleTrigger = (SimpleTrigger)trigger;
-			SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-			StringBuilder sb = new StringBuilder();
-			sb.append("StartTime=" + df.format(simpleTrigger.getStartTime()));
-			sb.append(", RepeatCount=" + simpleTrigger.getRepeatCount());
+			sb.append("RepeatCount=" + simpleTrigger.getRepeatCount());
 			if (simpleTrigger.getRepeatCount() > 0) {
 				sb.append(", RepeatInterval=" + simpleTrigger.getRepeatInterval());				
 			}
-			if (simpleTrigger.getEndTime() != null) {
-				sb.append(", StartTime=" + df.format(simpleTrigger.getEndTime()));		
-			}
-			job.setTriggerInfo(sb.toString());
-		} 
+		}
+		
+		// start and end time.
+		if (trigger.getStartTime() != null) {
+			sb.append(", StartTime=" + df.format(trigger.getStartTime()));
+		}
+		if (trigger.getEndTime() != null) {
+			sb.append(", StartTime=" + df.format(trigger.getEndTime()));		
+		}
+
+		job.setTriggerInfo(sb.toString());
 	}
 	
 }
