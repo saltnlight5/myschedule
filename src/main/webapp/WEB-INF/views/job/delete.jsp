@@ -4,6 +4,9 @@
 <div class="content">
 
 <h1>Job Deleted</h1>
+
+<div class="fixedwidthpane centerpane">
+
 <div class="success">Job ${ data.jobDetail.fullName } has been deleted.</div>
 
 <ul>
@@ -12,5 +15,6 @@
 </c:forEach>
 </ul>
 
+</div><!-- div.fixedwidthpane -->
 </div><!-- div.content -->
 <%@ include file="/WEB-INF/views/footer.inc" %>

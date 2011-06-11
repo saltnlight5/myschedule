@@ -4,6 +4,9 @@
 
 <div class="content">
 <h1>Scheduler Scripting</h1>
+
+<div class="fixedwidthpane centerpane">
+
 <div class="success">Your script has been run successfully.</div>
 
 <c:if test="${ not empty data.webOutResult }">
@@ -20,5 +23,6 @@
 </c:if>
 -->
 
+</div><!-- <div class="fixedwidthpane centerpane"> -->
 </div><!-- div.content -->
 <%@ include file="/WEB-INF/views/footer.inc" %>

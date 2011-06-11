@@ -6,18 +6,18 @@
 
 	<schedule>	
 		<job>
-			<name>onetime_job</name>
+			<name>minute_job</name>
 			<group>DEFAULT</group>
 			<job-class>myschedule.job.sample.SimpleJob</job-class>
 		</job>		
 		<trigger>
 			<simple>
-				<name>onetime_job</name>
+				<name>minute_job</name>
 				<group>DEFAULT</group>
-				<job-name>onetime_job</job-name>
+				<job-name>minute_job</job-name>
 				<job-group>DEFAULT</job-group>
-				<repeat-count>0</repeat-count>
-				<repeat-interval>0</repeat-interval>
+				<repeat-count>-1</repeat-count>
+				<repeat-interval>60000</repeat-interval>
 			</simple>
 		</trigger>		
 	</schedule>
