@@ -5,6 +5,11 @@
 
 <h1>Job Detail and Its Associated Triggers</h1>
 
+<div class="center">
+<a href="${ mainPath }/job/delete?jobName=${ data.jobDetail.name }&jobGroup=${ data.jobDetail.group }">
+DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
+</div>
+
 <h2>Job : ${ data.jobDetail.fullName }</h2>
 <table class="outlined datalist">
 	<tr><td>Name</td><td>${ data.jobDetail.name }</td></tr>

@@ -177,7 +177,9 @@ public class SchedulerService {
 	public List<Trigger> deleteJob(String jobName, String jobGroup) {
 		try {
 			Trigger[] triggers = scheduler.getTriggersOfJob(jobName, jobGroup);
-			scheduler.deleteJob(jobName, jobGroup);
+			boolean success = scheduler.deleteJob(jobName, jobGroup);
+			if (!success)
+				throw new SchedulerException("Unable to delete jobName=" + jobName + ", jobGroup=" + jobGroup);
 			return Arrays.asList(triggers);
 		} catch (SchedulerException e) {
 			throw new RuntimeException(e);

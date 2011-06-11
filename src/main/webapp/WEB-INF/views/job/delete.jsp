@@ -9,11 +9,14 @@
 
 <div class="success">Job ${ data.jobDetail.fullName } has been deleted.</div>
 
+<c:if test="${ not empty data.triggers }">
+<div class="center">And these triggers are also removed.</div>
 <ul>
 <c:forEach items="${ data.triggers }" var="item">
 <li>Trigger: ${ item.fullName }</li> 
 </c:forEach>
 </ul>
+</c:if>
 
 </div><!-- div.fixedwidthpane -->
 </div><!-- div.content -->
