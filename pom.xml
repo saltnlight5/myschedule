@@ -74,6 +74,12 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
 		
 		<!-- Spring development libraries 
 		We would use jcl-over-slf4j instead of common-logging.
@@ -94,12 +100,6 @@
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>1.6.1</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>3.0.5.RELEASE</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -150,7 +150,7 @@
 			<artifactId>quartz</artifactId>
 			<version>1.8.5</version>
 		</dependency>
-		<!-- Quartz 1.8 JobStoreTx DataSource Pool -->
+		<!-- Quartz 1.8 JobStoreTx DataSource Pool (Note: quartz 2.0 uses c3p0)-->
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
@@ -158,7 +158,7 @@
 	      	<scope>runtime</scope>
 		</dependency>
 		
-		<!-- Quartz - Oracle and JDBC Driver-->
+		<!-- Quartz Oracle and JDBC Driver
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz-oracle</artifactId>
@@ -171,8 +171,9 @@
 			<version>11.2.0</version>
 			<scope>runtime</scope>
 	    </dependency>
+	    -->
 	    
-		<!-- Optional MySql JDBC Driver -->
+		<!-- MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.)-->
 	    <dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
