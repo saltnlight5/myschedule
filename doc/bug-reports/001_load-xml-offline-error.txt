@@ -1,3 +1,9 @@
+Saw this log msg:
+
+2011-06-13 22:47:59,234 INFO  myschedule.service.XmlJobLoader:240| Unable to load local schema packaged in quartz distri
+bution jar. Utilizing schema online at http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd
+
+
 HTTP ERROR 500
 
 Problem accessing /main/job/load-xml-action. Reason:

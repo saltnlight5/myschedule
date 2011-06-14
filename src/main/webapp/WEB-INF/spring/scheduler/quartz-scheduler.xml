@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This is spring config to define a "quartzScheduler" bean.
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
@@ -8,28 +11,14 @@
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
-	<!-- Allow sys prop placeholder -->
-	<context:property-placeholder/>
-	
-	<!-- Spring wrapped Quartz Scheduler
-	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-	</bean> 
-	-->
-	
 	<!-- Plain Quartz Scheduler using Factory -->
 	<bean id="quartzSchedulerFactory" class="org.quartz.impl.StdSchedulerFactory">
 		<constructor-arg>
 			<util:properties location="${myschedule.quartz.config:/WEB-INF/spring/scheduler/quartz.properties}"></util:properties>
 		</constructor-arg>
 	</bean>
-	<bean id="quartzScheduler" class="org.quartz.Scheduler" 
-		init-method="start" destroy-method="shutdown"
+	<bean id="quartzScheduler" class="org.quartz.Scheduler"
 		factory-bean="quartzSchedulerFactory" factory-method="getScheduler">
-	</bean>
-	
-	<!-- MySchedule Application Service -->
-	<bean name="schedulerService" class="myschedule.service.SchedulerService">
-		<property name="scheduler" ref="quartzScheduler"></property>
 	</bean>
 		
 </beans>
