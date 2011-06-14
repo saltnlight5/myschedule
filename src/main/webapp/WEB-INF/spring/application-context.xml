@@ -27,9 +27,7 @@ related beans should go into main-dispatcher-context.xml instead.
 		<property name="waitForJobsToComplete" value="${myschedule.quartz.waitForJobsToCommplete:true}"></property>
 		<property name="autoStartAndShutdown" value="${myschedule.quartz.autoStartAndShutdown:true}"></property>
 	</bean>
-	
-	<bean id="xmlJobLoader" class="myschedule.service.XmlJobLoader" />
-	
+		
 	<bean name="scriptingService" class="myschedule.service.GroovyScriptingService">
 	</bean>
 		

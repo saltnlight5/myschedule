@@ -167,8 +167,9 @@ public class SchedulerService implements InitializingBean, DisposableBean {
 	 */
 	public XmlJobLoader loadJobs(String xml) {
 		try {
-			XmlJobLoader xmlJobLoader = new XmlJobLoader(); // This is not only a loader, but also use to store what's loaded! 
-			String systemId = null;
+			// XmlJobLoader is not only just a loader, but also use to store what's loaded!
+			XmlJobLoader xmlJobLoader = XmlJobLoader.newInstance(); 
+			String systemId = XmlJobLoader.XML_SYSTEM_ID;
 			InputStream istream = new ByteArrayInputStream(xml.getBytes());
 			xmlJobLoader.processStreamAndScheduleJobs(istream, systemId, scheduler);
 			logger.info("Xml job data loaded. Loaded jobs size=" + xmlJobLoader.getLoadedJobs().size() + 

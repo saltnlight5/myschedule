@@ -1,3 +1,7 @@
+Fixed by adding XmlJobLoader.newInstance().
+  ClassLoadHelper must be initialized before passing into the parent XMLSchedulingDataProcessor
+  constructor.
+
 Saw this log msg:
 
 2011-06-13 22:47:59,234 INFO  myschedule.service.XmlJobLoader:240| Unable to load local schema packaged in quartz distri
