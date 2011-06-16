@@ -1,5 +1,7 @@
 /**
- * Simple CSS styling
+ * MySchedule Project: Simple CSS styling
+ * Author: Zemian Deng
+ * Date: 06/15/2011
  */
 body {
 	text-align: center;
@@ -77,6 +79,7 @@ table.outlined {
 	border-collapse: collapse;
 	margin-left:auto; 
 	margin-right:auto;
+	width: 100%;
 }
 table.outlined th {
 	border-width: 1px;
@@ -97,7 +100,7 @@ table.datalist td + td {
 	font-family: courier new;
 }
 
-/** Plain text/monospaced */
+/** Plain text/monospaced. */
 .plaintext {
 	white-space:pre;
 	font-family:courier new;

@@ -6,9 +6,11 @@
 <h1>Trigger Detail </h1>
 
 <div class="center">
-<a href="${ mainPath }/job/unschedule?triggerName=${ data.firstTrigger.name }&triggerGroup=${ data.firstTrigger.group }">
-UNSCHEDULE THIS TRIGGER JOB</a>
+<a href="${ mainPath }/job/job-detail?jobName=${ data.firstTrigger.jobName }&jobGroup=${ data.firstTrigger.jobGroup }"> VIEW JOB DETAIL</a> |
+<a href="${ mainPath }/job/unschedule?triggerName=${ data.firstTrigger.name }&triggerGroup=${ data.firstTrigger.group }"> UNSCHEDULE THIS TRIGGER JOB</a>
 </div>
+
+		
 
 <c:set var="trigger" value="${ data.firstTrigger }" scope="request"/>	
 <%@ include file="/WEB-INF/views/job/trigger-detail.inc" %>

@@ -1,103 +1,82 @@
 package myschedule.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
 public class JobListPageData {
-	private String schedulerSummary;	
-	private List<JobInfo> jobs;
-		
+	protected List<Trigger> triggers; // scheduled jobs
+	protected List<String> triggerSchedules; // trigger's schedule info
+	protected List<JobDetail> noTriggerJobDetails;
+	protected int showMaxFireTimesCount = 20; // default max size to show next fireTimes.
+	
 	/**
 	 * Getter.
-	 * @return the schedulerSummary - String
+	 * @return the triggerSchedules - List<String>
 	 */
-	public String getSchedulerSummary() {
-		return schedulerSummary;
+	public List<String> getTriggerSchedules() {
+		List<String> result = new ArrayList<String>();
+		for (Trigger trigger : triggers) {
+			StringBuilder sb = new StringBuilder();
+			if (trigger instanceof SimpleTrigger) {
+				SimpleTrigger t = (SimpleTrigger)trigger;
+				sb.append("Repeat=" + t.getRepeatCount());
+				sb.append(", Interval=" + t.getRepeatInterval());
+			} else if (trigger instanceof CronTrigger) {
+				CronTrigger t = (CronTrigger)trigger;
+				sb.append("Cron=" + t.getCronExpression());				
+			} else {
+				sb.append(trigger.getClass().getName());
+			}
+			result.add(sb.toString());
+		}
+		return result;
 	}
-
 	/**
 	 * Setter
-	 * @param schedulerSummary String, the schedulerSummary to set
+	 * @param showMaxFireTimesCount int, the showMaxFireTimesCount to set
 	 */
-	public void setSchedulerSummary(String schedulerSummary) {
-		this.schedulerSummary = schedulerSummary;
+	public void setShowMaxFireTimesCount(int showMaxFireTimesCount) {
+		this.showMaxFireTimesCount = showMaxFireTimesCount;
 	}
-
 	/**
 	 * Getter.
-	 * @return the jobs - List<JobInfo>
+	 * @return the showMaxFireTimesCount - int
 	 */
-	public List<JobInfo> getJobs() {
-		return jobs;
+	public int getShowMaxFireTimesCount() {
+		return showMaxFireTimesCount;
 	}
-
+	/**
+	 * Getter.
+	 * @return the triggers - List<Trigger>
+	 */
+	public List<Trigger> getTriggers() {
+		return triggers;
+	}
 	/**
 	 * Setter
-	 * @param jobs List<JobInfo>, the jobs to set
+	 * @param triggers List<Trigger>, the triggers to set
 	 */
-	public void setJobs(List<JobInfo> jobs) {
-		this.jobs = jobs;
+	public void setTriggers(List<Trigger> triggers) {
+		this.triggers = triggers;
 	}
-
-	public static class JobInfo implements Comparable<JobInfo> {
-		
-		private JobDetail jobDetail;
-		private Trigger trigger;
-		private String triggerInfo;
-		
-		@Override
-		public int compareTo(JobInfo that) {
-			return jobDetail.getFullName().compareTo(that.getJobDetail().getFullName());
-		}
-		
-		/**
-		 * Getter.
-		 * @return the triggerInfo - String
-		 */
-		public String getTriggerInfo() {
-			return triggerInfo;
-		}
-		
-		/**
-		 * Setter
-		 * @param triggerInfo String, the triggerInfo to set
-		 */
-		public void setTriggerInfo(String triggerInfo) {
-			this.triggerInfo = triggerInfo;
-		}
-		
-		/**
-		 * Getter.
-		 * @return the trigger - Trigger
-		 */
-		public Trigger getTrigger() {
-			return trigger;
-		}
-
-		/**
-		 * Setter
-		 * @param trigger Trigger, the trigger to set
-		 */
-		public void setTrigger(Trigger trigger) {
-			this.trigger = trigger;
-		}
-
-		/**
-		 * Getter.
-		 * @return the jobDetail - JobDetail
-		 */
-		public JobDetail getJobDetail() {
-			return jobDetail;
-		}
-
-		/**
-		 * Setter
-		 * @param jobDetail JobDetail, the jobDetail to set
-		 */
-		public void setJobDetail(JobDetail jobDetail) {
-			this.jobDetail = jobDetail;
-		}
+	/**
+	 * Getter.
+	 * @return the noTriggerJobDetails - List<JobDetail>
+	 */
+	public List<JobDetail> getNoTriggerJobDetails() {
+		return noTriggerJobDetails;
 	}
+	/**
+	 * Setter
+	 * @param noTriggerJobDetails List<JobDetail>, the noTriggerJobDetails to set
+	 */
+	public void setNoTriggerJobDetails(List<JobDetail> noTriggerJobDetails) {
+		this.noTriggerJobDetails = noTriggerJobDetails;
+	}
+	
 }

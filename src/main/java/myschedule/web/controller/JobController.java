@@ -1,9 +1,9 @@
 package myschedule.web.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -11,11 +11,8 @@ import javax.annotation.Resource;
 
 import myschedule.service.SchedulerService;
 import myschedule.service.XmlJobLoader;
-import myschedule.web.controller.JobListPageData.JobInfo;
 
-import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping(value="/job")
 public class JobController {
-	private static Logger logger = LoggerFactory.getLogger(JobController.class);
+	protected static Logger logger = LoggerFactory.getLogger(JobController.class);
 	
 	@Resource
-	private SchedulerService schedulerService;
+	protected SchedulerService schedulerService;
 		
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
@@ -46,9 +43,7 @@ public class JobController {
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public ModelMap list() {
-		JobListPageData data = new JobListPageData();
-		data.setJobs(getSchedulerJobs());
-		return new ModelMap("data", data);
+		return new ModelMap("data", getJobListPageData());
 	}
 	
 	@RequestMapping(value="/unschedule", method=RequestMethod.GET)
@@ -134,77 +129,91 @@ public class JobController {
 		return new ModelMap("data", data);
 	}
 
-	private List<String> getTriggerFullNames(List<Trigger> triggers) {
+	protected List<String> getTriggerFullNames(List<Trigger> triggers) {
 		List<String> list = new ArrayList<String>();
 		for (Trigger trigger : triggers)
 			list.add(trigger.getFullName());
 		return list;
 	}
 
-	private List<String> getJobDetailFullNames(List<JobDetail> jobDetails) {
+	protected List<String> getJobDetailFullNames(List<JobDetail> jobDetails) {
 		List<String> list = new ArrayList<String>();
 		for (JobDetail jobDetail : jobDetails)
 			list.add(jobDetail.getFullName());
 		return list;
 	}
 	
-	private List<Date> getNextFireTimes(Trigger trigger, int fireTimesCount) {
+	protected List<Date> getNextFireTimes(Trigger trigger, int fireTimesCount) {
 		List<Date> fireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		return fireTimes;
 	}
 	
-	private List<JobInfo> getSchedulerJobs() {
-		List<JobInfo> jobs = new ArrayList<JobInfo>();
-		List<JobDetail> jobDetails = schedulerService.getJobDetails();
-		logger.debug("Found " + jobDetails.size() + " jobDetail objects.");
-		for (JobDetail jobDetail : jobDetails) {
-			JobInfo job = new JobInfo();
-			jobs.add(job);
-			job.setJobDetail(jobDetail);
-			List<Trigger> triggers = schedulerService.getTriggers(jobDetail);
-			logger.debug("JobDetail " + jobDetail.getFullName() + " has " + triggers.size() + " triggers.");
-			if (triggers.size() > 0) {
-				populateJobInfo(job, triggers.get(0));
-				
-				// For each extra trigger, we create another JobInfo for display
-				for (int i = 1; i < triggers.size(); i++) {
-					job = new JobInfo();
-					jobs.add(job);
-					job.setJobDetail(jobDetail);
-					populateJobInfo(job, triggers.get(i));
-				}
+	protected JobListPageData getJobListPageData() {
+		List<Trigger> triggers = new ArrayList<Trigger>();
+		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
+		
+		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		logger.debug("Found total " + allJobDetails.size() + " jobDetails");
+		
+		for (JobDetail jobDetail : allJobDetails) {
+			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			if (jobTriggers.size() > 0) {
+				triggers.addAll(jobTriggers);
+			} else {
+				noTriggerJobDetails.add(jobDetail);
 			}
 		}
-		Collections.sort(jobs);
-		logger.debug("Found " + jobs.size() + " jobs");
-		return jobs;
+		logger.debug("Found " + triggers.size() + " triggers.");
+		logger.debug("Found " + noTriggerJobDetails.size() + " noTriggerJobDetails.");
+
+		// Let's sort them.
+		sortJobListTriggers(triggers);
+		sortJobListNoTriggerJobDetails(noTriggerJobDetails);
+		
+		JobListPageData data = new JobListPageData();
+		data.setTriggers(triggers);
+		data.setNoTriggerJobDetails(noTriggerJobDetails);
+		return data;
 	}
 	
-	private void populateJobInfo(JobInfo job, Trigger trigger) {
-		job.setTrigger(trigger);
+	/**
+	 * Sort by Trigger's default comparator provided by Quartz.
+	 */
+	@SuppressWarnings("unchecked")
+	protected void sortJobListTriggers(List<Trigger> triggers) {
+		Collections.sort(triggers);
+	}
+	
+	/**
+	 * Sort by JobDetail full name, then Trigger full name.
+	 */
+	protected void sortJobListTriggersByFullName(List<Trigger> triggers) {
+		Collections.sort(triggers, new Comparator<Trigger>() {
 
-		StringBuilder sb = new StringBuilder();
-		SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-		if (trigger instanceof CronTrigger) {
-			CronTrigger cronTrigger = (CronTrigger)trigger;
-			sb.append("Cron=" + cronTrigger.getCronExpression());
-		} else if (trigger instanceof SimpleTrigger) {
-			SimpleTrigger simpleTrigger = (SimpleTrigger)trigger;
-			sb.append("RepeatCount=" + simpleTrigger.getRepeatCount());
-			if (simpleTrigger.getRepeatCount() > 0) {
-				sb.append(", RepeatInterval=" + simpleTrigger.getRepeatInterval());				
+			@Override
+			public int compare(Trigger o1, Trigger o2) {
+				int ret = o1.getFullJobName().compareTo(o2.getFullJobName());
+				if (ret == 0) {
+					ret = o1.getFullName().compareTo(o2.getFullName());
+				}
+				return ret;
 			}
-		}
-		
-		// start and end time.
-		if (trigger.getStartTime() != null) {
-			sb.append(", StartTime=" + df.format(trigger.getStartTime()));
-		}
-		if (trigger.getEndTime() != null) {
-			sb.append(", StartTime=" + df.format(trigger.getEndTime()));		
-		}
+			
+		});
+	}
 
-		job.setTriggerInfo(sb.toString());
+	/**
+	 * Sort JobDetail by full name.
+	 */
+	protected void sortJobListNoTriggerJobDetails(List<JobDetail> noTriggerJobDetails) {
+		Collections.sort(noTriggerJobDetails, new Comparator<JobDetail>() {
+
+			@Override
+			public int compare(JobDetail o1, JobDetail o2) {
+				return o1.getFullName().compareTo(o2.getFullName());
+			}
+			
+		});
 	}
 	
 }
