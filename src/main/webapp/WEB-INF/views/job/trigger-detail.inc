@@ -4,8 +4,8 @@
 	<tr><td>Group</td><td>${ trigger.group }</td></tr>
 	<tr><td>JobName</td><td>${ trigger.jobName }</td></tr>
 	<tr><td>JobGroup</td><td>${ trigger.jobGroup }</td></tr>
-	<tr><td>Key</td><td>${ trigger.key }</td></tr>
 	<tr><td>Description</td><td>${ trigger.description }</td></tr>
+	<tr><td>Key</td><td>${ trigger.key }</td></tr>
 	<tr><td>Calendar Name</td><td>${ trigger.calendarName }</td></tr>
 	<tr><td>Fire Instance Id</td><td>${ trigger.fireInstanceId }</td></tr>
 	<tr><td>Misfire Instruction</td><td>${ trigger.misfireInstruction }</td></tr>

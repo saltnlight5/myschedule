@@ -8,6 +8,17 @@ import org.quartz.*
 	webOut.println('Job scheduled successfully: ' + jobDetail.fullName)
 }
 
+// Create 10 jobs that has durability set.
+import org.quartz.*
+100.times { i ->
+	name = 'GroovyDurableJob_every_min' + i
+	jobDetail = new JobDetail(name, 'DEFAULT', myschedule.job.sample.SimpleJob.class)
+	jobDetail.setDurability(true)
+	trigger = new CronTrigger(name, 'DEFAULT', '0 * * * * ?')
+	quartzScheduler.scheduleJob(jobDetail, trigger)
+	webOut.println('Job scheduled successfully: ' + jobDetail.fullName)
+}
+
 // Create 1 job, 100+1 triggers.
 import org.quartz.*
 // Generate jobs: every_hour

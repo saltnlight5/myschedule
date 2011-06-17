@@ -123,6 +123,7 @@ public class JobController {
 		logger.info("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
 		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
+		data.setJobDetail(schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
 		data.setNextFireTimes(getNextFireTimes(trigger, fireTimesCount));
