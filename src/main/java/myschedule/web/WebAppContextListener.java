@@ -1,5 +1,8 @@
 package myschedule.web;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -17,15 +20,16 @@ public class WebAppContextListener implements ServletContextListener {
 	private static Logger logger = LoggerFactory.getLogger(WebAppContextListener.class);	
 	public static final String MAIN_PATH = "/main";
 	public static final String VIEWS_PATH = "/WEB-INF/views";
-	public static final String MY_SCHEDULE_VERSION = "myschedule-1.1.3-SNAPSHOT";
+	public static final String VERSION_RES_NAME = "myschedule/version.properties";
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		// Adding "contextPath" variable to all JSP pages.
 		ServletContext ctx = sce.getServletContext();
 		String contextPath = ctx.getContextPath();
+		String myscheduleVersion = getMyScheduleVersion();
 
-		ctx.setAttribute("myscheduleVersion", MY_SCHEDULE_VERSION);
+		ctx.setAttribute("myscheduleVersion", myscheduleVersion);
 		logger.info("Set attribute myscheduleVersion=" + ctx.getAttribute("myscheduleVersion"));
 		
 		ctx.setAttribute("contextPath", contextPath);
@@ -38,6 +42,20 @@ public class WebAppContextListener implements ServletContextListener {
 		logger.info("Set attribute viewsPath=" + ctx.getAttribute("viewsPath"));
 		
 		logger.info("Web application initialized.");
+	}
+
+	private String getMyScheduleVersion() {
+		Properties props = new Properties();
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		InputStream inStream = cl.getResourceAsStream(VERSION_RES_NAME);
+		try {
+			props.load(inStream);
+		} catch (Exception e) {
+			logger.error("Failed to load resource: " + VERSION_RES_NAME, e);
+		}
+		String name = props.getProperty("name", "myschedule");
+		String version = props.getProperty("version", "UNKNOWN");
+		return name + "-" + version;
 	}
 
 	@Override
