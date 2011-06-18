@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author Zemian Deng
  */
-public class GroovyScriptingService {
+public class GroovyScriptingService implements Service {
 
 	public <T> T run(String scriptText, Map<String, Object> variables) {
 		GroovyShell groovyShell = new GroovyShell();
@@ -34,6 +34,14 @@ public class GroovyScriptingService {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void init() {
+	}
+
+	@Override
+	public void destroy() {
 	}
 	
 }

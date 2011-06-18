@@ -14,8 +14,6 @@ import org.quartz.SchedulerMetaData;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Provide Quartz scheduling service to application.
@@ -26,18 +24,18 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * @author Zemian Deng
  */
-public class SchedulerService implements InitializingBean, DisposableBean {
+public class SchedulerService implements Service {
 
 	private static Logger logger = LoggerFactory.getLogger(SchedulerService.class);
 	
 	protected Scheduler scheduler;
 	
-	protected boolean autoStartAndShutdown = true;
+	protected boolean autoStart = true;
 
 	private boolean waitForJobsToComplete = true;
 	
-	public void setAutoStartAndShutdown(boolean autoStartAndShutdown) {
-		this.autoStartAndShutdown = autoStartAndShutdown;
+	public void setAutoStart(boolean autoStart) {
+		this.autoStart = autoStart;
 	}
 	
 	public void setWaitForJobsToComplete(boolean waitForJobsToComplete) {
@@ -180,7 +178,7 @@ public class SchedulerService implements InitializingBean, DisposableBean {
 		}
 	}
 	
-	public void standby() {
+	public void standbyScheduler() {
 		try {
 			scheduler.standby();
 			logger.info(scheduler.getSchedulerName() + " standby.");
@@ -189,7 +187,7 @@ public class SchedulerService implements InitializingBean, DisposableBean {
 		}
 	}
 	
-	public void start() {
+	public void startScheduler() {
 		try {
 			scheduler.start();
 			logger.info(scheduler.getSchedulerName() + " started.");
@@ -224,22 +222,38 @@ public class SchedulerService implements InitializingBean, DisposableBean {
 		}
 	}	
 
-	// 
-	// Spring bean lifecycle - init/destroy
+	// Service lifecycle impl.
 	// ====================================
+	
+	/** This is not the scheudler's init stage, but the web application's init, but we are
+	 * controlling the scheduler in here. */
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (autoStartAndShutdown) {
-			scheduler.start();
-			logger.info(getSchedulerFullName() + " auto started.");
+	public void init() {
+		if (autoStart) {
+			try {
+				boolean remote = scheduler.getMetaData().isSchedulerRemote();
+				if (!remote) {
+					scheduler.start();
+					logger.info("Scheduler " + getSchedulerFullName() + " has started.");					
+				}
+			} catch (SchedulerException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
-
+	
+	/** This is not the scheduler's destroy/shutdown stage, but the web application destroy, but we
+	 * are controlling the scheduler in here. */ 
 	@Override
-	public void destroy() throws Exception {
-		if (autoStartAndShutdown) {
-			scheduler.shutdown(waitForJobsToComplete);
-			logger.info(getSchedulerFullName() + " auto shutdown with waitForJobsToComplete=" + waitForJobsToComplete);
+	public void destroy() {
+		try {
+			boolean remote = scheduler.getMetaData().isSchedulerRemote();
+			if (!remote) {
+				scheduler.shutdown(waitForJobsToComplete);
+				logger.info("Scheduler " + getSchedulerFullName() + " has shutdown with waitForJobsToComplete=" + waitForJobsToComplete);
+			}
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

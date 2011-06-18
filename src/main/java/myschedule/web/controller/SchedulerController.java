@@ -57,13 +57,13 @@ public class SchedulerController {
 
 	@RequestMapping(value="/standby", method=RequestMethod.GET)
 	public String standby() {
-		schedulerService.standby();
+		schedulerService.standbyScheduler();
 		return "redirect:detail";
 	}
 	
 	@RequestMapping(value="/start", method=RequestMethod.GET)
 	public String start() {
-		schedulerService.start();
+		schedulerService.startScheduler();
 		return "redirect:detail";
 	}
 

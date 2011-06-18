@@ -27,18 +27,20 @@ $(document).ready(function() {
 <div id="help" class="padvertext">
 In your script, these variables are available to use immediately:
 <pre>
-	webOut - An instance of java.io.PrintWriter to allow script to display output to web page after Run.
-	quartzScheduler - An instance of org.quartz.Scheduler scheduler in this application.
+webOut - An instance of java.io.PrintWriter to allow script to display output to web page after Run.
+quartzScheduler - An instance of org.quartz.Scheduler scheduler in this application.
 </pre>
 
-For example, here is how you schedule a new job to the scheduler that runs every minute:
+For example, here is how you schedule 20 new jobs to the scheduler that each runs every minute:
 <pre>
-	import org.quartz.*
-	name = 'GroovyJob' + System.currentTimeMillis()
-	jobDetail = new JobDetail(name, 'DEFAULT', myschedule.job.sample.SimpleJob.class)
-	trigger = new CronTrigger(name, 'DEFAULT', '0 * * * * ?')
-	quartzScheduler.scheduleJob(jobDetail, trigger)
-	webOut.println('Job scheduled successfully: ' + jobDetail.fullName)
+import org.quartz.*
+20.times { i ->
+  name = 'GroovyJob' + i
+  jobDetail = new JobDetail(name, 'DEFAULT', myschedule.job.sample.SimpleJob.class)
+  trigger = new CronTrigger(name, 'DEFAULT', '0 * * * * ?')
+  quartzScheduler.scheduleJob(jobDetail, trigger)
+  webOut.println('Job scheduled successfully: ' + jobDetail.fullName)
+}
 </pre>
 
 <div class="warning">
