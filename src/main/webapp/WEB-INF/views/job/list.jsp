@@ -2,6 +2,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ include file="/WEB-INF/views/header.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
+
+<script src="${ contextPath }/js/jquery.dataTables.js"></script>
+
 <div class="content">
 
 <h1>Jobs List</h1>
@@ -9,10 +12,19 @@
 <div class="center">Total ${ fn:length(data.triggers) + fn:length(data.noTriggerJobDetails) } jobs found.</div>
 
 <c:if test="${ not empty data.triggers }">
+
+<script>
+$(document).ready(function() {
+	// use dataTables plugin
+	$("#joblist1").dataTable();
+});
+</script>
+
 <table class="center">
 <tr><td>
 <div class="description">Jobs list with associated trigger.</div>
-<table class="outlined">
+<table id="joblist1" class="outlined">
+	<thead>
 	<tr>
 		<td> JOB NAME.GROUP </td>
 		<td> TRIGGER NAME.GROUP </td>
@@ -22,6 +34,9 @@
 		<td> END TIME </td>
 		<td> ACTIONS </td>
 	</tr>
+	</thead>
+	
+	<tbody>
 	<c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
 	<tr>
 		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.fullJobName }</a></td>
@@ -35,6 +50,7 @@
 		</td>
 	</tr>
 	</c:forEach>
+	</tbody>
 </table>
 
 </td></tr>
@@ -46,16 +62,27 @@
 
 <c:if test="${ not empty data.noTriggerJobDetails }">
 
+<script>
+$(document).ready(function() {
+	// use dataTables plugin
+	$("#joblist2").dataTable();
+});
+</script>
+
 <table class="center">
 <tr><td>
 
 <div class="description">Jobs list without triggers.</div>
-<table class="outlined">
+<table id="joblist2" class="outlined">
+	<thead>
 	<tr>
 		<td> JOB NAME.GROUP </td>
 		<td> JOB CLASS </td>
 		<td> ACTIONS </td>
 	</tr>
+	</thead>
+	
+	<tbody>
 	<c:forEach items="${ data.noTriggerJobDetails }" var="jobDetail">
 	<tr>
 		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">${ jobDetail.fullName }</a></td>
@@ -65,6 +92,7 @@
 		</td>
 	</tr>
 	</c:forEach>
+	</tbody>
 </table>
 
 </td></tr>
