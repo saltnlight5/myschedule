@@ -149,9 +149,6 @@
       <param-name>gzip</param-name>
       <param-value>true</param-value>
     </init-param>
-	<!-- Set to false to disable file locking at runtime under Windows.
-	See http://appfuse.org/display/APF/FAQ#FAQ-jettyrunlocked
-	-->
     <init-param>
       <param-name>useFileMappedBuffer</param-name>
       <param-value>false</param-value>
