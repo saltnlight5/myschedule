@@ -26,19 +26,18 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			
-			<!-- You can run with different port: mvn -Djetty.port=9999 jetty:run -->
             <plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>7.4.2.v20110526</version>
-				<configuration>
-					<webAppConfig>
-						<contextPath>/${artifactId}-${version}</contextPath>
-						<!-- <defaultsDescriptor>scripts/jetty-config/webdefault.xml</defaultsDescriptor> -->
-					</webAppConfig>
-				</configuration>
-            </plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tomcat-maven-plugin</artifactId>
+				<version>1.1</version>
+				<dependencies>
+					<dependency>
+					    <groupId>org.apache.tomcat</groupId>
+					    <artifactId>catalina</artifactId>
+					    <version>6.0.32</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
