@@ -4,7 +4,7 @@
 
 <link rel="stylesheet" type="text/css" href="${contextPath}/themes/simple/simple.css" />
 
-<script src="${ contextPath }/js/jquery-1.6.1.js"></script>
+<script src="${ contextPath }/js/jquery.js"></script>
 
 <title>MySchedule</title>
 
