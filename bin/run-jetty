@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-#mvn org.mortbay.jetty:jetty-maven-plugin:run -Djetty.port=9090 "$@"
-mvn jetty:run -Djetty.port=9090 "$@"
