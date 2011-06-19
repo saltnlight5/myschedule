@@ -14,6 +14,7 @@
 <div class="description">Jobs list with associated trigger.</div>
 <table class="outlined">
 	<tr>
+		<td> JOB NAME.GROUP </td>
 		<td> TRIGGER NAME.GROUP </td>
 		<td> SCHEDULE </td>
 		<td> NEXT FIRE TIME </td>
@@ -23,7 +24,8 @@
 	</tr>
 	<c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
 	<tr>
-		<td> <a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.fullName }</a> </td>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.fullJobName }</a></td>
+		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.fullName }</a></td>
 		<td> ${ data.triggerSchedules[status.index] } </td>
 		<td> ${ trigger.nextFireTime } </td>
 		<td> ${ trigger.startTime } </td>
