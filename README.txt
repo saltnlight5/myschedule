@@ -10,3 +10,7 @@ To run myscheduler.war on Tomcat with different quartz properties file, try:
 (Under Windows Cygwin)
 $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:\projects\myschedule-experiment\quartz-1.8-experiment\config\quartz.properties.database"
 $ bin/catalina.bat run
+
+= TODO =
+* Re-add job name back into job list.
+* Add DataTable (a jQuaey plugin) to display Job List.
