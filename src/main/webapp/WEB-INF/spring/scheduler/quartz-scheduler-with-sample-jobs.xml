@@ -82,7 +82,7 @@
 	Scheduler
 	========= -->
 	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-		<property name="autoStart" value="false"/>
+		<property name="autoStartup" value="false"/>
 		<property name="triggers">
 			<list>
 				<ref bean="job1Trigger"/>
