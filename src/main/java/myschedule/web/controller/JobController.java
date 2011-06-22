@@ -46,6 +46,11 @@ public class JobController {
 		return new ModelMap("data", getJobListPageData());
 	}
 	
+	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
+	public ModelMap listNoTriggerJobs() {
+		return new ModelMap("data", getJobListPageData());
+	}
+	
 	@RequestMapping(value="/unschedule", method=RequestMethod.GET)
 	public ModelMap unscheduleJob(
 			@RequestParam String triggerName,
