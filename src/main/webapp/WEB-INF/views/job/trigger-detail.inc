@@ -1,5 +1,5 @@
 <h2>Trigger : ${ trigger.class }</h2>
-<table class="outlined datalist">
+<table>
 	<tr><td>Name</td><td>${ trigger.name }</td></tr>
 	<tr><td>Group</td><td>${ trigger.group }</td></tr>
 	<tr><td>JobName</td><td>${ trigger.jobName }</td></tr>

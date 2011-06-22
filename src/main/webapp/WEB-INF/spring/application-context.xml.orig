@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This is spring config for application services, and is loaded by
+a ContextLoaderListener configured in web.xml.
+
+We should define business services in this file, while HTTP requests and MVC
+related beans should go into main-dispatcher-context.xml instead.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<!-- Allow sys prop placeholder -->
+	<context:property-placeholder/>
+	
+	<!-- Define a quartzScheduler bean -->
+	<import resource="scheduler/quartz-scheduler-with-sample-jobs.xml"/>
+	
+	<!-- MySchedule scheduler service -->
+	<bean name="schedulerService" class="myschedule.service.SchedulerService">
+		<property name="scheduler" ref="quartzScheduler"></property>
+		<property name="waitForJobsToComplete" value="${myschedule.quartz.waitForJobsToCommplete:true}"></property>
+		<property name="autoStart" value="${myschedule.quartz.autoStart:true}"></property>
+	</bean>
+		
+	<bean name="scriptingService" class="myschedule.service.GroovyScriptingService">
+	</bean>
+	
+	<bean name="serviceContainer" class="myschedule.spring.ServiceContainer">
+	</bean>
+		
+</beans>

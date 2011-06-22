@@ -1,4 +1,4 @@
-<div class="submenu">	
+<div id="submenu">	
 <ul>
 <li><a href="${ mainPath }/scheduler/summary">Summary</a></li>
 <li><a href="${ mainPath }/scheduler/detail">Detail</a></li>

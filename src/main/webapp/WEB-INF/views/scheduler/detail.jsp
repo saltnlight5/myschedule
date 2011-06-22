@@ -1,7 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ include file="/WEB-INF/views/header.inc" %>
+<%@ include file="/WEB-INF/views/page-a.inc" %>
+<%@ include file="/WEB-INF/views/menu.inc" %>
 <%@ include file="/WEB-INF/views/scheduler/submenu.inc" %>
-<div class="content">
 
 <h1>Scheduler : ${ data.schedulerName }</h1>
 <c:choose>
@@ -20,5 +19,4 @@
 </c:otherwise>
 </c:choose>
 
-</div><!-- div.content -->
-<%@ include file="/WEB-INF/views/footer.inc" %>
+<%@ include file="/WEB-INF/views/page-b.inc" %>

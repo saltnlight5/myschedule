@@ -13,6 +13,15 @@ public class JobListPageData {
 	protected List<String> triggerSchedules; // trigger's schedule info
 	protected List<JobDetail> noTriggerJobDetails;
 	protected int showMaxFireTimesCount = 20; // default max size to show next fireTimes.
+	protected String datePattern = "MM/dd/yy HH:mm:ss";
+	
+	/**
+	 * Getter.
+	 * @return the datePattern - String
+	 */
+	public String getDatePattern() {
+		return datePattern;
+	}
 	
 	/**
 	 * Getter.
@@ -24,7 +33,10 @@ public class JobListPageData {
 			StringBuilder sb = new StringBuilder();
 			if (trigger instanceof SimpleTrigger) {
 				SimpleTrigger t = (SimpleTrigger)trigger;
-				sb.append("Repeat=" + t.getRepeatCount());
+				if (t.getRepeatCount() == SimpleTrigger.REPEAT_INDEFINITELY)
+					sb.append("Repeat=FOREVER");
+				else
+					sb.append("Repeat=" + t.getRepeatCount());
 				sb.append(", Interval=" + t.getRepeatInterval());
 			} else if (trigger instanceof CronTrigger) {
 				CronTrigger t = (CronTrigger)trigger;

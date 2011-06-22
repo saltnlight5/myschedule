@@ -178,13 +178,13 @@
 	    </dependency>
 	    -->
 	    
-		<!-- MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.)-->
+		<!-- MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.)
 	    <dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
 		    <version>5.1.16</version>
 	      	<scope>runtime</scope>
-		</dependency>
+		</dependency>-->
 		
 		<!-- Apache Commons -->		
         <dependency>

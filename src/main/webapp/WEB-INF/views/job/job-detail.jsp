@@ -1,17 +1,17 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ include file="/WEB-INF/views/header.inc" %>
+<%@ include file="/WEB-INF/views/page-a.inc" %>
+<%@ include file="/WEB-INF/views/menu.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
-<div class="content">
 
+<div id="page-container">
 <h1>Job Detail and Its Associated Triggers</h1>
 
-<div class="center">
+<div>
 <a href="${ mainPath }/job/delete?jobName=${ data.jobDetail.name }&jobGroup=${ data.jobDetail.group }">
 DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </div>
 
 <h2>Job : ${ data.jobDetail.fullName }</h2>
-<table class="outlined datalist">
+<table>
 	<tr><td>Name</td><td>${ data.jobDetail.name }</td></tr>
 	<tr><td>Group</td><td>${ data.jobDetail.group }</td></tr>
 	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
@@ -32,5 +32,5 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	<%@ include file="/WEB-INF/views/job/trigger-detail.inc" %>
 </c:forEach>
 
-</div><!-- div.content -->
-<%@ include file="/WEB-INF/views/footer.inc" %>
+</div> <!-- page-container -->
+<%@ include file="/WEB-INF/views/page-b.inc" %>

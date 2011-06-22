@@ -17,7 +17,8 @@ import org.slf4j.LoggerFactory;
  */
 public class WebAppContextListener implements ServletContextListener {
 	
-	private static Logger logger = LoggerFactory.getLogger(WebAppContextListener.class);	
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+	public static final String DEFAULT_THEME_NAME = "smoothness";
 	public static final String MAIN_PATH = "/main";
 	public static final String VIEWS_PATH = "/WEB-INF/views";
 	public static final String VERSION_RES_NAME = "myschedule/version.properties";
@@ -40,6 +41,9 @@ public class WebAppContextListener implements ServletContextListener {
 		
 		ctx.setAttribute("viewsPath", contextPath + VIEWS_PATH);
 		logger.info("Set attribute viewsPath=" + ctx.getAttribute("viewsPath"));
+		
+		ctx.setAttribute("themeName", DEFAULT_THEME_NAME);
+		logger.info("Set attribute themeName=" + ctx.getAttribute("themeName"));
 		
 		logger.info("Web application initialized.");
 	}

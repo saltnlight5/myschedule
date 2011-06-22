@@ -14,3 +14,6 @@ $ bin/catalina.bat run
 = TODO =
 * Re-add job name back into job list.
 * Add DataTable (a jQuaey plugin) to display Job List.
+* Add sorting columns to job list
+* Switch maven jetty to tomcat plugin
+* Remove @javax.annotation.Resource and use setter method.

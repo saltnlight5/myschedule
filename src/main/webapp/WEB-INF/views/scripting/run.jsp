@@ -1,37 +1,38 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ include file="/WEB-INF/views/header.inc" %>
-
+<%@ include file="/WEB-INF/views/page-a.inc" %>
+<%@ include file="/WEB-INF/views/menu.inc" %>
+<style>
+#myschedule textarea {
+	width: 100%;
+	height: 200px;
+}
+</style>
 <script>
 $(document).ready(function() {
 	// Hide the help page on startup.
 	$("#help").hide();
 	
 	// Reponse to show page link
-	$('#showhelp').click(function() {
+	$('#show-help').click(function() {
 		$("#help").toggle('slow');
 	});
 });
 </script>
 
-<div class="content">
-
+<div id="page-container">
 <h1>Scheduler Scripting</h1>
 
-<div class="fixedwidthpane centerpane">
+<p>This is for the power user who want to manipulate the scheduler with 
+<a href="http://groovy.codehaus.org">Groovy</a> scripting.</p>
 
-<div class="padvertext">This is for the power user who want to manipulate the scheduler with 
-<a href="http://groovy.codehaus.org">Groovy</a> scripting.</div>
-
-<div class="padvertext"><a id="showhelp" href="#">Show an example</a></div>
-
-<div id="help" class="padvertext">
-In your script, these variables are available to use immediately:
+<a id="show-help" href="#">Show an example</a>
+<div id="help">
+<p>In your script, these variables are available to use immediately.</p>
 <pre>
 webOut - An instance of java.io.PrintWriter to allow script to display output to web page after Run.
 quartzScheduler - An instance of org.quartz.Scheduler scheduler in this application.
 </pre>
 
-For example, here is how you schedule three new jobs to the scheduler that each runs every minute:
+<p>For example, here is how you schedule three new jobs to the scheduler that each runs every minute.</p>
 <pre>
 import org.quartz.*
 3.times { i ->
@@ -52,12 +53,11 @@ as deleting files on system etc!
 </div><!-- div.help -->
 
 <form method="post" action="${ mainPath }/scripting/run-action">
-<textarea  class="fixedwidthpane" style="height: 300px;" name="groovyScriptText">${ data.groovyScriptText }</textarea>
+<textarea name="groovyScriptText">${ data.groovyScriptText }</textarea>
 <br/>
 <input type="submit" value="Run"></input>
 </form>
 
-</div><!-- div.fixedwidthpane -->
+</div><!-- page-container -->
 
-</div><!-- div.content -->
-<%@ include file="/WEB-INF/views/footer.inc" %>
+<%@ include file="/WEB-INF/views/page-b.inc" %>

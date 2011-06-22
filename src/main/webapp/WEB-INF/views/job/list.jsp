@@ -1,37 +1,29 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ include file="/WEB-INF/views/header.inc" %>
+<%@ include file="/WEB-INF/views/page-a.inc" %>
+<%@ include file="/WEB-INF/views/menu.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
-
-<script src="${ contextPath }/js/jquery.dataTables.js"></script>
-
-<div class="content">
-
-<h1>Jobs List</h1>
-
-<div class="center">Total ${ fn:length(data.triggers) + fn:length(data.noTriggerJobDetails) } jobs found.</div>
-
-<c:if test="${ not empty data.triggers }">
-
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#joblist1").dataTable();
+	$("#triggers-datatable").dataTable({
+		"aaSorting": [[ 3, "desc" ], [0, "asc"], [1, "asc"]],
+		"iDisplayLength": 50,
+		"bJQueryUI": true,
+		"sPaginationType": "full_numbers"
+	});
 });
 </script>
 
-<table class="center">
-<tr><td>
-<div class="description">Jobs list with associated trigger.</div>
-<table id="joblist1" class="outlined">
+<div id="page-container">
+<h1>Jobs with assigned trigger</h1>
+<table id="triggers-datatable" cellpadding="0" cellspacing="0" border="0" class="display">
 	<thead>
 	<tr>
-		<td> JOB NAME.GROUP </td>
-		<td> TRIGGER NAME.GROUP </td>
+		<td> JOB </td>
+		<td> TRIGGER </td>
 		<td> SCHEDULE </td>
-		<td> NEXT FIRE TIME </td>
 		<td> START TIME </td>
 		<td> END TIME </td>
+		<td> NEXT FIRE TIME </td>
 		<td> ACTIONS </td>
 	</tr>
 	</thead>
@@ -39,65 +31,17 @@ $(document).ready(function() {
 	<tbody>
 	<c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
 	<tr>
-		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.fullJobName }</a></td>
-		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.fullName }</a></td>
-		<td> ${ data.triggerSchedules[status.index] } </td>
-		<td> ${ trigger.nextFireTime } </td>
-		<td> ${ trigger.startTime } </td>
-		<td> ${ trigger.endTime } </td>
-		<td>
-			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a>
-		</td>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.jobName }</a></td>
+		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.name }</a></td>
+		<td>${ data.triggerSchedules[status.index] }</td>
+		<td><fmt:formatDate value="${ trigger.startTime }" pattern="${ data.datePattern }"/></td>
+		<td><fmt:formatDate value="${ trigger.endTime }" pattern="${ data.datePattern }"/></td>
+		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
+		<td><a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a></td>
 	</tr>
 	</c:forEach>
 	</tbody>
-</table>
+</table> <!-- triggersTable-datatable -->
 
-</td></tr>
-</table><!-- table.center -->
-</c:if> <!--  data.triggers -->
-
-<!-- Empty row for separator. -->
-<div class="gapseparator"></div>
-
-<c:if test="${ not empty data.noTriggerJobDetails }">
-
-<script>
-$(document).ready(function() {
-	// use dataTables plugin
-	$("#joblist2").dataTable();
-});
-</script>
-
-<table class="center">
-<tr><td>
-
-<div class="description">Jobs list without triggers.</div>
-<table id="joblist2" class="outlined">
-	<thead>
-	<tr>
-		<td> JOB NAME.GROUP </td>
-		<td> JOB CLASS </td>
-		<td> ACTIONS </td>
-	</tr>
-	</thead>
-	
-	<tbody>
-	<c:forEach items="${ data.noTriggerJobDetails }" var="jobDetail">
-	<tr>
-		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">${ jobDetail.fullName }</a></td>
-		<td>${ jobDetail.jobClass.name }</td>
-		<td>
-			<a href="${ mainPath }/job/delete?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">Delete</a>
-		</td>
-	</tr>
-	</c:forEach>
-	</tbody>
-</table>
-
-</td></tr>
-</table><!-- table.center -->
-</c:if> <!--  data.noTriggerJobDetails -->
-
-</div><!-- div.content -->
-<%@ include file="/WEB-INF/views/footer.inc" %>
+</div> <!-- page-container -->
+<%@ include file="/WEB-INF/views/page-b.inc" %>

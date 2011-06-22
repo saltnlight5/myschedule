@@ -1,0 +1,1439 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<link rel="stylesheet" type="text/css" href="../../themes/simple/css/page.css
+<link rel="stylesheet" type="text/css" href="../../themes/simple/css/table_jui.css">
+
+<script src="../../js/jquery.js"></script>
+
+<title>MySchedule</title>
+
+</head>
+<body>
+
+<div class="header">
+<div class="menu">
+<ul>
+
+<li><a href="http://localhost:8080/myschedule/main/scheduler/index">Scheduler</a></li>
+<li><a href="http://localhost:8080/myschedule/main/job/index">Jobs</a></li>
+<li><a href="http://localhost:8080/myschedule/main/scripting/index">Scripting</a></li>
+</ul>
+</div>
+</div><!-- div.header-->
+<div class="submenu">	
+<ul>
+<li><a href="http://localhost:8080/myschedule/main/job/list">List Jobs</a></li>
+<li><a href="http://localhost:8080/myschedule/main/job/load-xml">Load Jobs (Xml)</a></li>
+</ul>
+</div>
+
+<div class="content">
+
+
+<h1>Jobs with Trigger</h1>
+
+<script>
+$(document).ready(function() {
+	// use dataTables plugin
+	$("#triggersTable").dataTable({
+		"aaSorting": [[ 3, "desc" ], [0, "asc"], [1, "asc"]],
+		"iDisplayLength": 50,
+		"bJQueryUI": true,
+		"sPaginationType": "full_numbers"
+	});
+});
+</script>
+<div id="triggersTable_wrapper" class="dataTables_wrapper"><div class="dataTables_length" id="triggersTable_length">Show <select size="1" name="triggersTable_length"><option value="10">10</option><option value="25">25</option><option selected="selected" value="50">50</option><option value="100">100</option></select> entries</div><div class="dataTables_filter" id="triggersTable_filter">Search: <input type="text"></div><table style="width: 1101px;" id="triggersTable" class="display" border="0" cellpadding="0" cellspacing="0">
+	<thead><tr><td style="width: 176px;" colspan="1" rowspan="1" class="sorting_asc"> JOB NAME.GROUP </td><td style="width: 179px;" colspan="1" rowspan="1" class="sorting_asc"> TRIGGER NAME.GROUP </td><td style="width: 101px;" colspan="1" rowspan="1" class="sorting"> SCHEDULE </td><td style="width: 180px;" colspan="1" rowspan="1" class="sorting_desc"> NEXT FIRE TIME </td><td style="width: 180px;" colspan="1" rowspan="1" class="sorting"> START TIME </td><td style="width: 65px;" colspan="1" rowspan="1" class="sorting"> END TIME </td><td style="width: 81px;" colspan="1" rowspan="1" class="sorting"> ACTIONS </td></tr></thead>
+	
+	
+<tbody><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob0&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob0</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob0&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob0</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob0&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob1&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob1</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob1&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob1</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob1&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob10&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob10</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob10&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob10</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob10&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob100&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob100</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob100&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob100</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob100&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob101&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob101</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob101&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob101</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob101&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob11&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob11</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob11&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob11</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob11&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob12&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob12</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob12&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob12</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob12&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob13&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob13</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob13&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob13</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob13&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob14&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob14</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob14&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob14</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob14&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob15&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob15</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob15&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob15</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob15&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob16&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob16</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob16&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob16</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob16&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob17&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob17</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob17&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob17</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob17&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob18&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob18</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob18&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob18</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob18&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob19&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob19</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob19&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob19</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob19&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob2&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob2</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob2&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob2</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob2&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob20&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob20</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob20&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob20</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob20&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob21&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob21</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob21&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob21</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob21&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob22&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob22</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob22&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob22</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob22&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob23&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob23</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob23&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob23</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob23&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob24&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob24</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob24&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob24</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob24&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob25&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob25</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob25&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob25</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob25&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob26&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob26</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob26&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob26</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob26&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob27&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob27</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob27&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob27</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob27&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob28&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob28</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob28&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob28</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob28&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob29&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob29</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob29&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob29</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob29&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob3&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob3</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob3&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob3</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob3&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob30&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob30</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob30&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob30</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob30&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob31&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob31</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob31&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob31</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob31&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob32&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob32</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob32&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob32</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob32&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob33&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob33</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob33&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob33</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob33&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob34&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob34</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob34&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob34</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob34&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob35&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob35</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob35&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob35</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob35&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob36&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob36</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob36&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob36</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob36&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob37&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob37</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob37&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob37</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob37&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob38&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob38</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob38&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob38</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob38&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob39&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob39</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob39&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob39</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob39&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob4&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob4</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob4&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob4</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob4&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob40&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob40</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob40&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob40</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob40&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob41&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob41</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob41&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob41</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob41&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob42&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob42</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob42&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob42</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob42&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob43&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob43</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob43&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob43</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob43&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob44&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob44</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob44&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob44</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob44&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob45&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob45</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob45&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob45</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob45&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob46&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob46</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob46&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob46</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob46&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob47&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob47</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob47&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob47</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob47&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob48&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob48</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob48&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob48</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob48&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob49&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob49</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob49&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob49</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob49&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob5&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob5</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob5&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob5</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob5&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="odd">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob50&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob50</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob50&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob50</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob50&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr><tr class="even">
+		<td class=" sorting_2"><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob51&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob51</a></td>
+		<td class=" sorting_3"><a href="http://localhost:8080/myschedule/main/job/trigger-detail?triggerName=GroovyJob51&amp;triggerGroup=DEFAULT&amp;fireTimesCount=20">DEFAULT.GroovyJob51</a></td>
+		<td> Cron=0 * * * * ? </td>
+		<td class=" sorting_1"> Tue Jun 21 16:14:00 EDT 2011 </td>
+		<td> Tue Jun 21 16:13:18 EDT 2011 </td>
+		<td>  </td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/unschedule?triggerName=GroovyJob51&amp;triggerGroup=DEFAULT">Unschedule</a>
+		</td>
+	</tr></tbody></table><div id="triggersTable_info" class="dataTables_info">Showing 1 to 50 of 102 entries</div><div id="triggersTable_paginate" class="dataTables_paginate paging_two_button"><div id="triggersTable_previous" title="Previous" class="paginate_disabled_previous"></div><div id="triggersTable_next" title="Next" class="paginate_enabled_next"></div></div></div> <!-- triggersTable -->
+ <!--  data.triggers -->
+
+
+<h1>Jobs Without Trigger</h1>
+
+<script>
+$(document).ready(function() {
+	// use dataTables plugin
+	$("#noTriggerJobDetails").dataTable({
+		"aaSorting": [[0, "asc"], [1, "asc"]],
+		"iDisplayLength": 50
+	});
+});
+</script>
+<table id="noTriggerJobDetailsTable" class="display" border="0" cellpadding="0" cellspacing="0">
+	<thead>
+	<tr>
+		<td> JOB NAME.GROUP </td>
+		<td> JOB CLASS </td>
+		<td> ACTIONS </td>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob102&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob102</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJob102&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob103&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob103</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJob103&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJob104&amp;jobGroup=DEFAULT">DEFAULT.GroovyJob104</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJob104&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly0&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly0</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly0&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly1&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly1</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly1&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly10&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly10</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly10&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly100&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly100</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly100&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly101&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly101</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly101&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly11&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly11</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly11&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly12&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly12</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly12&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly13&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly13</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly13&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly14&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly14</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly14&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly15&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly15</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly15&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly16&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly16</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly16&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly17&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly17</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly17&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly18&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly18</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly18&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly19&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly19</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly19&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly2&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly2</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly2&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly20&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly20</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly20&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly21&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly21</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly21&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly22&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly22</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly22&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly23&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly23</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly23&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly24&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly24</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly24&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly25&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly25</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly25&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly26&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly26</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly26&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly27&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly27</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly27&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly28&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly28</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly28&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly29&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly29</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly29&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly3&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly3</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly3&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly30&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly30</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly30&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly31&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly31</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly31&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly32&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly32</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly32&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly33&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly33</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly33&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly34&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly34</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly34&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly35&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly35</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly35&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly36&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly36</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly36&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly37&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly37</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly37&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly38&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly38</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly38&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly39&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly39</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly39&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly4&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly4</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly4&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly40&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly40</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly40&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly41&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly41</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly41&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly42&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly42</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly42&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly43&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly43</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly43&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly44&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly44</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly44&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly45&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly45</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly45&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly46&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly46</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly46&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly47&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly47</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly47&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly48&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly48</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly48&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly49&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly49</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly49&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly5&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly5</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly5&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly50&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly50</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly50&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly51&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly51</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly51&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly52&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly52</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly52&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly53&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly53</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly53&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly54&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly54</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly54&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly55&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly55</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly55&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly56&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly56</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly56&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly57&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly57</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly57&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly58&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly58</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly58&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly59&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly59</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly59&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly6&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly6</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly6&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly60&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly60</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly60&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly61&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly61</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly61&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly62&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly62</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly62&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly63&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly63</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly63&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly64&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly64</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly64&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly65&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly65</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly65&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly66&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly66</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly66&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly67&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly67</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly67&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly68&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly68</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly68&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly69&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly69</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly69&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly7&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly7</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly7&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly70&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly70</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly70&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly71&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly71</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly71&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly72&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly72</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly72&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly73&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly73</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly73&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly74&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly74</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly74&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly75&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly75</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly75&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly76&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly76</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly76&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly77&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly77</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly77&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly78&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly78</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly78&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly79&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly79</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly79&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly8&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly8</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly8&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly80&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly80</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly80&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly81&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly81</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly81&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly82&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly82</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly82&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly83&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly83</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly83&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly84&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly84</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly84&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly85&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly85</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly85&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly86&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly86</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly86&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly87&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly87</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly87&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly88&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly88</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly88&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly89&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly89</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly89&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly9&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly9</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly9&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly90&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly90</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly90&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly91&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly91</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly91&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly92&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly92</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly92&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly93&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly93</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly93&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly94&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly94</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly94&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly95&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly95</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly95&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly96&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly96</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly96&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly97&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly97</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly97&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly98&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly98</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly98&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="http://localhost:8080/myschedule/main/job/job-detail?jobName=GroovyJobOnly99&amp;jobGroup=DEFAULT">DEFAULT.GroovyJobOnly99</a></td>
+		<td>myschedule.job.sample.SimpleJob</td>
+		<td>
+			<a href="http://localhost:8080/myschedule/main/job/delete?jobName=GroovyJobOnly99&amp;jobGroup=DEFAULT">Delete</a>
+		</td>
+	</tr>
+	
+	</tbody>
+</table> <!-- noTriggerJobDetailsTable -->
+ <!--  data.noTriggerJobDetails -->
+
+</div><!-- div.content -->
+
+<div class="footer">
+
+<div class="productInfo">
+<a href="http://code.google.com/p/myschedule">myschedule-1.2.0-SNAPSHOT</a> - A Quartz Dashboard by <a href="mailto:saltnlight5@gmail.com">Zemian Deng</a>
+</div>
+
+<div class="poweredBy">Powered by: 
+<a href="http://www.oracle.com/java">Java</a> 
+<a href="http://www.quartz-shecheduler.org/">Quartz</a> 
+<a href="http://www.springframework.org/">Spring</a>
+<a href="http://groovy.codehaus.org/">Groovy</a>
+</div>
+
+</div><!-- div.footer -->
+
+
+</body></html>

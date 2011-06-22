@@ -1,18 +1,16 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ include file="/WEB-INF/views/header.inc" %>
+<%@ include file="/WEB-INF/views/page-a.inc" %>
+<%@ include file="/WEB-INF/views/menu.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
-<div class="content">
 
+<div id="page-container">
 <h1>Trigger Detail </h1>
 
-<div class="center">
 <a href="${ mainPath }/job/unschedule?triggerName=${ data.firstTrigger.name }&triggerGroup=${ data.firstTrigger.group }"> UNSCHEDULE THIS TRIGGER JOB</a>
-</div>
 
-<div class="center">
+<p>
 The job class for this trigger is : ${ data.jobDetail.jobClass.name }. 
 View full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetail.name }&jobGroup=${ data.jobDetail.group }">JOB DETAIL</a> here.
-</div>
+</p>
 		
 <c:set var="trigger" value="${ data.firstTrigger }" scope="request"/>	
 <%@ include file="/WEB-INF/views/job/trigger-detail.inc" %>
@@ -27,5 +25,5 @@ View full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetail.name }
 	</c:forEach>
 </table>
 
-</div><!-- div.content -->
-<%@ include file="/WEB-INF/views/footer.inc" %>
+</div> <!-- page-container -->
+<%@ include file="/WEB-INF/views/page-b.inc" %>
