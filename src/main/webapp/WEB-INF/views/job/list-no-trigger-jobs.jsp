@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#noTriggerJobDetails-datatable").dataTable({
+	$("#noTriggerJobDetailsTable-datatable").dataTable({
 		"aaSorting": [[0, "asc"], [1, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
