@@ -48,7 +48,7 @@ public class JobController {
 	
 	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
 	public ModelMap listNoTriggerJobs() {
-		return new ModelMap("data", getJobListPageData());
+		return new ModelMap("data", getNoTriggerJobListPageData());
 	}
 	
 	@RequestMapping(value="/unschedule", method=RequestMethod.GET)
@@ -154,30 +154,48 @@ public class JobController {
 		return fireTimes;
 	}
 	
+	/** Return only jobs with trigger associated. */
 	protected JobListPageData getJobListPageData() {
 		List<Trigger> triggers = new ArrayList<Trigger>();
-		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		
 		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
-		logger.debug("Found total " + allJobDetails.size() + " jobDetails");
+		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
 			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
 			if (jobTriggers.size() > 0) {
 				triggers.addAll(jobTriggers);
-			} else {
-				noTriggerJobDetails.add(jobDetail);
 			}
 		}
 		logger.debug("Found " + triggers.size() + " triggers.");
-		logger.debug("Found " + noTriggerJobDetails.size() + " noTriggerJobDetails.");
 
 		// Let's sort them.
 		sortJobListTriggers(triggers);
-		sortJobListNoTriggerJobDetails(noTriggerJobDetails);
 		
 		JobListPageData data = new JobListPageData();
 		data.setTriggers(triggers);
+		return data;
+	}
+
+	/** Return only jobs without trigger associated. */
+	protected Object getNoTriggerJobListPageData() {
+		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
+		
+		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
+		
+		for (JobDetail jobDetail : allJobDetails) {
+			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			if (jobTriggers.size() == 0) {
+				noTriggerJobDetails.add(jobDetail);
+			}
+		}
+		logger.debug("Found " + noTriggerJobDetails.size() + " noTriggerJobDetails.");
+
+		// Let's sort them.
+		sortJobListNoTriggerJobDetails(noTriggerJobDetails);
+		
+		JobListPageData data = new JobListPageData();
 		data.setNoTriggerJobDetails(noTriggerJobDetails);
 		return data;
 	}

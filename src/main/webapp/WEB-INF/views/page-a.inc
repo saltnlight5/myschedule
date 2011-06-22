@@ -4,9 +4,9 @@
 <html>
 <head>
 
-<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/css/page.css" />
-<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/css/table_jui.css" />
-<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/css/jquery-ui.custom.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/page.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/datatables-css/table_jui.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/jquery-ui.custom.css" />
 
 <script src="${contextPath}/js/jquery.js"></script>
 <script src="${contextPath}/js/jquery-ui-custom.js"></script>

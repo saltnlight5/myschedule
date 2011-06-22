@@ -1,5 +1,10 @@
 <h2>Trigger : ${ trigger.class }</h2>
-<table>
+<table id="trigger-table-${loopIndex}">
+	<thead>
+		<td> NAME </td>
+		<td> VALUE </td>
+	</thead>
+	<tbody>
 	<tr><td>Name</td><td>${ trigger.name }</td></tr>
 	<tr><td>Group</td><td>${ trigger.group }</td></tr>
 	<tr><td>JobName</td><td>${ trigger.jobName }</td></tr>
@@ -28,7 +33,7 @@
 	
 	<c:when test="${ 'org.quartz.CronTrigger' == trigger.class.name }">
 	<tr><td>Cron Expression</td><td>${ trigger.cronExpression }</td></tr>
-	<tr><td>Expression Summary</td><td>${ trigger.expressionSummary }</td></tr>
+	<tr><td>Expression Summary</td><td><pre>${ trigger.expressionSummary }</pre></td></tr>
 	<tr><td>Time Zone</td><td>${ trigger.timeZone.displayName }</td></tr>
 	</c:when>
 	
@@ -37,5 +42,5 @@
 	<c:forEach items="${ trigger.jobDataMap }" var="item">
 	<tr><td>Job Data Map: ${ item.key }</td><td>${ item.value }</td></tr>
 	</c:forEach>
-
+	</tbody>
 </table>

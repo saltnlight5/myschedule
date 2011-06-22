@@ -7,5 +7,7 @@
 <a href="http://www.quartz-shecheduler.org">Quartz</a> 
 <a href="http://www.springframework.org">Spring</a>
 <a href="http://groovy.codehaus.org">Groovy</a>
+<a href="http://www.jquery.org">jQuery/UI</a>
+<a href="http://www.datatables.net">jQuery.DataTables</a>
 </div>
 </div><!-- div.footer -->

@@ -2,6 +2,20 @@
 <%@ include file="/WEB-INF/views/menu.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 
+<script>
+$(document).ready(function() {
+	// use dataTables plugin
+	$("#job-table").dataTable({		
+		"bPaginate": false,
+		"bLengthChange": false,
+		"bFilter": false,
+		"bSort": false,
+		"bInfo": false,
+		"bAutoWidth": false
+	});
+});
+</script>
+
 <div id="page-container">
 <h1>Job Detail and Its Associated Triggers</h1>
 
@@ -11,7 +25,12 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </div>
 
 <h2>Job : ${ data.jobDetail.fullName }</h2>
-<table>
+<table id="job-table">
+	<thead>
+		<td> NAME </td>
+		<td> VALUE </td>
+	</thead>
+	<tbody>
 	<tr><td>Name</td><td>${ data.jobDetail.name }</td></tr>
 	<tr><td>Group</td><td>${ data.jobDetail.group }</td></tr>
 	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
@@ -25,10 +44,24 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	<c:forEach items="${ data.jobDetail.jobDataMap }" var="item">
 	<tr><td>Job Data Map: ${ item.key }</td><td>${ item.value }</td></tr>
 	</c:forEach>
-	
+	</tbody>
 </table>
 
-<c:forEach items="${ data.triggers }" var="trigger">
+<c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
+	<c:set var="loopIndex" value="${ status.index }" scope="request"/>	
+	<script>
+	$(document).ready(function() {
+		// use dataTables plugin
+		$("#trigger-table-${ loopIndex }").dataTable({		
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": false,
+			"bSort": false,
+			"bInfo": false,
+			"bAutoWidth": false
+		});
+	});
+	</script>
 	<%@ include file="/WEB-INF/views/job/trigger-detail.inc" %>
 </c:forEach>
 
