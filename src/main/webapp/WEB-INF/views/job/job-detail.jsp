@@ -27,8 +27,10 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 <h2>Job : ${ data.jobDetail.fullName }</h2>
 <table id="job-table">
 	<thead>
-		<td> NAME </td>
-		<td> VALUE </td>
+	<tr>
+		<th></th>
+		<th></th>
+	</tr>
 	</thead>
 	<tbody>
 	<tr><td>Name</td><td>${ data.jobDetail.name }</td></tr>

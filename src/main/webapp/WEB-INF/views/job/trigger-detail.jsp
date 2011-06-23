@@ -40,8 +40,10 @@ View full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetail.name }
 
 <table id="next-fire-time-table">
 	<thead>
-		<td> INDEX </td>
-		<td> NEXT FIRE TIME </td>
+	<tr>
+		<th> INDEX </th>
+		<th> NEXT FIRE TIME </th>
+	</tr>
 	</thead>
 	<tbody>
 	<c:forEach items="${ data.nextFireTimes }" var="time" varStatus="status">

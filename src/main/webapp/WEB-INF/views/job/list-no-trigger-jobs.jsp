@@ -5,7 +5,7 @@
 $(document).ready(function() {
 	// use dataTables plugin
 	$("#noTriggerJobDetailsTable-datatable").dataTable({
-		"aaSorting": [[0, "asc"], [1, "asc"]],
+		"aaSorting": [[0, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
 		"sPaginationType": "full_numbers"
@@ -18,9 +18,9 @@ $(document).ready(function() {
 <table id="noTriggerJobDetailsTable-datatable" cellpadding="0" cellspacing="0" border="0" class="display">
 	<thead>
 	<tr>
-		<td> JOB </td>
-		<td> JOB CLASS </td>
-		<td> ACTIONS </td>
+		<th> JOB </th>
+		<th> JOB CLASS </th>
+		<th> ACTIONS </th>
 	</tr>
 	</thead>
 	

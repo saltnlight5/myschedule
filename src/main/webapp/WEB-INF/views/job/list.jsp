@@ -5,7 +5,7 @@
 $(document).ready(function() {
 	// use dataTables plugin
 	$("#triggers-datatable").dataTable({
-		"aaSorting": [[ 3, "desc" ], [0, "asc"], [1, "asc"]],
+		"aaSorting": [[ 5, "desc" ], [0, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
 		"sPaginationType": "full_numbers"
@@ -18,13 +18,13 @@ $(document).ready(function() {
 <table id="triggers-datatable" cellpadding="0" cellspacing="0" border="0" class="display">
 	<thead>
 	<tr>
-		<td> JOB </td>
-		<td> TRIGGER </td>
-		<td> SCHEDULE </td>
-		<td> START TIME </td>
-		<td> END TIME </td>
-		<td> NEXT FIRE TIME </td>
-		<td> ACTIONS </td>
+		<th> JOB </th>
+		<th> TRIGGER </th>
+		<th> SCHEDULE </th>
+		<th> START TIME </th>
+		<th> END TIME </th>
+		<th> NEXT FIRE TIME </th>
+		<th> ACTIONS </th>
 	</tr>
 	</thead>
 	

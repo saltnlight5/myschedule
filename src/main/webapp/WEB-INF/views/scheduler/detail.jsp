@@ -6,7 +6,7 @@
 <h1>Scheduler : ${ data.schedulerName }</h1>
 <c:choose>
 <c:when test="${ data.schedulerInStandbyMode }">
-<div class="warning">Scheduler has not yet started!</div>
+<div class="warning">Scheduler is in standby mode (all jobs are paused)!</div>
 </c:when>
 <c:otherwise>
 
@@ -25,8 +25,10 @@ $(document).ready(function() {
 </script>
 <table id="name-value-table">
 	<thead>
-		<td> NAME </td>
-		<td> VALUE </td>
+	<tr>
+		<th></th>
+		<th></th>
+	</tr>
 	</thead>
 	<tbody>
 	<c:forEach items="${ data.schedulerDetail }" var="item" varStatus="status">

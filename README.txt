@@ -1,10 +1,16 @@
-This is a Java Servlet web application that host a Quartz Scheduler instance.
-You may use this as a Quartz Dashboard.
+= About myschedule =
+The myschedule project is a web based Quartz scheduler dashboard application.
+You may use to manage and monitor the scheduler throhgh an easy to use web UI.
 
-== Deployment Notes ==
+The project home page is at: http://code.google.com/p/myschedule
+
+= Credits =
+The myschedule project is created by Zemian Deng <saltnlight5@gmail.com>.
+
+= Deployment Notes =
 The default myscheduler.war file can be drop into any Servlet 2.5 + Web Container and it should work.
 
-The myscheduler.war has been tested on jetty-8.0.0.M2 (via maven plugin), tomcat-6.0.32 and tomcat-7.0.8.
+The myscheduler.war has been tested on tomcat-6.0.32 and tomcat-7.0.8.
 
 To run myscheduler.war on Tomcat with different quartz properties file, try:
 (Under Windows Cygwin)
@@ -12,8 +18,11 @@ $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:\projects\myschedule-ex
 $ bin/catalina.bat run
 
 = TODO =
-* Re-add job name back into job list.
-* Add DataTable (a jQuaey plugin) to display Job List.
-* Add sorting columns to job list
-* Switch maven jetty to tomcat plugin
-* Remove @javax.annotation.Resource and use setter method.
+ * Remove @javax.annotation.Resource and use setter method.
+ * Support Multiple Schedulers.
+ * Add UI to change scheduler config online.
+ * Show Current Executing Jobs on UI.
+ * Add web based "crontab" like UI.
+
+= DONE =
+ 

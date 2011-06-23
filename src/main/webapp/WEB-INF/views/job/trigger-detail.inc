@@ -1,8 +1,10 @@
 <h2>Trigger : ${ trigger.class }</h2>
 <table id="trigger-table-${loopIndex}">
 	<thead>
-		<td> NAME </td>
-		<td> VALUE </td>
+	<tr>
+		<th></th>
+		<th></th>
+	</tr>
 	</thead>
 	<tbody>
 	<tr><td>Name</td><td>${ trigger.name }</td></tr>
