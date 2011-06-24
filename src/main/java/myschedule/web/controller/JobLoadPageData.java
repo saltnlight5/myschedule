@@ -7,12 +7,13 @@ import java.util.List;
  * @author Zemian Deng
  */
 public class JobLoadPageData {
-	private List<String> jobGroupsToNeverDelete;
-	private List<String> triggerGroupsToNeverDelete;
-	private List<String> loadedJobs; // full name.
-	private List<String> loadedTriggers; // full name.
-	private boolean ignoreDuplicates;
-	private boolean overWriteExistingData;
+	protected List<String> jobGroupsToNeverDelete;
+	protected List<String> triggerGroupsToNeverDelete;
+	protected List<String> loadedJobs; // full name.
+	protected List<String> loadedTriggers; // full name.
+	protected boolean ignoreDuplicates;
+	protected boolean overWriteExistingData;
+	
 	/**
 	 * Getter.
 	 * @return the jobGroupsToNeverDelete - List<String>

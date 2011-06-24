@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleJob implements Job {
 	
-	private static Logger logger = LoggerFactory.getLogger(SimpleJob.class);
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Override @see org.quartz.Job#execute(org.quartz.JobExecutionContext) method.

@@ -15,22 +15,18 @@ related beans should go into main-dispatcher-context.xml instead.
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
-	<!-- Allow sys prop placeholder -->
+	<!-- Allow system prop placeholder -->
 	<context:property-placeholder/>
 	
-	<!-- Define a quartzScheduler bean -->
-	<import resource="scheduler/quartz-scheduler.xml"/>
-	
-	<!-- MySchedule scheduler service -->
-	<bean name="schedulerService" class="myschedule.service.SchedulerService">
-		<property name="scheduler" ref="quartzScheduler"></property>
-		<property name="waitForJobsToComplete" value="${myschedule.quartz.waitForJobsToCommplete:true}"></property>
-		<property name="autoStart" value="${myschedule.quartz.autoStart:true}"></property>
-	</bean>
-		
+	<!-- User defined scheduler services -->
+	<import resource="${myschedule.spring.config:classpath:myschedule/spring/scheduler/scheduler-services.xml}"/>
+	 
+	<!-- Provide scripting service. -->
 	<bean name="scriptingService" class="myschedule.service.GroovyScriptingService">
 	</bean>
 	
+	<!-- The serviceContainer will inspect all beans in applications to ensure all service's init
+	and destroy methods are called. -->
 	<bean name="serviceContainer" class="myschedule.spring.ServiceContainer">
 	</bean>
 		

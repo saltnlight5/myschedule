@@ -5,14 +5,14 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 
 import myschedule.service.GroovyScriptingService;
+import myschedule.service.SchedulerService;
 
-import org.quartz.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,13 +39,19 @@ import org.springframework.web.context.ServletContextAware;
 @RequestMapping(value="/scripting")
 public class ScriptingController implements ServletContextAware {
 	
-	private static Logger logger = LoggerFactory.getLogger(ScriptingController.class);
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	private ServletContext servletContext;
-	@Resource
-	private Scheduler quartzScheduler;
-	@Resource
-	private GroovyScriptingService scriptingService;
+	protected ServletContext servletContext;
+	
+	@Autowired
+	protected SchedulerService defaultSchedulerService;
+	
+	@Autowired
+	protected GroovyScriptingService scriptingService;
+	
+	public void setScriptingService(GroovyScriptingService scriptingService) {
+		this.scriptingService = scriptingService;
+	}
 	
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
@@ -77,9 +83,9 @@ public class ScriptingController implements ServletContextAware {
 	/**
 	 * @return a map of binding variables.
 	 */
-	private Map<String, Object> getScriptingVariables() {
+	protected Map<String, Object> getScriptingVariables() {
 		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("quartzScheduler", quartzScheduler);
+		variables.put("quartzScheduler", defaultSchedulerService.getUnderlyingScheduler());
 		variables.put("servletContext", servletContext);
 		variables.put("logger", logger);
 		return variables;

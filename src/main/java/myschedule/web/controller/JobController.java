@@ -7,8 +7,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import myschedule.service.SchedulerService;
 import myschedule.service.XmlJobLoader;
 
@@ -16,6 +14,7 @@ import org.quartz.JobDetail;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +29,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping(value="/job")
 public class JobController {
-	protected static Logger logger = LoggerFactory.getLogger(JobController.class);
 	
-	@Resource
-	protected SchedulerService schedulerService;
-		
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Autowired
+	protected SchedulerService defaultSchedulerService;
+	
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
 		return "redirect:list";
@@ -58,10 +58,10 @@ public class JobController {
 		logger.info("Unscheduling trigger name=" + triggerName + ", group=" + triggerGroup);
 
 		ModelMap data = new ModelMap();
-		Trigger trigger = schedulerService.uncheduleJob(triggerName, triggerGroup);
+		Trigger trigger = getSchedulerService().uncheduleJob(triggerName, triggerGroup);
 		data.put("trigger", trigger);
 		try {
-			JobDetail jobDetail = schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup());
+			JobDetail jobDetail = getSchedulerService().getJobDetail(trigger.getJobName(), trigger.getJobGroup());
 			data.put("jobDetail", jobDetail);
 		} catch (RuntimeException e) {
 			// Job no longer exists, do nothing.
@@ -75,8 +75,8 @@ public class JobController {
 			@RequestParam String jobGroup) {
 		logger.info("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
 
-		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
-		List<Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
+		JobDetail jobDetail = getSchedulerService().getJobDetail(jobName, jobGroup);
+		List<Trigger> triggers = getSchedulerService().deleteJob(jobName, jobGroup);
 
 		ModelMap data = new ModelMap();
 		data.put("jobDetail", jobDetail);
@@ -97,7 +97,7 @@ public class JobController {
 	@RequestMapping(value="/load-xml-action", method=RequestMethod.POST)
 	public ModelMap loadPost(@RequestParam String xml) {
 		JobLoadPageData data = new JobLoadPageData();
-		XmlJobLoader loader = schedulerService.loadJobs(xml);
+		XmlJobLoader loader = getSchedulerService().loadJobs(xml);
 		data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
 		data.setOverWriteExistingData(loader.isOverWriteExistingData());
 		data.setJobGroupsToNeverDelete(loader.getJobGroupsToNeverDelete());
@@ -111,9 +111,9 @@ public class JobController {
 	@RequestMapping(value="/job-detail", method=RequestMethod.GET)
 	public ModelMap jobDetail(@RequestParam String jobName, @RequestParam String jobGroup) {
 		logger.info("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
-		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
+		JobDetail jobDetail = getSchedulerService().getJobDetail(jobName, jobGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setTriggers(schedulerService.getTriggers(jobDetail));
+		data.setTriggers(getSchedulerService().getTriggers(jobDetail));
 		data.setJobDetail(jobDetail);
 		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
 		return new ModelMap("data", data);
@@ -126,9 +126,9 @@ public class JobController {
 			@RequestParam String triggerGroup,
 			@RequestParam int fireTimesCount) {
 		logger.info("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
-		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
+		Trigger trigger = getSchedulerService().getTrigger(triggerName, triggerGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setJobDetail(schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
+		data.setJobDetail(getSchedulerService().getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
 		data.setNextFireTimes(getNextFireTimes(trigger, fireTimesCount));
@@ -150,7 +150,7 @@ public class JobController {
 	}
 	
 	protected List<Date> getNextFireTimes(Trigger trigger, int fireTimesCount) {
-		List<Date> fireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);
+		List<Date> fireTimes = getSchedulerService().getNextFireTimes(trigger, new Date(), fireTimesCount);
 		return fireTimes;
 	}
 	
@@ -158,11 +158,11 @@ public class JobController {
 	protected JobListPageData getJobListPageData() {
 		List<Trigger> triggers = new ArrayList<Trigger>();
 		
-		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		List<JobDetail> allJobDetails = getSchedulerService().getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			List<Trigger> jobTriggers = getSchedulerService().getTriggers(jobDetail);
 			if (jobTriggers.size() > 0) {
 				triggers.addAll(jobTriggers);
 			}
@@ -181,11 +181,11 @@ public class JobController {
 	protected Object getNoTriggerJobListPageData() {
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		
-		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		List<JobDetail> allJobDetails = getSchedulerService().getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			List<Trigger> jobTriggers = getSchedulerService().getTriggers(jobDetail);
 			if (jobTriggers.size() == 0) {
 				noTriggerJobDetails.add(jobDetail);
 			}
@@ -240,4 +240,7 @@ public class JobController {
 		});
 	}
 	
+	protected SchedulerService getSchedulerService() {
+		return defaultSchedulerService;
+	}
 }

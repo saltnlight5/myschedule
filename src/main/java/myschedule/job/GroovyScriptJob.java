@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GroovyScriptJob implements Job {
 	
-	protected static Logger logger = LoggerFactory.getLogger(GroovyScriptJob.class);
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public static final String GROOVY_SCRIPT_TEXT_KEY = "GroovyScriptText";
 	

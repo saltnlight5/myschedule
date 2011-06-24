@@ -23,6 +23,7 @@ $ bin/catalina.bat run
  * Add UI to change scheduler config online.
  * Show Current Executing Jobs on UI.
  * Add web based "crontab" like UI.
+ * Turn controller to have HttpSession param available.
 
 = DONE =
  

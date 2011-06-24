@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleBeanJob {
 	
-	private static Logger logger = LoggerFactory.getLogger(SimpleBeanJob.class);
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public void run() {
 		logger.info("Running bean job.");

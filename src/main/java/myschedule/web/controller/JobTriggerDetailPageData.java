@@ -7,11 +7,11 @@ import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
 public class JobTriggerDetailPageData {
-	private int fireTimesCount;
-	private List<Date> nextFireTimes;
-	private JobDetail jobDetail;
-	private List<Trigger> triggers;
-	private boolean jobDetailShouldRecover;
+	protected int fireTimesCount;
+	protected List<Date> nextFireTimes;
+	protected JobDetail jobDetail;
+	protected List<Trigger> triggers;
+	protected boolean jobDetailShouldRecover;
 	
 	/**
 	 * Get the first trigger in the list.

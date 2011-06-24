@@ -3,7 +3,8 @@ package myschedule.web.controller;
 import java.util.TreeMap;
 
 public class SchedulerDetailPageData extends SchedulerSummaryPageData {
-	private TreeMap<String, String> schedulerDetail;
+	
+	protected TreeMap<String, String> schedulerDetail;
 	
 	/**
 	 * Getter.

@@ -3,9 +3,9 @@ package myschedule.web.controller;
 
 public class SchedulerSummaryPageData {
 	
-	private String schedulerSummary;
-	private String schedulerName;
-	private boolean schedulerInStandbyMode;
+	protected String schedulerSummary;
+	protected String schedulerName;
+	protected boolean schedulerInStandbyMode;
 		
 	/**
 	 * Getter.

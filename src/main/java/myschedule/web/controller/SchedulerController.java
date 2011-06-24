@@ -3,8 +3,6 @@ package myschedule.web.controller;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.annotation.Resource;
-
 import myschedule.service.ObjectUtils;
 import myschedule.service.ObjectUtils.Getter;
 import myschedule.service.SchedulerService;
@@ -13,6 +11,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +25,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping(value="/scheduler")
 public class SchedulerController {
-	private static Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 	
-	@Resource
-	private SchedulerService schedulerService;
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Autowired
+	protected SchedulerService defaultSchedulerService;
 	
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
@@ -38,7 +38,7 @@ public class SchedulerController {
 
 	@RequestMapping(value="/summary", method=RequestMethod.GET)
 	public ModelMap schedulerSummary() {
-		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+		SchedulerMetaData schedulerMetaData = defaultSchedulerService.getSchedulerMetaData();
 		SchedulerSummaryPageData data = new SchedulerSummaryPageData();
 		populateSummaryPageData(data, schedulerMetaData);
 		return new ModelMap("data", data);
@@ -47,7 +47,7 @@ public class SchedulerController {
 	@RequestMapping(value="/detail", method=RequestMethod.GET)
 	public ModelMap detail() {
 		SchedulerDetailPageData data = new SchedulerDetailPageData();
-		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+		SchedulerMetaData schedulerMetaData = defaultSchedulerService.getSchedulerMetaData();
 		populateSummaryPageData(data, schedulerMetaData);
 		if (!schedulerMetaData.isInStandbyMode()) {
 			data.setSchedulerDetail(getSchedulerDetail(schedulerMetaData));
@@ -57,17 +57,17 @@ public class SchedulerController {
 
 	@RequestMapping(value="/standby", method=RequestMethod.GET)
 	public String standby() {
-		schedulerService.standbyScheduler();
+		defaultSchedulerService.pause();
 		return "redirect:detail";
 	}
 	
 	@RequestMapping(value="/start", method=RequestMethod.GET)
 	public String start() {
-		schedulerService.startScheduler();
+		defaultSchedulerService.start();
 		return "redirect:detail";
 	}
 
-	private TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
+	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
 		List<Getter> getters = ObjectUtils.getGetters(schedulerMetaData);
 		for (Getter getter : getters) {
@@ -86,7 +86,7 @@ public class SchedulerController {
 		return schedulerInfo;
 	}
 
-	private void populateSummaryPageData(SchedulerSummaryPageData data, SchedulerMetaData schedulerMetaData) {
+	protected void populateSummaryPageData(SchedulerSummaryPageData data, SchedulerMetaData schedulerMetaData) {
 		data.setSchedulerName(schedulerMetaData.getSchedulerName());
 		data.setSchedulerInStandbyMode(schedulerMetaData.isInStandbyMode());
 		try {

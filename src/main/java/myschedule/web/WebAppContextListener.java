@@ -25,9 +25,13 @@ public class WebAppContextListener implements ServletContextListener {
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		// Adding "contextPath" variable to all JSP pages.
 		ServletContext ctx = sce.getServletContext();
 		String contextPath = ctx.getContextPath();
+		
+		logger.debug("Initializing MySchedule on server: " + ctx.getServerInfo());
+		
+		// Init global(app) variables
+		// ==========================
 		String myscheduleVersion = getMyScheduleVersion();
 
 		ctx.setAttribute("myscheduleVersion", myscheduleVersion);
@@ -44,7 +48,7 @@ public class WebAppContextListener implements ServletContextListener {
 		
 		ctx.setAttribute("themeName", DEFAULT_THEME_NAME);
 		logger.info("Set attribute themeName=" + ctx.getAttribute("themeName"));
-		
+				
 		logger.info("Web application initialized.");
 	}
 

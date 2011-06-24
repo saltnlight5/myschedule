@@ -79,7 +79,7 @@
 	</bean>
 	
 	<!-- 
-	Scheduler
+	Quartz Scheduler
 	========= -->
 	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="autoStartup" value="false"/>
@@ -93,5 +93,12 @@
 				<ref bean="job1Trigger5"/>
 			</list>
 		</property>
+	</bean>
+	
+	<!-- Default scheduler service for a basic in-memory quartz config -->
+	<bean name="defaultSchedulerService" class="myschedule.service.SchedulerService">
+		<property name="scheduler" ref="quartzScheduler"></property>
+		<property name="waitForJobsToComplete" value="true"></property>
+		<property name="autoStart" value="true"></property>
 	</bean>
 </beans>
