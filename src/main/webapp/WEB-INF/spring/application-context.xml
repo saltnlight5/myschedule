@@ -31,7 +31,7 @@ related beans should go into main-dispatcher-context.xml instead.
 	</bean>
 		
 	<!-- The serviceContainer will collect all Service beans and auto manage their init/destroy lifecycles. -->
-	<bean name="serviceContainer" class="myschedule.service.ServiceContainer" autowire="byType">
+	<bean name="serviceContainer" class="myschedule.service.ServiceContainer">
 	</bean>
 			
 	<!-- User defined scheduler services -->
