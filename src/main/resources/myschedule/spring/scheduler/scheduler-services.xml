@@ -19,8 +19,8 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 	<context:property-placeholder/>
 	
 	<!-- Default scheduler service for a basic in-memory quartz config -->
-	<bean name="defaultSchedulerService" class="myschedule.service.SchedulerService">
-		<property name="configUrl" value="${myschedule.quartz.config:classpath:myschedule/spring/scheduler/quartz.properties}"></property>
+	<bean name="defaultSchedulerService" class="myschedule.service.SchedulerService" autowire-candidate="default">
+		<property name="configUrl" value="${myschedule.quartz.config:classpath:/myschedule/spring/scheduler/quartz.properties.in-memory}"></property>
 		<property name="waitForJobsToComplete" value="${myschedule.quartz.waitForJobsToCommplete:true}"></property>
 		<property name="autoStart" value="${myschedule.quartz.autoStart:true}"></property>
 	</bean>

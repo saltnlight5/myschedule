@@ -1,0 +1,21 @@
+# A Quartz Scheduler configuration for database with cluster enabled.
+# See http://www.quartz-scheduler.org/docs/configuration
+
+org.quartz.scheduler.skipUpdateCheck = true
+org.quartz.scheduler.instanceName = DatabaseClusteredScheduler
+org.quartz.scheduler.instanceId = AUTO
+org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTX
+org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+org.quartz.jobStore.dataSource = quartzDataSource
+org.quartz.jobStore.tablePrefix = QRTZ_
+org.quartz.jobStore.isClustered = true
+org.quartz.jobStore.selectWithLockSQL = SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 4
+
+# Persistence Job Store - with Oracle database
+org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
+org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz18
+org.quartz.dataSource.quartzDataSource.user = quartz18
+org.quartz.dataSource.quartzDataSource.password = quartz18123
+org.quartz.dataSource.quartzDataSource.maxConnections = 4

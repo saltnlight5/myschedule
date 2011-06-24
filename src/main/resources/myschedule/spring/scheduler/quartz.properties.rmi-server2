@@ -1,0 +1,14 @@
+# A Quartz Scheduler configuration for RMI server
+# See http://www.quartz-scheduler.org/docs/configuration
+
+org.quartz.scheduler.skipUpdateCheck = true
+org.quartz.scheduler.instanceName = RmiServerScheduler
+org.quartz.scheduler.instanceId = NON_CLUSTERED
+org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 4
+org.quartz.scheduler.rmi.export = true
+org.quartz.scheduler.rmi.createRegistry = true
+org.quartz.scheduler.rmi.registryHost = localhost
+org.quartz.scheduler.rmi.registryPort = 1099
+org.quartz.scheduler.rmi.serverPort = 1100

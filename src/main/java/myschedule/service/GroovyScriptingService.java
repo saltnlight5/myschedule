@@ -1,5 +1,6 @@
 package myschedule.service;
 
+import static myschedule.service.ErrorCode.SCRIPTING_PROBLEM;
 import groovy.lang.GroovyShell;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class GroovyScriptingService implements Service {
 			T ret = (T)object;
 			return ret;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCRIPTING_PROBLEM, e);
 		}
 	}
 

@@ -45,37 +45,40 @@ public class GroovyScriptJob implements Job {
 	 */
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-		JobDetail jobDetail = jobExecutionContext.getJobDetail();
-		logger.info("Running Groovy Script Job: " + jobDetail.getFullName());
-		JobDataMap dataMap = jobDetail.getJobDataMap();
-		String scriptText = dataMap.getString(GROOVY_SCRIPT_TEXT_KEY);
-		String filename = null;
-		if (scriptText == null) {
-			// Try to look for file
-			filename = dataMap.getString(GROOVY_SCRIPT_FILE_KEY);
-			if (filename == null) {
-				logger.warn("No Groovy script text nor file name found from data map.");
-				return;
+		try {
+			JobDetail jobDetail = jobExecutionContext.getJobDetail();
+			logger.info("Running Groovy Script Job: " + jobDetail.getFullName());
+			JobDataMap dataMap = jobDetail.getJobDataMap();
+			String scriptText = dataMap.getString(GROOVY_SCRIPT_TEXT_KEY);
+			String filename = null;
+			if (scriptText == null) {
+				// Try to look for file
+				filename = dataMap.getString(GROOVY_SCRIPT_FILE_KEY);
+				if (filename == null) {
+					throw new JobExecutionException("No Groovy script text nor file name found from data map.");
+				}
 			}
+			
+			GroovyScriptingService scriptService = new GroovyScriptingService();
+			Map<String, Object> variables = new HashMap<String, Object>();
+			variables.put("jobExecutionContext", jobExecutionContext);
+			variables.put("logger", logger);
+			Object result = null;
+			if (filename == null) {
+				logger.debug("Running script text.");
+				variables.put("groovyScriptText", scriptText);
+				result = scriptService.run(scriptText, variables);
+			} else {
+				File file = new File(filename);
+				logger.debug("Running script file=" + file);
+				variables.put("groovyScriptFile", file);
+				result = scriptService.runScript(file, variables);
+			}
+			logger.info("Groovy script " + (filename == null ? "text" : filename) + 
+					" evaluated. Result: " + result);
+		} catch (Exception e) {
+			throw new JobExecutionException("Failed executing GroovyScriptJob.", e);
 		}
-		
-		GroovyScriptingService scriptService = new GroovyScriptingService();
-		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("jobExecutionContext", jobExecutionContext);
-		variables.put("logger", logger);
-		Object result = null;
-		if (filename == null) {
-			logger.debug("Running script text.");
-			variables.put("groovyScriptText", scriptText);
-			result = scriptService.run(scriptText, variables);
-		} else {
-			File file = new File(filename);
-			logger.debug("Running script file=" + file);
-			variables.put("groovyScriptFile", file);
-			result = scriptService.runScript(file, variables);
-		}
-		logger.info("Groovy script " + (filename == null ? "text" : filename) + 
-				" evaluated. Result: " + result);
 	}	
 
 }

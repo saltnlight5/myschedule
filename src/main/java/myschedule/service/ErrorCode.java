@@ -1,0 +1,9 @@
+package myschedule.service;
+
+public enum ErrorCode {
+	SERVICE_PROBLEM,
+	SCRIPTING_PROBLEM,
+	SCHEDULER_SERIVCE_NOT_FOUND,
+	SCHEDULER_PROBLEM,
+	GENERAL_PROBLEM;
+}

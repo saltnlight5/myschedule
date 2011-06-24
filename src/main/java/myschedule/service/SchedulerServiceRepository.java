@@ -1,5 +1,7 @@
 package myschedule.service;
 
+import static myschedule.service.ErrorCode.SCHEDULER_SERIVCE_NOT_FOUND;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +59,12 @@ public class SchedulerServiceRepository {
 	
 	public SchedulerService getSchedulerService(String name) {
 		if (!schedulerServices.containsKey(name)) {
-			throw new RuntimeException("SchedulerService " + name + " not found in repository.");
+			throw new ErrorCodeException(SCHEDULER_SERIVCE_NOT_FOUND, "SchedulerService " + name + " not found in repository.");
 		}
 		return schedulerServices.get(name);
+	}
+
+	public boolean hasSchedulerService(String name) {
+		return schedulerServices.containsKey(name);
 	}
 }

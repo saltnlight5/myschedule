@@ -35,7 +35,7 @@ public class XmlJobLoader extends XMLSchedulingDataProcessor {
 		try {
 			return new XmlJobLoader(clhelper);
 		} catch (ParserConfigurationException e) {
-			throw new RuntimeException("Failed to construct XmlJobLoader.", e);
+			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to construct XmlJobLoader.", e);
 		}		
 	}
 	

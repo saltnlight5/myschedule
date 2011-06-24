@@ -1,5 +1,7 @@
 package myschedule.service;
 
+import static myschedule.service.ErrorCode.SCHEDULER_PROBLEM;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +73,7 @@ public class SchedulerService implements Service {
 		try {
 			return scheduler.getSchedulerName();
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -80,7 +82,7 @@ public class SchedulerService implements Service {
 		try {
 			return scheduler.getSchedulerInstanceId();
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -88,7 +90,7 @@ public class SchedulerService implements Service {
 		try {
 			return scheduler.getMetaData();
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 
@@ -106,7 +108,7 @@ public class SchedulerService implements Service {
 			}
 			return jobs;
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -116,7 +118,7 @@ public class SchedulerService implements Service {
 			Trigger[] triggers = scheduler.getTriggersOfJob(jobDetail.getName(), jobDetail.getGroup());
 			return Arrays.asList(triggers);
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -124,7 +126,7 @@ public class SchedulerService implements Service {
 		try {
 			return scheduler.getJobDetail(jobName, jobGroup);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 
@@ -132,7 +134,7 @@ public class SchedulerService implements Service {
 		try {
 			return scheduler.getTrigger(triggerName, triggerGroup);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -154,7 +156,7 @@ public class SchedulerService implements Service {
 			}
 			return list;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -165,7 +167,7 @@ public class SchedulerService implements Service {
 			logger.info("Scheduled job=" + jobDetail.getFullName() + ", trigger=" + trigger.getFullName());
 			return nextFireTime;
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 
@@ -175,7 +177,7 @@ public class SchedulerService implements Service {
 			scheduler.scheduleJob(trigger);
 			logger.info("Scheduled trigger=" + trigger);
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -189,7 +191,7 @@ public class SchedulerService implements Service {
 			logger.info("Unscheduled job, triggerName=" + triggerName + ", triggerGroup=" + triggerGroup);
 			return trigger;
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 
@@ -204,7 +206,7 @@ public class SchedulerService implements Service {
 					triggers.length + " triggers.");
 			return Arrays.asList(triggers);
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 
@@ -224,7 +226,7 @@ public class SchedulerService implements Service {
 					" Loaded triggers size=" + xmlJobLoader.getLoadedTriggers().size());
 			return xmlJobLoader;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -232,7 +234,7 @@ public class SchedulerService implements Service {
 		try {
 			return scheduler.getMetaData().isSchedulerRemote();
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}		
 	}
 	
@@ -243,7 +245,7 @@ public class SchedulerService implements Service {
 			props.load(inStream);
 			return props;
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -254,7 +256,7 @@ public class SchedulerService implements Service {
 				logger.info(scheduler.getSchedulerName() + " paused.");
 			}
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -265,7 +267,7 @@ public class SchedulerService implements Service {
 				logger.info(scheduler.getSchedulerName() + " resumed.");
 			}
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -276,7 +278,7 @@ public class SchedulerService implements Service {
 				logger.info(scheduler.getSchedulerName() + " started.");
 			}
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
@@ -287,7 +289,7 @@ public class SchedulerService implements Service {
 				logger.info(scheduler.getSchedulerName() + " stopped with waitForJobsToComplete=" + waitForJobsToComplete);
 			}
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 
@@ -325,7 +327,7 @@ public class SchedulerService implements Service {
 
 	protected void createAndInitScheduler() {
 		if (configUrl == null) {
-			throw new RuntimeException("SchedulerService is missing configUrl.");
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, "SchedulerService is missing configUrl.");
 		}
 		
 		Properties props = getConfigProps();
@@ -333,7 +335,7 @@ public class SchedulerService implements Service {
 			StdSchedulerFactory schedulerFactory = new StdSchedulerFactory(props);
 			scheduler = schedulerFactory.getScheduler();
 		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}		
 	}
 }

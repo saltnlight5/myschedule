@@ -7,7 +7,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
+import myschedule.service.ErrorCodeException;
 import myschedule.service.SchedulerService;
+import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.XmlJobLoader;
 
 import org.quartz.JobDetail;
@@ -15,6 +19,7 @@ import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +37,8 @@ public class JobController {
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	@Autowired
-	protected SchedulerService defaultSchedulerService;
+	@Autowired @Qualifier("schedulerServiceFinder")
+	protected SchedulerServiceFinder schedulerServiceFinder;
 	
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
@@ -42,29 +47,32 @@ public class JobController {
 	
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
-	public ModelMap list() {
-		return new ModelMap("data", getJobListPageData());
+	public ModelMap list(HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		return new ModelMap("data", getJobListPageData(schedulerService));
 	}
 	
 	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
-	public ModelMap listNoTriggerJobs() {
-		return new ModelMap("data", getNoTriggerJobListPageData());
+	public ModelMap listNoTriggerJobs(HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		return new ModelMap("data", getNoTriggerJobListPageData(schedulerService));
 	}
 	
 	@RequestMapping(value="/unschedule", method=RequestMethod.GET)
 	public ModelMap unscheduleJob(
 			@RequestParam String triggerName,
-			@RequestParam String triggerGroup) {
+			@RequestParam String triggerGroup,
+			HttpSession session) {
 		logger.info("Unscheduling trigger name=" + triggerName + ", group=" + triggerGroup);
-
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		ModelMap data = new ModelMap();
-		Trigger trigger = getSchedulerService().uncheduleJob(triggerName, triggerGroup);
+		Trigger trigger = schedulerService.uncheduleJob(triggerName, triggerGroup);
 		data.put("trigger", trigger);
 		try {
-			JobDetail jobDetail = getSchedulerService().getJobDetail(trigger.getJobName(), trigger.getJobGroup());
+			JobDetail jobDetail = schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup());
 			data.put("jobDetail", jobDetail);
-		} catch (RuntimeException e) {
-			// Job no longer exists, do nothing.
+		} catch (ErrorCodeException e) {
+			// Job no longer exists, and we allow this scenario, so do nothing. 
 		}
 		return new ModelMap("data", data);
 	}
@@ -72,11 +80,12 @@ public class JobController {
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
 	public ModelMap deleteAllJobsPost(
 			@RequestParam String jobName,
-			@RequestParam String jobGroup) {
+			@RequestParam String jobGroup,
+			HttpSession session) {
 		logger.info("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
-
-		JobDetail jobDetail = getSchedulerService().getJobDetail(jobName, jobGroup);
-		List<Trigger> triggers = getSchedulerService().deleteJob(jobName, jobGroup);
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
+		List<Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
 
 		ModelMap data = new ModelMap();
 		data.put("jobDetail", jobDetail);
@@ -95,9 +104,12 @@ public class JobController {
 
 	/** Process from for load job-scheduling-data xml */
 	@RequestMapping(value="/load-xml-action", method=RequestMethod.POST)
-	public ModelMap loadPost(@RequestParam String xml) {
+	public ModelMap loadPost(
+			@RequestParam String xml, 
+			HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		JobLoadPageData data = new JobLoadPageData();
-		XmlJobLoader loader = getSchedulerService().loadJobs(xml);
+		XmlJobLoader loader = schedulerService.loadJobs(xml);
 		data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
 		data.setOverWriteExistingData(loader.isOverWriteExistingData());
 		data.setJobGroupsToNeverDelete(loader.getJobGroupsToNeverDelete());
@@ -109,11 +121,15 @@ public class JobController {
 
 	/** Show a trigger and its job detail page. */
 	@RequestMapping(value="/job-detail", method=RequestMethod.GET)
-	public ModelMap jobDetail(@RequestParam String jobName, @RequestParam String jobGroup) {
+	public ModelMap jobDetail(
+			@RequestParam String jobName, 
+			@RequestParam String jobGroup, 
+			HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		logger.info("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
-		JobDetail jobDetail = getSchedulerService().getJobDetail(jobName, jobGroup);
+		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setTriggers(getSchedulerService().getTriggers(jobDetail));
+		data.setTriggers(schedulerService.getTriggers(jobDetail));
 		data.setJobDetail(jobDetail);
 		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
 		return new ModelMap("data", data);
@@ -124,14 +140,17 @@ public class JobController {
 	public ModelMap triggerDetail(
 			@RequestParam String triggerName,
 			@RequestParam String triggerGroup,
-			@RequestParam int fireTimesCount) {
+			@RequestParam int fireTimesCount, 
+			HttpSession session) {
 		logger.info("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
-		Trigger trigger = getSchedulerService().getTrigger(triggerName, triggerGroup);
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
+		List<Date> nextFireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setJobDetail(getSchedulerService().getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
+		data.setJobDetail(schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
-		data.setNextFireTimes(getNextFireTimes(trigger, fireTimesCount));
+		data.setNextFireTimes(nextFireTimes);
 		return new ModelMap("data", data);
 	}
 
@@ -149,20 +168,15 @@ public class JobController {
 		return list;
 	}
 	
-	protected List<Date> getNextFireTimes(Trigger trigger, int fireTimesCount) {
-		List<Date> fireTimes = getSchedulerService().getNextFireTimes(trigger, new Date(), fireTimesCount);
-		return fireTimes;
-	}
-	
 	/** Return only jobs with trigger associated. */
-	protected JobListPageData getJobListPageData() {
+	protected JobListPageData getJobListPageData(SchedulerService schedulerService) {
 		List<Trigger> triggers = new ArrayList<Trigger>();
 		
-		List<JobDetail> allJobDetails = getSchedulerService().getJobDetails();
+		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = getSchedulerService().getTriggers(jobDetail);
+			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
 			if (jobTriggers.size() > 0) {
 				triggers.addAll(jobTriggers);
 			}
@@ -178,14 +192,14 @@ public class JobController {
 	}
 
 	/** Return only jobs without trigger associated. */
-	protected Object getNoTriggerJobListPageData() {
+	protected Object getNoTriggerJobListPageData(SchedulerService schedulerService) {
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		
-		List<JobDetail> allJobDetails = getSchedulerService().getJobDetails();
+		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = getSchedulerService().getTriggers(jobDetail);
+			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
 			if (jobTriggers.size() == 0) {
 				noTriggerJobDetails.add(jobDetail);
 			}
@@ -213,7 +227,6 @@ public class JobController {
 	 */
 	protected void sortJobListTriggersByFullName(List<Trigger> triggers) {
 		Collections.sort(triggers, new Comparator<Trigger>() {
-
 			@Override
 			public int compare(Trigger o1, Trigger o2) {
 				int ret = o1.getFullJobName().compareTo(o2.getFullJobName());
@@ -231,16 +244,10 @@ public class JobController {
 	 */
 	protected void sortJobListNoTriggerJobDetails(List<JobDetail> noTriggerJobDetails) {
 		Collections.sort(noTriggerJobDetails, new Comparator<JobDetail>() {
-
 			@Override
 			public int compare(JobDetail o1, JobDetail o2) {
 				return o1.getFullName().compareTo(o2.getFullName());
-			}
-			
+			}			
 		});
-	}
-	
-	protected SchedulerService getSchedulerService() {
-		return defaultSchedulerService;
 	}
 }

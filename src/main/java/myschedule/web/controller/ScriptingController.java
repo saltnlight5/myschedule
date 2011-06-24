@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 import myschedule.service.GroovyScriptingService;
 import myschedule.service.SchedulerService;
+import myschedule.service.SchedulerServiceFinder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,10 +47,10 @@ public class ScriptingController implements ServletContextAware {
 	protected ServletContext servletContext;
 	
 	@Autowired
-	protected SchedulerService defaultSchedulerService;
-	
-	@Autowired
 	protected GroovyScriptingService scriptingService;
+	
+	@Autowired @Qualifier("schedulerServiceFinder")
+	protected SchedulerServiceFinder schedulerServiceFinder;
 	
 	public void setScriptingService(GroovyScriptingService scriptingService) {
 		this.scriptingService = scriptingService;
@@ -65,30 +68,27 @@ public class ScriptingController implements ServletContextAware {
 	}
 	
 	@RequestMapping(value="run-action", method=RequestMethod.POST)
-	public ModelMap runAction(@RequestParam String groovyScriptText) {
+	public ModelMap runAction(
+			@RequestParam String groovyScriptText,
+			HttpSession session) {
 		logger.debug("Running Groovy Script Text.");
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		PrintWriter webOut = new PrintWriter(outStream);
-		Map<String, Object> variables = getScriptingVariables();
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		Map<String, Object> variables = new HashMap<String, Object>();
+		variables.put("schedulerService", schedulerService);
+		variables.put("quartzScheduler", schedulerService.getUnderlyingScheduler());
+		variables.put("servletContext", servletContext);
+		variables.put("logger", logger);
 		variables.put("webOut", webOut);
 		Object scriptingOutput = scriptingService.run(groovyScriptText, variables );
 		webOut.close();
 		String webOutResult = outStream.toString();
+		
 		ModelMap data = new ModelMap();
 		data.put("scriptingOutput", scriptingOutput);
 		data.put("webOutResult", webOutResult);
 		return new ModelMap("data", data);
-	}
-
-	/**
-	 * @return a map of binding variables.
-	 */
-	protected Map<String, Object> getScriptingVariables() {
-		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("quartzScheduler", defaultSchedulerService.getUnderlyingScheduler());
-		variables.put("servletContext", servletContext);
-		variables.put("logger", logger);
-		return variables;
 	}
 
 	/**
