@@ -4,10 +4,10 @@ import static myschedule.service.ErrorCode.SCHEDULER_SERIVCE_NOT_FOUND;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.web.SessionData;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import myschedule.web.SessionData;
 
 /**
  * Provide search and storing of SchedulerService instance in a web application env.
@@ -63,7 +63,7 @@ public class SchedulerServiceFinder {
 	}
 
 	protected SessionData createSessionData() {
-		SessionData data = new SessionData();
+		SessionData data = new SessionData();		
 		return data;
 	}
 	

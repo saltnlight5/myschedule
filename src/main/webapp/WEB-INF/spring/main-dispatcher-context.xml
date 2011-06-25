@@ -23,6 +23,16 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 	
+	<!-- Overriding default url handler -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<bean class="myshedule.web.interceptor.SchedulerReqInterceptor"/>
+			</list>
+		</property>
+	</bean>
+	
+	
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
 	<context:component-scan base-package="myschedule.web.controller" />
 	
