@@ -27,7 +27,7 @@
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<property name="interceptors">
 			<list>
-				<bean class="myshedule.web.interceptor.SchedulerReqInterceptor"/>
+				<bean class="myschedule.web.interceptor.SchedulerReqInterceptor"/>
 			</list>
 		</property>
 	</bean>

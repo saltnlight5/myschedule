@@ -11,5 +11,5 @@
 	<import resource="scheduler-services-sample1.xml"/>
 	<import resource="scheduler-services-sample2.xml"/>
 	<!-- <import resource="scheduler-services-sample3.xml"/> -->
-	<import resource="scheduler-services-sample3.xml"/>	
+	<import resource="scheduler-services-sample4.xml"/>	
 </beans>

@@ -38,9 +38,9 @@ public class SchedulerServiceFinder {
 			
 			// Need to update session with default scheduler.
 			data.setCurrentSchedulerName(result.getName());
-			logger.info("Added default scheduler service name into session data.");
+			logger.info("Added default scheduler service "+ result.getName() + " into session data.");
 		}
-
+		
 		logger.debug("Found scheduler service: " + result.getName());
 		return result;
 	}
@@ -63,7 +63,8 @@ public class SchedulerServiceFinder {
 	}
 
 	protected SessionData createSessionData() {
-		SessionData data = new SessionData();		
+		SessionData data = new SessionData();
+		logger.info("New session data created: " + data);
 		return data;
 	}
 	

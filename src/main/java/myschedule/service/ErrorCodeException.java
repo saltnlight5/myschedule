@@ -40,4 +40,9 @@ public class ErrorCodeException extends RuntimeException {
 	public ErrorCodeException(ErrorCode errorCode, String message, Throwable cause) {
 		super(message, cause);
 	}
+	
+	@Override
+	public String getMessage() {
+		return errorCode + ": " + super.getMessage();
+	}
 }
