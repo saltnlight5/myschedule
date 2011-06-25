@@ -45,7 +45,7 @@ public class SchedulerService implements Service {
 	protected boolean autoStart = true;
 
 	/** Used during stop/shutdown of scheduler. */
-	private boolean waitForJobsToComplete = true;
+	protected boolean waitForJobsToComplete = true;
 	
 	public void setConfigUrl(URL configUrl) {
 		this.configUrl = configUrl;

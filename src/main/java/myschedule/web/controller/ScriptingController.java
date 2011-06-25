@@ -62,13 +62,12 @@ public class ScriptingController implements ServletContextAware {
 	}
 
 	@RequestMapping(value="run", method=RequestMethod.GET)
-	public ModelMap run() {
-		ModelMap data = new ModelMap();
-		return new ModelMap("data", data);
+	public DataModelMap run() {
+		return new DataModelMap();
 	}
 	
 	@RequestMapping(value="run-action", method=RequestMethod.POST)
-	public ModelMap runAction(
+	public DataModelMap runAction(
 			@RequestParam String groovyScriptText,
 			HttpSession session) {
 		logger.debug("Running Groovy Script Text.");
@@ -88,7 +87,7 @@ public class ScriptingController implements ServletContextAware {
 		ModelMap data = new ModelMap();
 		data.put("scriptingOutput", scriptingOutput);
 		data.put("webOutResult", webOutResult);
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	/**

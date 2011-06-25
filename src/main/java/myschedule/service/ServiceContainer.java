@@ -55,26 +55,34 @@ public class ServiceContainer implements Service, ApplicationContextAware, Initi
 		return services;
 	}
 	
+	protected void initService(Service service) {		
+		// Let's init it.
+		try {
+			service.init();
+			initializedServices.add(service);
+			logger.info("Service " + service + " initialized.");
+		} catch (Exception e) {
+			if (failFast) {
+				destroy();
+				throw new ErrorCodeException(SERVICE_PROBLEM, "Failed to initialize service " + service, e);
+			} else {
+				logger.error("Failed to initialize service " + service, e);
+			}
+		}
+	}
+	
+	public void addAndInitService(Service service) {
+		services.add(service);
+		initService(service);
+	}
+	
 	@Override
 	public void init() {
 		for (Service service : services) {
 			// Ensured we don't init itself.
 			if (service == this)
 				continue;
-			
-			// Let's init it.
-			try {
-				service.init();
-				initializedServices.add(service);
-				logger.info("Service " + service + " initialized.");
-			} catch (Exception e) {
-				if (failFast) {
-					destroy();
-					throw new ErrorCodeException(SERVICE_PROBLEM, "Failed to initialize service " + service, e);
-				} else {
-					logger.error("Failed to initialize service " + service, e);
-				}
-			}
+			initService(service);
 		}
 	}
 	

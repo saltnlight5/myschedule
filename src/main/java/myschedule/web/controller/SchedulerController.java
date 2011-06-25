@@ -6,9 +6,9 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpSession;
 
 import myschedule.service.ObjectUtils;
-import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.ObjectUtils.Getter;
 import myschedule.service.SchedulerService;
+import myschedule.service.SchedulerServiceFinder;
 
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,16 +41,16 @@ public class SchedulerController {
 	}
 
 	@RequestMapping(value="/summary", method=RequestMethod.GET)
-	public ModelMap schedulerSummary(HttpSession session) {
+	public DataModelMap schedulerSummary(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
 		SchedulerSummaryPageData data = new SchedulerSummaryPageData();
 		populateSummaryPageData(data, schedulerMetaData);
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	@RequestMapping(value="/detail", method=RequestMethod.GET)
-	public ModelMap detail(HttpSession session) {
+	public DataModelMap detail(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		SchedulerDetailPageData data = new SchedulerDetailPageData();
 		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
@@ -59,7 +58,7 @@ public class SchedulerController {
 		if (!schedulerMetaData.isInStandbyMode()) {
 			data.setSchedulerDetail(getSchedulerDetail(schedulerMetaData));
 		}
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	@RequestMapping(value="/pause", method=RequestMethod.GET)
@@ -91,14 +90,14 @@ public class SchedulerController {
 	}
 	
 	@RequestMapping(value="/switch-scheduler-action", method=RequestMethod.POST)
-	public ModelMap switchSchedulerAction(
+	public DataModelMap switchSchedulerAction(
 			@RequestParam String newSchedulerName,
 			HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.switchSchedulerService(newSchedulerName, session);
 		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
 		SchedulerSummaryPageData data = new SchedulerSummaryPageData();
 		populateSummaryPageData(data, schedulerMetaData);
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {

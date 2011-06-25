@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,25 +46,25 @@ public class JobController {
 	
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
-	public ModelMap list(HttpSession session) {
+	public DataModelMap list(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		return new ModelMap("data", getJobListPageData(schedulerService));
+		return new DataModelMap(getJobListPageData(schedulerService));
 	}
 	
 	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
-	public ModelMap listNoTriggerJobs(HttpSession session) {
+	public DataModelMap listNoTriggerJobs(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		return new ModelMap("data", getNoTriggerJobListPageData(schedulerService));
+		return new DataModelMap(getNoTriggerJobListPageData(schedulerService));
 	}
 	
 	@RequestMapping(value="/unschedule", method=RequestMethod.GET)
-	public ModelMap unscheduleJob(
+	public DataModelMap unscheduleJob(
 			@RequestParam String triggerName,
 			@RequestParam String triggerGroup,
 			HttpSession session) {
 		logger.info("Unscheduling trigger name=" + triggerName + ", group=" + triggerGroup);
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		ModelMap data = new ModelMap();
+		DataModelMap data = new DataModelMap();
 		Trigger trigger = schedulerService.uncheduleJob(triggerName, triggerGroup);
 		data.put("trigger", trigger);
 		try {
@@ -74,11 +73,11 @@ public class JobController {
 		} catch (ErrorCodeException e) {
 			// Job no longer exists, and we allow this scenario, so do nothing. 
 		}
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 	
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
-	public ModelMap deleteAllJobsPost(
+	public DataModelMap deleteAllJobsPost(
 			@RequestParam String jobName,
 			@RequestParam String jobGroup,
 			HttpSession session) {
@@ -87,24 +86,24 @@ public class JobController {
 		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
 		List<Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
 
-		ModelMap data = new ModelMap();
+		DataModelMap data = new DataModelMap();
 		data.put("jobDetail", jobDetail);
 		data.put("triggers", triggers);
 		
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 	
 	/** Display form to load job-scheduling-data xml */
 	@RequestMapping(value="/load-xml", method=RequestMethod.GET)
-	public ModelMap load() {
-		ModelMap data = new ModelMap();
+	public DataModelMap load() {
+		DataModelMap data = new DataModelMap();
 		data.put("xml", "");
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	/** Process from for load job-scheduling-data xml */
 	@RequestMapping(value="/load-xml-action", method=RequestMethod.POST)
-	public ModelMap loadPost(
+	public DataModelMap loadPost(
 			@RequestParam String xml, 
 			HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
@@ -116,12 +115,12 @@ public class JobController {
 		data.setTriggerGroupsToNeverDelete(loader.getTriggerGroupsToNeverDelete());
 		data.setLoadedJobs(getJobDetailFullNames(loader.getLoadedJobs()));
 		data.setLoadedTriggers(getTriggerFullNames(loader.getLoadedTriggers()));
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	/** Show a trigger and its job detail page. */
 	@RequestMapping(value="/job-detail", method=RequestMethod.GET)
-	public ModelMap jobDetail(
+	public DataModelMap jobDetail(
 			@RequestParam String jobName, 
 			@RequestParam String jobGroup, 
 			HttpSession session) {
@@ -132,12 +131,12 @@ public class JobController {
 		data.setTriggers(schedulerService.getTriggers(jobDetail));
 		data.setJobDetail(jobDetail);
 		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	/** Show a trigger and its job detail page. */
 	@RequestMapping(value="/trigger-detail", method=RequestMethod.GET)
-	public ModelMap triggerDetail(
+	public DataModelMap triggerDetail(
 			@RequestParam String triggerName,
 			@RequestParam String triggerGroup,
 			@RequestParam int fireTimesCount, 
@@ -151,7 +150,7 @@ public class JobController {
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
 		data.setNextFireTimes(nextFireTimes);
-		return new ModelMap("data", data);
+		return new DataModelMap(data);
 	}
 
 	protected List<String> getTriggerFullNames(List<Trigger> triggers) {

@@ -71,7 +71,7 @@ public class SchedulerServiceFinder {
 		return session.getAttribute("data") != null;
 	}
 	
-	protected SessionData getOrCreateSessionData(HttpSession session) {
+	public SessionData getOrCreateSessionData(HttpSession session) {
 		SessionData data = (SessionData)session.getAttribute("data");
 		if (data == null) {
 			data = createSessionData();
