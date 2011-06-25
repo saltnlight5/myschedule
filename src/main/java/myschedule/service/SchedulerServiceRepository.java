@@ -48,13 +48,13 @@ public class SchedulerServiceRepository {
 	
 	public synchronized SchedulerService remove(String schedulerServiceName) {
 		SchedulerService ret = schedulerServices.remove(schedulerServiceName);
-		logger.debug(schedulerServiceName + " removed from repository.");
+		logger.info(schedulerServiceName + " removed from repository.");
 		return ret;
 	}
 	
 	protected synchronized void add(String schedulerServiceName, SchedulerService schedulerService) {
 		schedulerServices.put(schedulerServiceName, schedulerService);
-		logger.debug(schedulerServiceName + " added to repository.");
+		logger.info(schedulerServiceName + " added to repository.");
 	}
 	
 	public SchedulerService getSchedulerService(String name) {
