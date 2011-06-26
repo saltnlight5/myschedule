@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Zemian Deng
  */
 @Controller
-@RequestMapping(value="/repository")
-public class RepositoryController {
+@RequestMapping(value="/dashboard")
+public class DashboardController {
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -53,7 +53,7 @@ public class RepositoryController {
 		SchedulerServiceListPageData data = new SchedulerServiceListPageData();
 		data.setNames(names);
 		data.setSchedulerMetaDataMap(getSchedulerMetaDataMap(names));
-		return new DataModelMap("data", data);
+		return new DataModelMap(data);
 	}
 	
 	@RequestMapping(value="/delete", method=RequestMethod.GET)

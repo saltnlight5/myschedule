@@ -22,6 +22,7 @@ public class DataModelMap extends ModelMap {
 	}
 	
 	public DataModelMap(String name, Object value) {
+		put("data", new ModelMap());
 		addData(name, value);
 	}
 	

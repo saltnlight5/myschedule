@@ -1,0 +1,1 @@
+MAVEN_OPTS=-Dmyschedule.spring.config=file:///C:/projects/myschedule/src/main/resources/myschedule/spring/scheduler/scheduler-services-sample.xml mvn tomcat:run

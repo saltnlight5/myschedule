@@ -83,6 +83,7 @@
 	Quartz Scheduler
 	========= -->
 	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="schedulerName" value="SpringQuartzScheduler"/>
 		<property name="autoStartup" value="false"/>
 		<property name="triggers">
 			<list>

@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SchedulerServiceFinder {
 	
+	public static final String SESSION_DATA_KEY = "sessionData";
+
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	protected SchedulerService defaultSchedulerService;
@@ -69,11 +71,11 @@ public class SchedulerServiceFinder {
 	}
 	
 	protected boolean hasSessionData(HttpSession session) {
-		return session.getAttribute("data") != null;
+		return session.getAttribute(SESSION_DATA_KEY) != null;
 	}
 	
 	public SessionData getOrCreateSessionData(HttpSession session) {
-		SessionData data = (SessionData)session.getAttribute("data");
+		SessionData data = (SessionData)session.getAttribute(SESSION_DATA_KEY);
 		if (data == null) {
 			data = createSessionData();
 			setSessionData(session, data);
@@ -82,7 +84,7 @@ public class SchedulerServiceFinder {
 	}
 	
 	protected void setSessionData(HttpSession session, SessionData data) {
-		session.setAttribute("data", data);
+		session.setAttribute(SESSION_DATA_KEY, data);
 	}
 	
 	public SchedulerService switchSchedulerService(String newSchedulerName, HttpSession session) {
