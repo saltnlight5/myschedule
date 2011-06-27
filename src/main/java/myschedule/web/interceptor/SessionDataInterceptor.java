@@ -30,11 +30,11 @@ public class SessionDataInterceptor extends HandlerInterceptorAdapter {
 		SessionData sessionData = schedulerServiceFinder.getOrCreateSessionData(session);
 		if (sessionData.getCurrentSchedulerName() == null) {
 			List<String> names = SchedulerServiceRepository.getInstance().getNames();
-			if (names.size() <=0) {
-				// Ohoh, we don't have any scheduler service, abort all request now.
-				return false;
+			if (names.size()  > 0) {
+				sessionData.setCurrentSchedulerName(names.get(0)); // Use first one in list.
+			} else {
+				logger.warn("No scheduler service found in repository!");
 			}
-			sessionData.setCurrentSchedulerName(names.get(0)); // Use first one in list.
 		}
 		return true; // continue process.
 	}

@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/views/page-a.inc" %>
-<%@ include file="/WEB-INF/views/menu.inc" %>
+<%@ include file="/WEB-INF/views/dashboard/menu.inc" %>
+<%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
@@ -32,5 +33,4 @@ $(document).ready(function() {
 	</c:forEach>
 	</tbody>
 </table>
-
 <%@ include file="/WEB-INF/views/page-b.inc" %>

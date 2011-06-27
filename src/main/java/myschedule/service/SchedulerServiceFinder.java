@@ -88,12 +88,14 @@ public class SchedulerServiceFinder {
 	}
 	
 	public SchedulerService switchSchedulerService(String newSchedulerName, HttpSession session) {
+		SessionData data = getOrCreateSessionData(session);
+		String currentSchedulerName = data.getCurrentSchedulerName();
 		SchedulerServiceRepository repository = SchedulerServiceRepository.getInstance();
 		SchedulerService schedulerService = repository.getSchedulerService(newSchedulerName);
-		String currentSchedulerName = schedulerService.getName();
-		SessionData data = getOrCreateSessionData(session);
-		data.setCurrentSchedulerName(currentSchedulerName);
+		data.setCurrentSchedulerName(newSchedulerName);
 		setSessionData(session, data);
+		logger.info("Switched scheduler service in session data from " + 
+				currentSchedulerName + " to " + newSchedulerName);
 		return schedulerService;
 	}
 }
