@@ -51,6 +51,10 @@ public class SchedulerService implements Service {
 		this.configUrl = configUrl;
 	}
 	
+	public URL getConfigUrl() {
+		return configUrl;
+	}
+	
 	public void setAutoStart(boolean autoStart) {
 		this.autoStart = autoStart;
 	}
@@ -238,7 +242,7 @@ public class SchedulerService implements Service {
 		}		
 	}
 	
-	public Properties getConfigProps() {
+	protected Properties getConfigProps() {
 		try {
 			InputStream inStream = configUrl.openStream();
 			Properties props = new Properties();

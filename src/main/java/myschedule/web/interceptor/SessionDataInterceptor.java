@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-public class SchedulerReqInterceptor extends HandlerInterceptorAdapter {
+public class SessionDataInterceptor extends HandlerInterceptorAdapter {
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	

@@ -1,9 +1,8 @@
 package myschedule.web.controller;
 
 import java.net.URL;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -12,6 +11,8 @@ import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.SchedulerServiceRepository;
 import myschedule.service.ServiceContainer;
 import myschedule.web.SessionData;
+import myschedule.web.WebAppContextListener;
+import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
 
 import org.quartz.SchedulerMetaData;
 import org.slf4j.Logger;
@@ -49,11 +50,18 @@ public class DashboardController {
 
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list() {
-		List<String> names = schedulerRepository.getNames();
-		SchedulerServiceListPageData data = new SchedulerServiceListPageData();
-		data.setNames(names);
-		data.setSchedulerMetaDataMap(getSchedulerMetaDataMap(names));
+		SchedulerStatusListPageData data = new SchedulerStatusListPageData();
+		data.setSchedulerStatusList(getSchedulerStatusList());
 		return new DataModelMap(data);
+	}
+
+	@RequestMapping(value="/switch-scheduler", method=RequestMethod.GET)
+	public String switchScheduler(
+			@RequestParam String name,
+			HttpSession session) {
+		schedulerServiceFinder.switchSchedulerService(name, session);
+		String mainPath = WebAppContextListener.MAIN_PATH;
+		return "redirect:" + mainPath + "/job/list";
 	}
 	
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
@@ -104,13 +112,21 @@ public class DashboardController {
 	}
 
 
-	protected Map<String, SchedulerMetaData> getSchedulerMetaDataMap(List<String> names) {
-		Map<String, SchedulerMetaData> getSchedulerMetaDataMap = new HashMap<String, SchedulerMetaData>();
+	protected List<SchedulerStatus> getSchedulerStatusList() {
+		List<SchedulerStatus> result = new ArrayList<SchedulerStatus>();
+		List<String> names = schedulerRepository.getNames();
 		for (String name : names) {
-			SchedulerService schedulerService = schedulerRepository.getSchedulerService(name);
-			getSchedulerMetaDataMap.put(name, schedulerService.getSchedulerMetaData());
+			SchedulerService sservice = schedulerRepository.getSchedulerService(name);
+			SchedulerMetaData smeta = sservice.getSchedulerMetaData();
+			String configPath = sservice.getConfigUrl() == null ? "UNKOWN_CONFIG_PROPS" : sservice.getConfigUrl().toString();
+			SchedulerStatus sstatus = new SchedulerStatus();
+			sstatus.setName(name);
+			sstatus.setConfigPath(configPath);
+			sstatus.setJobStorageType(smeta.getJobStoreClass().getName());
+			sstatus.setRunning(smeta.isStarted() && !smeta.isInStandbyMode());
+			result.add(sstatus);
 		}
-		return getSchedulerMetaDataMap;
+		return result;
 	}
 
 }

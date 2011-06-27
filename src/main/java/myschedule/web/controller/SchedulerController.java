@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /** 
  * Scheduler controller.
@@ -89,17 +88,6 @@ public class SchedulerController {
 		return "redirect:detail";
 	}
 	
-	@RequestMapping(value="/switch-scheduler-action", method=RequestMethod.POST)
-	public DataModelMap switchSchedulerAction(
-			@RequestParam String newSchedulerName,
-			HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.switchSchedulerService(newSchedulerName, session);
-		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
-		SchedulerSummaryPageData data = new SchedulerSummaryPageData();
-		populateSummaryPageData(data, schedulerMetaData);
-		return new DataModelMap(data);
-	}
-
 	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
 		List<Getter> getters = ObjectUtils.getGetters(schedulerMetaData);

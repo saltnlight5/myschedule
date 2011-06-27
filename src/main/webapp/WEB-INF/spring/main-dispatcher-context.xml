@@ -22,7 +22,7 @@
 
 	<!-- Define interceptors -->
 	<mvc:interceptors>
-    	<bean class="myschedule.web.interceptor.SchedulerReqInterceptor" />
+    	<bean class="myschedule.web.interceptor.SessionDataInterceptor" />
     </mvc:interceptors>
   
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->

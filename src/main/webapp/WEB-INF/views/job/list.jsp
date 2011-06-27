@@ -15,7 +15,7 @@ $(document).ready(function() {
 
 <div id="page-container">
 <h1>Jobs with assigned trigger</h1>
-<table id="triggers-datatable" cellpadding="0" cellspacing="0" border="0" class="display">
+<table id="triggers-datatable" class="display">
 	<thead>
 	<tr>
 		<th> JOB </th>
@@ -29,11 +29,11 @@ $(document).ready(function() {
 	</thead>
 	
 	<tbody>
-	<c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
+	<c:forEach items="${ data.triggers }" var="trigger" varStatus="loop">
 	<tr>
 		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.jobName }</a></td>
 		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.name }</a></td>
-		<td>${ data.triggerSchedules[status.index] }</td>
+		<td>${ data.triggerSchedules[loop.index] }</td>
 		<td><fmt:formatDate value="${ trigger.startTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.endTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
