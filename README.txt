@@ -18,12 +18,4 @@ $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/sr
 $ bin/catalina.bat run
 
 = TODO =
- * Remove @javax.annotation.Resource and use setter method.
- * Support Multiple Schedulers.
- * Add UI to change scheduler config online.
- * Show Current Executing Jobs on UI.
- * Add web based "crontab" like UI.
- * Turn controller to have HttpSession param available.
-
-= DONE =
  
