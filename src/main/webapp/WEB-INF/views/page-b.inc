@@ -1,4 +1,4 @@
 <%@ include file="/WEB-INF/views/footer.inc" %>
-</div><!-- div.container -->
+</div><!-- body-container -->
 </body>
 </html>

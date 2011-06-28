@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -74,27 +75,30 @@ public class DashboardController {
 	
 	@RequestMapping(value="/create-action", method=RequestMethod.POST)
 	public DataModelMap createAction(
-			@RequestParam String configUrlName,
-			@RequestParam boolean autoStart,
-			@RequestParam boolean waitForJobsToComplete,
-			HttpSession session) {
-		URL configUrl;
+			@ModelAttribute SchedulerServiceForm form,
+			HttpSession session) {		
 		try {
-			configUrl = new URL(configUrlName);
+			logger.info("Create scheduler service form " + form);
+			URL configUrl = new URL(form.getConfigUrl());
+			SchedulerService schedulerService = new SchedulerService();
+			schedulerService.setConfigUrl(configUrl);
+			schedulerService.setAutoStart(form.isAutoStart());
+			schedulerService.setWaitForJobsToComplete(form.isWaitForJobsToComplete());
+			serviceContainer.addAndInitService(schedulerService);
+			logger.info("New schedulerService " + configUrl + " has been created.");
+			return new DataModelMap("schedulerService", schedulerService);
 		} catch (MalformedURLException e) {
-			throw new ErrorCodeException(ErrorCode.GENERAL_PROBLEM, "Failed to create config URL using " + configUrlName, e);
+			throw new ErrorCodeException(ErrorCode.GENERAL_PROBLEM, "Failed to create config URL using " + form.getConfigUrl(), e);
 		}
-		SchedulerService schedulerService = new SchedulerService();
-		schedulerService.setConfigUrl(configUrl);
-		schedulerService.setAutoStart(autoStart);
-		schedulerService.setWaitForJobsToComplete(waitForJobsToComplete);
-		serviceContainer.addAndInitService(schedulerService);
-		logger.info("New schedulerService " + configUrlName + " has been created.");
-		return new DataModelMap("schedulerService", schedulerService);
+	}
+
+	@RequestMapping(value="/delete", method=RequestMethod.GET)
+	public DataModelMap delete() {
+		return new DataModelMap();
 	}
 	
-	@RequestMapping(value="/delete", method=RequestMethod.GET)
-	public DataModelMap delete(
+	@RequestMapping(value="/delete-action", method=RequestMethod.POST)
+	public DataModelMap deleteAction(
 			@RequestParam String name,
 			HttpSession session) {
 		// Remove from repo
@@ -116,7 +120,7 @@ public class DashboardController {
 			}
 		}
 		
-		logger.info("Scheduler service " + name + " remmoved.");
+		logger.info("Scheduler service " + name + " removed.");
 		return new DataModelMap("removedSchedulerService", removedSchedulerService);
 	}
 
@@ -137,4 +141,28 @@ public class DashboardController {
 		return result;
 	}
 
+	public static class SchedulerServiceForm {
+		protected String configUrl;
+		protected boolean autoStart;
+		protected boolean waitForJobsToComplete;
+		public String getConfigUrl() {
+			return configUrl;
+		}
+		public void setConfigUrl(String configUrl) {
+			this.configUrl = configUrl;
+		}
+		public boolean isAutoStart() {
+			return autoStart;
+		}
+		public void setAutoStart(boolean autoStart) {
+			this.autoStart = autoStart;
+		}
+		public boolean isWaitForJobsToComplete() {
+			return waitForJobsToComplete;
+		}
+		public void setWaitForJobsToComplete(boolean waitForJobsToComplete) {
+			this.waitForJobsToComplete = waitForJobsToComplete;
+		}
+	}
+	
 }

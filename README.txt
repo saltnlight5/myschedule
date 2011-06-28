@@ -14,7 +14,7 @@ The myscheduler.war has been tested on tomcat-6.0.32 and tomcat-7.0.8.
 
 To run myscheduler.war on Tomcat with different quartz properties file, try:
 (Under Windows Cygwin)
-$ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:\projects\myschedule-experiment\quartz-1.8-experiment\config\quartz.properties.database"
+$ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/src/main/resources/myschedule/spring/scheduler/quartz.properties.database"
 $ bin/catalina.bat run
 
 = TODO =

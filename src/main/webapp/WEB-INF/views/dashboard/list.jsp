@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/views/page-a.inc" %>
-<%@ include file="/WEB-INF/views/dashboard/menu.inc" %>
-<%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
+<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/datatables-css/table_jui.css" />
+<script src="${contextPath}/js/jquery.dataTables-1.8.0.js"></script>
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
@@ -14,6 +14,8 @@ $(document).ready(function() {
 	});
 });
 </script>
+<%@ include file="/WEB-INF/views/dashboard/menu.inc" %>
+<%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
 <h1>List of All Schedulers</h1>
 <table id="scheduler-list">
 	<thead>

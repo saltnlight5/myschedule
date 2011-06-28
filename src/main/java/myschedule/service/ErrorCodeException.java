@@ -5,7 +5,7 @@ public class ErrorCodeException extends RuntimeException {
 	/** serialVersionUID - long */
 	protected static final long serialVersionUID = 1L;
 	
-	protected ErrorCode errorCode;
+	protected ErrorCode errorCode = ErrorCode.GENERAL_PROBLEM;
 	
 	public void setErrorCode(ErrorCode errorCode) {
 		this.errorCode = errorCode;
@@ -31,14 +31,17 @@ public class ErrorCodeException extends RuntimeException {
 	
 	public ErrorCodeException(ErrorCode errorCode, String message) {
 		super(message);
+		this.errorCode = errorCode;
 	}
 
 	public ErrorCodeException(ErrorCode errorCode, Throwable cause) {
 		super(cause);
+		this.errorCode = errorCode;
 	}
 	
 	public ErrorCodeException(ErrorCode errorCode, String message, Throwable cause) {
 		super(message, cause);
+		this.errorCode = errorCode;
 	}
 	
 	@Override
