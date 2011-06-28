@@ -34,11 +34,6 @@ public class SchedulerController {
 	@Autowired @Qualifier("schedulerServiceFinder")
 	protected SchedulerServiceFinder schedulerServiceFinder;
 	
-	@RequestMapping(value="/index", method=RequestMethod.GET)
-	public String index() {
-		return "redirect:summary";
-	}
-
 	@RequestMapping(value="/summary", method=RequestMethod.GET)
 	public DataModelMap schedulerSummary(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);

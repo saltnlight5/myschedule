@@ -1,6 +1,7 @@
 package myschedule.service;
 
 public enum ErrorCode {
+	WEB_UI_PROBLEM,
 	SERVICE_PROBLEM,
 	SCRIPTING_PROBLEM,
 	SCHEDULER_SERIVCE_NOT_FOUND,

@@ -56,11 +56,6 @@ public class ScriptingController implements ServletContextAware {
 		this.scriptingService = scriptingService;
 	}
 	
-	@RequestMapping(value="/index", method=RequestMethod.GET)
-	public String index() {
-		return "redirect:run";
-	}
-
 	@RequestMapping(value="run", method=RequestMethod.GET)
 	public DataModelMap run() {
 		return new DataModelMap();

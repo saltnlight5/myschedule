@@ -1,6 +1,8 @@
-<!-- A common scheduler specific menu -->
+<!-- A common menu for managing a scheduler -->
 <ul id="menu">
-	<li><a href="${ mainPath }/scheduler/index">Scheduler</a></li>
-	<li><a href="${ mainPath }/job/index">Jobs</a></li>
-	<li><a href="${ mainPath }/scripting/index">Scripting</a></li>
+	<li>${ sessionData.currentSchedulerName }: </li>
+	<li><a href="${ mainPath }/job/list">Jobs</a></li>
+	<li><a href="${ mainPath }/scheduler/summary">Settings</a></li>
+	<li><a href="${ mainPath }/scripting/run">Scripting</a></li>
+	<li><a href="${ mainPath }/dashboard/list">Dashboard</a></li>
 </ul>

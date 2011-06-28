@@ -39,11 +39,6 @@ public class JobController {
 	@Autowired @Qualifier("schedulerServiceFinder")
 	protected SchedulerServiceFinder schedulerServiceFinder;
 	
-	@RequestMapping(value="/index", method=RequestMethod.GET)
-	public String index() {
-		return "redirect:list";
-	}
-	
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list(HttpSession session) {

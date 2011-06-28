@@ -58,7 +58,7 @@ $(document).ready(function() {
 </div> <!-- div.help -->
 
 <form method="post" action="${ mainPath }/job/load-xml-action">
-<textarea name="xml">${ data.xml }</textarea>
+<textarea style="width: 100%; height: 15em;" name="xml">${ data.xml }</textarea>
 <br/>
 <input type="submit" value="Load"></input>
 </form>

@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#noTriggerJobDetailsTable-datatable").dataTable({
+	$("#jobs-without-triggers").dataTable({
 		"aaSorting": [[0, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
@@ -12,10 +12,8 @@ $(document).ready(function() {
 	});
 });
 </script>
-
-<div id="page-container">
 <h1>Jobs without assigned trigger</h1>
-<table id="noTriggerJobDetailsTable-datatable" cellpadding="0" cellspacing="0" border="0" class="display">
+<table id="jobs-without-triggers" class="display">
 	<thead>
 	<tr>
 		<th> JOB </th>
@@ -35,7 +33,5 @@ $(document).ready(function() {
 	</tr>
 	</c:forEach>
 	</tbody>
-</table> <!-- noTriggerJobDetailsTable-datatable -->
-
-</div> <!-- page-container -->
+</table> <!-- jobs-without-triggers -->
 <%@ include file="/WEB-INF/views/page-b.inc" %>

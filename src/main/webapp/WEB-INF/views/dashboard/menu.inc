@@ -1,4 +1,5 @@
-<!-- dashboard specific menu -->
+<!-- A menu for the dashboard to manage multiple schedulers -->
 <ul id="menu">
-	<li><a href="${ mainPath }/dashboard/list">Scheduler Dashboard</a></li>
+	<li>MySchedule: </li>
+	<li><a href="${ mainPath }/dashboard/list">Dashboard</a></li>
 </ul>

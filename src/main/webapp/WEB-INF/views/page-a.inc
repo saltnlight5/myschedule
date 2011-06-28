@@ -5,8 +5,10 @@
 <head>
 <link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/jquery-ui.custom.css" />
 <link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/main.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath}/themes/${themeName}/datatables-css/table_jui.css" />
 <script src="${contextPath}/js/jquery-1.6.1.js"></script>
 <script src="${contextPath}/js/jquery-ui-1.8.13.custom.js"></script>
+<script src="${contextPath}/js/jquery.dataTables-1.8.0.js"></script>
 <title>MySchedule</title>
 </head>
 

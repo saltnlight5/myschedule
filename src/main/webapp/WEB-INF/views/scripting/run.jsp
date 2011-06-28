@@ -53,7 +53,7 @@ as deleting files on system etc!
 </div><!-- div.help -->
 
 <form method="post" action="${ mainPath }/scripting/run-action">
-<textarea name="groovyScriptText">${ data.groovyScriptText }</textarea>
+<textarea  style="width: 100%; height: 15em;" name="groovyScriptText">${ data.groovyScriptText }</textarea>
 <br/>
 <input type="submit" value="Run"></input>
 </form>

@@ -47,11 +47,6 @@ public class DashboardController {
 	
 	protected SchedulerServiceRepository schedulerRepository = SchedulerServiceRepository.getInstance();
 	
-	@RequestMapping(value="/index", method=RequestMethod.GET)
-	public String index() {
-		return "redirect:list";
-	}
-
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list() {
 		SchedulerStatusListPageData data = new SchedulerStatusListPageData();
@@ -88,7 +83,7 @@ public class DashboardController {
 			logger.info("New schedulerService " + configUrl + " has been created.");
 			return new DataModelMap("schedulerService", schedulerService);
 		} catch (MalformedURLException e) {
-			throw new ErrorCodeException(ErrorCode.GENERAL_PROBLEM, "Failed to create config URL using " + form.getConfigUrl(), e);
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to create config URL using " + form.getConfigUrl(), e);
 		}
 	}
 
@@ -103,7 +98,15 @@ public class DashboardController {
 			HttpSession session) {
 		// Remove from repo
 		SchedulerService removedSchedulerService = schedulerRepository.remove(name);
-				
+		logger.info("Scheduler service " + name + " removed from repository.");
+		
+		// Check to see if needs to remove from the finder service
+		SchedulerService defSchedulerService = schedulerServiceFinder.getDefaultSchedulerService();
+		if (name.equals(defSchedulerService.getName())) {
+			schedulerServiceFinder.setDefaultSchedulerService(null);
+			logger.info("Removed scheduler matched default scheduler service in finder service. Removed its reference as well.");
+		}
+		
 		// Check to see if needs to remove from session
 		SessionData sessionData = schedulerServiceFinder.getOrCreateSessionData(session);
 		String currentName = sessionData.getCurrentSchedulerName();
@@ -116,11 +119,10 @@ public class DashboardController {
 				logger.info("Updated session data current scheduler name: " + newName);
 			} else { 
 				sessionData.setCurrentSchedulerName(null);
-				logger.warn("There is no more scheduler service left in repository!.");
+				logger.warn("There is no more scheduler service left in repository! Removed scheduler from session data.");
 			}
 		}
 		
-		logger.info("Scheduler service " + name + " removed.");
 		return new DataModelMap("removedSchedulerService", removedSchedulerService);
 	}
 

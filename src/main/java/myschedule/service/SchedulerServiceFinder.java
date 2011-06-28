@@ -26,6 +26,10 @@ public class SchedulerServiceFinder {
 		this.defaultSchedulerService = defaultSchedulerService;
 	}
 	
+	public SchedulerService getDefaultSchedulerService() {
+		return defaultSchedulerService;
+	}
+	
 	public SchedulerService find(HttpSession session) {
 		SessionData data = getOrCreateSessionData(session);
 		SchedulerService result = findBySessionData(data);

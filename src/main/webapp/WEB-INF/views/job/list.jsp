@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#triggers-datatable").dataTable({
+	$("#jobs-with-triggers").dataTable({
 		"aaSorting": [[ 5, "desc" ], [0, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
@@ -12,10 +12,8 @@ $(document).ready(function() {
 	});
 });
 </script>
-
-<div id="page-container">
 <h1>Jobs with assigned trigger</h1>
-<table id="triggers-datatable" class="display">
+<table id="jobs-with-triggers" class="display">
 	<thead>
 	<tr>
 		<th> JOB </th>
@@ -41,7 +39,5 @@ $(document).ready(function() {
 	</tr>
 	</c:forEach>
 	</tbody>
-</table> <!-- triggersTable-datatable -->
-
-</div> <!-- page-container -->
+</table> <!-- jobs-with-triggers -->
 <%@ include file="/WEB-INF/views/page-b.inc" %>
