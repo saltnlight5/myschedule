@@ -342,4 +342,18 @@ public class SchedulerService implements Service {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}		
 	}
+	
+	@Override
+	public String toString() {
+		String schedulerFullName = "null";
+		if (scheduler != null) {
+			try {
+				schedulerFullName = scheduler.getSchedulerName() + "_" + scheduler.getSchedulerInstanceId();
+			} catch (SchedulerException e) {
+				logger.error("Failed to get scheduler full name. Setting it to UNKOWN.", e);
+				schedulerFullName = "UNKNOWN: " + e.getMessage();
+			}
+		}		
+		return "SchedulerService[configUrl=" + configUrl + ", scheduler=" + schedulerFullName +  "]";
+	}
 }

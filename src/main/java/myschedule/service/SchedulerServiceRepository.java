@@ -46,10 +46,11 @@ public class SchedulerServiceRepository {
 		return new ArrayList<String>(schedulerServices.keySet());
 	}
 	
+	/** It will stop and destroy the scheduler service before removing! */
 	public synchronized SchedulerService remove(String schedulerServiceName) {
-		SchedulerService ret = schedulerServices.remove(schedulerServiceName);
-		logger.info(schedulerServiceName + " removed from repository.");
-		return ret;
+		SchedulerService schedulerService = schedulerServices.remove(schedulerServiceName);
+		logger.info(schedulerServiceName + " has successfully removed from repository.");		
+		return schedulerService;
 	}
 	
 	protected synchronized void add(String schedulerServiceName, SchedulerService schedulerService) {

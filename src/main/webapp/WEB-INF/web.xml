@@ -37,4 +37,9 @@
 		<url-pattern>/main/*</url-pattern>
 	</servlet-mapping>
 	
+	<!-- Session timeout in minutes. 1440 mins = 24 hours. -->
+	<session-config>
+        <session-timeout>1440</session-timeout> 
+    </session-config>
+	
 </web-app>

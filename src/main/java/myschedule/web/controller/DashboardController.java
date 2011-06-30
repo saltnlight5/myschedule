@@ -1,9 +1,16 @@
 package myschedule.web.controller;
 
-import java.net.MalformedURLException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,6 +24,7 @@ import myschedule.web.SessionData;
 import myschedule.web.WebAppContextListener;
 import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.quartz.SchedulerMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,26 +73,42 @@ public class DashboardController {
 	
 	@RequestMapping(value="/create", method=RequestMethod.GET)
 	public DataModelMap create() {
-		return new DataModelMap();
+		String fileLocationPrefix = "/data/myschedule"; // default to unix path
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			fileLocationPrefix = "/C:/data/myschedule";
+		}
+		return new DataModelMap("fileLocationPrefix", fileLocationPrefix);
 	}
 	
 	@RequestMapping(value="/create-action", method=RequestMethod.POST)
 	public DataModelMap createAction(
 			@ModelAttribute SchedulerServiceForm form,
-			HttpSession session) {		
-		try {
-			logger.info("Create scheduler service form " + form);
-			URL configUrl = new URL(form.getConfigUrl());
-			SchedulerService schedulerService = new SchedulerService();
-			schedulerService.setConfigUrl(configUrl);
-			schedulerService.setAutoStart(form.isAutoStart());
-			schedulerService.setWaitForJobsToComplete(form.isWaitForJobsToComplete());
-			serviceContainer.addAndInitService(schedulerService);
-			logger.info("New schedulerService " + configUrl + " has been created.");
-			return new DataModelMap("schedulerService", schedulerService);
-		} catch (MalformedURLException e) {
-			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to create config URL using " + form.getConfigUrl(), e);
-		}
+			HttpSession session) {
+		logger.info("Creating scheduler service form " + form);
+		
+		// Ensure we do not overwrite existing file.
+		String fileLocation = form.getFileLocation();
+		File fileLocationFile = new File(fileLocation);
+		if (fileLocationFile.exists())
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "File location " + fileLocation + " already exists.");
+		
+		// Parse form config into props
+		Properties configProps = loadPropertiesFromString(form.getConfigProperties());			
+		
+		// Ensure scheduler name is not already taken
+		String schedulerName = configProps.getProperty("org.quartz.scheduler.instanceName", "QuartzScheduler");
+		if (schedulerRepository.hasSchedulerService(schedulerName))
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Scheduler name alrady exists: " + schedulerName);
+		
+		// Save config and create a new SchedulerService.
+		URL configUrl = savePropertiesToFile(configProps, fileLocationFile);
+		SchedulerService schedulerService = new SchedulerService();
+		schedulerService.setConfigUrl(configUrl);
+		schedulerService.setAutoStart(form.isAutoStart());
+		schedulerService.setWaitForJobsToComplete(form.isWaitForJobsToComplete());
+		serviceContainer.addAndInitService(schedulerService);
+		logger.info("New schedulerService " + configUrl + " has been created.");
+		return new DataModelMap("schedulerService", schedulerService);
 	}
 
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
@@ -95,17 +119,20 @@ public class DashboardController {
 	@RequestMapping(value="/delete-action", method=RequestMethod.POST)
 	public DataModelMap deleteAction(
 			@RequestParam String name,
-			HttpSession session) {
-		// Remove from repo
-		SchedulerService removedSchedulerService = schedulerRepository.remove(name);
-		logger.info("Scheduler service " + name + " removed from repository.");
-		
+			HttpSession session) {		
+
 		// Check to see if needs to remove from the finder service
 		SchedulerService defSchedulerService = schedulerServiceFinder.getDefaultSchedulerService();
 		if (name.equals(defSchedulerService.getName())) {
 			schedulerServiceFinder.setDefaultSchedulerService(null);
 			logger.info("Removed scheduler matched default scheduler service in finder service. Removed its reference as well.");
 		}
+		
+		// Stop and destroy the service - it will auto remove from repository!
+		SchedulerService schedulerService = schedulerRepository.getSchedulerService(name);
+		schedulerService.stop();
+		schedulerService.destroy();		
+		logger.info("Scheduler service " + name + " has destroyed and removed from repository.");
 		
 		// Check to see if needs to remove from session
 		SessionData sessionData = schedulerServiceFinder.getOrCreateSessionData(session);
@@ -123,7 +150,27 @@ public class DashboardController {
 			}
 		}
 		
-		return new DataModelMap("removedSchedulerService", removedSchedulerService);
+		return new DataModelMap("removedName", name);
+	}
+	
+	@RequestMapping(value="/get-config-eg", method=RequestMethod.GET)
+	public void getConfigExample(@RequestParam String name, Writer writer) {
+		logger.debug("Getting resource: " + name);
+		ClassLoader classLoader = getClassLoader();
+		InputStream inStream = classLoader.getResourceAsStream("myschedule/spring/scheduler/" + name);
+		try {
+			IOUtils.copy(inStream, writer);
+			inStream.close();
+			writer.flush();
+			writer.close();
+			logger.info("Returned text for resource: " + name);
+		} catch (IOException e) {
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to get resource " + name, e);
+		}
+	}
+
+	protected ClassLoader getClassLoader() {
+		return Thread.currentThread().getContextClassLoader();
 	}
 
 	protected List<SchedulerStatus> getSchedulerStatusList() {
@@ -143,28 +190,30 @@ public class DashboardController {
 		return result;
 	}
 
-	public static class SchedulerServiceForm {
-		protected String configUrl;
-		protected boolean autoStart;
-		protected boolean waitForJobsToComplete;
-		public String getConfigUrl() {
-			return configUrl;
-		}
-		public void setConfigUrl(String configUrl) {
-			this.configUrl = configUrl;
-		}
-		public boolean isAutoStart() {
-			return autoStart;
-		}
-		public void setAutoStart(boolean autoStart) {
-			this.autoStart = autoStart;
-		}
-		public boolean isWaitForJobsToComplete() {
-			return waitForJobsToComplete;
-		}
-		public void setWaitForJobsToComplete(boolean waitForJobsToComplete) {
-			this.waitForJobsToComplete = waitForJobsToComplete;
+	protected Properties loadPropertiesFromString(String configProperties) {
+		try {
+			Properties config = new Properties();
+			// Read in form input.
+			StringReader reader = new StringReader(configProperties);
+			config.load(reader);
+			return config;
+		} catch (Exception e) {
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
+					"Failed to create Properties from input config.", e);			
+		}					
+	}
+
+	protected URL savePropertiesToFile(Properties props, File file) {
+		try {				
+			Writer writer = new FileWriter(file);
+			props.store(writer, "Scheduler Configuration Generated from MySchedule WebUI. CreateDate=" + new Date());
+			writer.close();
+			URL result = file.toURI().toURL();
+			logger.info("New config file has successfully saved to " + file);
+			return result;
+		} catch (Exception e) {
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
+					"Failed to write config to " + file + ". Please ensure directories exist and has write permission.");			
 		}
 	}
-	
 }
