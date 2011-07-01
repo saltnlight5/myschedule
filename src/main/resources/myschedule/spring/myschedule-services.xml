@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+This is spring config to define "myschedule.service.SchedulerService" beans. All
+beans defined with this types are automatically register in MyScheduler web application.
+
+Quartz scheduler note:
+User need not to defined and instantiate actual Quartz Scheduler object. 
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<!-- Allow system prop placeholder -->
+	<context:property-placeholder/>
+	
+	<!-- Scripting service. -->
+	<bean name="groovyScriptingService" class="myschedule.service.GroovyScriptingService">
+	</bean>
+	
+	<!-- 
+	Scheduler finder
+	Note: the "defaultSchedulerService" property will be autowired only if the bean name is present in context, else
+	it will be left alone to null value.
+	-->
+	<bean name="schedulerServiceFinder" class="myschedule.service.SchedulerServiceFinder" autowire="byName">
+		<property name="schedulerServiceContainer" ref="schedulerServiceContainer"></property>
+	</bean>
+		
+	<!-- The serviceContainer will collect all Service beans and auto manage their init/destroy lifecycles. -->
+	<bean name="serviceContainer" class="myschedule.service.ServiceContainer">
+	</bean>
+	
+	<bean name="schedulerServiceFileDao" class="myschedule.service.SchedulerServiceFileDao">
+		<property name="configStoreLocation" value="${user.home}/myschedule/quartz18"></property>
+	</bean>
+	
+	<!-- The serviceContainer will collect all SchedulerService beans and auto manage their init/destroy lifecycles. -->
+	<bean name="schedulerServiceContainer" class="myschedule.service.SchedulerServiceContainer">
+		<property name="schedulerServiceDao" ref="schedulerServiceFileDao"></property>
+	</bean>
+	
+</beans>

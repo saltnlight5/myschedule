@@ -9,5 +9,5 @@ org.quartz.scheduler.rmi.registryHost = localhost
 org.quartz.scheduler.rmi.registryPort = 1099
 
 # MySchedule scheduler service parameters
-myschedule.schedulerService.autoStart = true
+myschedule.schedulerService.autoStart = false
 myschedule.schedulerService.waitForJobsToComplete = true
