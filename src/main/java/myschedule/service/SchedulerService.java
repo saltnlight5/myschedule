@@ -72,10 +72,10 @@ public interface SchedulerService {
 
 	void destroy();
 	
-	boolean isJobRunning();
-	
 	boolean isStarted();
 
 	boolean isPaused();
+
+	boolean isShutdown();
 
 }

@@ -5,6 +5,8 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.service.ErrorCode;
+import myschedule.service.ErrorCodeException;
 import myschedule.service.ObjectUtils;
 import myschedule.service.ObjectUtils.Getter;
 import myschedule.service.SchedulerService;
@@ -35,24 +37,36 @@ public class SchedulerController {
 	protected SchedulerServiceFinder schedulerServiceFinder;
 	
 	@RequestMapping(value="/summary", method=RequestMethod.GET)
-	public DataModelMap schedulerSummary(HttpSession session) {
+	public DataModelMap summary(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
-		SchedulerSummaryPageData data = new SchedulerSummaryPageData();
-		populateSummaryPageData(data, schedulerMetaData);
-		return new DataModelMap(data);
+		DataModelMap data = new DataModelMap();
+		data.addData("schedulerName", schedulerService.getName());
+		data.addData("isStarted", schedulerService.isStarted());
+		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isShutdown", schedulerService.isShutdown());
+		try {
+		String summary = schedulerService.getSchedulerMetaData().getSummary();
+		data.addData("schedulerSummary", summary);
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Unable to get scheduler summary info.", e);
+		}
+		return data;
 	}
 
 	@RequestMapping(value="/detail", method=RequestMethod.GET)
 	public DataModelMap detail(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		SchedulerDetailPageData data = new SchedulerDetailPageData();
-		SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
-		populateSummaryPageData(data, schedulerMetaData);
-		if (!schedulerMetaData.isInStandbyMode()) {
-			data.setSchedulerDetail(getSchedulerDetail(schedulerMetaData));
+		DataModelMap data = new DataModelMap();
+		data.addData("schedulerName", schedulerService.getName());
+		data.addData("isStarted", schedulerService.isStarted());
+		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isShutdown", schedulerService.isShutdown());
+		if (schedulerService.isStarted() && !schedulerService.isShutdown()) {
+			data.addData("jobCount", "" + schedulerService.getJobDetails().size());
+			SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+			data.addData("schedulerDetailMap", getSchedulerDetail(schedulerMetaData));
 		}
-		return new DataModelMap(data);
+		return data;
 	}
 
 	@RequestMapping(value="/pause", method=RequestMethod.GET)
@@ -76,11 +90,14 @@ public class SchedulerController {
 		return "redirect:detail";
 	}
 	
-	@RequestMapping(value="/shutdown", method=RequestMethod.GET)
+	@RequestMapping(value="/stop", method=RequestMethod.GET)
 	public String stop(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		String name = schedulerService.getName();
 		schedulerService.shutdown();
-		return "redirect:detail";
+		logger.info("Scheduler service " + name + " has been shutdown.");
+				
+		return "redirect:summary";
 	}
 	
 	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
@@ -101,16 +118,4 @@ public class SchedulerController {
 		logger.debug("Scheduler info map has " + schedulerInfo.size() + " items.");
 		return schedulerInfo;
 	}
-
-	protected void populateSummaryPageData(SchedulerSummaryPageData data, SchedulerMetaData schedulerMetaData) {
-		data.setSchedulerName(schedulerMetaData.getSchedulerName());
-		data.setSchedulerInStandbyMode(schedulerMetaData.isInStandbyMode());
-		try {
-			data.setSchedulerSummary(schedulerMetaData.getSummary());
-		} catch (SchedulerException e) {
-			logger.warn("Failed to get scheduler summary.", e);
-			data.setSchedulerSummary("NO_DATA!");
-		}
-	}
-
 }

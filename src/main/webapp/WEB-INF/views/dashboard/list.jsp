@@ -19,16 +19,33 @@ $(document).ready(function() {
 	<thead>
 		<tr>
 			<th>SCHEDULER NAME</th>
-			<th>INITIALIZED</th>
-			<th>JOB STORAGE TYPE</th>
+			<th>READY</th>
+			<th>STARTED</th>
+			<th>PAUSED</th>
+			<th>PERSISTENCE</th>
+			<th>RUNNING SINCE</th>
+			<th># JOBS</th>
 		</tr>
 	</thead>
 	<tbody>
 	<c:forEach items="${ data.schedulerStatusList }" var="schedulerStatus" varStatus="loop">
 	<tr>
 		<td><a href="${ mainPath }/dashboard/switch-scheduler?name=${ schedulerStatus.name }">${ schedulerStatus.name }</a></td>
-		<td>${ schedulerStatus.running }</td>
-		<td>${ schedulerStatus.jobStorageType }</td>
+		<td>${ schedulerStatus.initialized }</td>
+		<c:choose><c:when test="${ schedulerStatus.initialized }">
+			<td>${ schedulerStatus.started }</td>
+			<td>${ schedulerStatus.paused }</td>
+			<td>${ schedulerStatus.schedulerMetaData.jobStoreSupportsPersistence }</td>
+			<td><fmt:formatDate value="${ schedulerStatus.schedulerMetaData.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
+			<td>${ schedulerStatus.jobCount }</td>
+		</c:when><c:otherwise>
+			<td>N/A</td>
+			<td>N/A</td>
+			<td>N/A</td>
+			<td>N/A</td>
+			<td>N/A</td>
+		</c:otherwise>
+		</c:choose>
 	</tr>
 	</c:forEach>
 	</tbody>

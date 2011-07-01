@@ -110,7 +110,7 @@ public class DashboardController {
 
 		// Check to see if needs to remove from the finder service
 		SchedulerService defSchedulerService = schedulerServiceFinder.getDefaultSchedulerService();
-		if (name.equals(defSchedulerService.getName())) {
+		if (defSchedulerService != null && defSchedulerService.getName().equals(name)) {
 			schedulerServiceFinder.setDefaultSchedulerService(null);
 			logger.info("Removed scheduler service in finder service.");
 		}
@@ -173,10 +173,13 @@ public class DashboardController {
 			SchedulerService sservice = schedulerServiceContainer.getSchedulerService(name);
 			if (sservice.isInitialized()) {
 				SchedulerMetaData smeta = sservice.getSchedulerMetaData();
-				sstatus.setJobStorageType(smeta.getJobStoreClass().getName());
-				sstatus.setRunning(sservice.isJobRunning());
+				sstatus.setInitialized(sservice.isInitialized());
+				sstatus.setPaused(sservice.isPaused());
+				sstatus.setStarted(sservice.isStarted() && !sservice.isShutdown());
+				sstatus.setSchedulerMetaData(smeta);
+				sstatus.setJobCount(sservice.getJobDetails().size());
 			} else {
-				sstatus.setRunning(false);
+				sstatus.setInitialized(false);
 			}
 			result.add(sstatus);
 		}

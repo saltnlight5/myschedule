@@ -96,8 +96,10 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 	public void removeAndDestroySchedulerService(String schedulerServiceName) {
 		synchronized(this) {
 			SchedulerService schedulerService = getSchedulerService(schedulerServiceName);
-			shutdownNonRemoteSchedulerService(schedulerService);
-			schedulerService.destroy();
+			if (schedulerService.isInitialized()) {
+				shutdownNonRemoteSchedulerService(schedulerService);
+				schedulerService.destroy();
+			}
 			schedulerServiceMap.remove(schedulerServiceName);
 			logger.info("SchedulerService " + schedulerServiceName + " is destroyed and removed from container.");
 		}

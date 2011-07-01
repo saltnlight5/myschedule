@@ -294,7 +294,7 @@ public class Quartz18SchedulerService implements SchedulerService {
 	@Override
 	public void pause() {
 		try {
-			if (!scheduler.isInStandbyMode()) {
+			if (scheduler != null) {
 				scheduler.standby();
 				logger.info(scheduler.getSchedulerName() + " paused.");
 			}
@@ -306,7 +306,7 @@ public class Quartz18SchedulerService implements SchedulerService {
 	@Override
 	public void resume() {
 		try {
-			if (scheduler.isInStandbyMode()) {
+			if (scheduler != null) {
 				scheduler.start();
 				logger.info(scheduler.getSchedulerName() + " resumed.");
 			}
@@ -319,7 +319,13 @@ public class Quartz18SchedulerService implements SchedulerService {
 	@Override
 	public void start() {
 		try {
-			if (!scheduler.isStarted() || scheduler.isInStandbyMode()) {
+			if (scheduler != null) {
+				if (scheduler.isShutdown()) {
+					// Re-init scheduler again in order so it can be start again.
+					destroy();
+					init();
+					logger.info("Scheduler service " + name + " has been re-init.");
+				}
 				scheduler.start();
 				logger.info("Scheduler " + scheduler.getSchedulerName() + " started.");
 			}
@@ -333,11 +339,9 @@ public class Quartz18SchedulerService implements SchedulerService {
 	public void shutdown() {
 		try {
 			if (scheduler != null) {
-				if (!scheduler.isShutdown()) {
-					String name = scheduler.getSchedulerName();
-					scheduler.shutdown(waitForJobsToComplete);
-					logger.info("Scheduler " + name + " shutdown with waitForJobsToComplete=" + waitForJobsToComplete);
-				}
+				String name = scheduler.getSchedulerName();
+				scheduler.shutdown(waitForJobsToComplete);
+				logger.info("Scheduler " + name + " shutdown with waitForJobsToComplete=" + waitForJobsToComplete);
 			}
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -376,14 +380,14 @@ public class Quartz18SchedulerService implements SchedulerService {
 	}
 
 	@Override
-	public boolean isJobRunning() {
+	public boolean isShutdown() {
 		try {
-			return scheduler.isStarted() && !scheduler.isInStandbyMode();
+			return scheduler.isShutdown();
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
-	
+
 	@Override
 	public boolean isStarted() {
 		try {
