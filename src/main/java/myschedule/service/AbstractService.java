@@ -6,11 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A basic Service that provide logger, start/stop state and empty init/destroy implementation.
+ * An abstract Service that provide logger, and state management for start/stop and 
+ * init/destroy implementation.
  *
  * @author Zemian Deng
  */
-public class AbstractService implements Service {
+public abstract class AbstractService implements Service {
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	protected AtomicBoolean started = new AtomicBoolean(false);
@@ -62,16 +63,12 @@ public class AbstractService implements Service {
 		return initialized.get();
 	}
 
-	protected void initService() {
-	}
+	abstract protected void initService();
 
-	protected void destroyService() {
-	}
+	abstract protected void destroyService();
 
-	protected void startService() {
-	}
+	abstract protected void startService();
 
-	protected void stopService() {
-	}
+	abstract protected void stopService();
 
 }

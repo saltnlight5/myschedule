@@ -21,18 +21,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provide Quartz scheduling service to application. User should ensure init and destroy
- * are called as part of the application lifecycle.
+ * Provide Quartz implementation of SchedulerService.
  * 
  * <p>
- * User may setup this class by providing either quartz Scheduler instance directly, or through "configProps". The
- * name will only be set after init() is called, else it's null.
+ * User may setup this class by providing either quartz Scheduler instance directly, or through #configProps. The
+ * scheduler #name will only be set after init() is called, else it's null. Or user may try #getConfigSchedulerName()
+ * that attempt to extract name from #configProps.
  * 
- * <p>If "configProps" is used, then these two keys may be use to set the autoStart and waitForJobsToComplete
- * respectively: "myschedule.schedulerService.autoStart" and "myschedule.schedulerService.waitForJobsToComplete". Or
- * else they both default to true values.
+ * <p>If #configProps is used, then addition keys may be use to instruct DAO service on how to load
+ * SchedulerServcie with the autoStart and waitForJobsToComplete set properly.
+ * <pre>
+ * 	myschedule.schedulerService.autoStart = true
+ * 	myschedule.schedulerService.waitForJobsToComplete = true
+ * </pre>
  * 
- * @see SchedulerServiceContainer.
+ * @see SchedulerServiceContainer, {@link SchedulerServiceDao}
  * 
  * @author Zemian Deng
  */

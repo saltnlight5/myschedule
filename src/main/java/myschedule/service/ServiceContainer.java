@@ -13,7 +13,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * A service container that will auto init/destroy, and start/stop if possible to all of {@link Service} registered.
+ * A service container that will auto invoke init/destroy, and start/stop if possible to all of 
+ * {@link Service} registered in this class.
  * 
  * <p>This class implements Spring aware interfaces to auto detects {@link Service} by type
  * and process them.

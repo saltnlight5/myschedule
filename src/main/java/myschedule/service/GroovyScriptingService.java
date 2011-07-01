@@ -38,5 +38,21 @@ public class GroovyScriptingService extends AbstractService implements Scripting
 			throw new ErrorCodeException(SCRIPTING_PROBLEM, e);
 		}
 	}
+
+	@Override
+	protected void initService() {
+	}
+
+	@Override
+	protected void destroyService() {
+	}
+
+	@Override
+	protected void startService() {
+	}
+
+	@Override
+	protected void stopService() {
+	}
 	
 }

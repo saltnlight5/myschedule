@@ -114,4 +114,16 @@ public class SchedulerServiceFileDao extends AbstractService implements Schedule
 			logger.info("Created directory for configStoreLocation " + configStoreLocation);
 		}
 	}
+
+	@Override
+	protected void destroyService() {
+	}
+
+	@Override
+	protected void startService() {
+	}
+
+	@Override
+	protected void stopService() {
+	}
 }
