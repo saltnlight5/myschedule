@@ -115,14 +115,16 @@ public class DashboardController {
 			logger.info("Removed scheduler service in finder service.");
 		}
 		
-		// Stop and destroy the service - it will auto remove from repository!
+		// Stop and destroy the service and remove from the container
 		schedulerServiceContainer.removeAndDestroySchedulerService(name);
 		logger.info("Scheduler service " + name + " has destroyed.");
 
 		// Removing the config from storage
-		schedulerServiceDao.deleteSchedulerService(name);
-		logger.info("The schedulerService " + name + " configProps has been removed.");
-				
+		if (schedulerServiceDao.hasSchedulerService(name)) {
+			schedulerServiceDao.deleteSchedulerService(name);
+			logger.info("The schedulerService " + name + " configProps has been removed.");
+		}
+		
 		// Check to see if needs to remove from session
 		SessionData sessionData = schedulerServiceFinder.getOrCreateSessionData(session);
 		String currentName = sessionData.getCurrentSchedulerName();
@@ -132,14 +134,14 @@ public class DashboardController {
 			if (names.size() > 0) {
 				String newName = names.get(0);
 				sessionData.setCurrentSchedulerName(newName);
-				logger.info("Switched to another scheduler service in session data: " + newName);
+				logger.info("Session data is removed and switch to new scheduler name: " + newName);
 			} else { 
 				sessionData.setCurrentSchedulerName(null);
-				logger.warn("There is no more scheduler service left! Removed scheduler from session data.");
+				logger.warn("Session data is removed. Note there is not more scheduler in container!");
 			}
 		}
-		
-		return new DataModelMap("removedName", name);
+		// save data for view page
+		return new DataModelMap("removedSchedulerName", name);
 	}
 	
 	@RequestMapping(value="/get-config-eg", method=RequestMethod.GET)
