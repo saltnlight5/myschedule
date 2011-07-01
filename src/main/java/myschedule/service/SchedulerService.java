@@ -11,6 +11,10 @@ import org.quartz.Trigger;
 
 public interface SchedulerService {
 
+	boolean isInitialized();
+	
+	String getConfigSchedulerName();
+	
 	boolean isAutoStart();
 
 	boolean isWaitForJobsToComplete();
@@ -77,5 +81,9 @@ public interface SchedulerService {
 	void destroy();
 	
 	boolean isJobRunning();
+	
+	boolean isStarted();
+
+	boolean isPaused();
 
 }

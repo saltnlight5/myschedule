@@ -99,7 +99,8 @@ public class DashboardController {
 
 	@RequestMapping(value="/delete", method=RequestMethod.GET)
 	public DataModelMap delete() {
-		return new DataModelMap();
+		List<String> schedulerNames = schedulerServiceContainer.getSchedulerServiceNames();
+		return new DataModelMap("schedulerNames", schedulerNames);
 	}
 	
 	@RequestMapping(value="/delete-action", method=RequestMethod.POST)
@@ -127,7 +128,7 @@ public class DashboardController {
 		String currentName = sessionData.getCurrentSchedulerName();
 		if (name.equals(currentName)) {
 			// Update session with first name in list, or clear it.
-			List<String> names = schedulerServiceContainer.getSchedulerServiceNames();
+			List<String> names = schedulerServiceContainer.getInitializedSchedulerServiceNames();
 			if (names.size() > 0) {
 				String newName = names.get(0);
 				sessionData.setCurrentSchedulerName(newName);
@@ -165,12 +166,16 @@ public class DashboardController {
 		List<SchedulerStatus> result = new ArrayList<SchedulerStatus>();
 		List<String> names = schedulerServiceContainer.getSchedulerServiceNames();
 		for (String name : names) {
-			SchedulerService sservice = schedulerServiceContainer.getSchedulerService(name);			
-			SchedulerMetaData smeta = sservice.getSchedulerMetaData();
 			SchedulerStatus sstatus = new SchedulerStatus();
-			sstatus.setName(name);
-			sstatus.setJobStorageType(smeta.getJobStoreClass().getName());
-			sstatus.setRunning(sservice.isJobRunning());
+			sstatus.setName(name);			
+			SchedulerService sservice = schedulerServiceContainer.getSchedulerService(name);
+			if (sservice.isInitialized()) {
+				SchedulerMetaData smeta = sservice.getSchedulerMetaData();
+				sstatus.setJobStorageType(smeta.getJobStoreClass().getName());
+				sstatus.setRunning(sservice.isJobRunning());
+			} else {
+				sstatus.setRunning(false);
+			}
 			result.add(sstatus);
 		}
 		return result;

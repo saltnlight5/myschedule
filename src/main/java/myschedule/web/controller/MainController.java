@@ -24,7 +24,7 @@ public class MainController {
 	
 	@RequestMapping(value="/index", method=RequestMethod.GET)
 	public String index() {
-		List<String> names = schedulerServiceContainer.getSchedulerServiceNames();
+		List<String> names = schedulerServiceContainer.getInitializedSchedulerServiceNames();
 		if (names.size() == 0)
 			return "redirect:" + WebAppContextListener.MAIN_PATH + "/dashboard/create";
 		else

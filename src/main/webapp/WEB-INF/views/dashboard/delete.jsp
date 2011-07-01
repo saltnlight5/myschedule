@@ -5,7 +5,7 @@
 <form action="${ mainPath }/dashboard/delete-action" method="post">
 <span>SchedulerService:</span> 
 <select name="name">
-<c:forEach items="${ sessionData.schedulerServiceRepository.names }" var="name">
+<c:forEach items="${ data.schedulerNames }" var="name">
 	<c:set var="selectedAttr" value=""/>
 	<c:if test="${ name == sessionData.currentSchedulerName }">
 		<c:set var="selectedAttr" value="selected=\"selected\""/>

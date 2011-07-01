@@ -19,7 +19,7 @@ $(document).ready(function() {
 	<thead>
 		<tr>
 			<th>SCHEDULER NAME</th>
-			<th>RUNNING</th>
+			<th>INITIALIZED</th>
 			<th>JOB STORAGE TYPE</th>
 		</tr>
 	</thead>

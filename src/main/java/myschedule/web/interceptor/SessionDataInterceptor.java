@@ -32,7 +32,7 @@ public class SessionDataInterceptor extends HandlerInterceptorAdapter {
 		HttpSession session = request.getSession(true); // create session if not exists.
 		SessionData sessionData = schedulerServiceFinder.getOrCreateSessionData(session);
 		if (sessionData.getCurrentSchedulerName() == null) {
-			List<String> names = schedulerServiceContainer.getSchedulerServiceNames();
+			List<String> names = schedulerServiceContainer.getInitializedSchedulerServiceNames();
 			if (names.size()  > 0) {
 				sessionData.setCurrentSchedulerName(names.get(0)); // Use first one in list.
 			} else {

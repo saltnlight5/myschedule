@@ -11,4 +11,12 @@ public interface Service {
 	
 	void destroy();
 	
+	void start();
+	
+	void stop();
+	
+	boolean isStarted();
+	
+	boolean isInitialized();
+	
 }

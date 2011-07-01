@@ -18,4 +18,5 @@ $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/sr
 $ bin/catalina.bat run
 
 = TODO =
- 
+* Need to add logging when loading file DAO scheduler?
+* Wee need to continue to boot myschedule even if schdeuler failed to start!

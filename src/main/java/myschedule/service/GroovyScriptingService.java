@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Zemian Deng
  */
-public class GroovyScriptingService implements ScriptingService {
+public class GroovyScriptingService extends AbstractService implements ScriptingService {
 
 	@Override
 	public <T> T run(String scriptText, Map<String, Object> variables) {
@@ -37,14 +37,6 @@ public class GroovyScriptingService implements ScriptingService {
 		} catch (Exception e) {
 			throw new ErrorCodeException(SCRIPTING_PROBLEM, e);
 		}
-	}
-
-	@Override
-	public void init() {
-	}
-
-	@Override
-	public void destroy() {
 	}
 	
 }

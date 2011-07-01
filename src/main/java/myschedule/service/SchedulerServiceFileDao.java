@@ -9,20 +9,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A file storage implementation for SchedulerService DAO.
  * 
  * @author Zemian Deng
  */
-public class SchedulerServiceFileDao implements SchedulerServiceDao {
+public class SchedulerServiceFileDao extends AbstractService implements SchedulerServiceDao {
 
 	public static final String CONFIG_EXT = ".properties";
-	
-	protected Logger logger = LoggerFactory.getLogger(getClass());
-	
+		
 	protected File configStoreLocation;
 	
 	public void setConfigStoreLocation(File configStoreLocation) {
@@ -32,7 +27,10 @@ public class SchedulerServiceFileDao implements SchedulerServiceDao {
 	@Override
 	public void saveSchedulerService(SchedulerService schedulerService) {
 		Properties configProps = schedulerService.getConfigProps();
-		String name = configProps.getProperty(Quartz18SchedulerService.NAME_KEY, "QuartzScheduler");
+		String name = schedulerService.getConfigSchedulerName();
+		if (name == null)
+			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Config is missing scheduler name.");
+		
 		File file = getConfigFile(name);
 		
 		// Ensure we do not overwrite existing file.
@@ -108,16 +106,12 @@ public class SchedulerServiceFileDao implements SchedulerServiceDao {
 	}
 	
 	@Override
-	public void init() {
+	public void initService() {
 		if (!configStoreLocation.exists()) {
 			if (!configStoreLocation.mkdirs()) {
 				throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Failed to create configStoreLocation " + configStoreLocation);
 			}
 			logger.info("Created directory for configStoreLocation " + configStoreLocation);
 		}
-	}
-
-	@Override
-	public void destroy() {
 	}
 }

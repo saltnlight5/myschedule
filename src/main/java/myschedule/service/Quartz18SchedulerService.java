@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -43,6 +44,8 @@ public class Quartz18SchedulerService implements SchedulerService {
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
+	protected AtomicBoolean initialized = new AtomicBoolean(false);
+		
 	protected Scheduler scheduler;
 	
 	protected String name;
@@ -56,6 +59,11 @@ public class Quartz18SchedulerService implements SchedulerService {
 	
 	public void setConfigProps(Properties configProps) {
 		this.configProps = configProps;
+	}
+	
+	@Override
+	public boolean isInitialized() {
+		return initialized.get();
 	}
 	
 	@Override
@@ -82,6 +90,13 @@ public class Quartz18SchedulerService implements SchedulerService {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public String getConfigSchedulerName() {
+		if (configProps == null)
+			return null;
+		return configProps.getProperty(NAME_KEY, "QuartzScheduler");
 	}
 		
 	@Override
@@ -248,6 +263,22 @@ public class Quartz18SchedulerService implements SchedulerService {
 		}
 	}
 	
+	public Properties getConfigProps() {
+		return configProps;
+	}
+
+	protected void createAndInitScheduler() {
+		if (configProps == null) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, "SchedulerService is missing config properties.");
+		}
+		try {
+			StdSchedulerFactory schedulerFactory = new StdSchedulerFactory(configProps);
+			scheduler = schedulerFactory.getScheduler();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+	
 	@Override
 	public boolean isRemote() {
 		try {
@@ -255,10 +286,6 @@ public class Quartz18SchedulerService implements SchedulerService {
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}		
-	}
-	
-	public Properties getConfigProps() {
-		return configProps;
 	}
 	
 	@Override
@@ -291,7 +318,7 @@ public class Quartz18SchedulerService implements SchedulerService {
 		try {
 			if (!scheduler.isStarted() || scheduler.isInStandbyMode()) {
 				scheduler.start();
-				logger.info(scheduler.getSchedulerName() + " started.");
+				logger.info("Scheduler " + scheduler.getSchedulerName() + " started.");
 			}
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -302,9 +329,12 @@ public class Quartz18SchedulerService implements SchedulerService {
 	@Override
 	public void shutdown() {
 		try {
-			if (!scheduler.isShutdown()) {
-				scheduler.shutdown(waitForJobsToComplete);
-				logger.info(scheduler.getSchedulerName() + " stopped with waitForJobsToComplete=" + waitForJobsToComplete);
+			if (scheduler != null) {
+				if (!scheduler.isShutdown()) {
+					String name = scheduler.getSchedulerName();
+					scheduler.shutdown(waitForJobsToComplete);
+					logger.info("Scheduler " + name + " shutdown with waitForJobsToComplete=" + waitForJobsToComplete);
+				}
 			}
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -316,41 +346,32 @@ public class Quartz18SchedulerService implements SchedulerService {
 	 */
 	@Override
 	public void init() {
-		// Create and init the scheduler if it's not set by user.
-		if (scheduler == null) {
-			createAndInitScheduler();
-			autoStart = Boolean.parseBoolean(configProps.getProperty(AUTO_START_KEY, "true"));
-			waitForJobsToComplete = Boolean.parseBoolean(configProps.getProperty(WAIT_FOR_JOBS_KEY, "true"));
+		if (!initialized.get()) {
+			// Create and init the scheduler if it's not set by user.
+			if (scheduler == null) {
+				createAndInitScheduler();
+				autoStart = Boolean.parseBoolean(configProps.getProperty(AUTO_START_KEY, "true"));
+				waitForJobsToComplete = Boolean.parseBoolean(configProps.getProperty(WAIT_FOR_JOBS_KEY, "true"));
+			}
+			name = getSchedulerName();
+			initialized.set(true);
+			logger.info("Scheduler service " + name + " has been initialized.");
 		}
-		name = getSchedulerName();
-		logger.info("Scheduler service " + name + " has been initialized. autoStart=" + autoStart);
-
-		// Prevent autoStart on a remote scheduler.
-		if (isRemote() && autoStart) {
-			logger.info("Auto start on remote scheduler is dangerous and will be skipped.");
-			autoStart = false;
-		}
-		
-		// Auto start a non-remote scheduler
-		if (autoStart)
-			start();
 	}
 
 	/** Destroy and auto shutdown scheduler if possible. */
 	@Override
 	public void destroy() {
-		if (scheduler != null) {			
-			// Auto stop a non-remote scheduler
-			if (!isRemote()) {
-				shutdown();
-			} else {
-				logger.info("Auto stop/shutdown of remote scheduler is dangerous and will be skipped.");
+		if (initialized.get()) {
+			if (scheduler != null) {
+				String desc = scheduler.toString();
+				scheduler = null;
+				initialized.set(false);
+				logger.info("Scheduler service " + desc + " has been destroyed.");
 			}
-			scheduler = null;
 		}
 	}
 
-	/** Quartz's isStarted along will not tell whether job are runnign or not! */
 	@Override
 	public boolean isJobRunning() {
 		try {
@@ -359,14 +380,20 @@ public class Quartz18SchedulerService implements SchedulerService {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
-
-	protected void createAndInitScheduler() {
-		if (configProps == null) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, "SchedulerService is missing config properties.");
-		}
+	
+	@Override
+	public boolean isStarted() {
 		try {
-			StdSchedulerFactory schedulerFactory = new StdSchedulerFactory(configProps);
-			scheduler = schedulerFactory.getScheduler();
+			return scheduler.isStarted();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	@Override
+	public boolean isPaused() {
+		try {
+			return scheduler.isInStandbyMode();
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -376,5 +403,4 @@ public class Quartz18SchedulerService implements SchedulerService {
 	public String toString() {
 		return "SchedulerService[" + getName() +  "]";
 	}
-
 }

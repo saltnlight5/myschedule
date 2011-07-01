@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * A service container that will auto init/destroy all of {@link Service} registered.
+ * A service container that will auto init/destroy, and start/stop if possible to all of {@link Service} registered.
  * 
  * <p>This class implements Spring aware interfaces to auto detects {@link Service} by type
  * and process them.
@@ -27,8 +27,14 @@ public class ServiceContainer implements ApplicationContextAware, InitializingBe
 	/** Service list that's registered in the application. */
 	protected List<Service> services;
 	
+	protected boolean autoStart = true;
+	
 	/** Service list that's got initialized. */
 	protected List<Service> initializedServices = new ArrayList<Service>();
+	
+	public void setAutoStart(boolean autoStart) {
+		this.autoStart = autoStart;
+	}
 	
 	public void setServices(List<Service> services) {
 		this.services = services;
@@ -42,15 +48,38 @@ public class ServiceContainer implements ApplicationContextAware, InitializingBe
 				initializedServices.add(service);
 				logger.info("Service " + service + " initialized.");
 			} catch (Exception e) {
-				destroy();
-				throw new ErrorCodeException(ErrorCode.SERVICE_PROBLEM, 
-						"Failed to initialize service " + service +	". Previous initialized services are destroyed.", e);
+				throw new ErrorCodeException(ErrorCode.SERVICE_PROBLEM, "Failed to initialize service " + service, e);
+			}
+		}
+		
+		if (autoStart) {
+			// Start all services
+			for (Service service : initializedServices) {			
+				try {
+					service.start();
+					logger.info("Service " + service + " started.");
+				} catch (Exception e) {
+					throw new ErrorCodeException(ErrorCode.SERVICE_PROBLEM, "Failed to start service " + service, e);
+				}
 			}
 		}
 	}
 	
 	@Override
 	public void destroy() {
+		if (autoStart) {
+			// Stop all services in reverse order.
+			for (int i = initializedServices.size() - 1; i > 0; i--) {
+				Service service = initializedServices.get(i);	
+				try {
+					service.stop();
+					logger.info("Service " + service + " stopped.");
+				} catch (Exception e) {
+					logger.error("Failed to stop service " + service, e);
+				}
+			}
+		}
+		
 		// Destroying services in reverse order.
 		for (int i = initializedServices.size() - 1; i > 0; i--) {
 			Service service = initializedServices.get(i);
