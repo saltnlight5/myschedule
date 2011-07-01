@@ -1,13 +1,11 @@
 package myschedule.web;
 
-import myschedule.service.SchedulerServiceRepository;
 
 
 public class SessionData {
 	protected String currentMenu;
 	protected String currentSubMenu;
 	protected String currentSchedulerName;
-	protected transient SchedulerServiceRepository schedulerServiceRepository = SchedulerServiceRepository.getInstance();
 	
 	public String getCurrentMenu() {
 		return currentMenu;
@@ -23,10 +21,6 @@ public class SessionData {
 
 	public void setCurrentSubMenu(String currentSubMenu) {
 		this.currentSubMenu = currentSubMenu;
-	}
-
-	public SchedulerServiceRepository getSchedulerServiceRepository() {
-		return schedulerServiceRepository;
 	}
 	
 	public void setCurrentSchedulerName(String currentSchedulerName) {

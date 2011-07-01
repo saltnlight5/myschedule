@@ -11,8 +11,9 @@ import java.util.Map;
  *
  * @author Zemian Deng
  */
-public class GroovyScriptingService implements Service {
+public class GroovyScriptingService implements ScriptingService {
 
+	@Override
 	public <T> T run(String scriptText, Map<String, Object> variables) {
 		GroovyShell groovyShell = new GroovyShell();
 		for (Map.Entry<String, Object> entry : variables.entrySet())
@@ -23,6 +24,7 @@ public class GroovyScriptingService implements Service {
 		return ret;
 	}
 
+	@Override
 	public <T> T runScript(File file, Map<String, Object> variables) {
 		try {
 			GroovyShell groovyShell = new GroovyShell();

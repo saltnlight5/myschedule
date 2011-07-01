@@ -7,7 +7,8 @@ package myschedule.service;
  */
 public interface Service {
 	
-	public void init();
-	public void destroy();
+	void init();
+	
+	void destroy();
 	
 }

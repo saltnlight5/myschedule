@@ -1,7 +1,7 @@
-# A Quartz 1.8.x Scheduler configuration for an in-memory job storage.
+# A Quartz 1.8.x Scheduler configuration
 # See http://www.quartz-scheduler.org/docs/configuration
 
-org.quartz.scheduler.instanceName = InMemoryScheduler
+org.quartz.scheduler.instanceName = QuartzScheduler
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
 org.quartz.threadPool.threadCount = 4

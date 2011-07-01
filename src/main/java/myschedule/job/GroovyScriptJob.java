@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import myschedule.service.GroovyScriptingService;
+import myschedule.service.ScriptingService;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -59,7 +60,7 @@ public class GroovyScriptJob implements Job {
 				}
 			}
 			
-			GroovyScriptingService scriptService = new GroovyScriptingService();
+			ScriptingService scriptService = new GroovyScriptingService();
 			Map<String, Object> variables = new HashMap<String, Object>();
 			variables.put("jobExecutionContext", jobExecutionContext);
 			variables.put("logger", logger);

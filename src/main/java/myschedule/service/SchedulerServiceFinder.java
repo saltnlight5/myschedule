@@ -22,12 +22,18 @@ public class SchedulerServiceFinder {
 	
 	protected SchedulerService defaultSchedulerService;
 	
+	protected SchedulerServiceContainer schedulerServiceContainer;
+	
 	public void setDefaultSchedulerService(SchedulerService defaultSchedulerService) {
 		this.defaultSchedulerService = defaultSchedulerService;
 	}
 	
 	public SchedulerService getDefaultSchedulerService() {
 		return defaultSchedulerService;
+	}
+	
+	public void setSchedulerServiceContainer(SchedulerServiceContainer schedulerServiceContainer) {
+		this.schedulerServiceContainer = schedulerServiceContainer;
 	}
 	
 	public SchedulerService find(HttpSession session) {
@@ -56,13 +62,13 @@ public class SchedulerServiceFinder {
 		if (name == null) {
 			return null;
 		}
-		SchedulerServiceRepository repository = SchedulerServiceRepository.getInstance();
+		
 		SchedulerService schedulerService = null;
 		
 		// We might have multiple threads access this part of code from controller.
-		synchronized(repository) {
-			if (repository.hasSchedulerService(name)) {
-				schedulerService = repository.getSchedulerService(name);
+		synchronized(schedulerServiceContainer) {
+			if (schedulerServiceContainer.hasSchedulerService(name)) {
+				schedulerService = schedulerServiceContainer.getSchedulerService(name);
 			}
 		}
 		return schedulerService;
@@ -94,8 +100,7 @@ public class SchedulerServiceFinder {
 	public SchedulerService switchSchedulerService(String newSchedulerName, HttpSession session) {
 		SessionData data = getOrCreateSessionData(session);
 		String currentSchedulerName = data.getCurrentSchedulerName();
-		SchedulerServiceRepository repository = SchedulerServiceRepository.getInstance();
-		SchedulerService schedulerService = repository.getSchedulerService(newSchedulerName);
+		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(newSchedulerName);
 		data.setCurrentSchedulerName(newSchedulerName);
 		setSessionData(session, data);
 		logger.info("Switched scheduler service in session data from " + 

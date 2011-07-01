@@ -1,4 +1,4 @@
-# A Quartz Scheduler configuration for database.
+# A Quartz 1.8.x Scheduler configuration for database job persistence.
 # See http://www.quartz-scheduler.org/docs/configuration
 
 org.quartz.scheduler.skipUpdateCheck = true
@@ -16,4 +16,8 @@ org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
 org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz18
 org.quartz.dataSource.quartzDataSource.user = quartz18
 org.quartz.dataSource.quartzDataSource.password = quartz18123
-org.quartz.dataSource.quartzDataSource.maxConnections = 4
+org.quartz.dataSource.quartzDataSource.maxConnections = 7
+
+# MySchedule scheduler service parameters
+myschedule.schedulerService.autoStart = true
+myschedule.schedulerService.waitForJobsToComplete = true

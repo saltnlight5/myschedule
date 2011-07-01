@@ -1,4 +1,4 @@
-# A Quartz Scheduler configuration for RMI server
+# A Quartz 1.8.x Scheduler configuration for RMI enabled server
 # See http://www.quartz-scheduler.org/docs/configuration
 
 org.quartz.scheduler.skipUpdateCheck = true
@@ -12,3 +12,7 @@ org.quartz.scheduler.rmi.createRegistry = true
 org.quartz.scheduler.rmi.registryHost = localhost
 org.quartz.scheduler.rmi.registryPort = 1099
 org.quartz.scheduler.rmi.serverPort = 1100
+
+# MySchedule scheduler service parameters
+myschedule.schedulerService.autoStart = true
+myschedule.schedulerService.waitForJobsToComplete = true

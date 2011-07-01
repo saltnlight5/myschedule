@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
-import myschedule.service.GroovyScriptingService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
+import myschedule.service.ScriptingService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +47,12 @@ public class ScriptingController implements ServletContextAware {
 	protected ServletContext servletContext;
 	
 	@Autowired
-	protected GroovyScriptingService scriptingService;
+	protected ScriptingService scriptingService;
 	
 	@Autowired @Qualifier("schedulerServiceFinder")
 	protected SchedulerServiceFinder schedulerServiceFinder;
 	
-	public void setScriptingService(GroovyScriptingService scriptingService) {
+	public void setScriptingService(ScriptingService scriptingService) {
 		this.scriptingService = scriptingService;
 	}
 	

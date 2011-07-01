@@ -76,10 +76,10 @@ public class SchedulerController {
 		return "redirect:detail";
 	}
 	
-	@RequestMapping(value="/stop", method=RequestMethod.GET)
+	@RequestMapping(value="/shutdown", method=RequestMethod.GET)
 	public String stop(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		schedulerService.stop();
+		schedulerService.shutdown();
 		return "redirect:detail";
 	}
 	
