@@ -18,9 +18,6 @@ $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/sr
 $ bin/catalina.bat run
 
 = TODO =
- * Bug Fix: Currently Executing Jobs page error (invalid fields on jsp)
- * Added "Run It Now" action on job list.
- * Added createGroovyScriptCronJob method to SchedulerService.
 
 = samples =
 
