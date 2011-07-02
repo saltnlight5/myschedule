@@ -45,4 +45,7 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 		<property name="schedulerServiceDao" ref="schedulerServiceFileDao"></property>
 	</bean>
 	
+	<!-- User Scheduler services. We expose this config key to let user customize different file. -->
+	<import resource="${myschedule.spring.scheduler.config:classpath:/myschedule/spring/scheduler/scheduler-services.xml}"/>
+	
 </beans>

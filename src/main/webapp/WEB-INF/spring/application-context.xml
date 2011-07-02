@@ -20,8 +20,5 @@ related beans should go into main-dispatcher-context.xml instead.
 	
 	<!-- Internal MySchedule application services. Expose key in case user want to customize. -->
 	<import resource="${myschedule.spring.config:classpath:/myschedule/spring/myschedule-services.xml}"/>
-				
-	<!-- User Scheduler services. We expose this config key to let user customize different file. -->
-	<import resource="${myschedule.spring.scheduler.config:classpath:/myschedule/spring/scheduler/scheduler-services.xml}"/>
 					
 </beans>
