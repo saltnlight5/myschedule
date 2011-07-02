@@ -7,10 +7,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import myschedule.job.GroovyScriptJob;
+
+import org.quartz.CronTrigger;
+import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
@@ -433,6 +439,36 @@ public class Quartz18SchedulerService implements SchedulerService {
 			scheduler.triggerJob(jobName, groupName);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+	
+	public static Map<String, Object> createDataMap(Object ... objects) {
+		if (objects.length % 2 != 0)
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, "createDataMap parameters must be even count. Got " + objects.length + " instead.");
+		Map<String, Object> result = new HashMap<String, Object>();	
+		int size = objects.length / 2;
+		for (int i = 0; i < size; i += 2) {
+			result.put(objects[i].toString(), objects[i+1]);
+		}
+		return result;
+	}
+
+	@Override
+	public void createGroovyScriptCronJob(String jobName, String cron, String script) {
+		createCronJob(jobName, cron, GroovyScriptJob.class, 
+				createDataMap(GroovyScriptJob.GROOVY_SCRIPT_TEXT_KEY, script));
+	}
+
+	@Override
+	public void createCronJob(String jobName, String cron, Class<? extends Job> jobClass, Map<String, Object> data) {
+		try {
+			JobDetail jobDetail = new JobDetail(jobName, Scheduler.DEFAULT_GROUP, jobClass);
+			if (data != null)
+				jobDetail.getJobDataMap().putAll(data);
+			Trigger trigger = new CronTrigger(jobName, Scheduler.DEFAULT_GROUP, cron);
+			scheduler.scheduleJob(jobDetail, trigger);
+		} catch (Exception e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, "Failed to scheduler cron job: " + jobName, e);
 		}
 	}
 }

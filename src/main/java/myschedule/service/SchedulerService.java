@@ -2,8 +2,10 @@ package myschedule.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
@@ -82,5 +84,8 @@ public interface SchedulerService {
 	boolean isShutdown();
 
 	void runJob(String jobName, String jobGroup);
-
+	
+	void createGroovyScriptCronJob(String jobName, String cron, String script);
+	
+	void createCronJob(String jobName, String cron, Class<? extends Job> jobClass, Map<String, Object> data);
 }

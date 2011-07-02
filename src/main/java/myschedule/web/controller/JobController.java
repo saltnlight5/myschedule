@@ -120,6 +120,7 @@ public class JobController {
 	public DataModelMap loadPost(
 			@RequestParam String xml, 
 			HttpSession session) {
+		logger.info("Loading xml jobs.");
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		JobLoadPageData data = new JobLoadPageData();
 		XmlJobLoader loader = schedulerService.loadJobs(xml);
@@ -139,7 +140,7 @@ public class JobController {
 			@RequestParam String jobGroup, 
 			HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		logger.info("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
+		logger.debug("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
 		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
 		data.setTriggers(schedulerService.getTriggers(jobDetail));
@@ -155,7 +156,7 @@ public class JobController {
 			@RequestParam String triggerGroup,
 			@RequestParam int fireTimesCount, 
 			HttpSession session) {
-		logger.info("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
+		logger.debug("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
 		List<Date> nextFireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);

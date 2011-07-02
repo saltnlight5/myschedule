@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
  * <pre>
  *   jobExecutionContext - instance of org.quartz.JobExecutionContext when job is run.
  *   logger - instance of org.slf4j.Logger with name="myschedule.job.GroovyScriptJob".
- *   groovyScriptText - Groovy script source if "GroovyScriptText" is used.
- *   groovyScriptFile - Groovy script source if "GroovyScriptFile" is used.
+ *   groovyScriptText - Groovy script source if "groovyScriptText" key is used.
+ *   groovyScriptFile - Groovy script source if "groovyScriptFile" key is used.
  * </pre>
  * 
  * @author Zemian Deng
@@ -35,9 +35,9 @@ public class GroovyScriptJob implements Job {
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	public static final String GROOVY_SCRIPT_TEXT_KEY = "GroovyScriptText";
+	public static final String GROOVY_SCRIPT_TEXT_KEY = "groovyScriptText";
 	
-	public static final String GROOVY_SCRIPT_FILE_KEY = "GroovyScriptFile";
+	public static final String GROOVY_SCRIPT_FILE_KEY = "groovyScriptFile";
 
 	/**
 	 * Run the job to evaluate the Groovy script text.
