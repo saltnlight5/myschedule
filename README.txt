@@ -16,3 +16,12 @@ To run myscheduler.war on Tomcat with different quartz properties file, try:
 (Under Windows Cygwin)
 $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/src/main/resources/myschedule/spring/scheduler/quartz.properties.database"
 $ bin/catalina.bat run
+
+= samples =
+
+== Simplest groovy job ==
+{{{
+schedulerService.createGroovyScriptCronJob('test', '0/3 * * * * ?', ''''
+  logger.info("Hi. This is a groovy script job.")
+''')
+}}}
