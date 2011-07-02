@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,17 @@ import org.slf4j.LoggerFactory;
 public class ObjectUtils {
 	
 	private static Logger logger = LoggerFactory.getLogger(ObjectUtils.class);
+		
+	public static Map<String, Object> createMap(Object ... objects) {
+		if (objects.length % 2 != 0)
+			throw new RuntimeException("CreateMap parameters must be in even count. Got " + objects.length + " instead.");
+		Map<String, Object> result = new HashMap<String, Object>();	
+		int size = objects.length / 2;
+		for (int i = 0; i < size; i += 2) {
+			result.put(objects[i].toString(), objects[i+1]);
+		}
+		return result;
+	}
 	
 	/**
 	 * Generate a stacktrace with method call stack and log it.
