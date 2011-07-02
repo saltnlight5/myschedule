@@ -36,6 +36,7 @@ $(document).ready(function() {
 		<td><fmt:formatDate value="${ trigger.endTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
 		<td>
+			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">Run It Now</a> |
 			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a>
 		</td>
 	</tr>

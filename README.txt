@@ -20,8 +20,16 @@ $ bin/catalina.bat run
 = samples =
 
 == Simplest groovy job ==
+// simple job that run every 3 secs.
 {{{
-schedulerService.createGroovyScriptCronJob('test', '0/3 * * * * ?', ''''
+schedulerService.createGroovyScriptCronJob('test', '0/3 * * * * ?', '''
   logger.info("Hi. This is a groovy script job.")
 ''')
 }}}
+
+// run job every 5 mins. the job will take 2 min to run.
+schedulerService.createGroovyScriptCronJob('sleepy_job', '0 0/5 * * * ?', '''
+  logger.info("Start sleeping...")
+  Thread.sleep(2 * 60* 1000)
+  logger.info("Job is done.")
+''')

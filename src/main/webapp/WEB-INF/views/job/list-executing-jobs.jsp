@@ -19,7 +19,7 @@ $(document).ready(function() {
 		<th> JOB </th>
 		<th> TRIGGER </th>
 		<th> RECOVERING </th>
-		<th> SCHEDULE TIME </th>
+		<th> SCHEDULE FIRE TIME </th>
 		<th> FIRE TIME </th>
 		<th> PREV FIRE TIME </th>
 		<th> NEXT FIRE TIME </th>
@@ -32,10 +32,10 @@ $(document).ready(function() {
 		<td>${ job.jobDetail.fullName  }</td>
 		<td>${ job.trigger.fullName  }</td>
 		<td>${ job.recovering  }</td>
-		<td>${ job.scheduledTime  }</td>
-		<td>${ job.fireTime  }</td>
-		<td>${ job.prevFireTime  }</td>
-		<td>${ job.nextFireTime  }</td>
+		<td><fmt:formatDate value="${ job.scheduledFireTime  }" pattern="MM/dd/yyyy HH:mm:ss"/></td>
+		<td><fmt:formatDate value="${ job.fireTime  }" pattern="MM/dd/yyyy HH:mm:ss"/></td>
+		<td><fmt:formatDate value="${ job.previousFireTime  }" pattern="MM/dd/yyyy HH:mm:ss"/></td>
+		<td><fmt:formatDate value="${ job.nextFireTime  }" pattern="MM/dd/yyyy HH:mm:ss"/></td>
 	</tr>
 	</c:forEach>
 	</tbody>
