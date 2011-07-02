@@ -28,6 +28,7 @@ $(document).ready(function() {
 		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">${ jobDetail.fullName }</a></td>
 		<td>${ jobDetail.jobClass.name }</td>
 		<td>
+			<a href="${ mainPath }/job/run-job?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">Run It Now</a> |
 			<a href="${ mainPath }/job/delete?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">Delete</a>
 		</td>
 	</tr>

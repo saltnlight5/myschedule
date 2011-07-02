@@ -18,8 +18,15 @@ $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/sr
 $ bin/catalina.bat run
 
 = TODO =
+ * Add Edit Config in scheduler menu.
+ * Add Change Scripting to Tool menu and add CronTest page. 
 
 = samples =
+== Add a job without trigger =
+import org.quartz.*
+import org.quartz.jobs.*
+job = new JobDetail('job1', 'DEFAULT', NoOpJob.class)
+quartzScheduler.addJob(job, true)
 
 == Simplest groovy job ==
 // simple job that run every 3 secs.
