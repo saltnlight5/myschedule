@@ -1,5 +1,5 @@
 <h2>Trigger : ${ trigger.class }</h2>
-<table id="trigger-table-${loopIndex}">
+<table id="triggers-${loopIndex}">
 	<thead>
 	<tr>
 		<th></th>

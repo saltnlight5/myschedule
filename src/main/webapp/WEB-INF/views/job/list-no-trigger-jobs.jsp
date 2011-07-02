@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#jobs-without-triggers").dataTable({
+	$("#jobs").dataTable({
 		"aaSorting": [[0, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
@@ -13,7 +13,7 @@ $(document).ready(function() {
 });
 </script>
 <h1>Jobs without assigned trigger</h1>
-<table id="jobs-without-triggers" class="display">
+<table id="jobs" class="display">
 	<thead>
 	<tr>
 		<th> JOB </th>

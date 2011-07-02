@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
@@ -62,6 +63,21 @@ public class Quartz18SchedulerService implements SchedulerService {
 	
 	public void setConfigProps(Properties configProps) {
 		this.configProps = configProps;
+	}
+	
+	@Override
+	public List<JobExecutionContext> getCurrentlyExecutingJobs() {
+		List<JobExecutionContext> result = new ArrayList<JobExecutionContext>();
+		try {
+			List<?> jobs = scheduler.getCurrentlyExecutingJobs();
+			for (Object job : jobs) {
+				JobExecutionContext jobec = (JobExecutionContext)job;
+				result.add(jobec);
+			}
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+		return result;
 	}
 	
 	@Override
@@ -409,5 +425,14 @@ public class Quartz18SchedulerService implements SchedulerService {
 	@Override
 	public String toString() {
 		return "SchedulerService[" + getName() +  "]";
+	}
+
+	@Override
+	public void runJob(String jobName, String groupName) {
+		try {
+			scheduler.triggerJob(jobName, groupName);
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
 	}
 }

@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#jobs-with-triggers").dataTable({
+	$("#jobs").dataTable({
 		"aaSorting": [[ 5, "desc" ], [0, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
@@ -13,7 +13,7 @@ $(document).ready(function() {
 });
 </script>
 <h1>Jobs with assigned trigger</h1>
-<table id="jobs-with-triggers" class="display">
+<table id="jobs" class="display">
 	<thead>
 	<tr>
 		<th> JOB </th>
@@ -35,7 +35,9 @@ $(document).ready(function() {
 		<td><fmt:formatDate value="${ trigger.startTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.endTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
-		<td><a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a></td>
+		<td>
+			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a>
+		</td>
 	</tr>
 	</c:forEach>
 	</tbody>

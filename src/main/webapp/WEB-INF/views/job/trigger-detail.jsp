@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#trigger-table-0").dataTable({		
+	$("#triggers-0").dataTable({		
 		"bPaginate": false,
 		"bLengthChange": false,
 		"bFilter": false,
@@ -12,7 +12,7 @@ $(document).ready(function() {
 		"bInfo": false,
 		"bAutoWidth": false
 	});
-	$("#next-fire-time-table").dataTable({		
+	$("#next-fire-times").dataTable({		
 		"bPaginate": false,
 		"bLengthChange": false,
 		"bFilter": false,
@@ -38,7 +38,7 @@ View full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetail.name }
 
 <h2>Trigger's Next ${ data.fireTimesCount } FireTimes</h2>
 
-<table id="next-fire-time-table">
+<table id="next-fire-times">
 	<thead>
 	<tr>
 		<th> INDEX </th>

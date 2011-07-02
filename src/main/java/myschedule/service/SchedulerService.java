@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerMetaData;
 import org.quartz.Trigger;
@@ -20,6 +21,8 @@ import org.quartz.Trigger;
  */
 public interface SchedulerService {
 
+	List<JobExecutionContext> getCurrentlyExecutingJobs();
+	
 	boolean isInitialized();
 	
 	String getConfigSchedulerName();
@@ -77,5 +80,7 @@ public interface SchedulerService {
 	boolean isPaused();
 
 	boolean isShutdown();
+
+	void runJob(String jobName, String jobGroup);
 
 }

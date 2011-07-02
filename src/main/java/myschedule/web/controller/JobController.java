@@ -15,6 +15,7 @@ import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.XmlJobLoader;
 
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,13 @@ public class JobController {
 	public DataModelMap list(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		return new DataModelMap(getJobListPageData(schedulerService));
+	}
+
+	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
+	public DataModelMap listExecutingJobs(HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		List<JobExecutionContext> jobs = schedulerService.getCurrentlyExecutingJobs();
+		return new DataModelMap("jobExecutionContextList", jobs);
 	}
 	
 	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
@@ -86,6 +94,17 @@ public class JobController {
 		data.put("triggers", triggers);
 		
 		return new DataModelMap(data);
+	}
+	
+	@RequestMapping(value="/run-job", method=RequestMethod.GET)
+	public String runJob(
+			@RequestParam String jobName,
+			@RequestParam String jobGroup,
+			HttpSession session) {
+		logger.info("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		schedulerService.runJob(jobName, jobGroup);		
+		return "redirect:list";
 	}
 	
 	/** Display form to load job-scheduling-data xml */

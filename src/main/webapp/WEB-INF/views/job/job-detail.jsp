@@ -5,7 +5,7 @@
 <script>
 $(document).ready(function() {
 	// use dataTables plugin
-	$("#job-table").dataTable({		
+	$("#jobs").dataTable({		
 		"bPaginate": false,
 		"bLengthChange": false,
 		"bFilter": false,
@@ -25,7 +25,7 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </div>
 
 <h2>Job : ${ data.jobDetail.fullName }</h2>
-<table id="job-table">
+<table id="jobs">
 	<thead>
 	<tr>
 		<th></th>
@@ -54,7 +54,7 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	<script>
 	$(document).ready(function() {
 		// use dataTables plugin
-		$("#trigger-table-${ loopIndex }").dataTable({		
+		$("#triggers-${ loopIndex }").dataTable({		
 			"bPaginate": false,
 			"bLengthChange": false,
 			"bFilter": false,
