@@ -1,5 +1,7 @@
 package myschedule.web.interceptor;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -39,8 +41,16 @@ public class SchedulerAvailableInterceptor extends HandlerInterceptorAdapter {
 		SessionData sessionData = schedulerServiceFinder.getOrCreateSessionData(session);
 		String schedulerServiceName = sessionData.getCurrentSchedulerName();
 		if (schedulerServiceName == null) {
-			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM,
-					"The request require a scheduler service to be selected, but none is in session.");
+			// If there is only one scheduler, then set session.
+			List<String> names = schedulerServiceContainer.getSchedulerServiceNames();
+			if (names.size() == 1) {
+				schedulerServiceName = names.get(0);
+				sessionData.setCurrentSchedulerName(schedulerServiceName);
+				logger.info("There is only one scheduler in app, setting it to session data.");
+			} else {
+				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM,
+						"The request require a scheduler service to be selected, but none is in session.");
+			}
 		}
 		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(schedulerServiceName);
 		if (!schedulerService.isInitialized()) {
