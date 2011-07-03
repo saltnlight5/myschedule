@@ -12,6 +12,7 @@ import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceContainer;
 import myschedule.service.SchedulerServiceFinder;
 import myschedule.web.SessionData;
+import myschedule.web.WebAppContextListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,22 @@ public class SchedulerAvailableInterceptor extends HandlerInterceptorAdapter {
 			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
 					"The scheduler service " + schedulerServiceName + " has not been initialized. Please select one that has properly initialized.");
 		}
+		
+		// If scheduler is down and req is for /job/*, then redirect to scheduler/* instead.
+		if (schedulerService.isShutdown()) {
+			String mainPath = WebAppContextListener.MAIN_PATH;
+			String url = request.getRequestURI();
+			String contextPath = request.getContextPath();
+			if (url.startsWith(contextPath + mainPath + "/job")) {
+				response.sendRedirect(contextPath + mainPath + "/scheduler/summary");
+				return false;
+			}
+		} else {
+			// Update current scheduler state
+			sessionData.setCurrentSchedulerStarted(schedulerService.isStarted());
+			sessionData.setCurrentSchedulerPaused(schedulerService.isPaused());
+		}
+		
 		return true; // continue process.
 	}
 }

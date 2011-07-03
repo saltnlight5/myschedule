@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
@@ -50,6 +51,9 @@ public class JobController {
 	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
 	public DataModelMap listExecutingJobs(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		if (!schedulerService.isStarted() || schedulerService.isPaused())
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
+					"The current scheudler is not started or in standby mode. Plese start it first.");
 		List<JobExecutionContext> jobs = schedulerService.getCurrentlyExecutingJobs();
 		return new DataModelMap("jobExecutionContextList", jobs);
 	}

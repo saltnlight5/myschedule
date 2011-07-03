@@ -3,31 +3,33 @@ package myschedule.web;
 
 
 public class SessionData {
-	protected String currentMenu;
-	protected String currentSubMenu;
 	protected String currentSchedulerName;
 	
-	public String getCurrentMenu() {
-		return currentMenu;
-	}
-
-	public void setCurrentMenu(String currentMenu) {
-		this.currentMenu = currentMenu;
-	}
-
-	public String getCurrentSubMenu() {
-		return currentSubMenu;
-	}
-
-	public void setCurrentSubMenu(String currentSubMenu) {
-		this.currentSubMenu = currentSubMenu;
-	}
+	protected boolean currentSchedulerStarted;
 	
+	protected boolean currentSchedulerPaused;
+		
 	public void setCurrentSchedulerName(String currentSchedulerName) {
 		this.currentSchedulerName = currentSchedulerName;
 	}
 	
 	public String getCurrentSchedulerName() {
 		return currentSchedulerName;
+	}
+
+	public boolean isCurrentSchedulerStarted() {
+		return currentSchedulerStarted;
+	}
+
+	public void setCurrentSchedulerStarted(boolean currentSchedulerStarted) {
+		this.currentSchedulerStarted = currentSchedulerStarted;
+	}
+
+	public boolean isCurrentSchedulerPaused() {
+		return currentSchedulerPaused;
+	}
+
+	public void setCurrentSchedulerPaused(boolean currentSchedulerPaused) {
+		this.currentSchedulerPaused = currentSchedulerPaused;
 	}
 }

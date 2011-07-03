@@ -67,7 +67,13 @@ public class DashboardController {
 	public String switchScheduler(
 			@RequestParam String name,
 			HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.switchSchedulerService(name, session);
+		SessionData sessionData = schedulerServiceFinder.getOrCreateSessionData(session);
+		SchedulerService schedulerService = null;
+		if (!name.equals(sessionData.getCurrentSchedulerName())) {
+			schedulerService = schedulerServiceFinder.switchSchedulerService(name, session);
+		} else {
+			schedulerService = schedulerServiceContainer.getSchedulerService(name);
+		}
 		String mainPath = WebAppContextListener.MAIN_PATH;
 		if (schedulerService.isShutdown())
 			return "redirect:" + mainPath + "/scheduler/summary";
