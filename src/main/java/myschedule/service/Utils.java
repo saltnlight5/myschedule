@@ -1,13 +1,18 @@
 package myschedule.service;
 
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +22,34 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zemian Deng
  */
-public class ObjectUtils {
+public class Utils {
 	
-	private static Logger logger = LoggerFactory.getLogger(ObjectUtils.class);
-		
+	private static Logger logger = LoggerFactory.getLogger(Utils.class);
+	
+	public static String propsToText(Properties configProps) {
+		StringWriter sWriter = new StringWriter();
+		PrintWriter pWriter = new PrintWriter(sWriter);
+		// print in sorted order.
+		List<String> names = new ArrayList<String>(configProps.stringPropertyNames());
+		Collections.sort(names);
+		for (String name : names)
+			pWriter.println(name + " = " + configProps.getProperty(name));
+		pWriter.close();
+		return sWriter.toString();
+	}
+	
+	public static Properties loadPropertiesFromText(String configPropsText) {
+		try {
+			Properties config = new Properties();
+			// Read in form input.
+			StringReader reader = new StringReader(configPropsText);
+			config.load(reader);
+			return config;
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to create Properties from input text.", e);			
+		}					
+	}
+	
 	public static Map<String, Object> createMap(Object ... objects) {
 		if (objects.length % 2 != 0)
 			throw new RuntimeException("CreateMap parameters must be in even count. Got " + objects.length + " instead.");

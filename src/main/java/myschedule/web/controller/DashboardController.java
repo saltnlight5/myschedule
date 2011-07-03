@@ -2,12 +2,8 @@ package myschedule.web.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -21,6 +17,7 @@ import myschedule.service.SchedulerServiceContainer;
 import myschedule.service.SchedulerServiceDao;
 import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.ServiceContainer;
+import myschedule.service.Utils;
 import myschedule.web.SessionData;
 import myschedule.web.WebAppContextListener;
 import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
@@ -70,9 +67,12 @@ public class DashboardController {
 	public String switchScheduler(
 			@RequestParam String name,
 			HttpSession session) {
-		schedulerServiceFinder.switchSchedulerService(name, session);
+		SchedulerService schedulerService = schedulerServiceFinder.switchSchedulerService(name, session);
 		String mainPath = WebAppContextListener.MAIN_PATH;
-		return "redirect:" + mainPath + "/job/list";
+		if (schedulerService.isShutdown())
+			return "redirect:" + mainPath + "/scheduler/summary";
+		else
+			return "redirect:" + mainPath + "/job/list";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.GET)
@@ -85,7 +85,7 @@ public class DashboardController {
 			@RequestParam String configPropsText,
 			HttpSession session) {
 		// Parse form config into props
-		Properties configProps = loadPropertiesFromText(configPropsText);
+		Properties configProps = Utils.loadPropertiesFromText(configPropsText);
 		
 		// Create a new SchedulerService.
 		Quartz18SchedulerService schedulerService = new Quartz18SchedulerService();
@@ -104,75 +104,6 @@ public class DashboardController {
 	public DataModelMap modifyGetNames(HttpSession session) {
 		List<String> schedulerNames = schedulerServiceContainer.getSchedulerServiceNames();
 		return new DataModelMap("schedulerNames", schedulerNames);
-	}
-	
-	@RequestMapping(value="/modify", method=RequestMethod.GET)
-	public DataModelMap modify(
-			@RequestParam String name, 
-			HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(name);
-		Properties configProps = schedulerService.getConfigProps();
-		if (configProps == null || !schedulerService.isConfigModifiable())
-			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "ScheduleService " + name + " config props is not editiable.");
-		String configPropsText = null;
-		String schedulerServiceName = schedulerService.getSchedulerName();
-		if (schedulerServiceDao.hasSchedulerService(schedulerServiceName)) {
-			configPropsText = schedulerServiceDao.getConfigPropsText(schedulerServiceName);
-		} else {
-			configPropsText = propsToText(configProps);
-		}
-		
-		DataModelMap data = new DataModelMap();
-		data.addData("configPropsText", configPropsText);
-		data.addData("schedulerServiceName", schedulerServiceName);
-		return data; 
-	}
-	
-	@RequestMapping(value="/modify-action", method=RequestMethod.POST)
-	public DataModelMap modifyAction(
-			@RequestParam String schedulerServiceName,
-			@RequestParam String configPropsText,
-			HttpSession session) {
-		// Parse form config into props
-		Properties configProps = loadPropertiesFromText(configPropsText);
-		
-		// Create a new SchedulerService.
-		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(schedulerServiceName);
-		boolean origRunning = schedulerService.isStarted() && !schedulerService.isPaused();
-		if (schedulerService.isInitialized()) {
-			schedulerService.shutdown();
-			schedulerService.destroy();
-		}		
-		schedulerService.setConfigProps(configProps);
-		schedulerService.init();
-		logger.info("SchedulerService " + schedulerServiceName + " has been updated and re-initialized.");
-		
-		// Update storage config
-		schedulerServiceDao.saveSchedulerService(schedulerService, configPropsText, true);
-		logger.info("SchedulerService " + schedulerService.getName() + " configProps has been updated.");
-		
-		if (origRunning) {
-			schedulerService.start();
-			logger.info("SchedulerService " + schedulerServiceName + " has been re-started.");
-		}
-
-		DataModelMap data = new DataModelMap();
-		data.addData("schedulerService", schedulerService);
-		data.addData("origRunning", origRunning);
-		
-		return data;
-	}
-
-	protected String propsToText(Properties configProps) {
-		StringWriter sWriter = new StringWriter();
-		PrintWriter pWriter = new PrintWriter(sWriter);
-		// print in sorted order.
-		List<String> names = new ArrayList<String>(configProps.stringPropertyNames());
-		Collections.sort(names);
-		for (String name : names)
-			pWriter.println(name + " = " + configProps.getProperty(name));
-		pWriter.close();
-		return sWriter.toString();
 	}
 
 	@RequestMapping(value="/delete-get-names", method=RequestMethod.GET)
@@ -249,7 +180,7 @@ public class DashboardController {
 			SchedulerStatus sstatus = new SchedulerStatus();
 			sstatus.setName(name);			
 			SchedulerService sservice = schedulerServiceContainer.getSchedulerService(name);
-			if (sservice.isInitialized()) {
+			if (sservice.isInitialized() && !sservice.isShutdown()) {
 				SchedulerMetaData smeta = sservice.getSchedulerMetaData();
 				sstatus.setInitialized(sservice.isInitialized());
 				sstatus.setPaused(sservice.isPaused());
@@ -262,17 +193,5 @@ public class DashboardController {
 			result.add(sstatus);
 		}
 		return result;
-	}
-
-	protected Properties loadPropertiesFromText(String configPropsText) {
-		try {
-			Properties config = new Properties();
-			// Read in form input.
-			StringReader reader = new StringReader(configPropsText);
-			config.load(reader);
-			return config;
-		} catch (Exception e) {
-			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM,  "Failed to create configProps from input text.", e);			
-		}					
 	}
 }

@@ -2,7 +2,7 @@ package myschedule.service;
 
 import java.util.List;
 
-import myschedule.service.ObjectUtils.Getter;
+import myschedule.service.Utils.Getter;
 
 import org.junit.Test;
 import org.quartz.Scheduler;
@@ -19,7 +19,7 @@ public class SchedulerMetaDataTest {
 	public void testSchedulerMetaData() throws Exception {
 		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
 		SchedulerMetaData metaData = scheduler.getMetaData();
-		List<Getter> getters = ObjectUtils.getGetters(metaData);
+		List<Getter> getters = Utils.getGetters(metaData);
 		System.out.println(getters);
 	}
 }

@@ -451,7 +451,7 @@ public class Quartz18SchedulerService implements SchedulerService {
 	@Override
 	public void createGroovyScriptCronJob(String jobName, String cron, String script) {
 		createCronJob(jobName, cron, GroovyScriptJob.class, 
-				ObjectUtils.createMap(GroovyScriptJob.GROOVY_SCRIPT_TEXT_KEY, script));
+				Utils.createMap(GroovyScriptJob.GROOVY_SCRIPT_TEXT_KEY, script));
 	}
 
 	@Override

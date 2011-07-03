@@ -17,10 +17,10 @@ public class ObjectUtilsTest {
 	@Test
 	public void testDump() throws Exception {
 		//Utils.dump(System.getProperties());
-		ObjectUtils.dump(getMapSample());
-		ObjectUtils.dump(getListSample());
-		ObjectUtils.dump(new String[]{});
-		ObjectUtils.dump(new String[]{"a", "B"});
+		Utils.dump(getMapSample());
+		Utils.dump(getListSample());
+		Utils.dump(new String[]{});
+		Utils.dump(new String[]{"a", "B"});
 	}
 	
 	public Map<String, String> getMapSample() {

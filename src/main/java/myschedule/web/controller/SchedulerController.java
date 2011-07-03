@@ -1,14 +1,17 @@
 package myschedule.web.controller;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpSession;
 
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
-import myschedule.service.ObjectUtils;
-import myschedule.service.ObjectUtils.Getter;
+import myschedule.service.Utils;
+import myschedule.service.SchedulerServiceContainer;
+import myschedule.service.SchedulerServiceDao;
+import myschedule.service.Utils.Getter;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
 
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /** 
  * Scheduler controller.
@@ -35,6 +39,78 @@ public class SchedulerController {
 	
 	@Autowired @Qualifier("schedulerServiceFinder")
 	protected SchedulerServiceFinder schedulerServiceFinder;
+	
+	@Autowired @Qualifier("schedulerServiceContainer")
+	protected SchedulerServiceContainer schedulerServiceContainer;
+
+	@Autowired @Qualifier("schedulerServiceFileDao")
+	protected SchedulerServiceDao schedulerServiceDao;
+	
+	@RequestMapping(value="/modify", method=RequestMethod.GET)
+	public DataModelMap modify(
+			@RequestParam String name, 
+			HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(name);
+		DataModelMap data = new DataModelMap();
+		data.addData("schedulerName", schedulerService.getName());
+		data.addData("isStarted", schedulerService.isStarted());
+		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isShutdown", schedulerService.isShutdown());
+		
+		Properties configProps = schedulerService.getConfigProps();
+		if (configProps == null || !schedulerService.isConfigModifiable())
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "ScheduleService " + name + " config props is not editiable.");
+		String configPropsText = null;
+		String schedulerServiceName = schedulerService.getSchedulerName();
+		if (schedulerServiceDao.hasSchedulerService(schedulerServiceName)) {
+			configPropsText = schedulerServiceDao.getConfigPropsText(schedulerServiceName);
+		} else {
+			configPropsText = Utils.propsToText(configProps);
+		}
+		
+		data.addData("configPropsText", configPropsText);
+		data.addData("schedulerServiceName", schedulerServiceName);
+		return data; 
+	}
+	
+	@RequestMapping(value="/modify-action", method=RequestMethod.POST)
+	public DataModelMap modifyAction(
+			@RequestParam String schedulerServiceName,
+			@RequestParam String configPropsText,
+			HttpSession session) {
+		// Parse form config into props
+		Properties configProps = Utils.loadPropertiesFromText(configPropsText);
+		
+		// Create a new SchedulerService.
+		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(schedulerServiceName);
+		boolean origRunning = schedulerService.isStarted() && !schedulerService.isPaused();
+		if (schedulerService.isInitialized()) {
+			schedulerService.shutdown();
+			schedulerService.destroy();
+		}		
+		schedulerService.setConfigProps(configProps);
+		schedulerService.init();
+		logger.info("SchedulerService " + schedulerServiceName + " has been updated and re-initialized.");
+		
+		// Update storage config
+		schedulerServiceDao.saveSchedulerService(schedulerService, configPropsText, true);
+		logger.info("SchedulerService " + schedulerService.getName() + " configProps has been updated.");
+		
+		if (origRunning) {
+			schedulerService.start();
+			logger.info("SchedulerService " + schedulerServiceName + " has been re-started.");
+		}
+		DataModelMap data = new DataModelMap();
+		data.addData("schedulerName", schedulerService.getName());
+		data.addData("isStarted", schedulerService.isStarted());
+		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isShutdown", schedulerService.isShutdown());
+		
+		data.addData("schedulerService", schedulerService);
+		data.addData("origRunning", origRunning);
+		
+		return data;
+	}
 	
 	@RequestMapping(value="/summary", method=RequestMethod.GET)
 	public DataModelMap summary(HttpSession session) {
@@ -102,14 +178,14 @@ public class SchedulerController {
 	
 	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
-		List<Getter> getters = ObjectUtils.getGetters(schedulerMetaData);
+		List<Getter> getters = Utils.getGetters(schedulerMetaData);
 		for (Getter getter : getters) {
 			String key = getter.getPropName();
 			if (key.length() >= 1) {
 				if (key.equals("summary")) // skip this field.
 					continue;
 				key = key.substring(0, 1).toUpperCase() + key.substring(1);
-				String value = ObjectUtils.getGetterStrValue(getter);
+				String value = Utils.getGetterStrValue(getter);
 				schedulerInfo.put(key, value);
 			} else {
 				logger.warn("Skipped a scheduler info key length less than 1 char. Key=" + key);

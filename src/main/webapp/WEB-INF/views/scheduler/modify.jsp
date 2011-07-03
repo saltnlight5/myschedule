@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/views/page-a.inc" %>
-<%@ include file="/WEB-INF/views/dashboard/menu.inc" %>
-<%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
+<%@ include file="/WEB-INF/views/menu.inc" %>
+<%@ include file="/WEB-INF/views/scheduler/submenu.inc" %>
 <style>
 #modify-scheduler-service {
 	width: 100%;
@@ -26,6 +26,11 @@
 }
 </style>
 <h1>Modify Scheduler Config</h1>
+
+<div class="warning">
+Modifying config props will auto re-initialize/re-start your scheduler!
+</div>
+
 <div id="modify-scheduler-service">
 <form method="post" action="modify-action">
 
