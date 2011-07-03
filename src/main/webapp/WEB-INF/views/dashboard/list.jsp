@@ -19,7 +19,7 @@ $(document).ready(function() {
 	<thead>
 		<tr>
 			<th>SCHEDULER NAME</th>
-			<th>READY</th>
+			<th>INITIALIZED</th>
 			<th>STARTED</th>
 			<th>PAUSED</th>
 			<th>PERSISTENCE</th>

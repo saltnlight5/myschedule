@@ -60,13 +60,15 @@ public class SchedulerAvailableInterceptor extends HandlerInterceptorAdapter {
 					"The scheduler service " + schedulerServiceName + " has not been initialized. Please select one that has properly initialized.");
 		}
 		
-		// If scheduler is down and req is for /job/*, then redirect to scheduler/* instead.
+		// If scheduler is down and req is for /job/*, then redirect to job/scheduler-down instead.
 		if (schedulerService.isShutdown()) {
 			String mainPath = WebAppContextListener.MAIN_PATH;
 			String url = request.getRequestURI();
 			String contextPath = request.getContextPath();
-			if (url.startsWith(contextPath + mainPath + "/job")) {
-				response.sendRedirect(contextPath + mainPath + "/scheduler/summary");
+			if (url.endsWith("/job/scheduler-down")) { // ensure we are not in a infinite loop.
+				return true;
+			} else if (url.startsWith(contextPath + mainPath + "/job")) {
+				response.sendRedirect(contextPath + mainPath + "/job/scheduler-down");
 				return false;
 			}
 		} else {

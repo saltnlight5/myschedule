@@ -47,6 +47,11 @@ public class JobController {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		return new DataModelMap(getJobListPageData(schedulerService));
 	}
+	
+	@RequestMapping(value="/scheduler-down", method=RequestMethod.GET)
+	public DataModelMap schedulerDown() {
+		return new DataModelMap();
+	}
 
 	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
 	public DataModelMap listExecutingJobs(HttpSession session) {
