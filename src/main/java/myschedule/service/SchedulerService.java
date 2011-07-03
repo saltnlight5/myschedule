@@ -23,7 +23,11 @@ import org.quartz.Trigger;
  */
 public interface SchedulerService {
 
+	void setConfigProps(Properties configProps);
+	
 	List<JobExecutionContext> getCurrentlyExecutingJobs();
+	
+	boolean isConfigModifiable();
 	
 	boolean isInitialized();
 	

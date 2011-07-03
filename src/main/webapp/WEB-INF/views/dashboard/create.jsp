@@ -10,7 +10,7 @@
 	margin-top: 2px;
 	margin-bottom: 2px;
 }
-#configPropsText, #fileLocation {
+#configPropsText {
 	font-size: 1.5em;
 	height: 2.0em;
 	font-height: 1.2em;
@@ -21,22 +21,8 @@
 	height: 20.0em;
 	width: 100%;
 }
-#fileLocation, #configPropsText{
-	width: 480px;
-	width: 100%;
-}
-#autoStart, #waitForJobsToComplete {
-	font-size: 1.5em;
-	margin-top: 2px;
-	margin-bottom: 2px;
-}
 #submit {
 	font-size: 1.5em;
-}
-
-.two-cols div { 
-	float: left;
-	width: 50%; 
 }
 </style>
 <script>
@@ -76,11 +62,9 @@ Quartz Scheduler Config Properties
 <textarea id="configPropsText" name="configPropsText"></textarea>
 </div>
 
-<div>
-	<span id="empty-label" class="label"></span></div>
-	<input id="submit" type="submit" value="Create Scheduler"/>
-</div>
+<input id="submit" type="submit" value="Create Scheduler"/>
 
 </form>
-</div>
+</div><!-- create-scheduler-service -->
+
 <%@ include file="/WEB-INF/views/page-b.inc" %>

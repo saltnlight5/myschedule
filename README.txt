@@ -19,6 +19,10 @@ $ bin/catalina.bat run
 
 = TODO =
  * Add Edit Config in scheduler menu.
+ * Renamed delete to delete-get-names.jsp to be consistent.
+ * Add warning on non-started scheduler on job list page.
+ * Add delete confirmation dialog
+ * Add delete scheduler config only notes, not jobs in DB.
  * Add Change Scripting to Tool menu and add CronTest page. 
 
 = samples =

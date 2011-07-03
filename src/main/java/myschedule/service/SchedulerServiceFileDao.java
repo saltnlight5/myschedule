@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * A file storage implementation for SchedulerService DAO.
@@ -23,32 +26,38 @@ public class SchedulerServiceFileDao extends AbstractService implements Schedule
 	public void setConfigStoreLocation(File configStoreLocation) {
 		this.configStoreLocation = configStoreLocation;
 	}
-
+	
 	@Override
-	public void saveSchedulerService(SchedulerService schedulerService) {
-		Properties configProps = schedulerService.getConfigProps();
+	public void saveSchedulerService(SchedulerService schedulerService, String origConfigPropsText, boolean update) {
 		String name = schedulerService.getConfigSchedulerName();
 		if (name == null)
 			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Config is missing scheduler name.");
 		
 		File file = getConfigFile(name);
 		
-		// Ensure we do not overwrite existing file.
-		if (file.exists())
-			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Config " + file + " already exists.");
-		
-		// Ensure we have scheduler data save together into the configProperties
-		if (!configProps.containsKey(Quartz18SchedulerService.AUTO_START_KEY))
-			configProps.setProperty(Quartz18SchedulerService.AUTO_START_KEY, "" + schedulerService.isAutoStart());
-		if (!configProps.containsKey(Quartz18SchedulerService.WAIT_FOR_JOBS_KEY))
-			configProps.setProperty(Quartz18SchedulerService.WAIT_FOR_JOBS_KEY, "" + schedulerService.isWaitForJobsToComplete());
+		if (!update) {
+			// Ensure we do not overwrite existing file.
+			if (file.exists())
+				throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Config " + file + " already exists.");
+		}
 		
 		// Write config file.
 		try {
 			FileWriter writer = new FileWriter(file);
-			configProps.store(writer, "MySchedule Scheduler Config. CreateDate: " + new Date());
+			if (origConfigPropsText != null) {
+				writer.write(origConfigPropsText);
+				logger.info("Save config using origConfigPropsText.");
+			} else {
+				Properties configProps = schedulerService.getConfigProps();
+				configProps.store(writer, "MySchedule Scheduler Config. CreateDate: " + new Date());
+				logger.info("Save config using configProps object.");
+			}
+			writer.flush();
 			writer.close();
-			logger.info("Config props " + file + " has been saved.");
+			if (update)
+				logger.info("Update to SchedulerService " + name + " config props on file: " + file + " is done.");
+			else 
+				logger.info("New SchedulerService " + name + " config props on file: " + file + " is done.");
 		} catch (Exception e) {
 			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Failed to create Properties from input config.", e);			
 		}				
@@ -68,7 +77,7 @@ public class SchedulerServiceFileDao extends AbstractService implements Schedule
 		}
 		
 		Quartz18SchedulerService schedulerService = new Quartz18SchedulerService();
-		schedulerService.setConfigProps(configProps);
+		schedulerService.setConfigProps(configProps);		
 		return schedulerService;
 	}
 
@@ -103,6 +112,21 @@ public class SchedulerServiceFileDao extends AbstractService implements Schedule
 				names.add(name);
 		}
 		return names;
+	}
+
+	@Override
+	public String getConfigPropsText(String schedulerServiceName) {
+		File file = getConfigFile(schedulerServiceName);
+		try {
+			FileReader reader = new FileReader(file);
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(reader, writer);
+			reader.close();
+			writer.close();
+			return writer.toString();
+		} catch (IOException e) {
+			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Failed to read config props from file: " + file);
+		}
 	}
 	
 	@Override

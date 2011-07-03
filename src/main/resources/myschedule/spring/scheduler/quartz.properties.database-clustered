@@ -13,7 +13,7 @@ org.quartz.jobStore.selectWithLockSQL = SELECT * FROM {0}LOCKS WHERE LOCK_NAME =
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
 org.quartz.threadPool.threadCount = 4
 
-# Persistence Job Store - with Oracle database
+# Persistence Job Store - with database
 org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
 org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz18
 org.quartz.dataSource.quartzDataSource.user = quartz18

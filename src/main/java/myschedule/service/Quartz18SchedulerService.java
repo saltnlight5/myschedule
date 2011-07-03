@@ -61,11 +61,22 @@ public class Quartz18SchedulerService implements SchedulerService {
 	
 	protected boolean autoStart;
 	
+	protected boolean configModifiable = true; // default to true
+	
 	protected Properties configProps;
 	
 	/** Used during stop/shutdown of scheduler. */
 	protected boolean waitForJobsToComplete = true;
 	
+	public void setConfigModifiable(boolean configModifiable) {
+		this.configModifiable = configModifiable;
+	}
+	
+	public boolean isConfigModifiable() {
+		return configModifiable;
+	}
+	
+	@Override
 	public void setConfigProps(Properties configProps) {
 		this.configProps = configProps;
 	}
@@ -186,21 +197,17 @@ public class Quartz18SchedulerService implements SchedulerService {
 	 */
 	@Override
 	public List<Date> getNextFireTimes(Trigger trigger, Date startTime, int maxCount) {	
-		try {
-			List<Date> list = new ArrayList<Date>();
-			Date nextDate = startTime;
-			int count = 0;
-			while(count++ < maxCount) {
-				Date fireTime = trigger.getFireTimeAfter(nextDate);
-				list.add(fireTime);
-				if (fireTime == null)
-					break;
-				nextDate = fireTime;
-			}
-			return list;
-		} catch (Exception e) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		List<Date> list = new ArrayList<Date>();
+		Date nextDate = startTime;
+		int count = 0;
+		while(count++ < maxCount) {
+			Date fireTime = trigger.getFireTimeAfter(nextDate);
+			list.add(fireTime);
+			if (fireTime == null)
+				break;
+			nextDate = fireTime;
 		}
+		return list;
 	}
 	
 	/** Add a JobDetail with a trigger schedule when to fire. */

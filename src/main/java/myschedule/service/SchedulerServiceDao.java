@@ -5,9 +5,11 @@ import java.util.List;
 
 public interface SchedulerServiceDao extends Service {
 
-	void saveSchedulerService(SchedulerService schedulerService);
-
+	void saveSchedulerService(SchedulerService schedulerService, String origConfigPropsText, boolean update);
+	
 	void deleteSchedulerService(String schedulerServiceName);
+
+	String getConfigPropsText(String schedulerServiceName);
 	
 	SchedulerService getSchedulerService(String schedulerServiceName);
 	

@@ -2,9 +2,12 @@ package myschedule.web.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -90,15 +93,90 @@ public class DashboardController {
 		schedulerServiceContainer.addAndInitSchedulerService(schedulerService);
 		logger.info("New schedulerService " + schedulerService.getName() + " has been created.");
 		
-		// Saving the config to storage
-		schedulerServiceDao.saveSchedulerService(schedulerService);
+		// Saving the new config to storage
+		schedulerServiceDao.saveSchedulerService(schedulerService, configPropsText, false);
 		logger.info("New schedulerService " + schedulerService.getName() + " configProps has been saved.");
 		
 		return new DataModelMap("schedulerService", schedulerService);
 	}
+	
+	@RequestMapping(value="/modify-get-names", method=RequestMethod.GET)
+	public DataModelMap modifyGetNames(HttpSession session) {
+		List<String> schedulerNames = schedulerServiceContainer.getSchedulerServiceNames();
+		return new DataModelMap("schedulerNames", schedulerNames);
+	}
+	
+	@RequestMapping(value="/modify", method=RequestMethod.GET)
+	public DataModelMap modify(
+			@RequestParam String name, 
+			HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(name);
+		Properties configProps = schedulerService.getConfigProps();
+		if (configProps == null || !schedulerService.isConfigModifiable())
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "ScheduleService " + name + " config props is not editiable.");
+		String configPropsText = null;
+		String schedulerServiceName = schedulerService.getSchedulerName();
+		if (schedulerServiceDao.hasSchedulerService(schedulerServiceName)) {
+			configPropsText = schedulerServiceDao.getConfigPropsText(schedulerServiceName);
+		} else {
+			configPropsText = propsToText(configProps);
+		}
+		
+		DataModelMap data = new DataModelMap();
+		data.addData("configPropsText", configPropsText);
+		data.addData("schedulerServiceName", schedulerServiceName);
+		return data; 
+	}
+	
+	@RequestMapping(value="/modify-action", method=RequestMethod.POST)
+	public DataModelMap modifyAction(
+			@RequestParam String schedulerServiceName,
+			@RequestParam String configPropsText,
+			HttpSession session) {
+		// Parse form config into props
+		Properties configProps = loadPropertiesFromText(configPropsText);
+		
+		// Create a new SchedulerService.
+		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(schedulerServiceName);
+		boolean origRunning = schedulerService.isStarted() && !schedulerService.isPaused();
+		if (schedulerService.isInitialized()) {
+			schedulerService.shutdown();
+			schedulerService.destroy();
+		}		
+		schedulerService.setConfigProps(configProps);
+		schedulerService.init();
+		logger.info("SchedulerService " + schedulerServiceName + " has been updated and re-initialized.");
+		
+		// Update storage config
+		schedulerServiceDao.saveSchedulerService(schedulerService, configPropsText, true);
+		logger.info("SchedulerService " + schedulerService.getName() + " configProps has been updated.");
+		
+		if (origRunning) {
+			schedulerService.start();
+			logger.info("SchedulerService " + schedulerServiceName + " has been re-started.");
+		}
 
-	@RequestMapping(value="/delete", method=RequestMethod.GET)
-	public DataModelMap delete() {
+		DataModelMap data = new DataModelMap();
+		data.addData("schedulerService", schedulerService);
+		data.addData("origRunning", origRunning);
+		
+		return data;
+	}
+
+	protected String propsToText(Properties configProps) {
+		StringWriter sWriter = new StringWriter();
+		PrintWriter pWriter = new PrintWriter(sWriter);
+		// print in sorted order.
+		List<String> names = new ArrayList<String>(configProps.stringPropertyNames());
+		Collections.sort(names);
+		for (String name : names)
+			pWriter.println(name + " = " + configProps.getProperty(name));
+		pWriter.close();
+		return sWriter.toString();
+	}
+
+	@RequestMapping(value="/delete-get-names", method=RequestMethod.GET)
+	public DataModelMap deleteGetNames() {
 		List<String> schedulerNames = schedulerServiceContainer.getSchedulerServiceNames();
 		return new DataModelMap("schedulerNames", schedulerNames);
 	}
