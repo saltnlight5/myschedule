@@ -11,16 +11,20 @@ import org.quartz.spi.ClassLoadHelper;
 import org.quartz.xml.XMLSchedulingDataProcessor;
 
 /** 
- * Extending the parent class to expose two getter methods.
+ * Extending XMLSchedulingDataProcessor to expose two getter methods, {@link #getLoadedJobs()} and
+ * {@link #getLoadedTriggers()}.
  * 
  * <p>
  * The XMLSchedulingDataProcessor is more than just a loader, it also keep data after loaded such
- * as list of loaded jobs. This class will expose those fields so user may access them.
+ * as list of loaded jobs. This class will expose those fields so user may access them after them.
  * 
  * <p>
- * If you forget to initialize the ClassLoadHelper parameter before passing to constructor,
+ * The XMLSchedulingDataProcessor constructor requires a CascadingClassLoadHelper that must be 
+ * initialized! If you forget to initialize the ClassLoadHelper parameter before passing to constructor,
  * you will always ended up a xml xsd schema default to the public web version and not the
- * one comes with the quartz jar! So use XmlJobLoader.newInstance() whenever possible.
+ * one comes with the quartz jar! This can be a really nasty hidden problem that makes your application
+ * unusable offline! We can't automatically call it in constructor either, so we provide a static helper
+ * XmlJobLoader.newInstance() to remind and workaround this problem.
  *
  * @author Zemian Deng
  */
@@ -28,7 +32,8 @@ public class XmlJobLoader extends XMLSchedulingDataProcessor {
 		
 	public static String XML_SYSTEM_ID = XMLSchedulingDataProcessor.QUARTZ_SYSTEM_ID_JAR_PREFIX;
 	
-	/** A simple factory method that automatically use CascadingClassLoadHelper as parameter. */
+	/** A simple factory method that automatically initialize a new CascadingClassLoadHelper and
+	 * pass to XmlJobLoader. */
 	public static XmlJobLoader newInstance() {
 		CascadingClassLoadHelper clhelper = new CascadingClassLoadHelper();
 		clhelper.initialize(); // we must initialize this first!
