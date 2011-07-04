@@ -18,12 +18,12 @@ $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/sr
 $ bin/catalina.bat run
 
 = TODO =
- * Add Edit Config in scheduler menu.
+ * Add modify action for config props in scheduler menu.
  * Renamed delete to delete-get-names.jsp to be consistent.
  * Add warning on non-started scheduler on job list page.
  * Add delete confirmation dialog
  * Add delete scheduler config only notes, not jobs in DB.
- * Add Change Scripting to Tool menu and add CronTest page. 
+ * Add confirmation box to delete and unschedule job. 
 
 = samples =
 == Add a job without trigger #2 ==
