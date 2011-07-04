@@ -33,9 +33,10 @@ $(document).ready(function() {
 	});
 });
 </script>
+
 <div id="unschedule-confirm" title="Unschedule Trigger?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Are you sure you want to remove the trigger from the scheduler?
+	Are you sure you want to remove this trigger from the scheduler?
 	</p>
 </div>
 

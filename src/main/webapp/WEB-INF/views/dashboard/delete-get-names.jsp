@@ -7,6 +7,12 @@
 	<p>There is no scheduler service to delete. Please create one first.</p>
 </c:when>
 <c:otherwise>
+	<div class="warning">
+		Only configuration properties file will be delete. If the scheduler is configured
+		with database persistence, no data from the database will be removed! If you must
+		also want remove database data, then try using the Scripting tool before removing
+		deleting this configuration. 
+	</div>
 	<form action="${ mainPath }/dashboard/delete-action" method="post">
 	<span>SchedulerService:</span> 
 	<select name="name">

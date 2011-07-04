@@ -33,9 +33,10 @@ $(document).ready(function() {
 	});
 });
 </script>
+
 <div id="delete-confirm" title="Delete Job?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Are you sure you want to remove the job from the scheduler?
+	Are you sure you want to remove this job from the scheduler?
 	</p>
 </div>
 
