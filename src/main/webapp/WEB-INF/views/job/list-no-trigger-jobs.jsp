@@ -3,17 +3,43 @@
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
 <script>
 $(document).ready(function() {
-	// use dataTables plugin
+	// Use dataTables plugin
 	$("#jobs").dataTable({
 		"aaSorting": [[0, "asc"]],
 		"iDisplayLength": 50,
 		"bJQueryUI": true,
 		"sPaginationType": "full_numbers"
 	});
+
+	// Confirm unschedule job
+	$("#delete-confirm").hide()
+	$("#jobs .action a + a").click(function() {
+		var linkUrl = $(this).attr("href");
+		$("#delete-confirm").dialog({
+			resizable: false,
+			height:200,
+			width:400,
+			modal: true,
+			buttons: {
+				"Yes": function() {
+					window.location.href=linkUrl;
+				},
+				Cancel: function() {
+					$(this).dialog("close");
+				}
+			}
+		});
+		return false;
+	});
 });
 </script>
-<h1>Jobs without assigned trigger</h1>
+<div id="delete-confirm" title="Delete Job?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	Are you sure you want to remove the job from the scheduler?
+	</p>
+</div>
 
+<h1>Jobs without assigned trigger</h1>
 <c:choose><c:when test="${ !sessionData.currentSchedulerStarted }">
 	<div class="warning">The current scheduler has not started! No jobs will be running yet.</div>
 </c:when><c:when test="${ sessionData.currentSchedulerPaused }">
@@ -34,7 +60,7 @@ $(document).ready(function() {
 	<tr>
 		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">${ jobDetail.fullName }</a></td>
 		<td>${ jobDetail.jobClass.name }</td>
-		<td>
+		<td class="action">
 			<a href="${ mainPath }/job/run-job?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">Run It Now</a> |
 			<a href="${ mainPath }/job/delete?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">Delete</a>
 		</td>

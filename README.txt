@@ -26,6 +26,11 @@ $ bin/catalina.bat run
  * Add Change Scripting to Tool menu and add CronTest page. 
 
 = samples =
+== Add a job without trigger #2 ==
+import org.quartz.*
+job = new JobDetail('job', 'DEFAULT', myschedule.job.sample.SimpleJob.class)
+quartzScheduler.addJob(job, true)
+
 == Add a job without trigger =
 import org.quartz.*
 import org.quartz.jobs.*
