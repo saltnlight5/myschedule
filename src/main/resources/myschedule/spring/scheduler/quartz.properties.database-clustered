@@ -11,7 +11,7 @@ org.quartz.jobStore.tablePrefix = QRTZ_
 org.quartz.jobStore.isClustered = true
 org.quartz.jobStore.selectWithLockSQL = SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
-org.quartz.threadPool.threadCount = 4
+org.quartz.threadPool.threadCount = 5
 
 # Persistence Job Store - with database
 org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver

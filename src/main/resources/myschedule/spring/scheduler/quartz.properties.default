@@ -4,7 +4,7 @@
 org.quartz.scheduler.instanceName = QuartzScheduler
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
-org.quartz.threadPool.threadCount = 4
+org.quartz.threadPool.threadCount = 5
 
 # MySchedule scheduler service parameters
 myschedule.schedulerService.autoStart = true
