@@ -439,10 +439,11 @@ public class Quartz18SchedulerService implements SchedulerService {
 		return "SchedulerService[" + getName() +  "]";
 	}
 
+	/** Run a job immediately with a non-volatile trigger (remove as soon as it's finished.) */
 	@Override
 	public void runJob(String jobName, String groupName) {
 		try {
-			scheduler.triggerJob(jobName, groupName);
+			scheduler.triggerJobWithVolatileTrigger(jobName, groupName);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}

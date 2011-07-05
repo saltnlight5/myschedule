@@ -17,13 +17,6 @@ To run myscheduler.war on Tomcat with different quartz properties file, try:
 $ export JAVA_OPTS="-Dmyschedule.quartz.config=file:///C:/projects/myschedule/src/main/resources/myschedule/spring/scheduler/quartz.properties.database"
 $ bin/catalina.bat run
 
-= TODO =
- * Add modify action for config props in scheduler menu.
- * Renamed delete to delete-get-names.jsp to be consistent.
- * Add warning on non-started scheduler on job list page.
- * Add delete confirmation dialog
- * Add delete scheduler config only notes, not jobs in DB.
- * Add confirmation box to delete and unschedule job. 
 
 = samples =
 == Add a job without trigger #2 ==
@@ -51,3 +44,7 @@ schedulerService.createGroovyScriptCronJob('sleepy_job', '0 0/5 * * * ?', '''
   Thread.sleep(2 * 60* 1000)
   logger.info("Job is done.")
 ''')
+
+= TODO =
+ * Run It Now should use a non-volatile trigger.
+
