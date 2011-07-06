@@ -22,8 +22,6 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 			<util:properties location="classpath:/myschedule/spring/scheduler/quartz.properties.in-memory"/>
 		</property>
 		<property name="configModifiable" value="false"></property>
-		<property name="autoStart" value="true"></property>
-		<property name="waitForJobsToComplete" value="true"></property>
 	</bean>
 		
 </beans>

@@ -84,7 +84,7 @@
 	========= -->
 	<bean id="springQuartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="schedulerName" value="SpringQuartzScheduler"/>
-		<property name="autoStartup" value="false"/>
+		<property name="autoStartup" value="true"/>
 		<property name="triggers">
 			<list>
 				<ref bean="job1Trigger"/>
@@ -101,7 +101,5 @@
 	<bean name="sampleScheduler4" class="myschedule.service.Quartz18SchedulerService">
 		<property name="scheduler" ref="springQuartzScheduler"></property>
 		<property name="configModifiable" value="false"></property>
-		<property name="waitForJobsToComplete" value="true"></property>
-		<property name="autoStart" value="true"></property>
 	</bean>
 </beans>
