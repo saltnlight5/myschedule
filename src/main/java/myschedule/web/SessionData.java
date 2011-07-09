@@ -3,11 +3,14 @@ package myschedule.web;
 
 
 public class SessionData {
-	protected String currentSchedulerName;
-	
-	protected boolean currentSchedulerStarted;
-	
+	protected String currentSchedulerName;	
+	protected boolean currentSchedulerStarted;	
 	protected boolean currentSchedulerPaused;
+	
+	@Override
+	public String toString() {
+		return super.toString() + "[currentSchedulerName=" + currentSchedulerName + "]";
+	}
 		
 	public void setCurrentSchedulerName(String currentSchedulerName) {
 		this.currentSchedulerName = currentSchedulerName;

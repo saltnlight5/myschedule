@@ -2,6 +2,8 @@ package myschedule.service;
 
 import static myschedule.service.ErrorCode.SCHEDULER_SERIVCE_NOT_FOUND;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import myschedule.web.SessionData;
@@ -75,11 +77,26 @@ public class SchedulerServiceFinder {
 	}
 
 	protected SessionData createSessionData() {
+		String name = findCurrentSchedulerName();
 		SessionData data = new SessionData();
+		data.setCurrentSchedulerName(name);
 		logger.info("New session data created: " + data);
 		return data;
 	}
 	
+	protected String findCurrentSchedulerName() {
+		String name = null;
+		if (defaultSchedulerService != null && defaultSchedulerService.isInit()) {
+			name = defaultSchedulerService.getName();
+		} else {
+			List<String> names = schedulerServiceContainer.getInitializedSchedulerServiceNames();
+			if (names.size()  > 0) {
+				name = names.get(0);
+			}
+		}
+		return name;
+	}
+
 	protected boolean hasSessionData(HttpSession session) {
 		return session.getAttribute(SESSION_DATA_KEY) != null;
 	}
@@ -88,13 +105,9 @@ public class SchedulerServiceFinder {
 		SessionData data = (SessionData)session.getAttribute(SESSION_DATA_KEY);
 		if (data == null) {
 			data = createSessionData();
-			setSessionData(session, data);
+			session.setAttribute(SESSION_DATA_KEY, data);
 		}
 		return data;
-	}
-	
-	protected void setSessionData(HttpSession session, SessionData data) {
-		session.setAttribute(SESSION_DATA_KEY, data);
 	}
 	
 	public SchedulerService switchSchedulerService(String newSchedulerName, HttpSession session) {
@@ -102,7 +115,7 @@ public class SchedulerServiceFinder {
 		String currentSchedulerName = data.getCurrentSchedulerName();
 		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(newSchedulerName);
 		data.setCurrentSchedulerName(newSchedulerName);
-		setSessionData(session, data);
+		session.setAttribute(SESSION_DATA_KEY, data);
 		logger.info("Switched scheduler service in session data from " + 
 				currentSchedulerName + " to " + newSchedulerName);
 		return schedulerService;
