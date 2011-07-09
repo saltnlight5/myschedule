@@ -6,11 +6,9 @@
  * Enhanced scheduler settings view with pause/resume/standby/start submenu.
  
  * Disabled dashboard scheduler name link after shutdown.
+ * Add groovy form action exception msg in the form display.
  
- * Add auto filled groovy examples (like the scheduler config as ajax call)
- * Add groovy error display in the form display.
- * Add auto filled xml data examples (like the scheduler config as ajax call)
- * Add xml data error display in the form display.
+ * Add xml load action exception msg in the form display.
  * Add "Calendar" view to Job list.
  * Add calendar to calculation list of next trigger times.
  * Add calendars and listeners list page to Job page.

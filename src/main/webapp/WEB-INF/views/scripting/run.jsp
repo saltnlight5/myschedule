@@ -8,10 +8,8 @@
 </style>
 <script>
 $(document).ready(function() {
-	// Hide the help page on startup.
+	// Auto hide help page, and show when click.
 	$("#help").hide();
-	
-	// Reponse to show page link
 	$('#show-help').click(function() {
 		$("#help").toggle('slow');
 	});
@@ -51,6 +49,23 @@ as deleting files on system etc!
 </div>
 
 </div><!-- div.help -->
+
+<c:if test="${ not empty data.fullStackTrace }">
+<script>
+$(document).ready(function() {
+	// Auto hide help page, and show when click.
+	$("#exception").hide();
+	$('#show-exception').click(function() {
+		$("#exception").toggle('slow');
+	});
+});
+</script>
+<div class="error">
+<p>There is an error when evaluating your script: <pre>${ data.errorMessage }</pre></p>
+<a id="show-exception" href="#">Show exception stacktrace</a>
+</div>
+<div id="exception"><pre>${ data.fullStackTrace }</pre></div>
+</c:if>
 
 <form method="post" action="${ mainPath }/scripting/run-action">
 <textarea  style="width: 100%; height: 15em;" name="groovyScriptText">${ data.groovyScriptText }</textarea>

@@ -12,16 +12,17 @@ import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.ScriptingService;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.servlet.ModelAndView;
 
 /** 
  * Scheduler Scripting Web Controller.
@@ -62,7 +63,7 @@ public class ScriptingController implements ServletContextAware {
 	}
 	
 	@RequestMapping(value="run-action", method=RequestMethod.POST)
-	public DataModelMap runAction(
+	public ModelAndView runAction(
 			@RequestParam String groovyScriptText,
 			HttpSession session) {
 		logger.debug("Running Groovy Script Text.");
@@ -75,14 +76,22 @@ public class ScriptingController implements ServletContextAware {
 		variables.put("servletContext", servletContext);
 		variables.put("logger", logger);
 		variables.put("webOut", webOut);
-		Object scriptingOutput = scriptingService.run(groovyScriptText, variables );
-		webOut.close();
-		String webOutResult = outStream.toString();
-		
-		ModelMap data = new ModelMap();
-		data.put("scriptingOutput", scriptingOutput);
-		data.put("webOutResult", webOutResult);
-		return new DataModelMap(data);
+
+		DataModelMap data = new DataModelMap();
+		try {
+			Object scriptingOutput = scriptingService.run(groovyScriptText, variables );
+			data.addData("scriptingOutput", scriptingOutput);
+		} catch (Exception e) {
+			data.addData("errorMessage", ExceptionUtils.getMessage(e));
+			data.addData("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
+			data.addData("groovyScriptText", groovyScriptText);
+			return new ModelAndView("scripting/run", data);
+		} finally {
+			webOut.close();
+			String webOutResult = outStream.toString();
+			data.addData("webOutResult", webOutResult);
+		}	
+		return new ModelAndView("scripting/run-action", data);
 	}
 
 	/**
