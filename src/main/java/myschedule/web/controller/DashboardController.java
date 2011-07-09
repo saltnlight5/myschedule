@@ -159,6 +159,21 @@ public class DashboardController {
 		return new DataModelMap("removedSchedulerName", name);
 	}
 	
+	@RequestMapping(value="/init", method=RequestMethod.GET)
+	public String init(@RequestParam String name) {
+		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(name);
+		schedulerService.init();
+		return "redirect:list";
+	}
+	
+	@RequestMapping(value="/shutdown", method=RequestMethod.GET)
+	public String shutdown(@RequestParam String name) {
+		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(name);
+		schedulerService.shutdown();
+		return "redirect:list";
+	}
+	
+	
 	@RequestMapping(value="/get-config-eg", method=RequestMethod.GET)
 	public void getConfigExample(@RequestParam String name, Writer writer) {
 		logger.debug("Getting resource: " + name);
@@ -186,11 +201,13 @@ public class DashboardController {
 			SchedulerStatus sstatus = new SchedulerStatus();
 			sstatus.setName(name);			
 			SchedulerService sservice = schedulerServiceContainer.getSchedulerService(name);
-			if (sservice.isInitialized() && !sservice.isShutdown()) {
+			if (sservice.isInit() && !sservice.isShutdown()) {
 				SchedulerMetaData smeta = sservice.getSchedulerMetaData();
-				sstatus.setInitialized(sservice.isInitialized());
+				sstatus.setInitialized(sservice.isInit());
 				sstatus.setPaused(sservice.isPaused());
-				sstatus.setStarted(sservice.isStarted() && !sservice.isShutdown());
+				sstatus.setStarted(sservice.isStarted());
+				sstatus.setShutdown(sservice.isShutdown());
+				sstatus.setStandby(sservice.isStandby());
 				sstatus.setSchedulerMetaData(smeta);
 				sstatus.setJobCount(sservice.getJobDetails().size());
 			} else {

@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 		ArrayList<String> names = new ArrayList<String>(schedulerServiceMap.keySet());
 		for (String name : names) {
 			SchedulerService sservice = getSchedulerService(name);
-			if (sservice.isInitialized())
+			if (sservice.isInit())
 				result.add(name);
 		}
 		return result;
@@ -63,57 +63,49 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 	public void addAndInitSchedulerService(SchedulerService schedulerService) {
 		// Quartz oddity: we can not obtain scheduler name without first initialize it first!
 		synchronized(this) {
+			String schedulerServiceName = null;
 			try {
 				// Init scheduler now.
 				schedulerService.init();
-				String schedulerServiceName = schedulerService.getName();
+				schedulerServiceName = schedulerService.getName();
 							
 				// Ensure we do not crash with other existing scheduler name.
 				if (hasSchedulerService(schedulerServiceName)) {
-					shutdownNonRemoteSchedulerService(schedulerService); // Now we need proper shutdown before destroy.
 					schedulerService.destroy();
-					throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "SchedulerService " + schedulerServiceName + " already exists.");
+					throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "SchedulerService " + schedulerServiceName + 
+							" has been init and shutdown because it already exists in this application container.");
 				}
-	
-				schedulerServiceMap.put(schedulerServiceName, schedulerService);
-				logger.info("SchedulerService " + schedulerServiceName + " is initialized and added to container.");
-			} catch (Exception e) {
-				String schedulerServiceName = schedulerService.getConfigSchedulerName();
-				
-				// Ensure we have a name.
-				if (schedulerServiceName == null)
-					schedulerServiceName = "FAILED_INIT_" + UUID.randomUUID().toString();
-
-				logger.info("Failed to initialize scheduler service " + schedulerService + 
-						". We will name=" + schedulerServiceName + " to store this scheduler service instance.");				
-				schedulerServiceMap.put(schedulerServiceName, schedulerService);
-				
-				throw new ErrorCodeException(e);
+			} catch (ErrorCodeException e) {
+				// If service has already init, let's try to get the name from config instead
+				if (schedulerService.isInit() && schedulerServiceName == null) {
+					schedulerServiceName = schedulerService.getConfigSchedulerName();
+				} else {
+					// re throw it.
+					throw e;
+				}
 			}
+
+			// Ensure we have a name.
+			if (schedulerServiceName == null) {
+				schedulerServiceName = "FAILED_INIT_" + UUID.randomUUID().toString();
+				logger.warn("SchedulerService has been initailzed, but failed to obtain a name. Assigned random unique name: " + schedulerServiceName);
+			}
+
+			// Now save it in our cache map.
+			schedulerServiceMap.put(schedulerServiceName, schedulerService);
+			logger.info("SchedulerService " + schedulerServiceName + " is initialized and added to container.");
 		}
 	}
 	
 	public void removeAndDestroySchedulerService(String schedulerServiceName) {
 		synchronized(this) {
 			SchedulerService schedulerService = getSchedulerService(schedulerServiceName);
-			if (schedulerService.isInitialized()) {
-				shutdownNonRemoteSchedulerService(schedulerService);
+			if (schedulerService.isInit()) {
 				schedulerService.destroy();
 			}
 			schedulerServiceMap.remove(schedulerServiceName);
 			logger.info("SchedulerService " + schedulerServiceName + " is destroyed and removed from container.");
 		}
-	}
-	
-	protected boolean shutdownNonRemoteSchedulerService(SchedulerService schedulerService) {
-		if (schedulerService.isRemote()) {
-			logger.info("Auto shutdown on remote scheduler is dangerous and will be skipped automatically.");
-			return false;
-		}
-		
-		schedulerService.shutdown();
-		logger.info("Scheduler service " + schedulerService.getName() + " is shutdown.");
-		return true;		
 	}
 	
 	protected void loadStoredSchedulerServices() {
@@ -146,42 +138,11 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 				logger.error("Failed to initialize service " + schedulerService, e);
 			}
 		}
-		logger.info(initCount + "/" + initSchedulerServices.size() + " pre-configured SchedulerService intialized.");
-
-		// Auto start all scheduler service if possible
-		int startCount = 0;
-		for (Map.Entry<String, SchedulerService> schedulerServiceEntry : schedulerServiceMap.entrySet()) {
-			String schedulerServiceName = schedulerServiceEntry.getKey();
-			SchedulerService schedulerService = schedulerServiceEntry.getValue();
-			// Auto start non-remote scheduler.
-			if (schedulerService.isAutoStart()) {
-				if (schedulerService.isRemote()) {
-					logger.info("Auto start on remote scheduler is dangerous and will be skipped automatically.");
-				} else {
-					schedulerService.start();
-					startCount++;
-					logger.info("Scheduler service " + schedulerServiceName + " auto started.");
-				}
-			}
-		}
-		logger.info(startCount + "/" + schedulerServiceMap.size() + " SchedulerService started.");
+		logger.info(initCount + "/" + initSchedulerServices.size() + " pre-configured SchedulerService has been intialized.");
 	}
 	
 	@Override
 	public void destroy() {		
-		// Auto shutdown scheduler service if possible
-		int shutdownCount = 0;
-		for (Map.Entry<String, SchedulerService> schedulerServiceEntry : schedulerServiceMap.entrySet()) {
-			//String schedulerServiceName = schedulerServiceEntry.getKey();
-			SchedulerService schedulerService = schedulerServiceEntry.getValue();
-			
-			// Auto shutdown non-remote scheduler.
-			if (shutdownNonRemoteSchedulerService(schedulerService)) {
-				shutdownCount++;				
-			}
-		}
-		logger.info(shutdownCount + "/" + schedulerServiceMap.size() + " SchedulerService shutdown.");
-		
 		// Destroying services and remove from the container map.
 		int destroyCount = 0;
 		int totalCount = schedulerServiceMap.size();
@@ -199,7 +160,7 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 				logger.error("Failed to destroy service " + schedulerServiceName, e);
 			}
 		}
-		logger.info(destroyCount + "/" + totalCount + " SchedulerService destroyed.");		
+		logger.info(destroyCount + "/" + totalCount + " SchedulerService has been destroyed.");		
 	}
 
 	@Override

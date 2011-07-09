@@ -6,15 +6,16 @@
 <h1>Scheduler Details for ${ data.schedulerName }</h1>
 <c:choose>
 
-<c:when test="${ data.isStarted && !data.isShutdown && data.isPaused}">
-<div class="warning">Scheduler is paused (standby), no detail is available. Try to resume it first.</div>
-</c:when>
-
-<c:when test="${ !data.isStarted || data.isShutdown }">
-<div class="warning">Scheduler has not started, no detail is available. Try to start it first.</div>
+<c:when test="${ data.isStandby }">
+<div class="warning">Scheduler is in standby mode! You may start scheduler again to get out of standby mode.</div>
 </c:when>
 
 <c:otherwise>
+
+<c:if test="${ data.isPaused }">
+<div class="warning">Scheduler is in paused mode! All triggers are paused. You may resume scheduler again to un-pause it.</div>
+</c:if>
+
 <script>
 $(document).ready(function() {
 	// use dataTables plugin

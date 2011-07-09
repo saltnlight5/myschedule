@@ -53,7 +53,7 @@ public class Quartz18SchedulerService implements SchedulerService {
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected AtomicBoolean initialized = new AtomicBoolean(false);
+	protected AtomicBoolean paused = new AtomicBoolean(false);
 		
 	protected Scheduler scheduler;
 	
@@ -65,8 +65,13 @@ public class Quartz18SchedulerService implements SchedulerService {
 	
 	protected Properties configProps;
 	
-	/** Used during stop/shutdown of scheduler. */
+	/** Used during shutdown of scheduler. */
 	protected boolean waitForJobsToComplete = true;
+	
+	@Override
+	public String toString() {
+		return "SchedulerService[" + name +  "]";
+	}
 	
 	public void setConfigModifiable(boolean configModifiable) {
 		this.configModifiable = configModifiable;
@@ -74,31 +79,6 @@ public class Quartz18SchedulerService implements SchedulerService {
 	
 	public boolean isConfigModifiable() {
 		return configModifiable;
-	}
-	
-	@Override
-	public void setConfigProps(Properties configProps) {
-		this.configProps = configProps;
-	}
-	
-	@Override
-	public List<JobExecutionContext> getCurrentlyExecutingJobs() {
-		List<JobExecutionContext> result = new ArrayList<JobExecutionContext>();
-		try {
-			List<?> jobs = scheduler.getCurrentlyExecutingJobs();
-			for (Object job : jobs) {
-				JobExecutionContext jobec = (JobExecutionContext)job;
-				result.add(jobec);
-			}
-		} catch (SchedulerException e) {
-			throw new RuntimeException(e);
-		}
-		return result;
-	}
-	
-	@Override
-	public boolean isInitialized() {
-		return initialized.get();
 	}
 	
 	@Override
@@ -111,11 +91,10 @@ public class Quartz18SchedulerService implements SchedulerService {
 		return waitForJobsToComplete;
 	}
 	
-	// Scheduler service methods
-	// =========================
+	
 	@Override
-	public Scheduler getUnderlyingScheduler() {
-		return scheduler;
+	public void setConfigProps(Properties configProps) {
+		this.configProps = configProps;
 	}
 	
 	public void setScheduler(Scheduler scheduler) {
@@ -132,6 +111,28 @@ public class Quartz18SchedulerService implements SchedulerService {
 		if (configProps == null)
 			return null;
 		return configProps.getProperty(NAME_KEY, "QuartzScheduler");
+	}
+	
+	// Scheduler service methods
+	// =========================
+	@Override
+	public Scheduler getUnderlyingScheduler() {
+		return scheduler;
+	}
+
+	@Override
+	public List<JobExecutionContext> getCurrentlyExecutingJobs() {
+		List<JobExecutionContext> result = new ArrayList<JobExecutionContext>();
+		try {
+			List<?> jobs = scheduler.getCurrentlyExecutingJobs();
+			for (Object job : jobs) {
+				JobExecutionContext jobec = (JobExecutionContext)job;
+				result.add(jobec);
+			}
+		} catch (SchedulerException e) {
+			throw new RuntimeException(e);
+		}
+		return result;
 	}
 		
 	@Override
@@ -285,31 +286,116 @@ public class Quartz18SchedulerService implements SchedulerService {
 		}
 	}
 	
-	@Override
-	public String getSchedulerName() {
-		try {
-			return scheduler.getSchedulerName();
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
-		}
-	}
-	
 	public Properties getConfigProps() {
 		return configProps;
 	}
-
-	protected void createAndInitScheduler() {
+	
+	@Override
+	public void init() {
 		if (configProps == null) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, "SchedulerService is missing config properties.");
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, "configProps is missing.");
 		}
 		try {
+			// Init scheduler
 			StdSchedulerFactory schedulerFactory = new StdSchedulerFactory(configProps);
 			scheduler = schedulerFactory.getScheduler();
+			
+			// Init service
+			name = scheduler.getSchedulerName();
+			autoStart = Boolean.parseBoolean(configProps.getProperty(AUTO_START_KEY, "true"));
+			waitForJobsToComplete = Boolean.parseBoolean(configProps.getProperty(WAIT_FOR_JOBS_KEY, "true"));
+			logger.info("Scheduler service " + name + " has been initialized.");
+			
+			// Auto start if possible.
+			if (autoStart && !isRemote()) {
+				try {
+					start();
+					logger.info("Scheduler service " + name + " has auto started.");
+				} catch (Exception e) {
+					// Just log error, do not re-throw.
+					logger.error("Failed to auto start scheduerl service " + name, e);
+				}
+			}
+		} catch (SchedulerException e) {
+			if (scheduler != null) {
+				destroy();
+			}
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+		
+	@Override
+	public void start() {
+		try {
+			scheduler.start();
+			logger.info("Scheduler service " + name + " started.");
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	@Override
+	public void standby() {
+		try {
+			scheduler.standby();
+			logger.info("Scheduler service " + name + " standby.");
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	@Override
+	public void pause() {
+		try {
+			scheduler.pauseAll();
+			paused.set(true);
+			logger.info("Scheduler service " + name + " standby.");
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	@Override
+	public void resume() {
+		try {
+			scheduler.resumeAll();
+			paused.set(false);
+			logger.info("Scheduler service " + name + " standby.");
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
+	@Override
+	public void shutdown() {
+		try {
+			scheduler.shutdown(waitForJobsToComplete);
+			logger.info("Scheduler service " + name + " is shutdown. Called with waitForJobsToComplete=" + waitForJobsToComplete);
+			scheduler = null;
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+	
+	@Override
+	public void destroy() {
+		// Try to auto shutdown if possible.
+		if (isInit() && !isShutdown() && !isRemote()) {
+			shutdown();
+			logger.info("Scheduler service " + name + " has been auto shutdown.");
+		}
+	}
+	
+	@Override
+	public boolean isPaused() {
+		return paused.get();
+	}
+	
+	@Override
+	public boolean isInit() {
+		return scheduler != null;
+	}
+
 	@Override
 	public boolean isRemote() {
 		try {
@@ -319,94 +405,6 @@ public class Quartz18SchedulerService implements SchedulerService {
 		}		
 	}
 	
-	@Override
-	public void pause() {
-		try {
-			if (scheduler != null) {
-				scheduler.standby();
-				logger.info(scheduler.getSchedulerName() + " paused.");
-			}
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
-		}
-	}
-	
-	@Override
-	public void resume() {
-		try {
-			if (scheduler != null) {
-				scheduler.start();
-				logger.info(scheduler.getSchedulerName() + " resumed.");
-			}
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
-		}
-	}
-	
-	/** No job will run unless scheduler is started. You may start adding/remove jobs once it's initialized though. */
-	@Override
-	public void start() {
-		try {
-			if (scheduler != null) {
-				if (scheduler.isShutdown()) {
-					// Re-init scheduler again in order so it can be start again.
-					destroy();
-					init();
-					logger.info("Scheduler service " + name + " has been re-init.");
-				}
-				scheduler.start();
-				logger.info("Scheduler " + scheduler.getSchedulerName() + " started.");
-			}
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
-		}
-	}
-	
-	/** Shutdown the scheduler completely. You must re-initialize the service before able to start it again. */
-	@Override
-	public void shutdown() {
-		try {
-			if (scheduler != null) {
-				String name = scheduler.getSchedulerName();
-				scheduler.shutdown(waitForJobsToComplete);
-				logger.info("Scheduler " + name + " shutdown with waitForJobsToComplete=" + waitForJobsToComplete);
-			}
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
-		}
-	}
-
-	/** Init and auto start scheduler if possible.
-	 * <p>User may start add/removing job to scheduler once it's initialized. 
-	 */
-	@Override
-	public void init() {
-		if (!initialized.get()) {
-			// Create and init the scheduler if it's not set by user.
-			if (scheduler == null) {
-				createAndInitScheduler();
-				autoStart = Boolean.parseBoolean(configProps.getProperty(AUTO_START_KEY, "true"));
-				waitForJobsToComplete = Boolean.parseBoolean(configProps.getProperty(WAIT_FOR_JOBS_KEY, "true"));
-			}
-			name = getSchedulerName();
-			initialized.set(true);
-			logger.info("Scheduler service " + name + " has been initialized.");
-		}
-	}
-
-	/** Destroy and auto shutdown scheduler if possible. */
-	@Override
-	public void destroy() {
-		if (initialized.get()) {
-			if (scheduler != null) {
-				String desc = scheduler.toString();
-				scheduler = null;
-				initialized.set(false);
-				logger.info("Scheduler service " + desc + " has been destroyed.");
-			}
-		}
-	}
-
 	@Override
 	public boolean isShutdown() {
 		try {
@@ -426,7 +424,7 @@ public class Quartz18SchedulerService implements SchedulerService {
 	}
 
 	@Override
-	public boolean isPaused() {
+	public boolean isStandby() {
 		try {
 			return scheduler.isInStandbyMode();
 		} catch (SchedulerException e) {
@@ -434,10 +432,7 @@ public class Quartz18SchedulerService implements SchedulerService {
 		}
 	}
 	
-	@Override
-	public String toString() {
-		return "SchedulerService[" + getName() +  "]";
-	}
+	// === Jobs creation helpers
 
 	/** Run a job immediately with a non-volatile trigger (remove as soon as it's finished.) */
 	@Override

@@ -1,16 +1,16 @@
 = TODO =
  * Fix "Run It Now" to use a non-volatile trigger.
  * Add JMX enabled config sample.
-
- * Add "Standby" field to dashboard view.
- * Add "Standby" control to scheduler settings menu.
- * Refactor the controls in scheduler settings menu (remove "stop" and match to Scheduler interface).
+ * Refactor the SchedulerService lifecycle's methods and match more to Scheduler interface instead.
+ * Enhanced dashboard view with shutdown/initialize actions.
+ * Enhanced scheduler settings view with pause/resume/standby/start submenu.
+ 
  * Add auto filled groovy examples (like the scheduler config as ajax call)
  * Add groovy error display in the form display.
  * Add auto filled xml data examples (like the scheduler config as ajax call)
  * Add xml data error display in the form display.
  * Add "Calendar" view to Job list.
- * Use Calendar to calculation list of next trigger times.
+ * Add calendar to calculation list of next trigger times.
  * Add calendars and listeners list page to Job page.
  * Add JobExecutionHistory plugin - record for when job started, completed, misfired, and by which trigger.
 

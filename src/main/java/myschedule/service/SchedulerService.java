@@ -25,11 +25,7 @@ public interface SchedulerService {
 
 	void setConfigProps(Properties configProps);
 	
-	List<JobExecutionContext> getCurrentlyExecutingJobs();
-	
 	boolean isConfigModifiable();
-	
-	boolean isInitialized();
 	
 	String getConfigSchedulerName();
 	
@@ -41,6 +37,8 @@ public interface SchedulerService {
 
 	String getName();
 
+	List<JobExecutionContext> getCurrentlyExecutingJobs();
+	
 	SchedulerMetaData getSchedulerMetaData();
 
 	List<JobDetail> getJobDetails();
@@ -64,14 +62,12 @@ public interface SchedulerService {
 	XmlJobLoader loadJobs(String xml);
 	
 	Properties getConfigProps();
-	
-	String getSchedulerName();
-
-	boolean isRemote();
 
 	void pause();
-
+	
 	void resume();
+
+	void standby();
 
 	void start();
 
@@ -80,10 +76,16 @@ public interface SchedulerService {
 	void init();
 
 	void destroy();
+
+	boolean isInit();
 	
+	boolean isPaused();
+
+	boolean isRemote();
+		
 	boolean isStarted();
 
-	boolean isPaused();
+	boolean isStandby();
 
 	boolean isShutdown();
 

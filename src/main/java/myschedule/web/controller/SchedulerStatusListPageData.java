@@ -20,9 +20,23 @@ public class SchedulerStatusListPageData {
 		protected boolean initialized;
 		protected boolean paused;
 		protected boolean started;
+		protected boolean standby;
+		protected boolean shutdown;
 		protected SchedulerMetaData schedulerMetaData;
 		protected int jobCount;
 		
+		public void setShutdown(boolean shutdown) {
+			this.shutdown = shutdown;
+		}
+		public boolean isShutdown() {
+			return shutdown;
+		}
+		public boolean isStandby() {
+			return standby;
+		}
+		public void setStandby(boolean standby) {
+			this.standby = standby;
+		}
 		public boolean isStarted() {
 			return started;
 		}

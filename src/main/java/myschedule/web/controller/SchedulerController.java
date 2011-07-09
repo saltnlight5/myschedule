@@ -55,13 +55,14 @@ public class SchedulerController {
 		data.addData("schedulerName", schedulerService.getName());
 		data.addData("isStarted", schedulerService.isStarted());
 		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isStandby", schedulerService.isStandby());
 		data.addData("isShutdown", schedulerService.isShutdown());
 		
 		Properties configProps = schedulerService.getConfigProps();
 		if (configProps == null || !schedulerService.isConfigModifiable())
 			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "ScheduleService " + name + " config props is not editiable.");
 		String configPropsText = null;
-		String schedulerServiceName = schedulerService.getSchedulerName();
+		String schedulerServiceName = schedulerService.getName();
 		if (schedulerServiceDao.hasSchedulerService(schedulerServiceName)) {
 			configPropsText = schedulerServiceDao.getConfigPropsText(schedulerServiceName);
 		} else {
@@ -84,11 +85,12 @@ public class SchedulerController {
 		// Create a new SchedulerService.
 		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(schedulerServiceName);
 		boolean origRunning = schedulerService.isStarted() && !schedulerService.isPaused();
-		if (schedulerService.isInitialized()) {
-			schedulerService.shutdown();
-			schedulerService.destroy();
-		}		
+		
+		// Bring the scheduler down and update the config
+		schedulerService.shutdown();		
 		schedulerService.setConfigProps(configProps);
+		
+		// Re-init it now.
 		schedulerService.init();
 		logger.info("SchedulerService " + schedulerServiceName + " has been updated and re-initialized.");
 		
@@ -96,7 +98,7 @@ public class SchedulerController {
 		schedulerServiceDao.saveSchedulerService(schedulerService, configPropsText, true);
 		logger.info("SchedulerService " + schedulerService.getName() + " configProps has been updated.");
 		
-		if (origRunning) {
+		if (!schedulerService.isStarted() && origRunning) {
 			schedulerService.start();
 			logger.info("SchedulerService " + schedulerServiceName + " has been re-started.");
 		}
@@ -104,6 +106,7 @@ public class SchedulerController {
 		data.addData("schedulerName", schedulerService.getName());
 		data.addData("isStarted", schedulerService.isStarted());
 		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isStandby", schedulerService.isStandby());
 		data.addData("isShutdown", schedulerService.isShutdown());
 		
 		data.addData("schedulerService", schedulerService);
@@ -119,6 +122,7 @@ public class SchedulerController {
 		data.addData("schedulerName", schedulerService.getName());
 		data.addData("isStarted", schedulerService.isStarted());
 		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isStandby", schedulerService.isStandby());
 		data.addData("isShutdown", schedulerService.isShutdown());
 		try {
 		String summary = schedulerService.getSchedulerMetaData().getSummary();
@@ -136,6 +140,7 @@ public class SchedulerController {
 		data.addData("schedulerName", schedulerService.getName());
 		data.addData("isStarted", schedulerService.isStarted());
 		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isStandby", schedulerService.isStandby());
 		data.addData("isShutdown", schedulerService.isShutdown());
 		if (schedulerService.isStarted() && !schedulerService.isShutdown()) {
 			data.addData("jobCount", "" + schedulerService.getJobDetails().size());
@@ -166,14 +171,11 @@ public class SchedulerController {
 		return "redirect:detail";
 	}
 	
-	@RequestMapping(value="/stop", method=RequestMethod.GET)
-	public String stop(HttpSession session) {
+	@RequestMapping(value="/standby", method=RequestMethod.GET)
+	public String standby(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		String name = schedulerService.getName();
-		schedulerService.shutdown();
-		logger.info("Scheduler service " + name + " has been shutdown.");
-				
-		return "redirect:summary";
+		schedulerService.standby();
+		return "redirect:detail";
 	}
 	
 	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {

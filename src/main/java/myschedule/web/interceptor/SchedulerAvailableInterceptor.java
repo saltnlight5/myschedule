@@ -55,7 +55,7 @@ public class SchedulerAvailableInterceptor extends HandlerInterceptorAdapter {
 			schedulerService = schedulerServiceContainer.getSchedulerService(schedulerServiceName);
 		}
 		
-		if (!schedulerService.isInitialized()) {
+		if (!schedulerService.isInit()) {
 			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
 					"The scheduler service " + schedulerServiceName + " has not been initialized. Please select one that has properly initialized.");
 		}
