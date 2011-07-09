@@ -99,6 +99,9 @@ public class SchedulerController {
 			logger.info("SchedulerService name has changed from " + origName + " to " + schedulerServiceName + 
 					", and it has been re-added to container service.");
 			
+			// Need to remove the old config prop from DAO
+			schedulerServiceDao.deleteSchedulerService(origName);
+			
 			// Need to update session object.
 			schedulerServiceFinder.switchSchedulerService(schedulerServiceName, session);
 		} else {

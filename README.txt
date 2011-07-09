@@ -8,7 +8,8 @@
  * Disabled dashboard scheduler name link after shutdown.
  * Add groovy form action exception msg in the form display.
  * Fixed bug in SchedulerController#modify-action when schedulerName has changed.
- 
+
+ * Fixed bug in  job/list fail on first startup.
  * Add xml load action exception msg in the form display.
  * Add "Calendar" view to Job list.
  * Add calendar to calculation list of next trigger times.

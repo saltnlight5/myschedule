@@ -34,9 +34,11 @@ public class SessionDataInterceptor extends HandlerInterceptorAdapter {
 		if (sessionData.getCurrentSchedulerName() == null) {
 			List<String> names = schedulerServiceContainer.getInitializedSchedulerServiceNames();
 			if (names.size()  > 0) {
-				sessionData.setCurrentSchedulerName(names.get(0)); // Use first one in list.
+				String name = names.get(0);
+				sessionData.setCurrentSchedulerName(name); // Use first one in list.
+				logger.info("Set current scheduler service name to " + name + " in session data.");
 			} else {
-				logger.info("No scheduler service found in the application!");
+				logger.info("No scheduler service found in application container for session data!");
 			}
 		}
 		return true; // continue process.
