@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -59,7 +60,8 @@ public class DashboardController {
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list() {
 		SchedulerStatusListPageData data = new SchedulerStatusListPageData();
-		data.setSchedulerStatusList(getSchedulerStatusList());
+		List<SchedulerStatus> names = getSchedulerStatusList();
+		data.setSchedulerStatusList(names);
 		return new DataModelMap(data);
 	}
 
@@ -197,6 +199,7 @@ public class DashboardController {
 	protected List<SchedulerStatus> getSchedulerStatusList() {
 		List<SchedulerStatus> result = new ArrayList<SchedulerStatus>();
 		List<String> names = schedulerServiceContainer.getSchedulerServiceNames();
+		Collections.sort(names); // Let's sort the names.
 		for (String name : names) {
 			SchedulerStatus sstatus = new SchedulerStatus();
 			sstatus.setName(name);			

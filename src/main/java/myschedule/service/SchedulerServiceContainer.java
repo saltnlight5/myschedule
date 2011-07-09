@@ -3,11 +3,11 @@ package myschedule.service;
 import static myschedule.service.ErrorCode.SCHEDULER_SERIVCE_NOT_FOUND;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -27,8 +27,8 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 	/** Temp, initial list of SchedulerServices, it will be set null after this service init is completed.*/
 	protected List<SchedulerService> initSchedulerServices;
 	
-	/** Actual storage of scheduler services in this container. Key = Unique name per SchedulerService (scheduler name). We use TreeMap to keep key sorted. */
-	protected Map<String, SchedulerService> schedulerServiceMap = new TreeMap<String, SchedulerService>();
+	/** Actual storage of scheduler services in this container. Key = Unique name per SchedulerService (scheduler name).*/
+	protected Map<String, SchedulerService> schedulerServiceMap = new HashMap<String, SchedulerService>();
 	
 	public void setSchedulerServiceDao(SchedulerServiceDao schedulerServiceDao) {
 		this.schedulerServiceDao = schedulerServiceDao;

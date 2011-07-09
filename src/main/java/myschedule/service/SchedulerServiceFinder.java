@@ -2,6 +2,7 @@ package myschedule.service;
 
 import static myschedule.service.ErrorCode.SCHEDULER_SERIVCE_NOT_FOUND;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -90,6 +91,7 @@ public class SchedulerServiceFinder {
 			name = defaultSchedulerService.getName();
 		} else {
 			List<String> names = schedulerServiceContainer.getInitializedSchedulerServiceNames();
+			Collections.sort(names); // Let's sort the names.
 			if (names.size()  > 0) {
 				name = names.get(0);
 			}
