@@ -57,6 +57,23 @@ $(document).ready(function() {
 </pre>
 </div> <!-- div.help -->
 
+<c:if test="${ not empty data.fullStackTrace }">
+<script>
+$(document).ready(function() {
+	// Auto hide help page, and show when click.
+	$("#exception").hide();
+	$('#show-exception').click(function() {
+		$("#exception").toggle('slow');
+	});
+});
+</script>
+<div class="error">
+<p>There is an error when loading xml data: <pre>${ data.errorMessage }</pre></p>
+<a id="show-exception" href="#">Show exception stacktrace</a>
+<div id="exception"><pre>${ data.fullStackTrace }</pre></div>
+</div>
+</c:if>
+
 <form method="post" action="${ mainPath }/job/load-xml-action">
 <textarea style="width: 100%; height: 15em;" name="xml">${ data.xml }</textarea>
 <br/>

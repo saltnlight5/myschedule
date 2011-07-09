@@ -63,8 +63,8 @@ $(document).ready(function() {
 <div class="error">
 <p>There is an error when evaluating your script: <pre>${ data.errorMessage }</pre></p>
 <a id="show-exception" href="#">Show exception stacktrace</a>
-</div>
 <div id="exception"><pre>${ data.fullStackTrace }</pre></div>
+</div>
 </c:if>
 
 <form method="post" action="${ mainPath }/scripting/run-action">

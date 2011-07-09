@@ -15,6 +15,7 @@ import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.XmlJobLoader;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.Trigger;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 /** 
  * Scheduler Jobs Controller.
@@ -118,7 +120,7 @@ public class JobController {
 	
 	/** Display form to load job-scheduling-data xml */
 	@RequestMapping(value="/load-xml", method=RequestMethod.GET)
-	public DataModelMap load() {
+	public DataModelMap loadXml() {
 		DataModelMap data = new DataModelMap();
 		data.put("xml", "");
 		return new DataModelMap(data);
@@ -126,20 +128,29 @@ public class JobController {
 
 	/** Process from for load job-scheduling-data xml */
 	@RequestMapping(value="/load-xml-action", method=RequestMethod.POST)
-	public DataModelMap loadPost(
+	public ModelAndView loadXmlAction(
 			@RequestParam String xml, 
 			HttpSession session) {
 		logger.info("Loading xml jobs.");
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		JobLoadPageData data = new JobLoadPageData();
-		XmlJobLoader loader = schedulerService.loadJobs(xml);
-		data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
-		data.setOverWriteExistingData(loader.isOverWriteExistingData());
-		data.setJobGroupsToNeverDelete(loader.getJobGroupsToNeverDelete());
-		data.setTriggerGroupsToNeverDelete(loader.getTriggerGroupsToNeverDelete());
-		data.setLoadedJobs(getJobDetailFullNames(loader.getLoadedJobs()));
-		data.setLoadedTriggers(getTriggerFullNames(loader.getLoadedTriggers()));
-		return new DataModelMap(data);
+		
+		try {
+			XmlJobLoader loader = schedulerService.loadJobs(xml);
+			JobLoadPageData data = new JobLoadPageData();
+			data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
+			data.setOverWriteExistingData(loader.isOverWriteExistingData());
+			data.setJobGroupsToNeverDelete(loader.getJobGroupsToNeverDelete());
+			data.setTriggerGroupsToNeverDelete(loader.getTriggerGroupsToNeverDelete());
+			data.setLoadedJobs(getJobDetailFullNames(loader.getLoadedJobs()));
+			data.setLoadedTriggers(getTriggerFullNames(loader.getLoadedTriggers()));
+			return new ModelAndView("job/load-xml-action", new DataModelMap(data));
+		} catch (Exception e) {
+			DataModelMap data = new DataModelMap();
+			data.addData("xml", xml);
+			data.addData("errorMessage", ExceptionUtils.getMessage(e));
+			data.addData("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
+			return new ModelAndView("job/load-xml", data);
+		}
 	}
 
 	/** Show a trigger and its job detail page. */
