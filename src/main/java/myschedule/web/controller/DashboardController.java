@@ -111,6 +111,7 @@ public class DashboardController {
 	@RequestMapping(value="/modify-get-names", method=RequestMethod.GET)
 	public DataModelMap modifyGetNames(HttpSession session) {
 		List<String> schedulerNames = schedulerServiceContainer.getSchedulerServiceNames();
+		Collections.sort(schedulerNames);
 		return new DataModelMap("schedulerNames", schedulerNames);
 	}
 
