@@ -30,6 +30,9 @@ $(document).ready(function() {
 	$("#config-in-memory").click(function() {
 		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.in-memory");
 	});
+	$("#config-jmx").click(function() {
+		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.jmx");
+	});
 	$("#config-rmi-server").click(function() {
 		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.rmi-server");
 	});
@@ -53,6 +56,7 @@ $(document).ready(function() {
 Quartz Scheduler Config Properties
 <span style="label-notes">(Eg: 
 	<a name="config-in-memory" id="config-in-memory">In-Memory</a>, 
+	<a name="config-jmx" id="config-jmx">Jmx Enabled</a>, 
 	<a name="config-rmi-server" id="config-rmi-server">RMI Server</a>, 
 	<a name="config-rmi-client" id="config-rmi-client">RMI Client</a>, 
 	<a name="config-database" id="config-database">Database</a>, 
