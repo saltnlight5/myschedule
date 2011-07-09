@@ -104,7 +104,7 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 				schedulerService.destroy();
 			}
 			schedulerServiceMap.remove(schedulerServiceName);
-			logger.info("SchedulerService " + schedulerServiceName + " is destroyed and removed from container.");
+			logger.info("SchedulerService " + schedulerServiceName + " is removed from container.");
 		}
 	}
 	

@@ -85,23 +85,38 @@ public class SchedulerController {
 		// Create a new SchedulerService.
 		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(schedulerServiceName);
 		boolean origRunning = schedulerService.isStarted() && !schedulerService.isPaused();
-		
+				
 		// Bring the scheduler down and update the config
 		schedulerService.shutdown();		
 		schedulerService.setConfigProps(configProps);
 		
-		// Re-init it now.
-		schedulerService.init();
-		logger.info("SchedulerService " + schedulerServiceName + " has been updated and re-initialized.");
+		// If name has changed, we need to remove scheduler from container service and re-add it.
+		if (!schedulerServiceName.equals(schedulerService.getConfigSchedulerName())) {
+			schedulerServiceContainer.removeAndDestroySchedulerService(schedulerServiceName);
+			schedulerServiceContainer.addAndInitSchedulerService(schedulerService);
+			String origName = schedulerServiceName;
+			schedulerServiceName = schedulerService.getName();
+			logger.info("SchedulerService name has changed from " + origName + " to " + schedulerServiceName + 
+					", and it has been re-added to container service.");
+			
+			// Need to update session object.
+			schedulerServiceFinder.switchSchedulerService(schedulerServiceName, session);
+		} else {
+			// Re-init it now
+			schedulerService.init();
+			logger.info("SchedulerService " + schedulerServiceName + " has been updated and re-initialized.");
+		}
 		
 		// Update storage config
 		schedulerServiceDao.saveSchedulerService(schedulerService, configPropsText, true);
 		logger.info("SchedulerService " + schedulerService.getName() + " configProps has been updated.");
 		
+		// Auto start if originally already started.
 		if (!schedulerService.isStarted() && origRunning) {
 			schedulerService.start();
 			logger.info("SchedulerService " + schedulerServiceName + " has been re-started.");
 		}
+				
 		DataModelMap data = new DataModelMap();
 		data.addData("schedulerName", schedulerService.getName());
 		data.addData("isStarted", schedulerService.isStarted());

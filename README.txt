@@ -1,5 +1,5 @@
 = TODO =
- * Fix "Run It Now" to use a non-volatile trigger.
+ * Fixed "Run It Now" to use a non-volatile trigger.
  * Add JMX enabled config sample.
  * Refactor the SchedulerService lifecycle's methods and match more to Scheduler interface instead.
  * Enhanced dashboard view with shutdown/initialize actions.
@@ -7,6 +7,7 @@
  
  * Disabled dashboard scheduler name link after shutdown.
  * Add groovy form action exception msg in the form display.
+ * Fixed bug in SchedulerController#modify-action when schedulerName has changed.
  
  * Add xml load action exception msg in the form display.
  * Add "Calendar" view to Job list.
