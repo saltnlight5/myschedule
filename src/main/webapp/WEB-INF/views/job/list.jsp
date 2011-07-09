@@ -56,6 +56,7 @@ $(document).ready(function() {
 		<th> START TIME </th>
 		<th> END TIME </th>
 		<th> NEXT FIRE TIME </th>
+		<th> CALENDER </th>
 		<th> ACTIONS </th>
 	</tr>
 	</thead>
@@ -69,6 +70,7 @@ $(document).ready(function() {
 		<td><fmt:formatDate value="${ trigger.startTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.endTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
+		<td>${ trigger.calendarName }<%--<a href="${ mainPath }/job/calendar?name=${ trigger.calendarName }">${ trigger.calendarName }</a>--%></td>
 		<td class="action">
 			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">Run It Now</a> |
 			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a>
