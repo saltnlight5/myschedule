@@ -5,6 +5,8 @@
  * Enhanced dashboard view with shutdown/initialize actions.
  * Enhanced scheduler settings view with pause/resume/standby/start submenu.
  
+ * Disabled dashboard scheduler name link after shutdown.
+ 
  * Add auto filled groovy examples (like the scheduler config as ajax call)
  * Add groovy error display in the form display.
  * Add auto filled xml data examples (like the scheduler config as ajax call)

@@ -60,7 +60,11 @@ $(document).ready(function() {
 	<tbody>
 	<c:forEach items="${ data.schedulerStatusList }" var="schedulerStatus" varStatus="loop">
 	<tr>
-		<td><a href="${ mainPath }/dashboard/switch-scheduler?name=${ schedulerStatus.name }">${ schedulerStatus.name }</a></td>
+		<c:choose><c:when test="${ schedulerStatus.initialized }">
+			<td><a href="${ mainPath }/dashboard/switch-scheduler?name=${ schedulerStatus.name }">${ schedulerStatus.name }</a></td>
+		</c:when><c:otherwise>
+			<td>${ schedulerStatus.name }</td>
+		</c:otherwise></c:choose>
 		<td>${ schedulerStatus.initialized }</td>
 		<c:choose><c:when test="${ schedulerStatus.initialized }">
 			<td>${ schedulerStatus.started }</td>
@@ -78,8 +82,7 @@ $(document).ready(function() {
 			<td>N/A</td>
 			<td>N/A</td>
 			<td><a href="${ mainPath }/dashboard/init?name=${ schedulerStatus.name }">Initialize</a></td>
-		</c:otherwise>
-		</c:choose>
+		</c:otherwise></c:choose>
 	</tr>
 	</c:forEach>
 	</tbody>
