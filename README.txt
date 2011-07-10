@@ -1,17 +1,5 @@
 = TODO =
- * Fixed "Run It Now" to use a non-volatile trigger.
- * Added JMX enabled config sample.
- * Refactored the SchedulerService lifecycle's methods and match more to Scheduler interface instead.
- * Enhanced dashboard view with shutdown/initialize actions.
- * Enhanced scheduler settings view with pause/resume/standby/start submenu.
- * Disabled dashboard scheduler name link after shutdown.
- * Fixed bug in SchedulerController#modify-action when schedulerName has changed.
- * Fixed bug in  job/list fail on first startup.
- * Added groovy form action exception msg in the form display.
- * Added xml load action exception msg in the form display.
- * Added listeners page under Settings menu.
- * Added "Calendar" view to Job list.
- * Added calendar to calculation list of next trigger times.
+
 
 = About myschedule =
 The myschedule project is a web based Quartz scheduler dashboard application.
