@@ -1,5 +1,6 @@
 package myschedule.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -8,13 +9,14 @@ import javax.servlet.http.HttpSession;
 
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
-import myschedule.service.Utils;
+import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceContainer;
 import myschedule.service.SchedulerServiceDao;
-import myschedule.service.Utils.Getter;
-import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
+import myschedule.service.Utils;
+import myschedule.service.Utils.Getter;
 
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
 import org.slf4j.Logger;
@@ -46,17 +48,47 @@ public class SchedulerController {
 	@Autowired @Qualifier("schedulerServiceFileDao")
 	protected SchedulerServiceDao schedulerServiceDao;
 	
+	protected void copySchedulerStatusData(SchedulerService schedulerService, DataModelMap data) {
+		data.addData("schedulerName", schedulerService.getName());
+		data.addData("isStarted", schedulerService.isStarted());
+		data.addData("isPaused", schedulerService.isPaused());
+		data.addData("isStandby", schedulerService.isStandby());
+		data.addData("isShutdown", schedulerService.isShutdown());
+	}
+	
+	@RequestMapping(value="/listeners", method=RequestMethod.GET)
+	public DataModelMap listeners(HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		DataModelMap data = new DataModelMap();
+		copySchedulerStatusData(schedulerService, data);
+		Scheduler scheduler = (Scheduler)schedulerService.getUnderlyingScheduler();
+		try {
+			List<Object> jobListeners = new ArrayList<Object>();
+			for (Object nameObj : scheduler.getJobListenerNames())
+				jobListeners.add(scheduler.getJobListener(nameObj.toString()));
+
+			List<Object> triggerListeners = new ArrayList<Object>();
+			for (Object nameObj : scheduler.getTriggerListenerNames())
+				triggerListeners.add(scheduler.getTriggerListener(nameObj.toString()));
+			
+			data.addData("globalJobListeners", scheduler.getGlobalJobListeners());
+			data.addData("jobListeners", jobListeners);
+			data.addData("globalTriggerListeners", scheduler.getGlobalTriggerListeners());
+			data.addData("triggerListeners", triggerListeners);
+			data.addData("schedulerListeners", scheduler.getSchedulerListeners());
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to retrieve scheduler listeners.", e);
+		}
+		return data;
+	}
+	
 	@RequestMapping(value="/modify", method=RequestMethod.GET)
 	public DataModelMap modify(
 			@RequestParam String name, 
 			HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(name);
 		DataModelMap data = new DataModelMap();
-		data.addData("schedulerName", schedulerService.getName());
-		data.addData("isStarted", schedulerService.isStarted());
-		data.addData("isPaused", schedulerService.isPaused());
-		data.addData("isStandby", schedulerService.isStandby());
-		data.addData("isShutdown", schedulerService.isShutdown());
+		copySchedulerStatusData(schedulerService, data);
 		
 		Properties configProps = schedulerService.getConfigProps();
 		if (configProps == null || !schedulerService.isConfigModifiable())
@@ -121,11 +153,7 @@ public class SchedulerController {
 		}
 				
 		DataModelMap data = new DataModelMap();
-		data.addData("schedulerName", schedulerService.getName());
-		data.addData("isStarted", schedulerService.isStarted());
-		data.addData("isPaused", schedulerService.isPaused());
-		data.addData("isStandby", schedulerService.isStandby());
-		data.addData("isShutdown", schedulerService.isShutdown());
+		copySchedulerStatusData(schedulerService, data);
 		
 		data.addData("schedulerService", schedulerService);
 		data.addData("origRunning", origRunning);
@@ -137,14 +165,10 @@ public class SchedulerController {
 	public DataModelMap summary(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		DataModelMap data = new DataModelMap();
-		data.addData("schedulerName", schedulerService.getName());
-		data.addData("isStarted", schedulerService.isStarted());
-		data.addData("isPaused", schedulerService.isPaused());
-		data.addData("isStandby", schedulerService.isStandby());
-		data.addData("isShutdown", schedulerService.isShutdown());
+		copySchedulerStatusData(schedulerService, data);
 		try {
-		String summary = schedulerService.getSchedulerMetaData().getSummary();
-		data.addData("schedulerSummary", summary);
+			String summary = schedulerService.getSchedulerMetaData().getSummary();
+			data.addData("schedulerSummary", summary);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Unable to get scheduler summary info.", e);
 		}
@@ -155,11 +179,7 @@ public class SchedulerController {
 	public DataModelMap detail(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		DataModelMap data = new DataModelMap();
-		data.addData("schedulerName", schedulerService.getName());
-		data.addData("isStarted", schedulerService.isStarted());
-		data.addData("isPaused", schedulerService.isPaused());
-		data.addData("isStandby", schedulerService.isStandby());
-		data.addData("isShutdown", schedulerService.isShutdown());
+		copySchedulerStatusData(schedulerService, data);
 		if (schedulerService.isStarted() && !schedulerService.isShutdown()) {
 			data.addData("jobCount", "" + schedulerService.getJobDetails().size());
 			SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();

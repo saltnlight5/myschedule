@@ -62,9 +62,12 @@ schedulerService.createGroovyScriptCronJob('sleepy_job', '0 0/5 * * * ?', '''
   Thread.sleep(2 * 60* 1000)
   logger.info("Job is done.")
 ''')
- 
-= Ideas =
- * Support quartz 2.0
- * CronTab
- * Cluster Monitoring
 
+// Add calendar 
+cal = new org.quartz.impl.calendar.CronCalendar("* * * 24 DEC ?")
+quartzScheduler.addCalendar("xmas", cal, true, true)
+
+// Use calendar
+trigger = quartzScheduler.getTrigger("GroovyJob24", "DEFAULT") 
+trigger.setCalendar("xmas")
+quartzScheduler.scheduleJob(trigger)

@@ -2,6 +2,7 @@
 <ul>
 <li><a href="${ mainPath }/scheduler/summary">Summary</a></li>
 <li><a href="${ mainPath }/scheduler/detail">Detail</a></li>
+<li><a href="${ mainPath }/scheduler/listeners">Listeners</a></li>
 <li><a href="${ mainPath }/scheduler/modify?name=${ sessionData.currentSchedulerName }">ConfigProps</a></li>
 
 <c:choose><c:when test="${ data.isStandby }">
