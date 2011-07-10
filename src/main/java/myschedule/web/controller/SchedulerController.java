@@ -61,7 +61,7 @@ public class SchedulerController {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		DataModelMap data = new DataModelMap();
 		copySchedulerStatusData(schedulerService, data);
-		Scheduler scheduler = (Scheduler)schedulerService.getUnderlyingScheduler();
+		Scheduler scheduler = schedulerService.getUnderlyingScheduler();
 		try {
 			List<Object> jobListeners = new ArrayList<Object>();
 			for (Object nameObj : scheduler.getJobListenerNames())

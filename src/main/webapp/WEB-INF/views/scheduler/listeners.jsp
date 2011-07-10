@@ -30,7 +30,7 @@ $(document).ready(function() {
 	<c:forEach items="${ data.schedulerListeners }" var="item" varStatus="loop">
 	<tr>
 		<td> ${ loop.index + 1 }</td>
-		<td> ${ item.class }</td>
+		<td> ${ item.class.name }</td>
 	</tr>
 	</c:forEach>
 	</tbody>
@@ -50,7 +50,7 @@ $(document).ready(function() {
 	<tr>
 		<td> ${ loop.index + 1 }</td>
 		<td> ${ item.name }</td>
-		<td> ${ item.class }</td>
+		<td> ${ item.class.name }</td>
 	</tr>
 	</c:forEach>
 	</tbody>
@@ -70,7 +70,7 @@ $(document).ready(function() {
 	<tr>
 		<td> ${ loop.index + 1 }</td>
 		<td> ${ item.name }</td>
-		<td> ${ item.class }</td>
+		<td> ${ item.class.name }</td>
 	</tr>
 	</c:forEach>
 	</tbody>
@@ -90,7 +90,7 @@ $(document).ready(function() {
 	<tr>
 		<td> ${ loop.index + 1 }</td>
 		<td> ${ item.name }</td>
-		<td> ${ item.class }</td>
+		<td> ${ item.class.name }</td>
 	</tr>
 	</c:forEach>
 	</tbody>
@@ -110,7 +110,7 @@ $(document).ready(function() {
 	<tr>
 		<td> ${ loop.index + 1 }</td>
 		<td> ${ item.name }</td>
-		<td> ${ item.class }</td>
+		<td> ${ item.class.name }</td>
 	</tr>
 	</c:forEach>
 	</tbody>

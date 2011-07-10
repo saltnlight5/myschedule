@@ -11,11 +11,10 @@
  * Add groovy form action exception msg in the form display.
  * Add xml load action exception msg in the form display.
  
+ * Added listeners page under Settings menu.
  * Add "Calendar" view to Job list.
  * Add calendar to calculation list of next trigger times.
- * Add calendars and listeners list page to Job page.
- * Add JobExecutionHistory plugin - record for when job started, completed, misfired, and by which trigger.
-
+ 
 = About myschedule =
 The myschedule project is a web based Quartz scheduler dashboard application.
 You may use to manage and monitor the scheduler throhgh an easy to use web UI.

@@ -18,6 +18,8 @@ import myschedule.service.XmlJobLoader;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +71,26 @@ public class JobController {
 	public DataModelMap listNoTriggerJobs(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		return new DataModelMap(getNoTriggerJobListPageData(schedulerService));
+	}
+	
+	@RequestMapping(value="/list-calendars", method=RequestMethod.GET)
+	public DataModelMap listCalendars(HttpSession session) {
+		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		DataModelMap data = new DataModelMap();
+		Scheduler scheduler = schedulerService.getUnderlyingScheduler();
+		try {
+			List<Object> calendars = new ArrayList<Object>();
+			String[] names = scheduler.getCalendarNames();
+			Arrays.sort(names);
+			for (String name : names)
+				calendars.add(scheduler.getCalendar(name));
+
+			data.addData("calendarNames", names);
+			data.addData("calendars", calendars);
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to retrieve scheduler calendars.", e);
+		}
+		return data;
 	}
 	
 	@RequestMapping(value="/unschedule", method=RequestMethod.GET)
