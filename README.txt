@@ -65,8 +65,3 @@ schedulerService.createGroovyScriptCronJob('sleepy_job', '0 0/5 * * * ?', '''
 // Add calendar 
 cal = new org.quartz.impl.calendar.CronCalendar("* * * 24 DEC ?")
 quartzScheduler.addCalendar("xmas", cal, true, true)
-
-// Use calendar
-trigger = quartzScheduler.getTrigger("GroovyJob24", "DEFAULT") 
-trigger.setCalendar("xmas")
-quartzScheduler.scheduleJob(trigger)

@@ -22,7 +22,7 @@ $(document).ready(function() {
 	});
 	
 	// Confirm unschedule job
-	$("#unschedule-confirm").hide()
+	$("#unschedule-confirm").hide();
 	$("#unschedule").click(function() {
 		var linkUrl = $(this).attr("href");
 		$("#unschedule-confirm").dialog({
@@ -41,6 +41,9 @@ $(document).ready(function() {
 		});
 		return false;
 	});
+
+	// Highlight excluded calendar date
+	$(".excluded-date").css('background-color', 'RED');
 });
 </script>
 
@@ -74,13 +77,19 @@ You may view full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetai
 	<tr>
 		<th> INDEX </th>
 		<th> NEXT FIRE TIME </th>
+		<th> EXCLUDE BY CALENDAR </th>
 	</tr>
 	</thead>
 	<tbody>
-	<c:forEach items="${ data.nextFireTimes }" var="time" varStatus="status">
+	<c:forEach items="${ data.nextFireTimes }" var="time" varStatus="loop">
 	<tr>
-		<td>${ status.index + 1 }</td>
+		<td>${ loop.index + 1 }</td>
 		<td>${ time }</td>
+		<c:choose><c:when test="${ data.excludeByCalendar[loop.index] == 'No' }">
+			<td>${ data.excludeByCalendar[loop.index] }</td>
+		</c:when><c:otherwise>
+			<td class="excluded-date">${ data.excludeByCalendar[loop.index] }</td>
+		</c:otherwise></c:choose>
 	</tr>
 	</c:forEach>
 	</tbody>

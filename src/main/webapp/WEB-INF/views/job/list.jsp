@@ -12,7 +12,7 @@ $(document).ready(function() {
 	});
 	
 	// Confirm unschedule job
-	$("#unschedule-confirm").hide()
+	$("#unschedule-confirm").hide();
 	$("#jobs .action a + a").click(function() {
 		var linkUrl = $(this).attr("href");
 		$("#unschedule-confirm").dialog({

@@ -16,6 +16,7 @@ import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.XmlJobLoader;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
@@ -50,11 +51,6 @@ public class JobController {
 	public DataModelMap list(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		return new DataModelMap(getJobListPageData(schedulerService));
-	}
-	
-	@RequestMapping(value="/scheduler-down", method=RequestMethod.GET)
-	public DataModelMap schedulerDown() {
-		return new DataModelMap();
 	}
 
 	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
@@ -207,7 +203,33 @@ public class JobController {
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
 		data.setNextFireTimes(nextFireTimes);
+		
+		// Calculate excludeByCalendar
+		List<String> excludeByCalendar = new ArrayList<String>(nextFireTimes.size());
+		String calName = trigger.getCalendarName();
+		if (calName != null) {
+			try {
+				Scheduler scheduler = schedulerService.getUnderlyingScheduler();
+				Calendar cal = scheduler.getCalendar(calName);
+				for (Date dt : nextFireTimes) {
+					if (!cal.isTimeIncluded(dt.getTime())) {
+						excludeByCalendar.add("Yes. " + calName + ": " + cal.toString());
+					} else {
+						excludeByCalendar.add("No");
+					}
+				}
+			} catch (SchedulerException e) {
+				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to calculate next fire times with Calendar " + calName, e);
+			}
+		} 
+		data.setExcludeByCalendar(excludeByCalendar);
+		
 		return new DataModelMap(data);
+	}
+	
+	@RequestMapping(value="/scheduler-down", method=RequestMethod.GET)
+	public DataModelMap schedulerDown() {
+	        return new DataModelMap();
 	}
 
 	protected List<String> getTriggerFullNames(List<Trigger> triggers) {
