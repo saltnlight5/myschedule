@@ -64,8 +64,8 @@ $(document).ready(function() {
 	<tbody>
 	<c:forEach items="${ data.triggers }" var="trigger" varStatus="loop">
 	<tr>
-		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.jobName }</a></td>
-		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.name }</a></td>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.fullJobName }</a></td>
+		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.fullName }</a></td>
 		<td>${ data.triggerSchedules[loop.index] }</td>
 		<td><fmt:formatDate value="${ trigger.startTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.endTime }" pattern="${ data.datePattern }"/></td>
