@@ -77,7 +77,9 @@ You may view full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetai
 	<tr>
 		<th> INDEX </th>
 		<th> NEXT FIRE TIME </th>
-		<th> EXCLUDE BY CALENDAR </th>
+		<c:if test="${ not empty data.excludeByCalendar }">
+			<th> EXCLUDE BY CALENDAR </th>
+		</c:if>
 	</tr>
 	</thead>
 	<tbody>
@@ -85,11 +87,13 @@ You may view full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetai
 	<tr>
 		<td>${ loop.index + 1 }</td>
 		<td>${ time }</td>
-		<c:choose><c:when test="${ data.excludeByCalendar[loop.index] == 'No' }">
-			<td>${ data.excludeByCalendar[loop.index] }</td>
-		</c:when><c:otherwise>
+		<c:if test="${ not empty data.excludeByCalendar }">
+		<c:choose><c:when test="${ data.excludeByCalendar[loop.index] != 'No' }">
 			<td class="excluded-date">${ data.excludeByCalendar[loop.index] }</td>
+		</c:when><c:otherwise>
+			<td>${ data.excludeByCalendar[loop.index] }</td>
 		</c:otherwise></c:choose>
+		</c:if>
 	</tr>
 	</c:forEach>
 	</tbody>

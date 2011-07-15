@@ -1,5 +1,5 @@
 = TODO =
-
+  * Fixed calendar datetime bg highlight displayed even when calendar is not set.
 
 = About myschedule =
 The myschedule project is a web based Quartz scheduler dashboard application.
