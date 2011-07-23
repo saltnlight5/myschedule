@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.ScriptingService;
+import myschedule.service.quartz.SchedulerTemplate;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -72,6 +73,7 @@ public class ScriptingController implements ServletContextAware {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("schedulerService", schedulerService);
+		variables.put("schedulerTemplate", new SchedulerTemplate(schedulerService.getUnderlyingScheduler()));
 		variables.put("quartzScheduler", schedulerService.getUnderlyingScheduler());
 		variables.put("servletContext", servletContext);
 		variables.put("logger", logger);
