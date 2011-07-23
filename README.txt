@@ -1,5 +1,7 @@
 = TODO =
   * Fixed calendar datetime bg highlight displayed even when calendar is not set.
+  * Added SchedulerTemplate and refactored services to use it.
+  * Added schedulerTemplate groovy script variable.
 
 = About myschedule =
 The myschedule project is a web based Quartz scheduler dashboard application.
