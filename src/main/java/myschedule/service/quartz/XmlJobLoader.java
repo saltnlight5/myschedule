@@ -1,8 +1,11 @@
-package myschedule.service;
+package myschedule.service.quartz;
 
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
+
+import myschedule.service.ErrorCode;
+import myschedule.service.ErrorCodeException;
 
 import org.quartz.JobDetail;
 import org.quartz.Trigger;

@@ -15,6 +15,7 @@ import myschedule.service.SchedulerServiceDao;
 import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.Utils;
 import myschedule.service.Utils.Getter;
+import myschedule.service.quartz.SchedulerTemplate;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -167,7 +168,7 @@ public class SchedulerController {
 		DataModelMap data = new DataModelMap();
 		copySchedulerStatusData(schedulerService, data);
 		try {
-			String summary = schedulerService.getSchedulerMetaData().getSummary();
+			String summary = schedulerService.getUnderlyingScheduler().getMetaData().getSummary();
 			data.addData("schedulerSummary", summary);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Unable to get scheduler summary info.", e);
@@ -178,11 +179,12 @@ public class SchedulerController {
 	@RequestMapping(value="/detail", method=RequestMethod.GET)
 	public DataModelMap detail(HttpSession session) {
 		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getUnderlyingScheduler());
 		DataModelMap data = new DataModelMap();
 		copySchedulerStatusData(schedulerService, data);
 		if (schedulerService.isStarted() && !schedulerService.isShutdown()) {
-			data.addData("jobCount", "" + schedulerService.getJobDetails().size());
-			SchedulerMetaData schedulerMetaData = schedulerService.getSchedulerMetaData();
+			data.addData("jobCount", "" + schedulerTemplate.getJobDetails().size());
+			SchedulerMetaData schedulerMetaData = schedulerTemplate.getSchedulerMetaData();
 			data.addData("schedulerDetailMap", getSchedulerDetail(schedulerMetaData));
 		}
 		return data;

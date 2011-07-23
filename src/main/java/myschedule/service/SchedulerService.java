@@ -1,16 +1,8 @@
 package myschedule.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerMetaData;
-import org.quartz.Trigger;
 
 /**
  * Lifecycle for a scheduler service. This is not the same as the {@link Service} due to special
@@ -36,30 +28,6 @@ public interface SchedulerService {
 	Scheduler getUnderlyingScheduler();
 
 	String getName();
-
-	List<JobExecutionContext> getCurrentlyExecutingJobs();
-	
-	SchedulerMetaData getSchedulerMetaData();
-
-	List<JobDetail> getJobDetails();
-
-	List<Trigger> getTriggers(JobDetail jobDetail);
-
-	JobDetail getJobDetail(String jobName, String jobGroup);
-
-	Trigger getTrigger(String triggerName, String triggerGroup);
-
-	List<Date> getNextFireTimes(Trigger trigger, Date startTime, int maxCount);
-
-	Date scheduleJob(JobDetail jobDetail, Trigger trigger);
-
-	void scheduleJob(Trigger trigger);
-
-	Trigger uncheduleJob(String triggerName, String triggerGroup);
-
-	List<Trigger> deleteJob(String jobName, String jobGroup);
-	
-	XmlJobLoader loadJobs(String xml);
 	
 	Properties getConfigProps();
 
@@ -88,10 +56,5 @@ public interface SchedulerService {
 	boolean isStandby();
 
 	boolean isShutdown();
-
-	void runJob(String jobName, String jobGroup);
 	
-	void createGroovyScriptCronJob(String jobName, String cron, String script);
-	
-	void createCronJob(String jobName, String cron, Class<? extends Job> jobClass, Map<String, Object> data);
 }

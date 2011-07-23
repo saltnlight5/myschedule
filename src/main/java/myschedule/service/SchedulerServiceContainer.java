@@ -59,7 +59,7 @@ public class SchedulerServiceContainer implements ApplicationContextAware, Initi
 		}
 		return schedulerServiceMap.get(schedulerServiceName);
 	}
-
+	
 	public void addAndInitSchedulerService(SchedulerService schedulerService) {
 		// Quartz oddity: we can not obtain scheduler name without first initialize it first!
 		synchronized(this) {

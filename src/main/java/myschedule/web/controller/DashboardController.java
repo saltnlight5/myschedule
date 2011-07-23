@@ -12,13 +12,14 @@ import javax.servlet.http.HttpSession;
 
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
-import myschedule.service.Quartz18SchedulerService;
+import myschedule.service.SchedulerServiceImpl;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceContainer;
 import myschedule.service.SchedulerServiceDao;
 import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.ServiceContainer;
 import myschedule.service.Utils;
+import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.web.SessionData;
 import myschedule.web.WebAppContextListener;
 import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
@@ -96,7 +97,7 @@ public class DashboardController {
 		Properties configProps = Utils.loadPropertiesFromText(configPropsText);
 		
 		// Create a new SchedulerService.
-		Quartz18SchedulerService schedulerService = new Quartz18SchedulerService();
+		SchedulerServiceImpl schedulerService = new SchedulerServiceImpl();
 		schedulerService.setConfigProps(configProps);
 		schedulerServiceContainer.addAndInitSchedulerService(schedulerService);
 		logger.info("New schedulerService " + schedulerService.getName() + " has been created.");
@@ -204,16 +205,17 @@ public class DashboardController {
 		for (String name : names) {
 			SchedulerStatus sstatus = new SchedulerStatus();
 			sstatus.setName(name);			
-			SchedulerService sservice = schedulerServiceContainer.getSchedulerService(name);
-			if (sservice.isInit() && !sservice.isShutdown()) {
-				SchedulerMetaData smeta = sservice.getSchedulerMetaData();
-				sstatus.setInitialized(sservice.isInit());
-				sstatus.setPaused(sservice.isPaused());
-				sstatus.setStarted(sservice.isStarted());
-				sstatus.setShutdown(sservice.isShutdown());
-				sstatus.setStandby(sservice.isStandby());
+			SchedulerService schedulerService = schedulerServiceContainer.getSchedulerService(name);
+			SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getUnderlyingScheduler());
+			if (schedulerService.isInit() && !schedulerService.isShutdown()) {
+				SchedulerMetaData smeta = schedulerTemplate.getSchedulerMetaData();
+				sstatus.setInitialized(schedulerService.isInit());
+				sstatus.setPaused(schedulerService.isPaused());
+				sstatus.setStarted(schedulerService.isStarted());
+				sstatus.setShutdown(schedulerService.isShutdown());
+				sstatus.setStandby(schedulerService.isStandby());
 				sstatus.setSchedulerMetaData(smeta);
-				sstatus.setJobCount(sservice.getJobDetails().size());
+				sstatus.setJobCount(schedulerTemplate.getJobDetails().size());
 			} else {
 				sstatus.setInitialized(false);
 			}

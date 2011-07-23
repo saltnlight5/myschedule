@@ -98,7 +98,7 @@
 	</bean>
 	
 	<!-- Sample scheduler service with a direct Quartz scheduler instance without configProps. -->
-	<bean name="sampleScheduler4" class="myschedule.service.Quartz18SchedulerService">
+	<bean name="sampleScheduler4" class="myschedule.service.SchedulerServiceImpl">
 		<property name="scheduler" ref="springQuartzScheduler"></property>
 		<property name="configModifiable" value="false"></property>
 	</bean>

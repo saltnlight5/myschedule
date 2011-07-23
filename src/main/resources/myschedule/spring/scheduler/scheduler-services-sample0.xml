@@ -17,7 +17,7 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
 	<!-- A default scheduler service with basic in-memory quartz config -->
-	<bean name="defaultSchedulerService" class="myschedule.service.Quartz18SchedulerService">
+	<bean name="defaultSchedulerService" class="myschedule.service.SchedulerServiceImpl">
 		<property name="configProps">
 			<util:properties location="classpath:/myschedule/spring/scheduler/quartz.properties.default"/>
 		</property>

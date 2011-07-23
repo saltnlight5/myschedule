@@ -76,7 +76,7 @@ public class SchedulerServiceFileDao extends AbstractService implements Schedule
 			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Failed to read configConfigs: " + file, e);	
 		}
 		
-		Quartz18SchedulerService schedulerService = new Quartz18SchedulerService();
+		SchedulerServiceImpl schedulerService = new SchedulerServiceImpl();
 		schedulerService.setConfigProps(configProps);		
 		return schedulerService;
 	}

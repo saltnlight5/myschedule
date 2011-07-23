@@ -13,7 +13,8 @@ import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceFinder;
-import myschedule.service.XmlJobLoader;
+import myschedule.service.quartz.SchedulerTemplate;
+import myschedule.service.quartz.XmlJobLoader;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;
@@ -49,8 +50,8 @@ public class JobController {
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list(HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		return new DataModelMap(getJobListPageData(schedulerService));
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		return new DataModelMap(getJobListPageData(schedulerTemplate));
 	}
 
 	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
@@ -59,14 +60,15 @@ public class JobController {
 		if (!schedulerService.isStarted() || schedulerService.isPaused())
 			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
 					"The current scheudler is not started or in standby mode. Plese start it first.");
-		List<JobExecutionContext> jobs = schedulerService.getCurrentlyExecutingJobs();
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getUnderlyingScheduler());
+		List<JobExecutionContext> jobs = schedulerTemplate.getCurrentlyExecutingJobs();
 		return new DataModelMap("jobExecutionContextList", jobs);
 	}
 	
 	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
 	public DataModelMap listNoTriggerJobs(HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		return new DataModelMap(getNoTriggerJobListPageData(schedulerService));
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		return new DataModelMap(getNoTriggerJobListPageData(schedulerTemplate));
 	}
 	
 	@RequestMapping(value="/list-calendars", method=RequestMethod.GET)
@@ -95,12 +97,12 @@ public class JobController {
 			@RequestParam String triggerGroup,
 			HttpSession session) {
 		logger.info("Unscheduling trigger name=" + triggerName + ", group=" + triggerGroup);
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
 		DataModelMap data = new DataModelMap();
-		Trigger trigger = schedulerService.uncheduleJob(triggerName, triggerGroup);
+		Trigger trigger = schedulerTemplate.uncheduleJob(triggerName, triggerGroup);
 		data.put("trigger", trigger);
 		try {
-			JobDetail jobDetail = schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup());
+			JobDetail jobDetail = schedulerTemplate.getJobDetail(trigger.getJobName(), trigger.getJobGroup());
 			data.put("jobDetail", jobDetail);
 		} catch (ErrorCodeException e) {
 			// Job no longer exists, and we allow this scenario, so do nothing. 
@@ -114,7 +116,7 @@ public class JobController {
 			@RequestParam String jobGroup,
 			HttpSession session) {
 		logger.info("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		SchedulerTemplate schedulerService = schedulerServiceFinder.findSchedulerTemplate(session);
 		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
 		List<Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
 
@@ -131,8 +133,8 @@ public class JobController {
 			@RequestParam String jobGroup,
 			HttpSession session) {
 		logger.info("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		schedulerService.runJob(jobName, jobGroup);		
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		schedulerTemplate.runJobNow(jobName, jobGroup);		
 		return "redirect:list";
 	}
 	
@@ -150,10 +152,10 @@ public class JobController {
 			@RequestParam String xml, 
 			HttpSession session) {
 		logger.info("Loading xml jobs.");
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
 		
 		try {
-			XmlJobLoader loader = schedulerService.loadJobs(xml);
+			XmlJobLoader loader = schedulerTemplate.scheduleXmlSchedulingData(xml);
 			JobLoadPageData data = new JobLoadPageData();
 			data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
 			data.setOverWriteExistingData(loader.isOverWriteExistingData());
@@ -177,11 +179,11 @@ public class JobController {
 			@RequestParam String jobName, 
 			@RequestParam String jobGroup, 
 			HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
 		logger.debug("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
-		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
+		JobDetail jobDetail = schedulerTemplate.getJobDetail(jobName, jobGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setTriggers(schedulerService.getTriggers(jobDetail));
+		data.setTriggers(schedulerTemplate.getTriggers(jobDetail));
 		data.setJobDetail(jobDetail);
 		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
 		return new DataModelMap(data);
@@ -195,7 +197,7 @@ public class JobController {
 			@RequestParam int fireTimesCount, 
 			HttpSession session) {
 		logger.debug("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		SchedulerTemplate schedulerService = schedulerServiceFinder.findSchedulerTemplate(session);
 		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
 		List<Date> nextFireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
@@ -209,7 +211,7 @@ public class JobController {
 		String calName = trigger.getCalendarName();
 		if (calName != null) {
 			try {
-				Scheduler scheduler = schedulerService.getUnderlyingScheduler();
+				Scheduler scheduler = schedulerService.getScheduler();
 				Calendar cal = scheduler.getCalendar(calName);
 				for (Date dt : nextFireTimes) {
 					if (!cal.isTimeIncluded(dt.getTime())) {
@@ -247,7 +249,7 @@ public class JobController {
 	}
 	
 	/** Return only jobs with trigger associated. */
-	protected JobListPageData getJobListPageData(SchedulerService schedulerService) {
+	protected JobListPageData getJobListPageData(SchedulerTemplate schedulerService) {
 		List<Trigger> triggers = new ArrayList<Trigger>();
 		
 		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
@@ -270,7 +272,7 @@ public class JobController {
 	}
 
 	/** Return only jobs without trigger associated. */
-	protected Object getNoTriggerJobListPageData(SchedulerService schedulerService) {
+	protected Object getNoTriggerJobListPageData(SchedulerTemplate schedulerService) {
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		
 		List<JobDetail> allJobDetails = schedulerService.getJobDetails();

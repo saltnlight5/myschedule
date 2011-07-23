@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.web.SessionData;
 
 import org.slf4j.Logger;
@@ -58,6 +59,11 @@ public class SchedulerServiceFinder {
 		
 		logger.debug("Found scheduler service: " + result.getName());
 		return result;
+	}
+	
+	public SchedulerTemplate findSchedulerTemplate(HttpSession session) {
+		SchedulerService schedulerService = find(session);
+		return new SchedulerTemplate(schedulerService.getUnderlyingScheduler());
 	}
 	
 	private SchedulerService findBySessionData(SessionData data) {
