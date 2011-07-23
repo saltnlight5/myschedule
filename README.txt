@@ -1,7 +1,7 @@
-= TODO =
-  * Fixed calendar datetime bg highlight displayed even when calendar is not set.
-  * Added SchedulerTemplate and refactored services to use it.
-  * Added schedulerTemplate groovy script variable.
+= Hg branches =
+Current default branch uses Quartz 2.0 features.
+
+If you want Quartz 1.8.x features, you should see the myschedule-1.x branch.
 
 = About myschedule =
 The myschedule project is a web based Quartz scheduler dashboard application.
