@@ -1,5 +1,5 @@
 = TODO =
-* Error if file dao dir doesn't exist at startup.
+* Fixed NPE bug when starting up without config file directory created.
 
 
 = Hg branches =
