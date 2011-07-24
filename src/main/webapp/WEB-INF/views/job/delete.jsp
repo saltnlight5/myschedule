@@ -1,7 +1,6 @@
 <%@ include file="/WEB-INF/views/page-a.inc" %>
 <%@ include file="/WEB-INF/views/menu.inc" %>
 <%@ include file="/WEB-INF/views/job/submenu.inc" %>
-
 <div id="page-container">
 <h1>Job Deleted</h1>
 

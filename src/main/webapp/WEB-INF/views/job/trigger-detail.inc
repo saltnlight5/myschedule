@@ -15,7 +15,7 @@
 	<tr><td>Key</td><td>${ trigger.key }</td></tr>
 	<tr><td>Calendar Name</td><td>${ trigger.calendarName }</td></tr>
 	<tr><td>Fire Instance Id</td><td>${ trigger.fireInstanceId }</td></tr>
-	<tr><td>Misfire Instruction</td><td>${ trigger.misfireInstruction }</td></tr>
+	<tr><td>Misfire Instruction</td><td><%= myschedule.service.quartz.TriggerUtils.getMisfireInstructionName((org.quartz.Trigger)request.getAttribute("trigger")) %></td></tr>
 	<tr><td>Priority</td><td>${ trigger.priority }</td></tr>
 	<tr><td>Trigger Listeners</td><td>${ triggerListenerNames }</td></tr>
 	
