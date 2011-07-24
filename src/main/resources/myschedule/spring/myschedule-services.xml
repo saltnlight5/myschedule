@@ -23,6 +23,10 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 	<bean name="groovyScriptingService" class="myschedule.service.GroovyScriptingService">
 	</bean>
 	
+	<bean name="schedulerServiceFileDao" class="myschedule.service.SchedulerServiceFileDao">
+		<property name="configStoreLocation" value="${user.home}/myschedule/quartz"></property>
+	</bean>
+	
 	<!-- 
 	Scheduler finder
 	Note: the "defaultSchedulerService" property will be autowired only if the bean name is present in context, else
@@ -34,10 +38,6 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 		
 	<!-- The serviceContainer will collect all Service beans and auto manage their init/destroy lifecycles. -->
 	<bean name="serviceContainer" class="myschedule.service.ServiceContainer">
-	</bean>
-	
-	<bean name="schedulerServiceFileDao" class="myschedule.service.SchedulerServiceFileDao">
-		<property name="configStoreLocation" value="${user.home}/myschedule/quartz18"></property>
 	</bean>
 	
 	<!-- The serviceContainer will collect all SchedulerService beans and auto manage their init/destroy lifecycles. -->

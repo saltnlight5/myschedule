@@ -1,5 +1,9 @@
 # A Quartz 1.8.x Scheduler configuration for database job persistence.
 # See http://www.quartz-scheduler.org/docs/configuration
+#
+# Note: setting up a quartz database schema is a manual process, and you may get 
+# a copy of the database schema here:
+# http://svn.terracotta.org/fisheye/browse/Quartz/tags/quartz-2.0.2/docs/dbTables
 
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = DatabaseScheduler
@@ -13,9 +17,9 @@ org.quartz.threadPool.threadCount = 5
 
 # Persistence Job Store - with database
 org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
-org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz18
-org.quartz.dataSource.quartzDataSource.user = quartz18
-org.quartz.dataSource.quartzDataSource.password = quartz18123
+org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz
+org.quartz.dataSource.quartzDataSource.user = quartz
+org.quartz.dataSource.quartzDataSource.password = quartz123
 org.quartz.dataSource.quartzDataSource.maxConnections = 8
 
 # MySchedule scheduler service parameters

@@ -135,7 +135,7 @@ public class SchedulerServiceFileDao extends AbstractService implements Schedule
 			if (!configStoreLocation.mkdirs()) {
 				throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, "Failed to create configStoreLocation " + configStoreLocation);
 			}
-			logger.info("Created directory for configStoreLocation " + configStoreLocation);
+			logger.info("Created directory for configStoreLocation {}", configStoreLocation);
 		}
 	}
 

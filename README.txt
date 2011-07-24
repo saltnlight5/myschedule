@@ -1,3 +1,7 @@
+= TODO =
+* Error if file dao dir doesn't exist at startup.
+
+
 = Hg branches =
 Current default branch uses Quartz 2.0 features.
 
