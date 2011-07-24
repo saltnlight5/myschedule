@@ -116,9 +116,9 @@ public class JobController {
 			@RequestParam String jobGroup,
 			HttpSession session) {
 		logger.info("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
-		SchedulerTemplate schedulerService = schedulerServiceFinder.findSchedulerTemplate(session);
-		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
-		List<Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		JobDetail jobDetail = schedulerTemplate.getJobDetail(jobName, jobGroup);
+		List<Trigger> triggers = schedulerTemplate.deleteJob(jobName, jobGroup);
 
 		DataModelMap data = new DataModelMap();
 		data.put("jobDetail", jobDetail);
@@ -197,11 +197,11 @@ public class JobController {
 			@RequestParam int fireTimesCount, 
 			HttpSession session) {
 		logger.debug("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
-		SchedulerTemplate schedulerService = schedulerServiceFinder.findSchedulerTemplate(session);
-		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
-		List<Date> nextFireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		Trigger trigger = schedulerTemplate.getTrigger(triggerName, triggerGroup);
+		List<Date> nextFireTimes = schedulerTemplate.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setJobDetail(schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
+		data.setJobDetail(schedulerTemplate.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
 		data.setNextFireTimes(nextFireTimes);
@@ -211,7 +211,7 @@ public class JobController {
 		String calName = trigger.getCalendarName();
 		if (calName != null) {
 			try {
-				Scheduler scheduler = schedulerService.getScheduler();
+				Scheduler scheduler = schedulerTemplate.getScheduler();
 				Calendar cal = scheduler.getCalendar(calName);
 				for (Date dt : nextFireTimes) {
 					if (!cal.isTimeIncluded(dt.getTime())) {
@@ -249,14 +249,14 @@ public class JobController {
 	}
 	
 	/** Return only jobs with trigger associated. */
-	protected JobListPageData getJobListPageData(SchedulerTemplate schedulerService) {
+	protected JobListPageData getJobListPageData(SchedulerTemplate schedulerTemplate) {
 		List<Trigger> triggers = new ArrayList<Trigger>();
 		
-		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			List<Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() > 0) {
 				triggers.addAll(jobTriggers);
 			}
@@ -272,14 +272,14 @@ public class JobController {
 	}
 
 	/** Return only jobs without trigger associated. */
-	protected Object getNoTriggerJobListPageData(SchedulerTemplate schedulerService) {
+	protected Object getNoTriggerJobListPageData(SchedulerTemplate schedulerTemplate) {
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		
-		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			List<Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() == 0) {
 				noTriggerJobDetails.add(jobDetail);
 			}
