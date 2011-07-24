@@ -26,19 +26,23 @@ $(document).ready(function() {
 <div id="help">
 <p>In your script, these variables are available to use immediately.</p>
 <pre>
-webOut - An instance of java.io.PrintWriter to allow script to display output to web page after Run.
-quartzScheduler - An instance of org.quartz.Scheduler scheduler in this application.
+webOut              An instance of java.io.PrintWriter to allow script to display output to web page after Run.
+schedulerTemplate   An instance of myschedule.service.quartz.SchedulerTemplate that provide simplified 
+                    template to manage a scheduler implemenation (such as the Quartz's Scheduler).
+quartzScheduler     An instance of org.quartz.Scheduler scheduler in this application.
 </pre>
 
 <p>For example, here is how you schedule three new jobs to the scheduler that each runs every minute.</p>
 <pre>
-3.times { i ->
-  name = 'GroovyJob' + i
-  // -1 means repeat forever.
-  schedulerTemplate.scheduleRepeatableJob(name, -1, 60000, myschedule.job.sample.SimpleJob.class)
-  webOut.println('Job scheduled successfully: ' + name)
-}
+name = 'MintelyJob'
+repeatForever = -1
+repeatMillisInterval = 60000
+jobClass = myschedule.job.sample.SimpleJob.class
+schedulerTemplate.scheduleRepeatableJob(name, repeatForever, repeatMillisInterval, jobClass)
+webOut.println('Job scheduled successfully: ' + name)
 </pre>
+
+You can find more <a href="http://code.google.com/p/myschedule/wiki/ScriptingScheduler">examples here.</a>
 
 <div class="warning">
 Warning: Groovy is a full featured programming language on top of Java. There is no 

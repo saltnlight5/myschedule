@@ -13,8 +13,20 @@ import java.util.Map;
  */
 public class GroovyScriptingService extends AbstractService implements ScriptingService {
 
+	private static final String SCHEDULER_IMPORTS = "import org.quartz.*\n" +
+			"import org.quartz.jobs.*\n" +
+			"import myschedule.job.*\n" +
+			"import myschedule.job.sample.*\n";
+	protected boolean autoImportSchedulerPackage = true;
+	
+	public void setAutoImportSchedulerPackage(boolean autoImportSchedulerPackage) {
+		this.autoImportSchedulerPackage = autoImportSchedulerPackage;
+	}
+	
 	@Override
 	public <T> T run(String scriptText, Map<String, Object> variables) {
+		if (autoImportSchedulerPackage)
+			scriptText = SCHEDULER_IMPORTS + scriptText;
 		GroovyShell groovyShell = new GroovyShell();
 		for (Map.Entry<String, Object> entry : variables.entrySet())
 			groovyShell.setVariable(entry.getKey(), entry.getValue());
