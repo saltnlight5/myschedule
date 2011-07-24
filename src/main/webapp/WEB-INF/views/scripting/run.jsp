@@ -32,13 +32,11 @@ quartzScheduler - An instance of org.quartz.Scheduler scheduler in this applicat
 
 <p>For example, here is how you schedule three new jobs to the scheduler that each runs every minute.</p>
 <pre>
-import org.quartz.*
 3.times { i ->
   name = 'GroovyJob' + i
-  jobDetail = new JobDetail(name, 'DEFAULT', myschedule.job.sample.SimpleJob.class)
-  trigger = new CronTrigger(name, 'DEFAULT', '0 * * * * ?')
-  quartzScheduler.scheduleJob(jobDetail, trigger)
-  webOut.println('Job scheduled successfully: ' + jobDetail.fullName)
+  // -1 means repeat forever.
+  schedulerTemplate.scheduleRepeatableJob(name, -1, 60000, myschedule.job.sample.SimpleJob.class)
+  webOut.println('Job scheduled successfully: ' + name)
 }
 </pre>
 

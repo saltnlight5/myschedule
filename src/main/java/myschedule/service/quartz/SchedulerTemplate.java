@@ -331,6 +331,14 @@ public class SchedulerTemplate {
 			Class<? extends Job> jobClass, Map<String, Object> data) {
 		if (group == null)
 			group = Scheduler.DEFAULT_GROUP;
+		
+		if (startTime == null)
+			startTime = new Date();
+		
+		if (repeatCount < 0)
+			repeatCount = SimpleTrigger.REPEAT_INDEFINITELY;
+		else
+			repeatCount = repeatCount - 1; // convert total count to quartz's repeatCount.
 
 		JobDetail jobDetail = newJob(jobClass).withIdentity(name, group).build();
 		if (data != null)
@@ -341,7 +349,7 @@ public class SchedulerTemplate {
 				.startAt(startTime).endAt(endTime)
 				.withSchedule(
 						simpleSchedule()
-						.withRepeatCount(repeatCount - 1)
+						.withRepeatCount(repeatCount)
 						.withIntervalInMilliseconds(repeatInterval))
 				.build();
 		
