@@ -1,6 +1,5 @@
 package myschedule.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -17,6 +16,7 @@ import myschedule.service.Utils;
 import myschedule.service.Utils.Getter;
 import myschedule.service.quartz.SchedulerTemplate;
 
+import org.quartz.ListenerManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
@@ -64,19 +64,10 @@ public class SchedulerController {
 		copySchedulerStatusData(schedulerService, data);
 		Scheduler scheduler = schedulerService.getUnderlyingScheduler();
 		try {
-			List<Object> jobListeners = new ArrayList<Object>();
-			for (Object nameObj : scheduler.getJobListenerNames())
-				jobListeners.add(scheduler.getJobListener(nameObj.toString()));
-
-			List<Object> triggerListeners = new ArrayList<Object>();
-			for (Object nameObj : scheduler.getTriggerListenerNames())
-				triggerListeners.add(scheduler.getTriggerListener(nameObj.toString()));
-			
-			data.addData("globalJobListeners", scheduler.getGlobalJobListeners());
-			data.addData("jobListeners", jobListeners);
-			data.addData("globalTriggerListeners", scheduler.getGlobalTriggerListeners());
-			data.addData("triggerListeners", triggerListeners);
-			data.addData("schedulerListeners", scheduler.getSchedulerListeners());
+			ListenerManager listenerManager = scheduler.getListenerManager();
+			data.addData("jobListeners", listenerManager.getJobListeners());
+			data.addData("triggerListeners", listenerManager.getTriggerListeners());
+			data.addData("schedulerListeners", listenerManager.getSchedulerListeners());
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to retrieve scheduler listeners.", e);
 		}

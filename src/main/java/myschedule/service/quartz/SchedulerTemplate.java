@@ -1,15 +1,19 @@
 package myschedule.service.quartz;
 
 import static myschedule.service.ErrorCode.SCHEDULER_PROBLEM;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import myschedule.service.ErrorCodeException;
 
@@ -18,11 +22,14 @@ import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,11 +83,12 @@ public class SchedulerTemplate {
 	public List<JobDetail> getJobDetails() {
 		try {
 			List<JobDetail> jobs = new ArrayList<JobDetail>();
-			String[] groups = scheduler.getJobGroupNames();
+			List<String> groups = scheduler.getJobGroupNames();
 			for (String group : groups) {
-				String[] jobNames = scheduler.getJobNames(group);
-				for (String jobName : jobNames) {
-					JobDetail jobDetail = scheduler.getJobDetail(jobName, group);
+				@SuppressWarnings("unchecked")
+				Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
+				for (JobKey key : keys) {
+					JobDetail jobDetail = scheduler.getJobDetail(key);
 					jobs.add(jobDetail);
 				}
 			}
@@ -92,11 +100,11 @@ public class SchedulerTemplate {
 	}
 	
 	/** Get all the triggers in the scheduler. */
-	public List<Trigger> getTriggers(JobDetail jobDetail) {
+	public List<? extends Trigger> getTriggers(JobDetail jobDetail) {
 		try {
-			Trigger[] triggers = scheduler.getTriggersOfJob(jobDetail.getName(), jobDetail.getGroup());
-			logger.debug("{} triggers found.", triggers.length);
-			return Arrays.asList(triggers);
+			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobDetail.getKey());
+			logger.debug("{} triggers found.", triggers.size());
+			return triggers;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -104,15 +112,17 @@ public class SchedulerTemplate {
 	
 	public JobDetail getJobDetail(String jobName, String group) {	
 		try {
-			return scheduler.getJobDetail(jobName, group);
+			JobKey key = JobKey.jobKey(jobName, group);
+			return scheduler.getJobDetail(key);
 		} catch (Exception e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 
-	public Trigger getTrigger(String triggerName, String triggerGroup) {	
+	public Trigger getTrigger(String triggerName, String group) {	
 		try {
-			return scheduler.getTrigger(triggerName, triggerGroup);
+			TriggerKey key = TriggerKey.triggerKey(triggerName, group);
+			return scheduler.getTrigger(key);
 		} catch (Exception e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -153,7 +163,7 @@ public class SchedulerTemplate {
 		List<Date> dates = getNextFireTimes(trigger, startTime, maxCount);
 		String calName = trigger.getCalendarName();
 		if (calName == null) {
-			logger.debug("There is no calendar associated with trigger {}", trigger.getFullName());
+			logger.debug("There is no calendar associated with trigger {}", trigger.getKey());
 			return dates;
 		}
 		
@@ -165,7 +175,7 @@ public class SchedulerTemplate {
 				result.add(dt);
 			} else {
 				logger.debug("Trigger {} has calendar {} that excluded date: {}", 
-						new Object[]{ trigger.getFullJobName(), calName, dt });
+						new Object[]{ trigger.getKey(), calName, dt });
 			}
 		}
 		logger.debug("{} dates generated after calendar processing.", result.size());
@@ -175,12 +185,10 @@ public class SchedulerTemplate {
 	/** Update existing job with newJobDetail and return the old one. */
 	public JobDetail updateJobDetail(JobDetail newJobDetail) {
 		try {
-			String name = newJobDetail.getName();
-			String group = newJobDetail.getGroup();
-			JobDetail oldJob = scheduler.getJobDetail(name, group);
-			logger.debug("Found existing job {}", oldJob.getFullName());
+			JobDetail oldJob = scheduler.getJobDetail(newJobDetail.getKey());
+			logger.debug("Found existing job {}", oldJob.getKey());
 			scheduler.addJob(newJobDetail, true);
-			logger.debug("Job {} replaced.", newJobDetail.getFullName());
+			logger.debug("Job {} replaced.", newJobDetail.getKey());
 			return oldJob;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -190,12 +198,10 @@ public class SchedulerTemplate {
 	/** Update existing trigger with newTrigger and return the old one. */
 	public Trigger updateTrigger(Trigger newTrigger) {
 		try {
-			String name = newTrigger.getName();
-			String group = newTrigger.getGroup();
-			Trigger oldTrigger = scheduler.getTrigger(name, group);
-			logger.debug("Found existing trigger {}", oldTrigger.getFullName());
-			scheduler.rescheduleJob(name, group, newTrigger);
-			logger.debug("Trigger {} replaced.", newTrigger.getFullName());
+			Trigger oldTrigger = scheduler.getTrigger(newTrigger.getKey());
+			logger.debug("Found existing trigger {}", oldTrigger.getKey());
+			scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
+			logger.debug("Trigger {} replaced.", newTrigger.getKey());
 			return oldTrigger;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -206,7 +212,7 @@ public class SchedulerTemplate {
 	public Date scheduleJob(JobDetail jobDetail, Trigger trigger) {
 		try {
 			Date nextFireTime = scheduler.scheduleJob(jobDetail, trigger);
-			logger.info("New job {} scheduled with trigger {}.", jobDetail.getFullName(), trigger.getFullName());
+			logger.info("New job {} scheduled with trigger {}.", jobDetail.getKey(), trigger.getKey());
 			return nextFireTime;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -217,7 +223,7 @@ public class SchedulerTemplate {
 	public void scheduleJob(Trigger trigger) {
 		try {
 			scheduler.scheduleJob(trigger);
-			logger.info("New trigger {} has been scheduled for existing job {}.", trigger.getFullName(), trigger.getFullJobName());
+			logger.info("New trigger {} has been scheduled for existing job {}.", trigger.getKey(), trigger.getJobKey());
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -226,11 +232,11 @@ public class SchedulerTemplate {
 	/** Remove a trigger and its JobDetail if it's not set durable. */
 	public Trigger uncheduleJob(String triggerName, String triggerGroup) {
 		try {
-			Trigger trigger = scheduler.getTrigger(triggerName, triggerGroup);
-			boolean success = scheduler.unscheduleJob(triggerName, triggerGroup);
+			Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
+			boolean success = scheduler.unscheduleJob(trigger.getKey());
 			if (!success)
 				throw new SchedulerException("Failed to unschedule job. Trigger name=" + triggerName + ", group=" + triggerGroup);
-			logger.info("Unscheduled trigger {} for job {}.", trigger.getFullName(), trigger.getFullJobName());
+			logger.info("Unscheduled trigger {} for job {}.", trigger.getKey(), trigger.getJobKey());
 			return trigger;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -238,14 +244,15 @@ public class SchedulerTemplate {
 	}
 
 	/** Remove a JobDetail and all the triggers associated with it. */
-	public List<Trigger> deleteJob(String jobName, String group) {
+	public List<? extends Trigger> deleteJob(String jobName, String group) {
 		try {
-			Trigger[] triggers = scheduler.getTriggersOfJob(jobName, group);
-			boolean success = scheduler.deleteJob(jobName, group);
+			JobKey key = JobKey.jobKey(jobName, group);
+			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(key);
+			boolean success = scheduler.deleteJob(key);
 			if (!success)
-				throw new SchedulerException("Unable to delete jobName=" + jobName + ", group=" + group);
-			logger.info("Deleted job {} with {} associated triggers.", jobName + "." + group, triggers.length);
-			return Arrays.asList(triggers);
+				throw new SchedulerException("Unable to delete job " + key);
+			logger.info("Deleted job {} with {} associated triggers.", key, triggers.size());
+			return triggers;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -275,8 +282,9 @@ public class SchedulerTemplate {
 	/** Run a job immediately with a non-volatile trigger (remove as soon as it's finished.) */
 	public void runJobNow(String name, String group) {
 		try {
-			scheduler.triggerJobWithVolatileTrigger(name, group);
-			logger.debug("Job {} has been kicked off with volatile trigger.", name + "." + group);
+			JobKey key = JobKey.jobKey(name, group);
+			scheduler.triggerJob(key);
+			logger.debug("Job {} has been triggered.", key);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -289,20 +297,21 @@ public class SchedulerTemplate {
 		if (group == null)
 			group = Scheduler.DEFAULT_GROUP;
 		
-		JobDetail jobDetail = new JobDetail(name, group, jobClass);
+		JobDetail jobDetail = newJob(jobClass).withIdentity(name, group).build();
 		if (data != null)
 			jobDetail.getJobDataMap().putAll(data);
-		Trigger trigger;
+		
 		try {
-			trigger = new CronTrigger(name, group, cron);
+			CronTrigger trigger = newTrigger()
+					.withIdentity(name, group)
+					.startAt(startTime).endAt(endTime)
+					.withSchedule(cronSchedule(cron))
+					.build();
+	
+			scheduleJob(jobDetail, trigger);
 		} catch (ParseException e) {
-			throw new ErrorCodeException("Failed to parse CRON expression " + cron, e);
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
-		if (startTime != null)
-			trigger.setStartTime(startTime);
-		if (endTime != null)
-			trigger.setEndTime(endTime);
-		scheduleJob(jobDetail, trigger);
 	}
 
 	public void scheduleRepeatForeverJob(String name, long repeatInterval, Class<? extends Job> jobClass) {
@@ -322,16 +331,20 @@ public class SchedulerTemplate {
 			Class<? extends Job> jobClass, Map<String, Object> data) {
 		if (group == null)
 			group = Scheduler.DEFAULT_GROUP;
-		
-		JobDetail jobDetail = new JobDetail(name, group, jobClass);
+
+		JobDetail jobDetail = newJob(jobClass).withIdentity(name, group).build();
 		if (data != null)
 			jobDetail.getJobDataMap().putAll(data);
-		// Quartz's repeatCount is one less than total execution runs, so we auto adjust it here.
-		Trigger trigger = new SimpleTrigger(name, group, repeatCount - 1, repeatInterval);
-		if (startTime != null)
-			trigger.setStartTime(startTime);
-		if (endTime != null)
-			trigger.setEndTime(endTime);
+		
+		SimpleTrigger trigger = newTrigger()
+				.withIdentity(name, group)
+				.startAt(startTime).endAt(endTime)
+				.withSchedule(
+						simpleSchedule()
+						.withRepeatCount(repeatCount - 1)
+						.withIntervalInMilliseconds(repeatInterval))
+				.build();
+		
 		scheduleJob(jobDetail, trigger);
 	}
 	

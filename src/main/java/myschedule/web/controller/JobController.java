@@ -20,6 +20,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
@@ -78,8 +79,8 @@ public class JobController {
 		Scheduler scheduler = schedulerService.getUnderlyingScheduler();
 		try {
 			List<Object> calendars = new ArrayList<Object>();
-			String[] names = scheduler.getCalendarNames();
-			Arrays.sort(names);
+			List<String> names = scheduler.getCalendarNames();
+			Collections.sort(names);
 			for (String name : names)
 				calendars.add(scheduler.getCalendar(name));
 
@@ -102,7 +103,8 @@ public class JobController {
 		Trigger trigger = schedulerTemplate.uncheduleJob(triggerName, triggerGroup);
 		data.put("trigger", trigger);
 		try {
-			JobDetail jobDetail = schedulerTemplate.getJobDetail(trigger.getJobName(), trigger.getJobGroup());
+			JobKey key = trigger.getJobKey();
+			JobDetail jobDetail = schedulerTemplate.getJobDetail(key.getName(), key.getGroup());
 			data.put("jobDetail", jobDetail);
 		} catch (ErrorCodeException e) {
 			// Job no longer exists, and we allow this scenario, so do nothing. 
@@ -118,7 +120,7 @@ public class JobController {
 		logger.info("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
 		SchedulerTemplate schedulerService = schedulerServiceFinder.findSchedulerTemplate(session);
 		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
-		List<Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
+		List<? extends Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
 
 		DataModelMap data = new DataModelMap();
 		data.put("jobDetail", jobDetail);
@@ -201,7 +203,8 @@ public class JobController {
 		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
 		List<Date> nextFireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setJobDetail(schedulerService.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
+		JobKey key = trigger.getJobKey();
+		data.setJobDetail(schedulerService.getJobDetail(key.getName(), key.getGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
 		data.setNextFireTimes(nextFireTimes);
@@ -237,26 +240,26 @@ public class JobController {
 	protected List<String> getTriggerFullNames(List<Trigger> triggers) {
 		List<String> list = new ArrayList<String>();
 		for (Trigger trigger : triggers)
-			list.add(trigger.getFullName());
+			list.add(trigger.getKey().toString());
 		return list;
 	}
 
 	protected List<String> getJobDetailFullNames(List<JobDetail> jobDetails) {
 		List<String> list = new ArrayList<String>();
 		for (JobDetail jobDetail : jobDetails)
-			list.add(jobDetail.getFullName());
+			list.add(jobDetail.getKey().toString());
 		return list;
 	}
 	
 	/** Return only jobs with trigger associated. */
-	protected JobListPageData getJobListPageData(SchedulerTemplate schedulerService) {
+	protected JobListPageData getJobListPageData(SchedulerTemplate schedulerTemplate) {
 		List<Trigger> triggers = new ArrayList<Trigger>();
 		
-		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() > 0) {
 				triggers.addAll(jobTriggers);
 			}
@@ -272,14 +275,14 @@ public class JobController {
 	}
 
 	/** Return only jobs without trigger associated. */
-	protected Object getNoTriggerJobListPageData(SchedulerTemplate schedulerService) {
+	protected Object getNoTriggerJobListPageData(SchedulerTemplate schedulerTemplate) {
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		
-		List<JobDetail> allJobDetails = schedulerService.getJobDetails();
+		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
 		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
 		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerService.getTriggers(jobDetail);
+			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() == 0) {
 				noTriggerJobDetails.add(jobDetail);
 			}
@@ -297,7 +300,6 @@ public class JobController {
 	/**
 	 * Sort by Trigger's default comparator provided by Quartz.
 	 */
-	@SuppressWarnings("unchecked")
 	protected void sortJobListTriggers(List<Trigger> triggers) {
 		Collections.sort(triggers);
 	}
@@ -309,9 +311,9 @@ public class JobController {
 		Collections.sort(triggers, new Comparator<Trigger>() {
 			@Override
 			public int compare(Trigger o1, Trigger o2) {
-				int ret = o1.getFullJobName().compareTo(o2.getFullJobName());
+				int ret = o1.getJobKey().compareTo(o2.getJobKey());
 				if (ret == 0) {
-					ret = o1.getFullName().compareTo(o2.getFullName());
+					ret = o1.getKey().compareTo(o2.getKey());
 				}
 				return ret;
 			}
@@ -326,7 +328,7 @@ public class JobController {
 		Collections.sort(noTriggerJobDetails, new Comparator<JobDetail>() {
 			@Override
 			public int compare(JobDetail o1, JobDetail o2) {
-				return o1.getFullName().compareTo(o2.getFullName());
+				return o1.getKey().compareTo(o2.getKey());
 			}			
 		});
 	}
