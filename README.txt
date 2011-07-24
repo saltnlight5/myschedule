@@ -1,3 +1,7 @@
+= TODO for 1.4.4-SNAPSHOT =
+  * Show misfire instruction name and code instead just integeter.
+  * Backported SchedulerTemplate from 2.0 branch for easy Groovy scripting.
+
 = myschedule-1.x branch =
 This branch is for myschedule-1.x series of release that uses Quartz 1.8.x branch.
 
