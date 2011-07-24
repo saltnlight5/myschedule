@@ -118,9 +118,9 @@ public class JobController {
 			@RequestParam String jobGroup,
 			HttpSession session) {
 		logger.info("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
-		SchedulerTemplate schedulerService = schedulerServiceFinder.findSchedulerTemplate(session);
-		JobDetail jobDetail = schedulerService.getJobDetail(jobName, jobGroup);
-		List<? extends Trigger> triggers = schedulerService.deleteJob(jobName, jobGroup);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		JobDetail jobDetail = schedulerTemplate.getJobDetail(jobName, jobGroup);
+		List<? extends Trigger> triggers = schedulerTemplate.deleteJob(jobName, jobGroup);
 
 		DataModelMap data = new DataModelMap();
 		data.put("jobDetail", jobDetail);
@@ -199,12 +199,12 @@ public class JobController {
 			@RequestParam int fireTimesCount, 
 			HttpSession session) {
 		logger.debug("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
-		SchedulerTemplate schedulerService = schedulerServiceFinder.findSchedulerTemplate(session);
-		Trigger trigger = schedulerService.getTrigger(triggerName, triggerGroup);
-		List<Date> nextFireTimes = schedulerService.getNextFireTimes(trigger, new Date(), fireTimesCount);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		Trigger trigger = schedulerTemplate.getTrigger(triggerName, triggerGroup);
+		List<Date> nextFireTimes = schedulerTemplate.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
 		JobKey key = trigger.getJobKey();
-		data.setJobDetail(schedulerService.getJobDetail(key.getName(), key.getGroup()));
+		data.setJobDetail(schedulerTemplate.getJobDetail(key.getName(), key.getGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
 		data.setNextFireTimes(nextFireTimes);
@@ -214,7 +214,7 @@ public class JobController {
 		String calName = trigger.getCalendarName();
 		if (calName != null) {
 			try {
-				Scheduler scheduler = schedulerService.getScheduler();
+				Scheduler scheduler = schedulerTemplate.getScheduler();
 				Calendar cal = scheduler.getCalendar(calName);
 				for (Date dt : nextFireTimes) {
 					if (!cal.isTimeIncluded(dt.getTime())) {
