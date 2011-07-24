@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * A file storage implementation for SchedulerService DAO.
  * 
  * @author Zemian Deng
  */
-public class SchedulerServiceFileDao extends AbstractService implements SchedulerServiceDao {
+public class SchedulerServiceFileDao extends AbstractService implements SchedulerServiceDao, InitializingBean {
 
 	public static final String CONFIG_EXT = ".properties";
 		
@@ -149,5 +150,12 @@ public class SchedulerServiceFileDao extends AbstractService implements Schedule
 
 	@Override
 	protected void stopService() {
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// This service is loaded by SchedulerServiceContainer before it gets a chance to init by ServiceContainer, so we are
+		// init itself here.
+		init();
 	}
 }
