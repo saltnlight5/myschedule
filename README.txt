@@ -21,12 +21,16 @@ There is a myschedule-1.x branch that uses Quartz 1.8.x library, and it's not co
 To check out source, run:
 	$ hg clone https://code.google.com/p/myschedule
 
-= Support and Bugs =
+= Support and Reporting Bugs =
 Do you have a question on MySchedule project? Or you find a bug? Please help file
-a Issue in http://code.google.com/p/myschedule/issues/list
+an Issue in http://code.google.com/p/myschedule/issues/list
 
-= Credits =
-The myschedule project is created by Zemian Deng <saltnlight5@gmail.com>.
+= License and Credits =
+The myschedule project is created in 2011 by Zemian Deng <saltnlight5@gmail.com>.
+
+The project is an Open Source, and licensed with Apache License 2.0.
+
+Feel free to contribute, provide feedback and ask questions through the project site.
 
 = Production Deployment Notes =
 The default myscheduler.war file can be drop into any Servlet 2.5 + Web Container and it should work.
