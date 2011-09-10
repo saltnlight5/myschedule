@@ -34,6 +34,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.MutableTrigger;
+import org.quartz.spi.OperableTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SchedulerTemplate {
 	
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(SchedulerTemplate.class);
 	protected Scheduler scheduler;
 	
 	public SchedulerTemplate(Scheduler scheduler) {
@@ -58,6 +59,39 @@ public class SchedulerTemplate {
 	
 	public Scheduler getScheduler() {
 		return scheduler;
+	}
+
+	public List<String> getCalendarNames() {
+		try {
+			return scheduler.getCalendarNames();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	public boolean isShutdown() {
+		try {
+			return scheduler.isShutdown();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	
+	public boolean isInStandbyMode() {
+		try {
+			return scheduler.isInStandbyMode();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+	
+	public boolean isStarted() {
+		try {
+			return scheduler.isStarted();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
 	}
 	
 	public List<JobExecutionContext> getCurrentlyExecutingJobs() {
@@ -144,16 +178,24 @@ public class SchedulerTemplate {
 	 * Get a list of next fire time dates up to maxCount time. If next fire time needed
 	 * before maxCount, then there should be a null object in the last element of the list.
 	 */
-	public List<Date> getNextFireTimes(Trigger trigger, Date startTime, int maxCount) {	
+	public List<Date> getNextFireTimes(Trigger trigger, Date startTime, int maxCount) {
+		// We will clone the original trigger so we may call its triggered() to get a proper fireTime.
+		OperableTrigger clonedTrigger = (OperableTrigger)((OperableTrigger)trigger).clone();
+		Calendar cal = null;
+		
+        if (clonedTrigger.getNextFireTime() == null) {
+        	clonedTrigger.computeFirstFireTime(cal);
+        }
+        
 		List<Date> list = new ArrayList<Date>();
 		Date nextDate = startTime;
 		int count = 0;
 		while(count++ < maxCount) {
-			Date fireTime = trigger.getFireTimeAfter(nextDate);
-			list.add(fireTime);
-			if (fireTime == null)
+			nextDate = clonedTrigger.getFireTimeAfter(nextDate);
+			if (nextDate == null)
 				break;
-			nextDate = fireTime;
+			list.add(nextDate);
+			clonedTrigger.triggered(cal);
 		}
 		logger.debug("{} dates generated.", list.size());
 		return list;
@@ -253,7 +295,6 @@ public class SchedulerTemplate {
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
-		
 	}
 
 	/** Remove a JobDetail and all the triggers associated with it. */
@@ -418,4 +459,28 @@ public class SchedulerTemplate {
 		return scheduleRepeatableJob(name, group, startTime, endTime, 1, 0, jobClass, data);
 	}
 
+	public String getSchedulerName() {
+		try {
+			return scheduler.getSchedulerName();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+	
+	public String getSchedulerInstanceId() {
+		try {
+			return scheduler.getSchedulerInstanceId();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	public String getSchedulerNameAndId() {
+		return getSchedulerName() + "_$_" + getSchedulerInstanceId();
+	}
+	
+	@Override
+	public String toString() {
+		return "QuartzScheduler[" + getSchedulerNameAndId() + "]";
+	}
 }

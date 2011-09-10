@@ -1,25 +1,17 @@
 package myschedule.service;
 
 /**
- * Lifecycle for init/destroy and start/stop a service.
+ * A service that provide init/start/stop/destroy interface.
  *
  * <p>
- * A Service may be use the {@link ServiceContainer} to auto manage the lifecycle invocations.
+ * Use {@link ServiceContainer} to auto manage the lifecycles.
  * 
  * @author Zemian Deng
  */
-public interface Service {
+public interface Service extends Initable {
 	
-	void init();
-	
-	void destroy();
-	
-	void start();
-	
+	void start();	
 	void stop();
-	
 	boolean isStarted();
-	
-	boolean isInitialized();
 	
 }

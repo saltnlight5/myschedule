@@ -11,10 +11,9 @@ import javax.servlet.http.HttpSession;
 
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
-import myschedule.service.SchedulerService;
-import myschedule.service.SchedulerServiceFinder;
 import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.service.quartz.XmlJobLoader;
+import myschedule.web.SessionSchedulerServiceFinder;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;
@@ -46,7 +45,7 @@ public class JobController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired @Qualifier("schedulerServiceFinder")
-	protected SchedulerServiceFinder schedulerServiceFinder;
+	protected SessionSchedulerServiceFinder schedulerServiceFinder;
 	
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
@@ -57,11 +56,10 @@ public class JobController {
 
 	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
 	public DataModelMap listExecutingJobs(HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		if (!schedulerService.isStarted() || schedulerService.isPaused())
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		if (!schedulerTemplate.isInStandbyMode())
 			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
 					"The current scheudler is not started or in standby mode. Plese start it first.");
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getUnderlyingScheduler());
 		List<JobExecutionContext> jobs = schedulerTemplate.getCurrentlyExecutingJobs();
 		return new DataModelMap("jobExecutionContextList", jobs);
 	}
@@ -74,21 +72,16 @@ public class JobController {
 	
 	@RequestMapping(value="/list-calendars", method=RequestMethod.GET)
 	public DataModelMap listCalendars(HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
 		DataModelMap data = new DataModelMap();
-		Scheduler scheduler = schedulerService.getUnderlyingScheduler();
-		try {
-			List<Object> calendars = new ArrayList<Object>();
-			List<String> names = scheduler.getCalendarNames();
-			Collections.sort(names);
-			for (String name : names)
-				calendars.add(scheduler.getCalendar(name));
+		List<Object> calendars = new ArrayList<Object>();
+		List<String> names = schedulerTemplate.getCalendarNames();
+		Collections.sort(names);
+		for (String name : names)
+			calendars.add(schedulerTemplate.getCalendar(name));
 
-			data.addData("calendarNames", names);
-			data.addData("calendars", calendars);
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to retrieve scheduler calendars.", e);
-		}
+		data.addData("calendarNames", names);
+		data.addData("calendars", calendars);
 		return data;
 	}
 	

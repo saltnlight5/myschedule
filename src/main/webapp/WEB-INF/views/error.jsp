@@ -1,5 +1,6 @@
 <%@ page import="org.apache.commons.lang.exception.*" %>
 <%@ include file="/WEB-INF/views/page-a.inc" %>
+<%@ include file="/WEB-INF/views/menu.inc" %>
 <script>
 $(document).ready(function() {
 	// Hide the help page on startup.

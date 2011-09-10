@@ -3,23 +3,23 @@ package myschedule.web;
 
 
 public class SessionData {
-	protected String currentSchedulerName;	
+	protected String currentSchedulerServiceName;
 	protected boolean currentSchedulerStarted;	
 	protected boolean currentSchedulerPaused;
 	
 	@Override
 	public String toString() {
-		return super.toString() + "[currentSchedulerName=" + currentSchedulerName + "]";
-	}
-		
-	public void setCurrentSchedulerName(String currentSchedulerName) {
-		this.currentSchedulerName = currentSchedulerName;
+		return "SessionData[" + currentSchedulerServiceName + "]";
 	}
 	
-	public String getCurrentSchedulerName() {
-		return currentSchedulerName;
+	public String getCurrentSchedulerServiceName() {
+		return currentSchedulerServiceName;
 	}
-
+	
+	public void setCurrentSchedulerServiceName(String currentSchedulerServiceName) {
+		this.currentSchedulerServiceName = currentSchedulerServiceName;
+	}
+	
 	public boolean isCurrentSchedulerStarted() {
 		return currentSchedulerStarted;
 	}
