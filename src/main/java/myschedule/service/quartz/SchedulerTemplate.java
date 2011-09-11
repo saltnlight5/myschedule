@@ -123,8 +123,7 @@ public class SchedulerTemplate {
 			List<JobDetail> jobs = new ArrayList<JobDetail>();
 			List<String> groups = scheduler.getJobGroupNames();
 			for (String group : groups) {
-				@SuppressWarnings("unchecked")
-				Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
+				Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(group));
 				for (JobKey key : keys) {
 					JobDetail jobDetail = scheduler.getJobDetail(key);
 					jobs.add(jobDetail);

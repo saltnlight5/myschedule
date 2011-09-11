@@ -1,7 +1,5 @@
 package myschedule.service;
 
-import myschedule.service.quartz.SchedulerTemplate;
-
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.RemoteScheduler;
@@ -31,9 +29,9 @@ public class QuartzSchedulerService extends AbstractService implements Scheduler
 	
 	protected Scheduler scheduler;
 	protected SchedulerConfig schedulerConfig;
-	
+			
 	public QuartzSchedulerService(SchedulerConfig schedulerConfig) {
-		this.schedulerConfig = schedulerConfig;
+		setSchedulerConfig(schedulerConfig);
 	}
 	
 	public void setScheduler(Scheduler scheduler) {
@@ -56,34 +54,34 @@ public class QuartzSchedulerService extends AbstractService implements Scheduler
 	
 	@Override
 	protected void startService() {
-		autoStartScheduler();
+		startSchedulerNicely();
 	}
 	
-	protected void autoStartScheduler() {
-		// Let's auto start the scheduler if user has configured so.
+	protected void startSchedulerNicely() {
+		// Let's auto start the scheduler if user has configured so, and it's non-remote.
 		String autoStartStr = schedulerConfig.getConfigProps().getProperty(AUTO_START_KEY);
 		boolean autoStart = Boolean.parseBoolean(autoStartStr);
 		if (autoStart) {
-			logger.debug("Auto starting scheduler {}.", getSchedulerNameAndId());
+			if (scheduler instanceof RemoteScheduler) {
+				logger.warn("MyScheduler application will not auto start an RemoteScheduler " +
+						"because it affect remote server. Please start it manually.");
+				return;
+			}
+			
+			logger.debug("Auto starting scheduler {}.", toString());
 			try {
 				scheduler.start();
-				logger.debug("Quartz scheduler {} has auto started.", getSchedulerNameAndId());
+				logger.debug("Quartz scheduler {} has auto started.", toString());
 			} catch (SchedulerException e) {
 				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
-						"Failed to start Quartz scheduler " + getSchedulerNameAndId() + " in standby mode.", e);
+						"Failed to start Quartz scheduler " + toString() + " in standby mode.", e);
 			}
 		}
 	}
 
 	@Override
 	protected void stopService() {
-		// Quartz way of stopping the scheduler.
-		try {
-			scheduler.standby();
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
-					"Failed to put Quartz scheduler " + getSchedulerNameAndId() + " in standby mode.", e);
-		}
+		// Do nothing.
 	}
 	
 	@Override
@@ -94,7 +92,7 @@ public class QuartzSchedulerService extends AbstractService implements Scheduler
 				logger.debug("Initializing Quartz scheduler.");
 				StdSchedulerFactory factory = new StdSchedulerFactory(schedulerConfig.getConfigProps());
 				scheduler = factory.getScheduler();
-				logger.info("Quartz scheduler {} initialized.", getSchedulerNameAndId());
+				logger.info("Quartz scheduler {} initialized.", toString());
 			} catch (SchedulerException e) {
 				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
 						"Failed to initialize Quartz scheduler using configProps.", e);
@@ -109,49 +107,46 @@ public class QuartzSchedulerService extends AbstractService implements Scheduler
 	
 	protected void shutdownSchedulerNicely() {
 		// Shutdown if non-remote scheduler only.
-		if (scheduler != null && !(scheduler instanceof RemoteScheduler)) {
+		if (scheduler != null) {
+			if (scheduler instanceof RemoteScheduler) {
+				logger.warn("MyScheduler application will not auto shutdown an RemoteScheduler " +
+						"because it affect remote server. Please shutdown manually.");
+				return;
+			}
+			
 			String waitForJobsToCompleteStr = schedulerConfig.getConfigProps().getProperty(WAIT_FOR_JOBS_TO_COMPLETES_KEY);
 			boolean waitForJobsToComplete = Boolean.parseBoolean(waitForJobsToCompleteStr);
 			try {
-				logger.debug("Shutting down quartz scheduler {} with waitForJobsToComplete={}", getSchedulerNameAndId(), waitForJobsToComplete);
+				logger.debug("Shutting down quartz scheduler {} with waitForJobsToComplete={}", toString(), waitForJobsToComplete);
 				scheduler.shutdown(waitForJobsToComplete);
-				logger.info("Quartz scheduler {} has been shutdown.", getSchedulerNameAndId());
+				logger.info("Quartz scheduler {} has been shutdown.", toString());
 			} catch (SchedulerException e) {
 				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
-						"Failed to shutodwn quartz scheduler " + getSchedulerNameAndId(), e);
+						"Failed to shutodwn quartz scheduler " + toString(), e);
 			}
 		}
 		// Need to nullify the scheduler instance since it's useless after shutdown.
 		scheduler = null;
 	}
 
-	protected String getSchedulerNameAndId() {
-		SchedulerTemplate st = new SchedulerTemplate(scheduler);
-		return st.getSchedulerNameAndId();
-	}
-
 	@Override
 	protected void destroyService() {
 		shutdownSchedulerNicely();
 	}
-
+	
 	@Override
-	public String getServiceName() {
-		String name = null;
-		if (schedulerConfig == null)
-			name = schedulerConfig.getConfigId();
+	public String toString() {
+		String desc = "null"; // uninitialized scheduler.
+		if (schedulerConfig != null) 
+			desc = schedulerConfig.getConfigId();
 		else if (scheduler != null) {
 			try {
-				name = scheduler.getSchedulerName();
+				scheduler.getSchedulerName();
 			} catch (SchedulerException e) {
-				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to get scheduler name.", e);
+				// unlikely error, but in this case, we just use the default toString of scheduler.
+				desc = scheduler.toString();
 			}
 		}
-		
-		if (name == null) {
-			throw new ErrorCodeException(ErrorCode.SERVICE_PROBLEM, 
-					"Unable to determine scheduler service name. Please intialize SchedulerConfig#configId.");	
-		}
-		return name;
+		return "SchedulerService[" + desc + "]";
 	}
 }

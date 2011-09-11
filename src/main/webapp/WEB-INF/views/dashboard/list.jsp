@@ -50,7 +50,6 @@ $(document).ready(function() {
 			<th>INITIALIZED</th>
 			<th>STARTED</th>
 			<th>STANDBY</th>
-			<th>PAUSED</th>
 			<th>PERSISTENCE</th>
 			<th>RUNNING SINCE</th>
 			<th># JOBS</th>
@@ -61,7 +60,7 @@ $(document).ready(function() {
 	<c:forEach items="${ data.schedulerStatusList }" var="schedulerStatus" varStatus="loop">
 	<tr>
 		<c:choose><c:when test="${ schedulerStatus.initialized }">
-			<td><a href="${ mainPath }/dashboard/switch-scheduler?name=${ schedulerStatus.name }">${ schedulerStatus.name }</a></td>
+			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ schedulerStatus.configId }">${ schedulerStatus.name }</a></td>
 		</c:when><c:otherwise>
 			<td>${ schedulerStatus.name }</td>
 		</c:otherwise></c:choose>
@@ -69,19 +68,17 @@ $(document).ready(function() {
 		<c:choose><c:when test="${ schedulerStatus.initialized }">
 			<td>${ schedulerStatus.started }</td>
 			<td>${ schedulerStatus.standby }</td>
-			<td>${ schedulerStatus.paused }</td>
 			<td>${ schedulerStatus.schedulerMetaData.jobStoreSupportsPersistence }</td>
 			<td><fmt:formatDate value="${ schedulerStatus.schedulerMetaData.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
 			<td>${ schedulerStatus.jobCount }</td>
-			<td><a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?name=${ schedulerStatus.name }">Shutdown</a></td>
+			<td><a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerStatus.configId }">Shutdown</a></td>
 		</c:when><c:otherwise>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
-			<td>N/A</td>
-			<td><a href="${ mainPath }/dashboard/init?name=${ schedulerStatus.name }">Initialize</a></td>
+			<td><a href="${ mainPath }/dashboard/init?configId=${ schedulerStatus.configId }">Initialize</a></td>
 		</c:otherwise></c:choose>
 	</tr>
 	</c:forEach>

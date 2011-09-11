@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
 <h1>Delete Scheduler Service</h1>
 <c:choose>
-<c:when test="${ fn:length(data.schedulerNames) == 0 }">
+<c:when test="${ fn:length(data.schedulerNamesMap) == 0 }">
 	<p>There is no scheduler service to delete. Please create one first.</p>
 </c:when>
 <c:otherwise>
@@ -15,13 +15,13 @@
 	</div>
 	<form action="${ mainPath }/dashboard/delete-action" method="post">
 	<span>SchedulerService:</span> 
-	<select name="name">
-	<c:forEach items="${ data.schedulerNames }" var="name">
+	<select name="configId">
+	<c:forEach items="${ data.schedulerNamesMap }" var="entry">
 		<c:set var="selectedAttr" value=""/>
-		<c:if test="${ name == sessionData.currentSchedulerName }">
+		<c:if test="${ entry == sessionData.currentSchedulerConfigId }">
 			<c:set var="selectedAttr" value="selected=\"selected\""/>
 		</c:if>
-		<option value="${ name }" ${ selectedAttr }>${ name }</option>
+		<option value="${ entry.key }" ${ selectedAttr }>${ entry.value }</option>
 	</c:forEach>
 	</select>
 	<input type="submit" value="Delete"/>

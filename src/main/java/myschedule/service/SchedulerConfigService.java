@@ -1,55 +1,82 @@
 package myschedule.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The schedulerServiceConfigIds hold by this class are only those that loaded through the 
+ * DAO layer. The SchedulerServiceRepository might have more than these because Spring config
+ * might have created a direct SchedulerService that registered there.
+ * 
+ * @author Zemian Deng <saltnlight5@gmail.com>
+ *
+ */
 public class SchedulerConfigService extends AbstractService {
+
+	private static final String DEFAULT_QUARTZ_SCHEDULER_NAME = "QuartzScheduler";
 
 	private static final Logger logger = LoggerFactory.getLogger(SchedulerConfigService.class);
 	
 	protected SchedulerConfigDao schedulerConfigDao;
-	protected Set<String> schedulerServiceNames; // Ones loaded by this service only.
+	protected Set<String> daoConfigIds = new HashSet<String>(); // Ones loaded by this service only.
 	protected SchedulerServiceRepository schedulerServiceRepo = SchedulerServiceRepository.getInstance();
 	
-	public Set<String> getSchedulerServiceNames() {
-		return schedulerServiceNames;
+	public void setSchedulerConfigDao(SchedulerConfigDao schedulerConfigDao) {
+		this.schedulerConfigDao = schedulerConfigDao;
 	}
 	
-	public String getSchedulerConfigPropsText(String schedulerServiceName) {
-		SchedulerConfig schedulerConfig = schedulerConfigDao.load(schedulerServiceName);
+	public List<String> getSchedulerServiceConfigIds() {
+		List<String> configIds = new ArrayList<String>(daoConfigIds);
+		Collections.sort(configIds);
+		return configIds;
+	}
+	
+	public String getSchedulerConfigPropsText(String configId) {
+		SchedulerConfig schedulerConfig = schedulerConfigDao.load(configId);
 		return schedulerConfig.getConfigPropsText();
 	}
 	
-	public SchedulerService<?> modifySchedulerService(String schedulerServiceName, String newConfigPropsText) {
-		logger.debug("Stopping scheduler service {} before update config.", schedulerServiceName);
-		QuartzSchedulerService schedulerService = (QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(schedulerServiceName);
-		schedulerService.stop();
-		schedulerService.destroy();
+	public SchedulerService<?> modifySchedulerService(String configId, String newConfigPropsText) {
+		logger.debug("Stopping scheduler service {} before update config.", configId);
+		QuartzSchedulerService schedulerService = (QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(configId);
+		if (schedulerService.isInited()) {
+			schedulerService.stop();
+			schedulerService.destroy();
+		}
 		
-		logger.debug("Updating scheduler service {} config.", schedulerServiceName);
-		SchedulerConfig sc = schedulerConfigDao.load(schedulerServiceName);
+		logger.debug("Updating scheduler service {} config.", configId);
+		SchedulerConfig sc = schedulerConfigDao.load(configId);
 		sc.setConfigPropsText(newConfigPropsText);
 		schedulerConfigDao.update(sc);
 		schedulerService.setSchedulerConfig(sc);
-		logger.info("Scheduler service {} config updated.", schedulerServiceName);
+		logger.info("Scheduler service {} config updated.", configId);
 		
 		try {
 			schedulerService.init();
 			schedulerService.start();
 		} catch (RuntimeException e) {
-			logger.error("Failed to initialize and start scheduler service {}.", schedulerServiceName, e);
+			logger.error("Failed to initialize and start scheduler service {}.", configId, e);
 		}
 		
 		return schedulerService;
 	}
 	
-	public SchedulerService<?> createSchedulerService(String configPropsText) {
+	public SchedulerService<?> createSchedulerService(String configPropsText, ExceptionHolder exceptionHolder) {
 		String configId = generateConfigId();
+		logger.debug("Creating new schedulerConfig with id: {}", configId);
+		
 		SchedulerConfig schedulerConfig = new SchedulerConfig(configId, configPropsText);
+		schedulerConfigDao.save(schedulerConfig);
+		
 		QuartzSchedulerService schedulerService = new QuartzSchedulerService(schedulerConfig);
 		addSchedulerService(schedulerService);
 		try {
@@ -57,18 +84,26 @@ public class SchedulerConfigService extends AbstractService {
 			schedulerService.start();
 		} catch (RuntimeException e) {
 			logger.error("Failed to initialize and start scheduler service {}.", configId, e);
+
+			// Set the caller's holder for exception object. 
+			exceptionHolder.setException(e);
 		}
 		return schedulerService;
 	}
 	
-	public void removeSchedulerService(String schedulerServiceName) {
-		logger.debug("Removing scheduler service {} has been removed from repository.", schedulerServiceName);
-		SchedulerService<?> schedulerService = schedulerServiceRepo.removeSchedulerService(schedulerServiceName);
-		schedulerService.stop();
-		schedulerService.destroy();
+	public void removeSchedulerService(String configId) {
+		logger.debug("Removing scheduler service {} has been removed from repository.", configId);
+		SchedulerService<?> schedulerService = schedulerServiceRepo.removeSchedulerService(configId);
+		if (schedulerService.isInited()) {
+			schedulerService.stop();
+			schedulerService.destroy();
+		}
 		
-		schedulerServiceNames.remove(schedulerServiceName);
-		logger.info("Scheduler service {} has been removed from repository.", schedulerServiceName);
+		daoConfigIds.remove(configId);
+		logger.info("Scheduler service {} has been removed from repository.", configId);
+		
+		schedulerConfigDao.delete(configId);
+		logger.info("Scheduler service {} config has been removed from DAO.");
 	}
 	
 	protected String generateConfigId() {
@@ -76,10 +111,10 @@ public class SchedulerConfigService extends AbstractService {
 	}
 	
 	protected void addSchedulerService(SchedulerService<?> schedulerService) {
-		String schedulerServiceName = schedulerService.getServiceName();
-		schedulerServiceNames.add(schedulerServiceName);
-		schedulerServiceRepo.addSchedulerService(schedulerServiceName, schedulerService);
-		logger.info("Scheduler service {} has been added into the repository.", schedulerServiceName);	
+		String configId = schedulerService.getSchedulerConfig().getConfigId();
+		daoConfigIds.add(configId);
+		schedulerServiceRepo.addSchedulerService(schedulerService);
+		logger.info("Scheduler service {} has been added into the repository.", configId);	
 	}
 
 	protected void loadStoredSchedulerServices() {
@@ -98,13 +133,13 @@ public class SchedulerConfigService extends AbstractService {
 		loadStoredSchedulerServices();
 		
 		// Now initialize these loaded scheduler services
-		for (String schedulerServiceName : schedulerServiceNames) {
-			SchedulerService<?> schedulerService = schedulerServiceRepo.getSchedulerService(schedulerServiceName);
+		for (String configId : daoConfigIds) {
+			SchedulerService<?> schedulerService = schedulerServiceRepo.getSchedulerService(configId);
 			try {
 				schedulerService.init();
 				schedulerService.start();
 			} catch (RuntimeException e) {
-				logger.error("Failed to initialize and start scheduler service {}.", schedulerServiceName, e);
+				logger.error("Failed to initialize and start scheduler service {}.", configId, e);
 			}
 		}
 	}
@@ -112,14 +147,31 @@ public class SchedulerConfigService extends AbstractService {
 	@Override
 	protected void destroyService() {		
 		// Stop and destroy loaded scheduler services
-		for (String schedulerServiceName : schedulerServiceNames) {
-			SchedulerService<?> schedulerService = schedulerServiceRepo.getSchedulerService(schedulerServiceName);
+		for (String configId : daoConfigIds) {
+			SchedulerService<?> schedulerService = schedulerServiceRepo.getSchedulerService(configId);
 			try {
-				schedulerService.stop();
-				schedulerService.destroy();
+				if (schedulerService.isInited()) {
+					schedulerService.stop();
+					schedulerService.destroy();
+				}
 			} catch (RuntimeException e) {
-				logger.error("Failed to stop and destroy scheduler service {}.", schedulerServiceName, e);
+				logger.error("Failed to stop and destroy scheduler service {}.", configId, e);
 			}
 		}		
+	}
+
+	/**
+	 * Attempt to get the name from the config if possible, else return configId value.
+	 * @param configId
+	 * @return scheduler name or configId
+	 */
+	public String getSchedulerNameFromConfigProps(String configId) {
+		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		if (ss.getSchedulerConfig().getConfigProps() != null) {
+			String nameKey = StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME;
+			return ss.getSchedulerConfig().getConfigProps().getProperty(nameKey, DEFAULT_QUARTZ_SCHEDULER_NAME);
+		} else {
+			return configId;
+		}
 	}
 }

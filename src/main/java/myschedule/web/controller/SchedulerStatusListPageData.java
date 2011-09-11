@@ -16,15 +16,22 @@ public class SchedulerStatusListPageData {
 	}
 	
 	public static class SchedulerStatus {
+		
+		protected String configId;
 		protected String name;
 		protected boolean initialized;
-		protected boolean paused;
 		protected boolean started;
 		protected boolean standby;
 		protected boolean shutdown;
 		protected SchedulerMetaData schedulerMetaData;
 		protected int jobCount;
 		
+		public void setConfigId(String configId) {
+			this.configId = configId;
+		}
+		public String getConfigId() {
+			return configId;
+		}
 		public void setShutdown(boolean shutdown) {
 			this.shutdown = shutdown;
 		}
@@ -60,12 +67,6 @@ public class SchedulerStatusListPageData {
 		}
 		public void setInitialized(boolean initialized) {
 			this.initialized = initialized;
-		}
-		public boolean isPaused() {
-			return paused;
-		}
-		public void setPaused(boolean paused) {
-			this.paused = paused;
 		}
 		public SchedulerMetaData getSchedulerMetaData() {
 			return schedulerMetaData;

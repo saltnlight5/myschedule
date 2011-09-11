@@ -2,7 +2,7 @@
 # See http://www.quartz-scheduler.org/docs/configuration
 
 org.quartz.scheduler.skipUpdateCheck = true
-org.quartz.scheduler.instanceName = RmiServerScheduler
+org.quartz.scheduler.instanceName = RmiQuartzScheduler
 org.quartz.scheduler.instanceId = NON_CLUSTERED
 org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool

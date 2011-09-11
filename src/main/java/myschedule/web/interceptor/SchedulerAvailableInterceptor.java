@@ -30,15 +30,24 @@ public class SchedulerAvailableInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		// Ensure session data is created.
 		HttpSession session = request.getSession(true); // create session if not exists.
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
-				
+		boolean needToRedirect = false;
+		try {
+			QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+			needToRedirect = !ss.isInited();
+		} catch (RuntimeException e) {
+			// We are not able to get any scheduler available, we need to redire.
+			needToRedirect = true;
+		}
+		
 		// If scheduler is not initialized and request is for url=/job/*, then we need to redirect 
-		// new url=job/scheduler-down instead.
-		if (!schedulerService.isInited()) {
+		if (needToRedirect) {
 			String mainPath = WebAppContextListener.MAIN_PATH;
 			String url = request.getRequestURI();
 			String contextPath = request.getContextPath();
-			if (url.endsWith("/job/scheduler-down")) { // ensure we are not in a infinite loop.
+			
+			if (url.endsWith("/job/scheduler-down")) { // If request is a shutdown, we do not need scheduler in session data
+				return true;
+			} else if (url.endsWith("/scheduler/modify")) { // If request is a modify, we do not need scheduler in session data
 				return true;
 			} else if (url.startsWith(contextPath + mainPath + "/job")) {
 				response.sendRedirect(contextPath + mainPath + "/job/scheduler-down");

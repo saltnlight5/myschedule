@@ -19,32 +19,22 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 	<!-- Allow system prop placeholder -->
 	<context:property-placeholder/>
 	
-	<!-- Scripting service. -->
+	<!-- Service layer beans -->
 	<bean name="groovyScriptingService" class="myschedule.service.GroovyScriptingService">
 	</bean>
 	
-	<bean name="schedulerServiceFileDao" class="myschedule.service.SchedulerServiceFileDao">
-		<property name="configStoreLocation" value="${user.home}/myschedule/quartz"></property>
+	<bean name="schedulerConfigDao" class="myschedule.service.FileSchedulerConfigDao">
+		<property name="storeDir" value="${user.home}/myschedule2/configs"></property>
 	</bean>
 	
-	<!-- 
-	Scheduler finder
-	Note: the "defaultSchedulerService" property will be autowired only if the bean name is present in context, else
-	it will be left alone to null value.
-	-->
-	<bean name="schedulerServiceFinder" class="myschedule.service.SchedulerServiceFinder" autowire="byName">
-		<property name="schedulerServiceContainer" ref="schedulerServiceContainer"></property>
+	<bean name="schedulerConfigService" class="myschedule.service.SchedulerConfigService">
+		<property name="schedulerConfigDao" ref="schedulerConfigDao"></property>
 	</bean>
 		
-	<!-- The serviceContainer will collect all Service beans and auto manage their init/destroy lifecycles. -->
-	<bean name="serviceContainer" class="myschedule.service.ServiceContainer">
+	<!-- Auto detect any myschedule.service.Service beans in Spring and manage its lifecycles. -->
+	<bean name="springServiceContainer" class="myschedule.service.SpringServiceContainer">
 	</bean>
-	
-	<!-- The serviceContainer will collect all SchedulerService beans and auto manage their init/destroy lifecycles. -->
-	<bean name="schedulerServiceContainer" class="myschedule.service.SchedulerServiceContainer">
-		<property name="schedulerServiceDao" ref="schedulerServiceFileDao"></property>
-	</bean>
-	
+		
 	<!-- User Scheduler services. We expose this config key to let user customize different file. -->
 	<import resource="${myschedule.spring.scheduler.config:classpath:/myschedule/spring/scheduler/scheduler-services.xml}"/>
 	

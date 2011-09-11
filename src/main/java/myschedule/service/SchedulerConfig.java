@@ -1,8 +1,11 @@
 package myschedule.service;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * An entity that holds a scheduler configuration.
@@ -52,11 +55,15 @@ public class SchedulerConfig {
 		
 		// Auto load and reset the configProps.
 		configProps = new Properties();
+		Reader reader = null;
 		try {
-			configProps.load(new StringReader(configPropsText));
+			reader = new StringReader(configPropsText);
+			configProps.load(reader);
 		} catch (IOException e) {
 			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, 
 					"Failed to create Properties object from configPropsText.");
+		} finally {
+			IOUtils.closeQuietly(reader);
 		}
 	}
 

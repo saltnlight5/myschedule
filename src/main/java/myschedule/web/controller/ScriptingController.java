@@ -70,7 +70,7 @@ public class ScriptingController implements ServletContextAware {
 		logger.debug("Running Groovy Script Text.");
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		PrintWriter webOut = new PrintWriter(outStream);
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("schedulerService", schedulerService);
 		variables.put("schedulerTemplate", new SchedulerTemplate(schedulerService.getScheduler()));

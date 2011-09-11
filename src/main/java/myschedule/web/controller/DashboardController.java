@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
+import myschedule.service.ExceptionHolder;
 import myschedule.service.QuartzSchedulerService;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerService;
@@ -21,6 +23,7 @@ import myschedule.web.WebAppContextListener;
 import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.SchedulerMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,16 +56,17 @@ public class DashboardController {
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list() {
 		SchedulerStatusListPageData data = new SchedulerStatusListPageData();
-		List<SchedulerStatus> names = getSchedulerStatusList();
-		data.setSchedulerStatusList(names);
+		List<SchedulerStatus> schedulerStatusList = getSchedulerStatusList();
+		data.setSchedulerStatusList(schedulerStatusList);
 		return new DataModelMap(data);
 	}
 
 	@RequestMapping(value="/switch-scheduler", method=RequestMethod.GET)
 	public String switchScheduler(
-			@RequestParam String name,
+			@RequestParam String configId,
 			HttpSession session) {
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
+		schedulerServiceFinder.switchSchedulerService(configId, session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		String mainPath = WebAppContextListener.MAIN_PATH;
 		if (schedulerService.isInited())
 			return "redirect:" + mainPath + "/scheduler/summary";
@@ -79,47 +83,86 @@ public class DashboardController {
 	public DataModelMap createAction(
 			@RequestParam String configPropsText,
 			HttpSession session) {
-		SchedulerService<?> schedulerService = schedulerConfigService.createSchedulerService(configPropsText);
-		logger.info("New schedulerService {} has been saved.", schedulerService.getServiceName());
-		return new DataModelMap("schedulerService", schedulerService);
+		ExceptionHolder eh = new ExceptionHolder();
+		SchedulerService<?> ss = schedulerConfigService.createSchedulerService(configPropsText, eh);
+		if (eh.hasException()) {
+			DataModelMap data = new DataModelMap("schedulerService", ss);
+			data.addData("initFailedExceptionString", ExceptionUtils.getFullStackTrace(eh.getException()));
+			return data;
+		} else {
+			QuartzSchedulerService schedulerService = (QuartzSchedulerService)ss;
+			SchedulerTemplate st = new SchedulerTemplate(schedulerService.getScheduler());
+			logger.info("New scheduler service configId {} has been saved. The scheduler name is {}", 
+					schedulerService.getSchedulerConfig().getConfigId(), st.getSchedulerName());
+			return new DataModelMap("schedulerService", schedulerService);
+		}
 	}
 	
 	@RequestMapping(value="/modify-get-names", method=RequestMethod.GET)
 	public DataModelMap modifyGetNames(HttpSession session) {
-		List<String> schedulerNames = new ArrayList<String>(schedulerConfigService.getSchedulerServiceNames());
-		Collections.sort(schedulerNames);
-		return new DataModelMap("schedulerNames", schedulerNames);
+		return getSchedulerNamesDataModelMap();
+	}
+	
+	protected DataModelMap getSchedulerNamesDataModelMap() {
+		List<String> configIds = schedulerConfigService.getSchedulerServiceConfigIds();
+		logger.debug("There are {} configIds.", configIds.size());
+		Map<String, String> schedulerNamesMap = new HashMap<String, String>();
+		for (String configId : configIds) {
+			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+			String name = null;
+			if (ss.isInited()) {
+				SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+				name = st.getSchedulerName();
+			} else {
+				name = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+			}
+			schedulerNamesMap.put(configId, name);
+			logger.debug("Mapping configId {} to schedulerName {}.", configId, name);
+		}
+		DataModelMap data = new DataModelMap("schedulerNamesMap", schedulerNamesMap);
+		return data;
 	}
 
 	@RequestMapping(value="/delete-get-names", method=RequestMethod.GET)
 	public DataModelMap deleteGetNames() {
-		List<String> schedulerNames = new ArrayList<String>(schedulerConfigService.getSchedulerServiceNames());
-		Collections.sort(schedulerNames);
-		return new DataModelMap("schedulerNames", schedulerNames);
+		return getSchedulerNamesDataModelMap();
 	}
 	
 	@RequestMapping(value="/delete-action", method=RequestMethod.POST)
 	public DataModelMap deleteAction(
-			@RequestParam String name,
+			@RequestParam String configId,
 			HttpSession session) {
-
-		schedulerConfigService.removeSchedulerService(name);
-		session.removeAttribute(SessionSchedulerServiceFinder.SESSION_DATA_KEY);
+		DataModelMap data = new DataModelMap("configId", configId);
 		
-		// save data for view page
-		return new DataModelMap("removedSchedulerName", name);
+		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		// We might be deleting a scheduler service that hasn't been initialized yet. so scheduler name 
+		// might not be available.
+		if (ss.isInited()) {
+			String schedulerName = new SchedulerTemplate(ss.getScheduler()).getSchedulerName();
+			data.addData("schedulerName", schedulerName);
+		} else {
+			String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+			data.addData("schedulerName", schedulerName);
+		}
+		// Now remove scheduler service.
+		schedulerConfigService.removeSchedulerService(configId);
+		session.removeAttribute(SessionSchedulerServiceFinder.SESSION_DATA_KEY);
+		logger.info("Removed scheduler configId {} and from session data.", configId);
+		
+		return data;
 	}
 	
 	@RequestMapping(value="/init", method=RequestMethod.GET)
-	public String init(@RequestParam String name) {
-		SchedulerService<?> schedulerService = schedulerServiceRepo.getSchedulerService(name);
+	public String init(@RequestParam String configId) {
+		QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
 		schedulerService.init();
+		schedulerService.start(); // This is myschedule auto start if possible feature, not direct Quartz start. So safe to call.
 		return "redirect:list";
 	}
 	
 	@RequestMapping(value="/shutdown", method=RequestMethod.GET)
-	public String shutdown(@RequestParam String name) {
-		SchedulerService<?> schedulerService = schedulerServiceRepo.getSchedulerService(name);
+	public String shutdown(@RequestParam String configId) {
+		QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
 		schedulerService.destroy();
 		return "redirect:list";
 	}
@@ -147,23 +190,40 @@ public class DashboardController {
 
 	protected List<SchedulerStatus> getSchedulerStatusList() {
 		List<SchedulerStatus> result = new ArrayList<SchedulerStatus>();
-		List<String> names = schedulerServiceRepo.getSchedulerServiceNames();
-		for (String name : names) {
+		List<String> configIds = schedulerServiceRepo.getSchedulerServiceConfigIds();
+		for (String configId : configIds) {
+			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
 			SchedulerStatus sstatus = new SchedulerStatus();
-			sstatus.setName(name);			
-			QuartzSchedulerService schedulerService =(QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(name);
-			SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
-			if (schedulerService.isInited() && !schedulerTemplate.isShutdown()) {
-				SchedulerMetaData smeta = schedulerTemplate.getSchedulerMetaData();
-				sstatus.setInitialized(schedulerService.isInited());
-				sstatus.setPaused(schedulerService.isStarted() && schedulerTemplate.isInStandbyMode());
-				sstatus.setStarted(schedulerService.isStarted());
-				sstatus.setShutdown(schedulerTemplate.isShutdown());
-				sstatus.setStandby(schedulerTemplate.isInStandbyMode());
-				sstatus.setSchedulerMetaData(smeta);
-				sstatus.setJobCount(schedulerTemplate.getJobDetails().size());
+			sstatus.setConfigId(configId);			
+			if (ss.isInited()) {
+				sstatus.setInitialized(true);
+				try {
+					SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+					SchedulerMetaData smeta = st.getSchedulerMetaData();
+					sstatus.setSchedulerMetaData(smeta);
+					sstatus.setName(st.getSchedulerName());
+					sstatus.setStarted(ss.isStarted());
+					sstatus.setShutdown(st.isShutdown());
+					sstatus.setStandby(st.isInStandbyMode());
+					sstatus.setJobCount(st.getJobDetails().size());
+				} catch (RuntimeException e) {
+					logger.error("Failed to get scheduler information for configId {}.", e, configId);
+					
+					// We need to ensure scheduler status list return without exception! So just fill bogus data except the name.
+					String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+					sstatus.setName(schedulerName);
+					sstatus.setStarted(false);
+					sstatus.setShutdown(false);
+					sstatus.setStandby(false);
+					sstatus.setJobCount(-1);
+					
+					// Give little more reasoning as what's going on, and append to the name.
+					sstatus.setName(sstatus.getName() + " - ERROR: " + e.getMessage());
+				}
 			} else {
 				sstatus.setInitialized(false);
+				String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+				sstatus.setName(schedulerName);
 			}
 			result.add(sstatus);
 		}

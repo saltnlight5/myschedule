@@ -8,9 +8,9 @@ import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 
 import org.quartz.JobDetail;
-import org.quartz.Trigger;
 import org.quartz.simpl.CascadingClassLoadHelper;
 import org.quartz.spi.ClassLoadHelper;
+import org.quartz.spi.MutableTrigger;
 import org.quartz.xml.XMLSchedulingDataProcessor;
 
 /** 
@@ -66,7 +66,7 @@ public class XmlJobLoader extends XMLSchedulingDataProcessor {
 	 * @return
 	 */
 	@Override
-	public List<Trigger> getLoadedTriggers() {
+	public List<MutableTrigger> getLoadedTriggers() {
 		return super.getLoadedTriggers();
 	}
 

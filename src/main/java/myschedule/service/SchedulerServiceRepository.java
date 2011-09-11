@@ -30,33 +30,38 @@ public class SchedulerServiceRepository {
 		return instance;		
 	}
 	
-	public List<String> getSchedulerServiceNames() {
+	public List<String> getSchedulerServiceConfigIds() {
 		List<String> names = new ArrayList<String>(schedulerServiceMap.keySet());
 		Collections.sort(names); // Sorted so that end user may consistently get the first service.
 		return names;
 	}
 	
-	public boolean hasSchedulerService(String schedulerServiceName) {
-		return schedulerServiceMap.containsKey(schedulerServiceName);
+	public boolean hasSchedulerService(String configId) {
+		return schedulerServiceMap.containsKey(configId);
 	}
 	
-	public SchedulerService<?> getSchedulerService(String schedulerServiceName) {
-		if (!schedulerServiceMap.containsKey(schedulerServiceName)) {
-			throw new ErrorCodeException(SCHEDULER_SERIVCE_NOT_FOUND, "SchedulerService " + schedulerServiceName + " not found in repository.");
+	public SchedulerService<?> getSchedulerService(String configId) {
+		if (!schedulerServiceMap.containsKey(configId)) {
+			throw new ErrorCodeException(SCHEDULER_SERIVCE_NOT_FOUND, "SchedulerService " + configId + " not found in repository.");
 		}
-		return schedulerServiceMap.get(schedulerServiceName);
+		return schedulerServiceMap.get(configId);
 	}
 	
-	public void addSchedulerService(String schedulerServiceName, SchedulerService<?> schedulerService) {
-		schedulerServiceMap.put(schedulerServiceName, schedulerService);
-		logger.info("SchedulerService {} has been added to service repository.", schedulerServiceName);
+	public void addSchedulerService(SchedulerService<?> schedulerService) {
+		String configId = schedulerService.getSchedulerConfig().getConfigId();
+		schedulerServiceMap.put(configId, schedulerService);
+		logger.info("SchedulerService {} has been added to service repository.", configId);
 	}
 	
-	public SchedulerService<?> removeSchedulerService(String schedulerServiceName) {
-		SchedulerService<?> schedulerService = getSchedulerService(schedulerServiceName);
-		schedulerServiceMap.remove(schedulerServiceName);
-		logger.info("SchedulerService " + schedulerServiceName + " has removed from repository.");
+	public SchedulerService<?> removeSchedulerService(String configId) {
+		SchedulerService<?> schedulerService = getSchedulerService(configId);
+		schedulerServiceMap.remove(configId);
+		logger.info("SchedulerService " + configId + " has removed from repository.");
 		return schedulerService;
 	}
 	
+	// For convenient sake, we have a method to return Quartz impl to avoid cast everywhere.
+	public QuartzSchedulerService getQuartzSchedulerService(String configId) {
+		return (QuartzSchedulerService)getSchedulerService(configId);
+	}
 }

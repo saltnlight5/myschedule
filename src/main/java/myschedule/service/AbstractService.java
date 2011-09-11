@@ -19,8 +19,8 @@ public abstract class AbstractService implements Service {
 	@Override
 	public void init() {
 		if (!inited.get()) {
-			inited.set(true);
 			initService();
+			inited.set(true);
 		}
 	}
 
@@ -32,8 +32,8 @@ public abstract class AbstractService implements Service {
 		}
 		// Start service now.
 		if (!started.get()) {
-			started.set(true);
 			startService();
+			started.set(true);
 		}
 	}
 

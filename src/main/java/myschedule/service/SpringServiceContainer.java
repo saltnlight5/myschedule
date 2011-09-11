@@ -46,5 +46,16 @@ public class SpringServiceContainer implements ApplicationContextAware, Initiali
 			serviceContainer.addService(service);
 		}
 		logger.info("Service container has been pupolated.");
+		
+		// Let's find all SchedulerService beans and register them to SchedulerServiceRepository
+		SchedulerServiceRepository repo = SchedulerServiceRepository.getInstance();
+		@SuppressWarnings("rawtypes")
+		Map<String, SchedulerService> schedulerServiceBeans = applicationContext.getBeansOfType(SchedulerService.class);
+		for (@SuppressWarnings("rawtypes") Map.Entry<String, SchedulerService> entry : schedulerServiceBeans.entrySet()) {
+			String beanId = entry.getKey();
+			SchedulerService<?> schedulerService = entry.getValue();
+			repo.addSchedulerService(schedulerService);
+			logger.debug("Registering beanId {} to scheduler repository.", beanId);
+		}
 	}
 }

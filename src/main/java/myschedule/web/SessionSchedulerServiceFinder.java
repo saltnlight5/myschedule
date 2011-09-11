@@ -26,37 +26,40 @@ public class SessionSchedulerServiceFinder {
 	public static final String SESSION_DATA_KEY = "sessionData";
 
 	protected SchedulerServiceRepository schedulerServiceRepo = SchedulerServiceRepository.getInstance();
-		
-	public QuartzSchedulerService find(HttpSession session) {
+	
+	public QuartzSchedulerService findSchedulerService(HttpSession session) {
 		SessionData data = getOrCreateSessionData(session);
-		return findBySessionData(data);
+		return getOrCreateSchedulerServiceSessionData(data);
 	}
 	
-	public SchedulerTemplate findSchedulerTemplate(HttpSession session) {
-		QuartzSchedulerService schedulerService = find(session);
-		if (schedulerService == null)
-			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
-					"Unable to find a scheduler service in user session data.");
-		return new SchedulerTemplate(schedulerService.getScheduler());
-	}
-	
-	protected QuartzSchedulerService findBySessionData(SessionData data) {
-		List<String> allSchedulerServiceNames = schedulerServiceRepo.getSchedulerServiceNames();
-		String schedulerServiceName = data.getCurrentSchedulerServiceName();
-		if (schedulerServiceName == null) {
-			if (allSchedulerServiceNames.size() < 1) {
-				return null;
+	protected QuartzSchedulerService getOrCreateSchedulerServiceSessionData(SessionData data) {;
+		String configId = data.getCurrentSchedulerConfigId();
+		if (configId == null) {
+			List<String> allConfigIds = schedulerServiceRepo.getSchedulerServiceConfigIds();
+			if (allConfigIds.size() < 1) {
+				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
+						"There is no scheduler service available in repository. Please create a scheduler config first.");
 			} else {
-				schedulerServiceName = allSchedulerServiceNames.get(0);
+				// Find the first initialized services.
+				for (String configId2 : allConfigIds) {
+					SchedulerService<?> ss2 = schedulerServiceRepo.getSchedulerService(configId2);
+					if (ss2.isInited()) {
+						configId = configId2;
+						break;
+					}
+				}
+				if (configId == null) {
+					throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
+						"There are scheduler service available in repository, but none are initialized.");
+				}
 			}
 		}
-		
-		QuartzSchedulerService schedulerService = (QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(schedulerServiceName);
-		data.setCurrentSchedulerServiceName(schedulerServiceName);
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
-		data.setCurrentSchedulerPaused(schedulerTemplate.isInStandbyMode());
-		data.setCurrentSchedulerStarted(schedulerTemplate.isStarted() && !schedulerTemplate.isInStandbyMode());
-		return schedulerService;
+
+		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		data.setCurrentSchedulerName(st.getSchedulerName());
+		data.setCurrentSchedulerConfigId(configId);
+		return ss;
 	}
 
 	protected SessionData createSessionData() {
@@ -78,13 +81,17 @@ public class SessionSchedulerServiceFinder {
 		return data;
 	}
 	
-	public SchedulerService<?> switchSchedulerService(String newSchedulerName, HttpSession session) {
+	public SchedulerService<?> switchSchedulerService(String configId, HttpSession session) {
 		SessionData data = getOrCreateSessionData(session);
-		String currentSchedulerName = data.getCurrentSchedulerServiceName();
-		QuartzSchedulerService schedulerService = (QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(newSchedulerName);
-		data.setCurrentSchedulerServiceName(newSchedulerName);
-		session.setAttribute(SESSION_DATA_KEY, data);
-		logger.info("Switched scheduler service in session data from {} to {} ", currentSchedulerName, newSchedulerName);
-		return schedulerService;
+		String origConfigId = data.getCurrentSchedulerConfigId();
+
+		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+
+		data.setCurrentSchedulerName(st.getSchedulerName());
+		data.setCurrentSchedulerConfigId(configId);
+		
+		logger.info("Switched scheduler service in session data from {} to {} ", origConfigId, configId);
+		return ss;
 	}
 }

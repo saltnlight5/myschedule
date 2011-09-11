@@ -2,7 +2,7 @@
 # See http://www.quartz-scheduler.org/docs/configuration
 
 org.quartz.scheduler.skipUpdateCheck = true
-org.quartz.scheduler.instanceName = RmiClientScheduler
+org.quartz.scheduler.instanceName = RmiQuartzScheduler
 org.quartz.scheduler.instanceId = NON_CLUSTERED
 org.quartz.scheduler.rmi.proxy = true
 org.quartz.scheduler.rmi.registryHost = localhost

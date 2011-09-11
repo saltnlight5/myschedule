@@ -3,36 +3,29 @@ package myschedule.web;
 
 
 public class SessionData {
-	protected String currentSchedulerServiceName;
-	protected boolean currentSchedulerStarted;	
-	protected boolean currentSchedulerPaused;
+	
+	protected String currentSchedulerName;
+	protected String currentSchedulerConfigId;
+	
+	public void setCurrentSchedulerConfigId(String currentSchedulerConfigId) {
+		this.currentSchedulerConfigId = currentSchedulerConfigId;
+	}
+	
+	public String getCurrentSchedulerConfigId() {
+		return currentSchedulerConfigId;
+	}
 	
 	@Override
 	public String toString() {
-		return "SessionData[" + currentSchedulerServiceName + "]";
+		return "SessionData[" + currentSchedulerName + "]";
 	}
 	
-	public String getCurrentSchedulerServiceName() {
-		return currentSchedulerServiceName;
+	public String getCurrentSchedulerName() {
+		return currentSchedulerName;
 	}
 	
-	public void setCurrentSchedulerServiceName(String currentSchedulerServiceName) {
-		this.currentSchedulerServiceName = currentSchedulerServiceName;
+	public void setCurrentSchedulerName(String currentSchedulerServiceName) {
+		this.currentSchedulerName = currentSchedulerServiceName;
 	}
 	
-	public boolean isCurrentSchedulerStarted() {
-		return currentSchedulerStarted;
-	}
-
-	public void setCurrentSchedulerStarted(boolean currentSchedulerStarted) {
-		this.currentSchedulerStarted = currentSchedulerStarted;
-	}
-
-	public boolean isCurrentSchedulerPaused() {
-		return currentSchedulerPaused;
-	}
-
-	public void setCurrentSchedulerPaused(boolean currentSchedulerPaused) {
-		this.currentSchedulerPaused = currentSchedulerPaused;
-	}
 }

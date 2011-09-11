@@ -39,7 +39,7 @@ Modifying config props will auto re-initialize your scheduler!
 <textarea id="configPropsText" name="configPropsText">${ data.configPropsText }</textarea>
 </div>
 
-<input type="hidden" name="schedulerServiceName" value="${ data.schedulerServiceName }"/>
+<input type="hidden" name="configId" value="${ data.configId }"/>
 <input id="submit" type="submit" value="Modify Scheduler"/>
 
 </form>

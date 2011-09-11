@@ -13,8 +13,5 @@ public interface SchedulerService<T> extends Service {
 	SchedulerConfig getSchedulerConfig();
 	
 	T getScheduler();
-	
-	/** A unique name per scheduler service within the JVM! */
-	String getServiceName();
-	
+		
 }

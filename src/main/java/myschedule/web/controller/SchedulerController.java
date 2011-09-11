@@ -59,7 +59,7 @@ public class SchedulerController {
 	
 	@RequestMapping(value="/listeners", method=RequestMethod.GET)
 	public DataModelMap listeners(HttpSession session) {
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		DataModelMap data = new DataModelMap();
 		copySchedulerStatusData(schedulerService, data);
 		Scheduler scheduler = schedulerService.getScheduler();
@@ -76,41 +76,37 @@ public class SchedulerController {
 	
 	@RequestMapping(value="/modify", method=RequestMethod.GET)
 	public DataModelMap modify(
-			@RequestParam String name, 
+			@RequestParam String configId, 
 			HttpSession session) {
-		QuartzSchedulerService schedulerService = (QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(name);
 		DataModelMap data = new DataModelMap();
-		copySchedulerStatusData(schedulerService, data);
-		String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(name);
+		String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(configId);
 		data.addData("configPropsText", configPropsText);
-		data.addData("schedulerServiceName", name);
+		data.addData("configId", configId);
 		return data; 
 	}
 	
 	@RequestMapping(value="/modify-action", method=RequestMethod.POST)
 	public DataModelMap modifyAction(
-			@RequestParam String schedulerServiceName,
-			@RequestParam String newConfigPropsText,
+			@RequestParam String configId,
+			@RequestParam String configPropsText,
 			HttpSession session) {
-		
-		QuartzSchedulerService origSchedulerService = (QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(schedulerServiceName);
-		SchedulerTemplate st = new SchedulerTemplate(origSchedulerService.getScheduler());
-		boolean origRunning = origSchedulerService.isInited() && st.isStarted();
-		
-		schedulerConfigService.modifySchedulerService(schedulerServiceName, newConfigPropsText);
-		QuartzSchedulerService schedulerService = (QuartzSchedulerService)schedulerServiceRepo.getSchedulerService(schedulerServiceName);
-		DataModelMap data = new DataModelMap();
-		copySchedulerStatusData(schedulerService, data);
-		
-		data.addData("schedulerService", schedulerService);
-		data.addData("origRunning", origRunning);
-		
+		DataModelMap data = new DataModelMap("configId", configId);
+		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		schedulerConfigService.modifySchedulerService(configId, configPropsText);
+		if (ss.isInited()) {
+			String schedulerName = new SchedulerTemplate(ss.getScheduler()).getSchedulerName();
+			data.addData("schedulerName", schedulerName);
+		} else {
+			String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+			data.addData("schedulerName", schedulerName);
+		}
+		data.addData("schedulerService", ss);
 		return data;
 	}
 	
 	@RequestMapping(value="/summary", method=RequestMethod.GET)
 	public DataModelMap summary(HttpSession session) {
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		DataModelMap data = new DataModelMap();
 		copySchedulerStatusData(schedulerService, data);
 		try {
@@ -124,7 +120,7 @@ public class SchedulerController {
 
 	@RequestMapping(value="/detail", method=RequestMethod.GET)
 	public DataModelMap detail(HttpSession session) {
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
 		DataModelMap data = new DataModelMap();
 		copySchedulerStatusData(schedulerService, data);
@@ -150,7 +146,7 @@ public class SchedulerController {
 	
 	@RequestMapping(value="/start", method=RequestMethod.GET)
 	public String start(HttpSession session) {
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		try {
 			schedulerService.getScheduler().start();
 		} catch (SchedulerException e) {
@@ -161,7 +157,7 @@ public class SchedulerController {
 	
 	@RequestMapping(value="/standby", method=RequestMethod.GET)
 	public String standby(HttpSession session) {
-		QuartzSchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		try {
 			schedulerService.getScheduler().standby();
 		} catch (SchedulerException e) {

@@ -18,6 +18,10 @@ public class FileSchedulerConfigDao extends AbstractService implements Scheduler
 	private static final Logger logger = LoggerFactory.getLogger(FileSchedulerConfigDao.class);
 	protected File storeDir;
 	
+	public void setStoreDir(File storeDir) {
+		this.storeDir = storeDir;
+	}
+	
 	@Override
 	public void save(SchedulerConfig sc) {
 		String id = sc.getConfigId();
@@ -36,24 +40,32 @@ public class FileSchedulerConfigDao extends AbstractService implements Scheduler
 	
 	protected void write(String name, String text) {
 		File file = new File(storeDir, name);
+		FileWriter writer = null;
 		try {
-			IOUtils.write(text, new FileWriter(file));
+			writer = new FileWriter(file);
+			IOUtils.write(text, writer);
 		} catch (IOException e) {
 			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, 
 					"Failed to save file: " + file.getAbsolutePath());
+		} finally {
+			IOUtils.closeQuietly(writer);
 		}
 	}
 	
 	@Override
 	public SchedulerConfig load(String configId) {
 		File file = new File(storeDir, configId);
+		FileReader reader = null;
 		try {
-			String text = IOUtils.toString(new FileReader(file));
+			reader = new FileReader(file);
+			String text = IOUtils.toString(reader);
 			SchedulerConfig sc = new SchedulerConfig(configId, text);
 			return sc;
 		} catch (IOException e) {
 			throw new ErrorCodeException(ErrorCode.DATA_ACCESS_PROBLME, 
 					"Failed to read file: " + file.getAbsolutePath());
+		} finally {
+			IOUtils.closeQuietly(reader);
 		}
 	}
 
