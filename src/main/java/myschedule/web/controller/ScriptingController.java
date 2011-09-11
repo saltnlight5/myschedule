@@ -48,7 +48,7 @@ public class ScriptingController implements ServletContextAware {
 	
 	protected ServletContext servletContext;
 	
-	@Autowired
+	@Autowired @Qualifier("groovyScriptingService")
 	protected ScriptingService scriptingService;
 	
 	@Autowired @Qualifier("schedulerServiceFinder")
@@ -84,6 +84,7 @@ public class ScriptingController implements ServletContextAware {
 			Object scriptingOutput = scriptingService.run(groovyScriptText, variables );
 			data.addData("scriptingOutput", scriptingOutput);
 		} catch (Exception e) {
+			logger.error("Failed to run script text.", e);
 			data.addData("errorMessage", ExceptionUtils.getMessage(e));
 			data.addData("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
 			data.addData("groovyScriptText", groovyScriptText);

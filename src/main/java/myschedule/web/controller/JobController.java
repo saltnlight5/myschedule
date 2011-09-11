@@ -53,17 +53,13 @@ public class JobController {
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list(HttpSession session) {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		return new DataModelMap(getJobListPageData(schedulerTemplate));
+		return new DataModelMap(getJobListPageData(ss));
 	}
 
 	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
 	public DataModelMap listExecutingJobs(HttpSession session) {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		if (!schedulerTemplate.isInStandbyMode())
-			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
-					"The current scheudler is not started or in standby mode. Plese start it first.");
 		List<JobExecutionContext> jobs = schedulerTemplate.getCurrentlyExecutingJobs();
 		return new DataModelMap("jobExecutionContextList", jobs);
 	}
@@ -71,8 +67,7 @@ public class JobController {
 	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
 	public DataModelMap listNoTriggerJobs(HttpSession session) {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		return new DataModelMap(getNoTriggerJobListPageData(schedulerTemplate));
+		return new DataModelMap(getNoTriggerJobListPageData(ss));
 	}
 	
 	@RequestMapping(value="/list-calendars", method=RequestMethod.GET)
@@ -85,7 +80,6 @@ public class JobController {
 		Collections.sort(names);
 		for (String name : names)
 			calendars.add(schedulerTemplate.getCalendar(name));
-
 		data.addData("calendarNames", names);
 		data.addData("calendars", calendars);
 		return data;
@@ -256,12 +250,10 @@ public class JobController {
 	}
 	
 	/** Return only jobs with trigger associated. */
-	protected JobListPageData getJobListPageData(SchedulerTemplate schedulerTemplate) {
-		List<Trigger> triggers = new ArrayList<Trigger>();
-		
+	protected JobListPageData getJobListPageData(QuartzSchedulerService schedulerService) {
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
+		List<Trigger> triggers = new ArrayList<Trigger>();		
 		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
-		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
-		
 		for (JobDetail jobDetail : allJobDetails) {
 			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() > 0) {
@@ -272,31 +264,28 @@ public class JobController {
 
 		// Let's sort them.
 		sortJobListTriggers(triggers);
-		
 		JobListPageData data = new JobListPageData();
 		data.setTriggers(triggers);
+		data.setSchedulerService(schedulerService);
 		return data;
 	}
 
 	/** Return only jobs without trigger associated. */
-	protected Object getNoTriggerJobListPageData(SchedulerTemplate schedulerTemplate) {
+	protected Object getNoTriggerJobListPageData(QuartzSchedulerService schedulerService) {
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
-		
 		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
-		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
-		
 		for (JobDetail jobDetail : allJobDetails) {
 			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() == 0) {
 				noTriggerJobDetails.add(jobDetail);
 			}
 		}
-		logger.debug("Found " + noTriggerJobDetails.size() + " noTriggerJobDetails.");
-
 		// Let's sort them.
 		sortJobListNoTriggerJobDetails(noTriggerJobDetails);
 		
 		JobListPageData data = new JobListPageData();
+		data.setSchedulerService(schedulerService);
 		data.setNoTriggerJobDetails(noTriggerJobDetails);
 		return data;
 	}

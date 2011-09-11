@@ -52,7 +52,6 @@ public class SchedulerController {
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate((Scheduler)schedulerService.getScheduler());
 		data.addData("schedulerName", schedulerTemplate.getSchedulerName());
 		data.addData("isStarted", schedulerTemplate.isStarted());
-		data.addData("isPaused", schedulerTemplate.isStarted() && schedulerTemplate.isInStandbyMode());
 		data.addData("isStandby", schedulerTemplate.isInStandbyMode());
 		data.addData("isShutdown", schedulerTemplate.isShutdown());
 	}
@@ -132,15 +131,21 @@ public class SchedulerController {
 		return data;
 	}
 
-	@RequestMapping(value="/pause", method=RequestMethod.GET)
-	public String pause(HttpSession session) {
-		standby(session);
+	@RequestMapping(value="/pauseAllTriggers", method=RequestMethod.GET)
+	public String pauseAllTriggers(HttpSession session) {
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		st.pauseAllTriggers();
+		logger.info("Paused all triggers in scheduler {}.", st.getSchedulerName());
 		return "redirect:detail";
 	}
 	
-	@RequestMapping(value="/resume", method=RequestMethod.GET)
-	public String resume(HttpSession session) {
-		start(session);
+	@RequestMapping(value="/resumeAllTriggers", method=RequestMethod.GET)
+	public String resumeAllTriggers(HttpSession session) {
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		st.resumeAllTriggers();
+		logger.info("Resumed all triggers in scheduler {}.", st.getSchedulerName());
 		return "redirect:detail";
 	}
 	

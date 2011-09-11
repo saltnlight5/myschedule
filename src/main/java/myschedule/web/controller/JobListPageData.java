@@ -3,17 +3,27 @@ package myschedule.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import myschedule.service.QuartzSchedulerService;
+
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
 public class JobListPageData {
+	protected QuartzSchedulerService schedulerService;
 	protected List<Trigger> triggers; // scheduled jobs
 	protected List<String> triggerSchedules; // trigger's schedule info
 	protected List<JobDetail> noTriggerJobDetails;
 	protected int showMaxFireTimesCount = 20; // default max size to show next fireTimes.
 	protected String datePattern = "MM/dd/yy HH:mm:ss";
+	
+	public void setSchedulerService(QuartzSchedulerService schedulerService) {
+		this.schedulerService = schedulerService;
+	}
+	public QuartzSchedulerService getSchedulerService() {
+		return schedulerService;
+	}
 	
 	/**
 	 * Getter.

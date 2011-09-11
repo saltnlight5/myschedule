@@ -26,11 +26,13 @@ import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
+import org.quartz.ListenerManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.MutableTrigger;
@@ -458,5 +460,45 @@ public class SchedulerTemplate {
 	@Override
 	public String toString() {
 		return "QuartzScheduler[" + getSchedulerNameAndId() + "]";
+	}
+
+	public void pauseAllTriggers() {
+		try {
+			scheduler.pauseAll();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+
+	public void resumeAllTriggers() {
+		try {
+			scheduler.resumeAll();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+	public ListenerManager getListenerManager() {
+		try {
+			return scheduler.getListenerManager();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
+	public List<Trigger> getPausedTriggers() {
+		try {
+			List<Trigger> result = new ArrayList<Trigger>();
+			List<String> groups = scheduler.getTriggerGroupNames();
+			for (String group : groups) {
+				Set<TriggerKey> triggerKeys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(group));
+				for (TriggerKey key : triggerKeys) {
+					if (scheduler.getTriggerState(key) == TriggerState.PAUSED) {
+						result.add(scheduler.getTrigger(key));
+					}
+				}
+			}
+			return result;
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
 	}
 }
