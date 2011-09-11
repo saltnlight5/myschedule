@@ -47,8 +47,6 @@ public class SchedulerAvailableInterceptor extends HandlerInterceptorAdapter {
 			
 			if (url.endsWith("/job/scheduler-down")) { // If request is a shutdown, we do not need scheduler in session data
 				return true;
-			} else if (url.endsWith("/scheduler/modify")) { // If request is a modify, we do not need scheduler in session data
-				return true;
 			} else if (url.startsWith(contextPath + mainPath + "/job")) {
 				response.sendRedirect(contextPath + mainPath + "/job/scheduler-down");
 				return false;

@@ -7,7 +7,7 @@
 	<p>There is no scheduler service to modify. Please create one first.</p>
 </c:when>
 <c:otherwise>
-	<form action="${ mainPath }/scheduler/modify" method="get">
+	<form action="${ mainPath }/dashboard/modify" method="get">
 	<span>SchedulerService:</span> 
 	<select name="configId">
 	<c:forEach items="${ data.schedulerNamesMap }" var="entry">

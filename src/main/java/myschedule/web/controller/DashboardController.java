@@ -52,7 +52,37 @@ public class DashboardController {
 	protected SchedulerConfigService schedulerConfigService;
 	
 	protected SchedulerServiceRepository schedulerServiceRepo = SchedulerServiceRepository.getInstance();
-		
+	
+	@RequestMapping(value="/modify", method=RequestMethod.GET)
+	public DataModelMap modify(
+			@RequestParam String configId, 
+			HttpSession session) {
+		DataModelMap data = new DataModelMap();
+		String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(configId);
+		data.addData("configPropsText", configPropsText);
+		data.addData("configId", configId);
+		return data; 
+	}
+	
+	@RequestMapping(value="/modify-action", method=RequestMethod.POST)
+	public DataModelMap modifyAction(
+			@RequestParam String configId,
+			@RequestParam String configPropsText,
+			HttpSession session) {
+		DataModelMap data = new DataModelMap("configId", configId);
+		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		schedulerConfigService.modifySchedulerService(configId, configPropsText);
+		if (ss.isInited()) {
+			String schedulerName = new SchedulerTemplate(ss.getScheduler()).getSchedulerName();
+			data.addData("schedulerName", schedulerName);
+		} else {
+			String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+			data.addData("schedulerName", schedulerName);
+		}
+		data.addData("schedulerService", ss);
+		return data;
+	}
+	
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list() {
 		SchedulerStatusListPageData data = new SchedulerStatusListPageData();

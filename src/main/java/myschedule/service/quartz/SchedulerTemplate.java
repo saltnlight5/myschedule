@@ -35,8 +35,6 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.MutableTrigger;
 import org.quartz.spi.OperableTrigger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A template to simplify quartz Scheduler class. It provides some more convenient methods to schedule
@@ -46,7 +44,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SchedulerTemplate {
 	
-	private static final Logger logger = LoggerFactory.getLogger(SchedulerTemplate.class);
 	protected Scheduler scheduler;
 	
 	public SchedulerTemplate(Scheduler scheduler) {
@@ -102,7 +99,6 @@ public class SchedulerTemplate {
 				JobExecutionContext jobec = (JobExecutionContext)job;
 				result.add(jobec);
 			}
-			logger.debug("{} jobs found.", result.size());
 			return result;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -129,7 +125,6 @@ public class SchedulerTemplate {
 					jobs.add(jobDetail);
 				}
 			}
-			logger.debug("{} jobs found.", jobs.size());
 			return jobs;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -140,7 +135,6 @@ public class SchedulerTemplate {
 	public List<? extends Trigger> getTriggers(JobDetail jobDetail) {
 		try {
 			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobDetail.getKey());
-			logger.debug("{} triggers found.", triggers.size());
 			return triggers;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -196,7 +190,6 @@ public class SchedulerTemplate {
 			list.add(nextDate);
 			clonedTrigger.triggered(cal);
 		}
-		logger.debug("{} dates generated.", list.size());
 		return list;
 	}
 	
@@ -208,7 +201,6 @@ public class SchedulerTemplate {
 		List<Date> dates = getNextFireTimes(trigger, startTime, maxCount);
 		String calName = trigger.getCalendarName();
 		if (calName == null) {
-			logger.debug("There is no calendar associated with trigger {}", trigger.getKey());
 			return dates;
 		}
 		
@@ -218,12 +210,8 @@ public class SchedulerTemplate {
 		for (Date dt : dates) {
 			if (cal.isTimeIncluded(dt.getTime())) {
 				result.add(dt);
-			} else {
-				logger.debug("Trigger {} has calendar {} that excluded date: {}", 
-						new Object[]{ trigger.getKey(), calName, dt });
 			}
 		}
-		logger.debug("{} dates generated after calendar processing.", result.size());
 		return result;
 	}
 	
@@ -231,9 +219,7 @@ public class SchedulerTemplate {
 	public JobDetail updateJobDetail(JobDetail newJobDetail) {
 		try {
 			JobDetail oldJob = scheduler.getJobDetail(newJobDetail.getKey());
-			logger.debug("Found existing job {}", oldJob.getKey());
 			scheduler.addJob(newJobDetail, true);
-			logger.debug("Job {} replaced.", newJobDetail.getKey());
 			return oldJob;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -244,9 +230,7 @@ public class SchedulerTemplate {
 	public Trigger updateTrigger(Trigger newTrigger) {
 		try {
 			Trigger oldTrigger = scheduler.getTrigger(newTrigger.getKey());
-			logger.debug("Found existing trigger {}", oldTrigger.getKey());
 			scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
-			logger.debug("Trigger {} replaced.", newTrigger.getKey());
 			return oldTrigger;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -257,7 +241,6 @@ public class SchedulerTemplate {
 	public Date scheduleJob(JobDetail jobDetail, Trigger trigger) {
 		try {
 			Date nextFireTime = scheduler.scheduleJob(jobDetail, trigger);
-			logger.info("New job {} scheduled with trigger {}.", jobDetail.getKey(), trigger.getKey());
 			return nextFireTime;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -268,7 +251,6 @@ public class SchedulerTemplate {
 	public void scheduleJob(Trigger trigger) {
 		try {
 			scheduler.scheduleJob(trigger);
-			logger.info("New trigger {} has been scheduled for existing job {}.", trigger.getKey(), trigger.getJobKey());
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -280,8 +262,8 @@ public class SchedulerTemplate {
 			Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
 			boolean success = scheduler.unscheduleJob(trigger.getKey());
 			if (!success)
-				throw new SchedulerException("Failed to unschedule job. Trigger name=" + triggerName + ", group=" + triggerGroup);
-			logger.info("Unscheduled trigger {} for job {}.", trigger.getKey(), trigger.getJobKey());
+				throw new SchedulerException("Failed to unschedule job. Trigger name=" + 
+						triggerName + ", group=" + triggerGroup);
 			return trigger;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -304,7 +286,6 @@ public class SchedulerTemplate {
 			boolean success = scheduler.deleteJob(key);
 			if (!success)
 				throw new SchedulerException("Unable to delete job " + key);
-			logger.info("Deleted job {} with {} associated triggers.", key, triggers.size());
 			return triggers;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -319,13 +300,10 @@ public class SchedulerTemplate {
 	public XmlJobLoader scheduleXmlSchedulingData(String xml) {
 		try {
 			// XmlJobLoader is not only just a loader, but also use to store what's loaded!
-			logger.info("Loading jobs with xml scheduling data.");
 			XmlJobLoader xmlJobLoader = XmlJobLoader.newInstance(); 
 			String systemId = XmlJobLoader.XML_SYSTEM_ID;
 			InputStream istream = new ByteArrayInputStream(xml.getBytes());
 			xmlJobLoader.processStreamAndScheduleJobs(istream, systemId, scheduler);
-			logger.info("Xml job data loaded. Loaded jobs size={} and Loaded triggers size={}.",
-					xmlJobLoader.getLoadedJobs().size(), xmlJobLoader.getLoadedTriggers().size());
 			return xmlJobLoader;
 		} catch (Exception e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -337,7 +315,6 @@ public class SchedulerTemplate {
 		try {
 			JobKey key = JobKey.jobKey(name, group);
 			scheduler.triggerJob(key);
-			logger.debug("Job {} has been triggered.", key);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
