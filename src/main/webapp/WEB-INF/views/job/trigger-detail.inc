@@ -1,4 +1,4 @@
-<h2>Trigger : ${ trigger.class }</h2>
+<h2>Trigger : ${ trigger.class } (Status: ${triggerStatus})</h2>
 <table id="triggers-${loopIndex}">
 	<thead>
 	<tr>

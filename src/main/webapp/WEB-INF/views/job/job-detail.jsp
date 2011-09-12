@@ -75,7 +75,8 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 
 <c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
 	<c:set var="trigger" value="${ trigger }" scope="request"/>
-	<c:set var="loopIndex" value="${ status.index }" scope="request"/>	
+	<c:set var="triggerStatus" value="${ data.triggerStatusList[status.index] }" scope="request"/>
+	<c:set var="loopIndex" value="${ status.index }" scope="request"/>
 	<script>
 	$(document).ready(function() {
 		// use dataTables plugin

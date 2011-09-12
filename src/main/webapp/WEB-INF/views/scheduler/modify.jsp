@@ -28,7 +28,7 @@
 <h1>Modify Scheduler Config</h1>
 
 <div class="warning">
-Modifying config props will auto re-initialize your scheduler!
+Modifying config properties will shutdown the current scheduler, re-initialize, and auto restart if it's set!
 </div>
 
 <div id="modify-scheduler-service">

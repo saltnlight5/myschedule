@@ -11,13 +11,17 @@ public class JobTriggerDetailPageData {
 	protected List<Date> nextFireTimes;
 	protected JobDetail jobDetail;
 	protected List<? extends Trigger> triggers;
+	protected List<String> triggerStatusList;
 	protected boolean jobDetailShouldRecover;
 	protected List<String> excludeByCalendar;
 	
-	public Trigger getFirstTrigger() {
-		return triggers.get(0);
+	public List<String> getTriggerStatusList() {
+		return triggerStatusList;
 	}
-
+	public void setTriggerStatusList(List<String> triggerStatusList) {
+		this.triggerStatusList = triggerStatusList;
+	}
+	
 	public boolean isJobDetailShouldRecover() {
 		return jobDetailShouldRecover;
 	}

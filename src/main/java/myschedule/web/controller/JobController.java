@@ -24,6 +24,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.quartz.spi.MutableTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,12 +180,20 @@ public class JobController {
 			HttpSession session) {
 		logger.debug("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		JobDetail jobDetail = schedulerTemplate.getJobDetail(jobName, jobGroup);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		JobDetail jobDetail = st.getJobDetail(jobName, jobGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setTriggers(schedulerTemplate.getTriggers(jobDetail));
+		data.setTriggers(st.getTriggers(jobDetail));
 		data.setJobDetail(jobDetail);
 		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
+
+		List<String> triggerStatusList = new ArrayList<String>();
+		for (Trigger trigger : data.getTriggers()) {
+			TriggerKey tk = trigger.getKey();
+			triggerStatusList.add(st.getTriggerState(tk.getName(), tk.getGroup()));
+		}
+		data.setTriggerStatusList(triggerStatusList);
+		
 		return new DataModelMap(data);
 	}
 
@@ -195,16 +204,17 @@ public class JobController {
 			@RequestParam String triggerGroup,
 			@RequestParam int fireTimesCount, 
 			HttpSession session) {
-		logger.debug("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		Trigger trigger = schedulerTemplate.getTrigger(triggerName, triggerGroup);
-		List<Date> nextFireTimes = schedulerTemplate.getNextFireTimes(trigger, new Date(), fireTimesCount);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		Trigger trigger = st.getTrigger(triggerName, triggerGroup);
+		List<Date> nextFireTimes = st.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		JobKey key = trigger.getJobKey();
-		data.setJobDetail(schedulerTemplate.getJobDetail(key.getName(), key.getGroup()));
+		JobKey jobKey = trigger.getJobKey();
+		TriggerKey triggerKey = trigger.getKey();
+		data.setJobDetail(st.getJobDetail(jobKey.getName(), jobKey.getGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
+		data.setTriggerStatusList(Arrays.asList(new String[]{ st.getTriggerState(triggerKey.getName(), triggerKey.getGroup()) }));
 		data.setNextFireTimes(nextFireTimes);
 		
 		// Calculate excludeByCalendar
@@ -212,7 +222,7 @@ public class JobController {
 		String calName = trigger.getCalendarName();
 		if (calName != null) {
 			try {
-				Scheduler scheduler = schedulerTemplate.getScheduler();
+				Scheduler scheduler = st.getScheduler();
 				Calendar cal = scheduler.getCalendar(calName);
 				for (Date dt : nextFireTimes) {
 					if (!cal.isTimeIncluded(dt.getTime())) {

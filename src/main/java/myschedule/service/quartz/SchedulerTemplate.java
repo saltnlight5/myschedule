@@ -501,4 +501,12 @@ public class SchedulerTemplate {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
+
+	public String getTriggerState(String name, String group) {
+		try {
+			return scheduler.getTriggerState(TriggerKey.triggerKey(name, group)).toString();
+		} catch (SchedulerException e) {
+			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
+		}
+	}
 }

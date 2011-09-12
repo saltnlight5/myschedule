@@ -74,13 +74,16 @@ public class SchedulerController {
 	}
 	
 	@RequestMapping(value="/modify", method=RequestMethod.GET)
-	public DataModelMap modify(
-			@RequestParam String configId, 
-			HttpSession session) {
-		DataModelMap data = new DataModelMap();
+	public DataModelMap modify(HttpSession session) {
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		String configId = ss.getSchedulerConfig().getConfigId();
 		String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(configId);
+		
+		DataModelMap data = new DataModelMap();
 		data.addData("configPropsText", configPropsText);
 		data.addData("configId", configId);
+		data.addData("isStandby", st.isInStandbyMode());
 		return data; 
 	}
 	

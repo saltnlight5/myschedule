@@ -3,8 +3,7 @@
 <li><a href="${ mainPath }/scheduler/summary">Summary</a></li>
 <li><a href="${ mainPath }/scheduler/detail">Detail</a></li>
 <li><a href="${ mainPath }/scheduler/listeners">Listeners</a></li>
-<li><a href="${ mainPath }/scheduler/modify?configId=${ sessionData.currentSchedulerConfigId }">ConfigProps</a></li>
-
+<li><a href="${ mainPath }/scheduler/modify">Config Properties</a></li>
 <c:choose><c:when test="${ data.isStandby }">
 	<li><a href="${ mainPath }/scheduler/start">Start Scheduler</a></li>
 </c:when><c:otherwise>
