@@ -1,5 +1,6 @@
 package myschedule.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -16,10 +17,14 @@ import myschedule.service.Utils.Getter;
 import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.web.SessionSchedulerServiceFinder;
 
+import org.quartz.JobDetail;
 import org.quartz.ListenerManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
+import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,22 +139,33 @@ public class SchedulerController {
 		return data;
 	}
 
-	@RequestMapping(value="/pauseAllTriggers", method=RequestMethod.GET)
-	public String pauseAllTriggers(HttpSession session) {
+	@RequestMapping(value="/pause-all-triggers", method=RequestMethod.GET)
+	public DataModelMap pauseAllTriggers(HttpSession session) {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		List<Trigger> nonPausedTriggers = new ArrayList<Trigger>();
+		for (JobDetail jobDetail : st.getJobDetails()) {
+			List<? extends Trigger> jobTriggers = st.getTriggers(jobDetail);
+			for (Trigger trigger : jobTriggers) {
+				TriggerKey tk = trigger.getKey();
+				if (st.getTriggerState(tk.getName(), tk.getGroup()) != TriggerState.PAUSED) {
+					nonPausedTriggers.add(trigger);
+				}
+			}
+		}
 		st.pauseAllTriggers();
-		logger.info("Paused all triggers in scheduler {}.", st.getSchedulerName());
-		return "redirect:detail";
+		logger.info("Paused {} triggers in scheduler {}.", nonPausedTriggers.size(), st.getSchedulerName());
+		return new DataModelMap("triggers", nonPausedTriggers);
 	}
 	
-	@RequestMapping(value="/resumeAllTriggers", method=RequestMethod.GET)
-	public String resumeAllTriggers(HttpSession session) {
+	@RequestMapping(value="/resume-all-triggers", method=RequestMethod.GET)
+	public DataModelMap resumeAllTriggers(HttpSession session) {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		List<Trigger> pausedTriggers = st.getPausedTriggers();
 		st.resumeAllTriggers();
-		logger.info("Resumed all triggers in scheduler {}.", st.getSchedulerName());
-		return "redirect:detail";
+		logger.info("Resumed {} triggers in scheduler {}.", pausedTriggers.size(), st.getSchedulerName());
+		return new DataModelMap("triggers", pausedTriggers);
 	}
 	
 	@RequestMapping(value="/start", method=RequestMethod.GET)

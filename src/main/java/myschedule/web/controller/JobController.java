@@ -190,7 +190,7 @@ public class JobController {
 		List<String> triggerStatusList = new ArrayList<String>();
 		for (Trigger trigger : data.getTriggers()) {
 			TriggerKey tk = trigger.getKey();
-			triggerStatusList.add(st.getTriggerState(tk.getName(), tk.getGroup()));
+			triggerStatusList.add(st.getTriggerState(tk.getName(), tk.getGroup()).toString());
 		}
 		data.setTriggerStatusList(triggerStatusList);
 		
@@ -214,7 +214,8 @@ public class JobController {
 		data.setJobDetail(st.getJobDetail(jobKey.getName(), jobKey.getGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
-		data.setTriggerStatusList(Arrays.asList(new String[]{ st.getTriggerState(triggerKey.getName(), triggerKey.getGroup()) }));
+		String statusStr = st.getTriggerState(triggerKey.getName(), triggerKey.getGroup()).toString();
+		data.setTriggerStatusList(Arrays.asList(new String[]{ statusStr }));
 		data.setNextFireTimes(nextFireTimes);
 		
 		// Calculate excludeByCalendar

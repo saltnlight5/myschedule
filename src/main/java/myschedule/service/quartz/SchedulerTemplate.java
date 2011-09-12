@@ -502,9 +502,9 @@ public class SchedulerTemplate {
 		}
 	}
 
-	public String getTriggerState(String name, String group) {
+	public TriggerState getTriggerState(String name, String group) {
 		try {
-			return scheduler.getTriggerState(TriggerKey.triggerKey(name, group)).toString();
+			return scheduler.getTriggerState(TriggerKey.triggerKey(name, group));
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}

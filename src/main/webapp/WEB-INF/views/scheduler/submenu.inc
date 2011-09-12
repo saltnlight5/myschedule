@@ -8,8 +8,8 @@
 	<li><a href="${ mainPath }/scheduler/start">Start Scheduler</a></li>
 </c:when><c:otherwise>
 	<li><a href="${ mainPath }/scheduler/standby">Standby Scheduler</a></li>
-	<li><a href="${ mainPath }/scheduler/pauseAllTriggers">Pause All Triggers</a></li>
-	<li><a href="${ mainPath }/scheduler/resumeAllTriggers">Resume All Triggers</a></li>
+	<li><a href="${ mainPath }/scheduler/pause-all-triggers">Pause All Triggers</a></li>
+	<li><a href="${ mainPath }/scheduler/resume-all-triggers">Resume All Triggers</a></li>
 </c:otherwise></c:choose>
 
 </ul>
