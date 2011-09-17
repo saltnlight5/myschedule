@@ -1,6 +1,10 @@
 # A Quartz 1.8.x Scheduler configuration for an in-memory job storage.
 # See http://www.quartz-scheduler.org/docs/configuration
+#
+# This config will setup Quartz to run in Memory job storage. All job data will not survive 
+# any restart of quartz!
 
+# Main Quartz configuration
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = InMemoryScheduler
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool

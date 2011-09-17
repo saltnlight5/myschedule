@@ -1,6 +1,9 @@
 # A simple default Quartz Scheduler configuration
 # See http://www.quartz-scheduler.org/docs/configuration
+#
+# This config will setup Quartz like InMemory, but with JMX enabled.
 
+# Main Quartz configuration
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = JmxScheduler
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
