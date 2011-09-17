@@ -46,11 +46,11 @@ $(document).ready(function() {
 <h1>Job Detail and Its Associated Triggers</h1>
 
 <div>
-<a id="delete" href="${ mainPath }/job/delete?jobName=${ data.jobDetail.key.name }&jobGroup=${ data.jobDetail.key.group }">
+<a id="delete" href="${ mainPath }/job/delete?jobName=${ data.jobDetail.name }&jobGroup=${ data.jobDetail.group }">
 DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </div>
 
-<h2>Job : ${ data.jobDetail.key }</h2>
+<h2>Job : ${ data.jobDetail.fullName }</h2>
 <table id="jobs">
 	<thead>
 	<tr>
@@ -59,7 +59,7 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	</tr>
 	</thead>
 	<tbody>
-	<tr><td>Key</td><td>${ data.jobDetail.key }</td></tr>
+	<tr><td>Key</td><td>${ data.jobDetail.fullName }</td></tr>
 	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
 	<tr><td>Description</td><td>${ data.jobDetail.description }</td></tr>
 	<tr><td>Durable</td><td>${ data.jobDetail.durable }</td></tr>
