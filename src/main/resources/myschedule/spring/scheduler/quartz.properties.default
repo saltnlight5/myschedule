@@ -1,10 +1,10 @@
-# A Quartz 1.8.x Scheduler configuration
-# See http://www.quartz-scheduler.org/docs/configuration
-#
 # This config will contain all Quartz default settings.
 #
 # NOTE: Some settings are mutually exclusive, and you must pick an option and remove the rest. But they are all listed
 # here for convenience.
+#
+# Full detail of Quartz configuration documentation can be found at http://www.quartz-scheduler.org/docs/configuration
+#
 
 # Main Quartz configuration
 org.quartz.scheduler.instanceName= QuartzScheduler'
@@ -93,7 +93,7 @@ org.quartz.jobStore.acquireTriggersWithinLock=false
 org.quartz.jobStore.lockHandler.class=
 org.quartz.jobStore.driverDelegateInitString=
 
-# Default DataSource for one of JDBC JobStore above (You may replace and use any NAME)
+# DataSource Option#1: A conn pooled DataSource for one of JDBC JobStore above (You may replace and use any NAME)
 org.quartz.dataSource.NAME.driver=
 org.quartz.dataSource.NAME.URL=
 org.quartz.dataSource.NAME.user=
@@ -104,5 +104,13 @@ org.quartz.dataSource.NAME.idleConnectionValidationSeconds=50
 org.quartz.dataSource.NAME.validateOnCheckout=false
 org.quartz.dataSource.NAME.discardIdleConnectionsSeconds=0 #(disabled)
 
-# User Custom DataSource Provider
-#org.quartz.utils.ConnectionProvider=my.ConnectionProviderImpl #You own conn pool impl.
+# DataSource Option#2: A JNDI DataSource for one of JDBC JobStore above (You may replace and use any NAME)
+org.quartz.dataSource.NAME.jndiURL=
+org.quartz.dataSource.NAME.java.naming.factory.initial=
+org.quartz.dataSource.NAME.java.naming.provider.url=
+org.quartz.dataSource.NAME.java.naming.security.principal=
+org.quartz.dataSource.NAME.java.naming.security.credentials=
+
+# DataSource Option#3: A user custom DataSource for one of JDBC JobStore above (You may replace and use any NAME)
+# The user class must implements org.quartz.utils.ConnectionProvider interface.
+org.quartz.dataSource.NAME.connectionProvider.class=my.ConnectionProviderImpl #You own conn pool impl.

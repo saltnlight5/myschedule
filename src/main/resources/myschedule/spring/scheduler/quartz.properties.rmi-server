@@ -1,11 +1,11 @@
-# A Quartz 1.8.x Scheduler configuration for RMI enabled server
-# See http://www.quartz-scheduler.org/docs/configuration
-#
 # This config will setup Quartz like InMemory, but with RMI enabled. It will act as a RMI server.
 #
 # NOTE: Quartz RMI connections are not fault tolerant! It means you have to live with the fact that there
 # is one connection point of failure.
-
+#
+# Full detail of Quartz configuration documentation can be found at http://www.quartz-scheduler.org/docs/configuration
+#
+s
 # Main Quartz configuration
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = RmiQuartzScheduler
