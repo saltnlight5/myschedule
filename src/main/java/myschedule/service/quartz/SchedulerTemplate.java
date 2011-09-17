@@ -12,10 +12,12 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import myschedule.job.GroovyScriptJob;
 import myschedule.service.ErrorCodeException;
 
 import org.quartz.Calendar;
@@ -39,8 +41,9 @@ import org.quartz.spi.MutableTrigger;
 import org.quartz.spi.OperableTrigger;
 
 /**
- * A template to simplify quartz Scheduler class. It provides some more convenient methods to schedule
- * jobs and convert Quartz's "checked" SchedulerException into an "unchecked" ErrorCodeException.
+ * A template to simplify creation and scheduling of Quartz jobs. This class can be very handy as one stop shop for
+ * simple needs. It also shields away Quartz's "checked" SchedulerException into an "unchecked" ErrorCodeException, so
+ * you can be more productive.
  *
  * @author Zemian Deng
  */
@@ -322,20 +325,41 @@ public class SchedulerTemplate {
 		}
 	}
 
-	public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass) {
-		return createJobDetail(name, null, true, jobClass, null);
+	public static JobDetail createGroovyFileJob(String name, String fileName) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(GroovyScriptJob.GROOVY_SCRIPT_FILE_KEY, fileName);
+		return createJobDetail(name, GroovyScriptJob.class, data);
 	}
 	
-	public static JobDetail createJobDetail(String name, String group, boolean durable, Class<? extends Job> jobClass, Map<String, Object> data) {
-		JobDetail jobDetail = newJob(jobClass).withIdentity(name, group).storeDurably(durable).build();
+	public static JobDetail createGroovyJob(String name, String groovyText) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(GroovyScriptJob.GROOVY_SCRIPT_TEXT_KEY, groovyText);
+		return createJobDetail(name, GroovyScriptJob.class, data);
+	}
+
+	public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass) {
+		return createJobDetail(name, jobClass, null);
+	}
+	
+	public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass, Map<String, Object> data) {
+		return createJobDetail(name, Scheduler.DEFAULT_GROUP, jobClass, data);
+	}
+	
+	public static JobDetail createJobDetail(String name, String group, Class<? extends Job> jobClass, Map<String, Object> data) {
+		JobDetail jobDetail = newJob(jobClass).withIdentity(name, group).build();
 		if (data != null)
 			jobDetail.getJobDataMap().putAll(data);
 		return jobDetail;
-	}	
-
+	}
+	
 	public static MutableTrigger createCalendarIntervalTrigger(
 			String name, int interval, IntervalUnit intervalUnit) {
-		return createCalendarIntervalTrigger(name, null, interval, intervalUnit, null, null);
+		return createCalendarIntervalTrigger(name, interval, intervalUnit, new Date());
+	}
+
+	public static MutableTrigger createCalendarIntervalTrigger(
+			String name, int interval, IntervalUnit intervalUnit, Date startTime) {
+		return createCalendarIntervalTrigger(name, null, interval, intervalUnit, startTime, null);
 	}
 	
 	public static MutableTrigger createCalendarIntervalTrigger(
@@ -357,7 +381,11 @@ public class SchedulerTemplate {
 	}
 	
 	public static MutableTrigger createCronTrigger(String name, String cron) {
-		return createCronTrigger(name, null, cron, null, null);
+		return createCronTrigger(name, null, cron, new Date(), null);
+	}
+
+	public static MutableTrigger createCronTrigger(String name, String cron, Date startTime) {
+		return createCronTrigger(name, null, cron, startTime, null);
 	}
 	
 	public static MutableTrigger createCronTrigger(String name, String group, String cron, Date startTime, Date endTime) {
@@ -377,6 +405,18 @@ public class SchedulerTemplate {
 		} catch (ParseException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
+	}
+	
+	public static MutableTrigger createSimpleTrigger(String name) {
+		return createSimpleTrigger(name, 1, 0);
+	}
+	
+	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval) {
+		return createSimpleTrigger(name, repeatTotalCount, interval, new Date());
+	}
+
+	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval, Date startTime) {
+		return createSimpleTrigger(name, Scheduler.DEFAULT_GROUP, repeatTotalCount, interval, startTime, null);
 	}
 	
 	public static MutableTrigger createSimpleTrigger(String name, String group, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
@@ -402,28 +442,36 @@ public class SchedulerTemplate {
 		return (MutableTrigger)trigger;
 	}
 	
+	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass) {
+		return scheduleCronJob(name, cron, jobClass, new Date());
+	}
+	
+	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleCronJob(name, Scheduler.DEFAULT_GROUP, cron, jobClass, null, startTime, null);
+	}
+	
 	public Date scheduleCronJob(
 			String name, String group, String cron, 
-			Date startTime, Date endTime,
-			Class<? extends Job> jobClass, Map<String, Object> data) {
-		JobDetail job = createJobDetail(name, group, false, jobClass, data);
+			Class<? extends Job> jobClass, Map<String, Object> data, 
+			Date startTime, Date endTime) {
+		JobDetail job = createJobDetail(name, group, jobClass, data);
 		Trigger trigger = createCronTrigger(name, group, cron, startTime, endTime);
 		return scheduleJob(job, trigger);
 	}
 
-	public Date scheduleRepeatForeverJob(String name, long repeatInterval, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(name, null, null, null, -1, repeatInterval, jobClass, null);
+	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
+		return scheduleRepeatableJob(name, -1, repeatInterval, jobClass, null);
 	}
 	
-	public Date scheduleRepeatableJob(String name, int repeatCount, long repeatInterval, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(name, null, null, null, repeatCount, repeatInterval, jobClass, null);
+	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleRepeatableJob(name, Scheduler.DEFAULT_GROUP, startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
 	}
 	
 	public Date scheduleRepeatableJob(
 			String name, String group, Date startTime, Date endTime,
 			int repeatTotalCount, long repeatInterval,
 			Class<? extends Job> jobClass, Map<String, Object> data) {
-		JobDetail job = createJobDetail(name, group, false, jobClass, data);
+		JobDetail job = createJobDetail(name, group, jobClass, data);
 		Trigger trigger = createSimpleTrigger(name, group, repeatTotalCount, repeatInterval, startTime, endTime);
 		return scheduleJob(job, trigger);
 	}
@@ -432,9 +480,25 @@ public class SchedulerTemplate {
 		return scheduleRepeatableJob(name, 1, 0, jobClass);
 	}
 	
+	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleRepeatableJob(name, 1, 0, jobClass, startTime);
+	}
+	
 	public Date scheduleOnetimeJob(String name, String group, Date startTime, Date endTime, 
 			Class<? extends Job> jobClass, Map<String, Object> data) {
 		return scheduleRepeatableJob(name, group, startTime, endTime, 1, 0, jobClass, data);
+	}
+	
+	public Date scheduleGroovyCronJob(String name, String cron, Date startTime, String groovyText) {
+		JobDetail job = createGroovyJob(name, groovyText);
+		Trigger trigger = createCronTrigger(name, cron, startTime);
+		return scheduleJob(job, trigger);
+	}
+	
+	public Date scheduleGroovyFileCronJob(String name, String cron, Date startTime, String fileName) {
+		JobDetail job = createGroovyFileJob(name, fileName);
+		Trigger trigger = createCronTrigger(name, cron, startTime);
+		return scheduleJob(job, trigger);
 	}
 
 	public String getSchedulerName() {
