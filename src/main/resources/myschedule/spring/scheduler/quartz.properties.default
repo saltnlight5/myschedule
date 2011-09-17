@@ -2,6 +2,9 @@
 # See http://www.quartz-scheduler.org/docs/configuration
 #
 # This config will contain all Quartz default settings.
+#
+# NOTE: Some settings are mutually exclusive, and you must pick an option and remove the rest. But they are all listed
+# here for convenience.
 
 # Main Quartz configuration
 org.quartz.scheduler.instanceName= QuartzScheduler'
