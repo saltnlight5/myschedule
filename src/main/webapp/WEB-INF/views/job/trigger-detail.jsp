@@ -57,7 +57,7 @@ $(document).ready(function() {
 <h1>Trigger Detail </h1>
 
 <div>
-<a id="unschedule" href="${ mainPath }/job/unschedule?triggerName=${ data.firstTrigger.name }&triggerGroup=${ data.firstTrigger.group }">
+<a id="unschedule" href="${ mainPath }/job/unschedule?triggerName=${ data.triggers[0].name }&triggerGroup=${ data.triggers[0].group }">
 UNSCHEDULE THIS TRIGGER JOB</a>
 </div>
 
@@ -67,7 +67,8 @@ You may view full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetai
 </div>
 
 <c:set var="loopIndex" value="0" scope="request"/>	
-<c:set var="trigger" value="${ data.firstTrigger }" scope="request"/>	
+<c:set var="trigger" value="${ data.triggers[0] }" scope="request"/>	
+<c:set var="triggerStatus" value="${ data.triggerStatusList[0] }" scope="request"/>	
 <%@ include file="/WEB-INF/views/job/trigger-detail.inc" %>
 
 <h2>Trigger's Next ${ data.fireTimesCount } FireTimes</h2>

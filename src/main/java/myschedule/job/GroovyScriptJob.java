@@ -48,7 +48,7 @@ public class GroovyScriptJob implements Job {
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		try {
 			JobDetail jobDetail = jobExecutionContext.getJobDetail();
-			logger.info("Running Groovy Script Job: " + jobDetail.getFullName());
+			logger.info("Running Groovy Script Job {}." + jobDetail.getKey());
 			JobDataMap dataMap = jobDetail.getJobDataMap();
 			String scriptText = dataMap.getString(GROOVY_SCRIPT_TEXT_KEY);
 			String filename = null;

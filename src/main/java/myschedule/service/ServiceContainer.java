@@ -2,106 +2,75 @@ package myschedule.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
- * A service container that will auto invoke init/destroy, and start/stop if possible to all of 
- * {@link Service} registered in this class.
+ * This container auto manage Initable or Service instance's lifecycle method calling together as part of Spring 
+ * lifecycles. When Spring starts up, it calls all init(), then start(), and when Spring close, it calls all stop(), 
+ * then destroy() in reverse order.
  * 
- * <p>This class implements Spring aware interfaces to auto detects {@link Service} by type
- * and process them.
  * 
  * @author Zemian Deng
  */
-public class ServiceContainer implements ApplicationContextAware, InitializingBean, DisposableBean {
+public class ServiceContainer extends AbstractService {
 	
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(ServiceContainer.class);
 	
 	/** Service list that's registered in the application. */
-	protected List<Service> services;
+	protected List<Initable> services = new ArrayList<Initable>();
 	
-	protected boolean autoStart = true;
-	
-	/** Service list that's got initialized. */
-	protected List<Service> initializedServices = new ArrayList<Service>();
-	
-	public void setAutoStart(boolean autoStart) {
-		this.autoStart = autoStart;
-	}
-	
-	public void setServices(List<Service> services) {
+	public void setServices(List<Initable> services) {
 		this.services = services;
 	}
 	
-	public void init() {
-		// Initialize all services
-		for (Service service : services) {			
-			try {
-				service.init();
-				initializedServices.add(service);
-				logger.info("Service " + service + " initialized.");
-			} catch (Exception e) {
-				throw new ErrorCodeException(ErrorCode.SERVICE_PROBLEM, "Failed to initialize service " + service, e);
-			}
+	public void addService(Initable service) {
+		services.add(service);
+	}
+	
+	@Override
+	protected void initService() {
+		for (Initable service : services) {
+			logger.debug("Initializing service {}.", service);
+			service.init();
+			logger.info("Service {} initialized.", service);
 		}
-		
-		if (autoStart) {
-			// Start all services
-			for (Service service : initializedServices) {			
-				try {
-					service.start();
-					logger.info("Service " + service + " started.");
-				} catch (Exception e) {
-					throw new ErrorCodeException(ErrorCode.SERVICE_PROBLEM, "Failed to start service " + service, e);
-				}
+	}
+	
+	@Override
+	protected void startService() {
+		for (Initable service : services) {
+			if (service instanceof Service) {
+				logger.debug("Starting service {}.", service);
+				((Service)service).start();
+				logger.info("Service {} started.", service);
 			}
 		}
 	}
 	
 	@Override
-	public void destroy() {
-		if (autoStart) {
-			// Stop all services in reverse order.
-			for (int i = initializedServices.size() - 1; i > 0; i--) {
-				Service service = initializedServices.get(i);	
-				try {
-					service.stop();
-					logger.info("Service " + service + " stopped.");
-				} catch (Exception e) {
-					logger.error("Failed to stop service " + service, e);
-				}
+	protected void stopService() {
+		// Stopping in reverse order.
+		for (int i = services.size() - 1; i > 0; i--) {
+			Initable service = services.get(i);
+			if (service instanceof Service) {
+				logger.debug("Stopping service {}.", service);
+				((Service)service).stop();
+				logger.info("Service {} stopped.", service);
 			}
-		}
-		
-		// Destroying services in reverse order.
-		for (int i = initializedServices.size() - 1; i > 0; i--) {
-			Service service = initializedServices.get(i);
-			try {
-				service.destroy();
-				logger.info("Service " + service + " destroyed.");
-			} catch (Exception e) {
-				logger.error("Failed to destroy service " + service, e);
-			}
+		}	
+	}
+	
+	@Override
+	protected void destroyService() {
+		// Destroying in reverse order.
+		for (int i = services.size() - 1; i > 0; i--) {
+			Initable service = services.get(i);
+			logger.debug("Destroying service {}.", service);
+			service.destroy();
+			logger.info("Service {} destroyed.", service);
 		}
 	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		init();
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		Map<String, Service> serviceBeans = applicationContext.getBeansOfType(Service.class);
-		services = new ArrayList<Service>(serviceBeans.values());
-		logger.info("Spring context initialized, detected " + services.size() + " Service instances.");
-	}
+	
 }

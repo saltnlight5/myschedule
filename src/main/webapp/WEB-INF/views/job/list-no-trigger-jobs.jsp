@@ -41,12 +41,6 @@ $(document).ready(function() {
 </div>
 
 <h1>Jobs without assigned trigger</h1>
-<c:choose><c:when test="${ !sessionData.currentSchedulerStarted }">
-	<div class="warning">The current scheduler has not started! No jobs will be running yet.</div>
-</c:when><c:when test="${ sessionData.currentSchedulerPaused }">
-	<div class="warning">The current scheduler has been paused (in standby mode)! No jobs will be running yet.</div>
-</c:when></c:choose>
-
 <table id="jobs" class="display">
 	<thead>
 	<tr>
@@ -59,11 +53,11 @@ $(document).ready(function() {
 	<tbody>
 	<c:forEach items="${ data.noTriggerJobDetails }" var="jobDetail">
 	<tr>
-		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">${ jobDetail.fullName }</a></td>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">${ jobDetail.key }</a></td>
 		<td>${ jobDetail.jobClass.name }</td>
 		<td class="action">
-			<a href="${ mainPath }/job/run-job?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">Run It Now</a> |
-			<a href="${ mainPath }/job/delete?jobName=${ jobDetail.name }&jobGroup=${ jobDetail.group }">Delete</a>
+			<a href="${ mainPath }/job/run-job?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">Run It Now</a> |
+			<a href="${ mainPath }/job/delete?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">Delete</a>
 		</td>
 	</tr>
 	</c:forEach>

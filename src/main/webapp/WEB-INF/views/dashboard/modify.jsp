@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/views/page-a.inc" %>
-<%@ include file="/WEB-INF/views/menu.inc" %>
-<%@ include file="/WEB-INF/views/scheduler/submenu.inc" %>
+<%@ include file="/WEB-INF/views/dashboard/menu.inc" %>
+<%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
 <style>
 #modify-scheduler-service {
 	width: 100%;
@@ -28,7 +28,7 @@
 <h1>Modify Scheduler Config</h1>
 
 <div class="warning">
-Modifying config properties will shutdown the current scheduler, re-initialize, and auto restart if it's set!
+Modifying config props will auto re-initialize your scheduler!
 </div>
 
 <div id="modify-scheduler-service">

@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/views/page-a.inc" %>
-<%@ include file="/WEB-INF/views/menu.inc" %>
-<%@ include file="/WEB-INF/views/scheduler/submenu.inc" %>
+<%@ include file="/WEB-INF/views/dashboard/menu.inc" %>
+<%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
 <h1>Modify Scheduler Config</h1>
 <div class="success">
 The scheduler service 

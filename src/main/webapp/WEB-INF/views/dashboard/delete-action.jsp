@@ -3,6 +3,8 @@
 <%@ include file="/WEB-INF/views/dashboard/submenu.inc" %>
 <h1>Delete Scheduler Service</h1>
 <div class="success">
-The scheduler service ${ data.removedSchedulerName } has been successfully removed.
+The scheduler service 
+<c:if test="${ not empty data.schedulerName }">( ${ data.schedulerName } )</c:if> 
+with configuration id ${ data.configId } has been removed.
 </div>
 <%@ include file="/WEB-INF/views/page-b.inc" %>

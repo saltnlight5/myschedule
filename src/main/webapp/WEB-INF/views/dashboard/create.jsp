@@ -30,6 +30,15 @@ $(document).ready(function() {
 	$("#config-in-memory").click(function() {
 		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.in-memory");
 	});
+	$("#config-database").click(function() {
+		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.database");
+	});
+	$("#config-database-clustered").click(function() {
+		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.database-clustered");
+	});
+	$("#config-database-cmt").click(function() {
+		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.database-cmt");
+	});
 	$("#config-jmx").click(function() {
 		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.jmx");
 	});
@@ -39,11 +48,8 @@ $(document).ready(function() {
 	$("#config-rmi-client").click(function() {
 		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.rmi-client");
 	});
-	$("#config-database").click(function() {
-		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.database");
-	});
-	$("#config-database-clustered").click(function() {
-		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.database-clustered");
+	$("#config-full-default").click(function() {
+		$("#configPropsText").load("${ mainPath }/dashboard/get-config-eg?name=quartz.properties.default");
 	});
 });
 </script>
@@ -56,11 +62,13 @@ $(document).ready(function() {
 Quartz Scheduler Config Properties
 <span style="label-notes">(Eg: 
 	<a name="config-in-memory" id="config-in-memory">In-Memory</a>, 
+	<a name="config-database" id="config-database">Database</a>, 
+	<a name="config-database-clustered" id="config-database-clustered">Database Cluster Node</a>,  
+	<a name="config-database-cmt" id="config-database-cmt">Database CMT/JTA</a>, 
 	<a name="config-jmx" id="config-jmx">Jmx Enabled</a>, 
 	<a name="config-rmi-server" id="config-rmi-server">RMI Server</a>, 
 	<a name="config-rmi-client" id="config-rmi-client">RMI Client</a>, 
-	<a name="config-database" id="config-database">Database</a>, 
-	<a name="config-database-clustered" id="config-database-clustered">Database Cluster Node</a>
+	<a name="config-rmi-client" id="config-full-default">Full Quartz Defaults</a>
 )</span>
 </label>
 <textarea id="configPropsText" name="configPropsText"></textarea>

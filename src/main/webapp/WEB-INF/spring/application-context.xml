@@ -17,7 +17,7 @@ related beans should go into main-dispatcher-context.xml instead.
 	
 	<!-- Allow system prop placeholder -->
 	<context:property-placeholder/>
-	
+		
 	<!-- Internal MySchedule application services. Expose key in case user want to customize. -->
 	<import resource="${myschedule.spring.config:classpath:/myschedule/spring/myschedule-services.xml}"/>
 					

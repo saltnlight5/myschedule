@@ -41,10 +41,8 @@ $(document).ready(function() {
 </div>
 
 <h1>Jobs with assigned trigger</h1>
-<c:choose><c:when test="${ !sessionData.currentSchedulerStarted }">
-	<div class="warning">The current scheduler has not started! No jobs will be running yet.</div>
-</c:when><c:when test="${ sessionData.currentSchedulerPaused }">
-	<div class="warning">The current scheduler has been paused (in standby mode)! No jobs will be running yet.</div>
+<c:choose><c:when test="${ data.schedulerService.scheduler.inStandbyMode }">
+	<div class="warning">The current scheduler is in standby mode! No jobs will be running yet.</div>
 </c:when></c:choose>
 
 <table id="jobs" class="display">
@@ -64,16 +62,16 @@ $(document).ready(function() {
 	<tbody>
 	<c:forEach items="${ data.triggers }" var="trigger" varStatus="loop">
 	<tr>
-		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.fullJobName }</a></td>
-		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.fullName }</a></td>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">${ trigger.jobKey }</a></td>
+		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.key }</a></td>
 		<td>${ data.triggerSchedules[loop.index] }</td>
 		<td><fmt:formatDate value="${ trigger.startTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.endTime }" pattern="${ data.datePattern }"/></td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
 		<td>${ trigger.calendarName }<%--<a href="${ mainPath }/job/calendar?name=${ trigger.calendarName }">${ trigger.calendarName }</a>--%></td>
 		<td class="action">
-			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">Run It Now</a> |
-			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a>
+			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">Run It Now</a> |
+			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Unschedule</a>
 		</td>
 	</tr>
 	</c:forEach>

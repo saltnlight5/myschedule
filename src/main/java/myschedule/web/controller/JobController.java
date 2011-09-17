@@ -11,18 +11,21 @@ import javax.servlet.http.HttpSession;
 
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
-import myschedule.service.SchedulerService;
-import myschedule.service.SchedulerServiceFinder;
+import myschedule.service.QuartzSchedulerService;
 import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.service.quartz.XmlJobLoader;
+import myschedule.web.SessionSchedulerServiceFinder;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.spi.MutableTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,49 +48,41 @@ public class JobController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired @Qualifier("schedulerServiceFinder")
-	protected SchedulerServiceFinder schedulerServiceFinder;
+	protected SessionSchedulerServiceFinder schedulerServiceFinder;
 	
 	/** List all scheudler's jobs */
 	@RequestMapping(value="/list", method=RequestMethod.GET)
 	public DataModelMap list(HttpSession session) {
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
-		return new DataModelMap(getJobListPageData(schedulerTemplate));
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		return new DataModelMap(getJobListPageData(ss));
 	}
 
 	@RequestMapping(value="/list-executing-jobs", method=RequestMethod.GET)
 	public DataModelMap listExecutingJobs(HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
-		if (!schedulerService.isStarted() || schedulerService.isPaused())
-			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
-					"The current scheudler is not started or in standby mode. Plese start it first.");
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getUnderlyingScheduler());
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 		List<JobExecutionContext> jobs = schedulerTemplate.getCurrentlyExecutingJobs();
 		return new DataModelMap("jobExecutionContextList", jobs);
 	}
 	
 	@RequestMapping(value="/list-no-trigger-jobs", method=RequestMethod.GET)
 	public DataModelMap listNoTriggerJobs(HttpSession session) {
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
-		return new DataModelMap(getNoTriggerJobListPageData(schedulerTemplate));
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		return new DataModelMap(getNoTriggerJobListPageData(ss));
 	}
 	
 	@RequestMapping(value="/list-calendars", method=RequestMethod.GET)
 	public DataModelMap listCalendars(HttpSession session) {
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 		DataModelMap data = new DataModelMap();
-		Scheduler scheduler = schedulerService.getUnderlyingScheduler();
-		try {
-			List<Object> calendars = new ArrayList<Object>();
-			String[] names = scheduler.getCalendarNames();
-			Arrays.sort(names);
-			for (String name : names)
-				calendars.add(scheduler.getCalendar(name));
-
-			data.addData("calendarNames", names);
-			data.addData("calendars", calendars);
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to retrieve scheduler calendars.", e);
-		}
+		List<Object> calendars = new ArrayList<Object>();
+		List<String> names = schedulerTemplate.getCalendarNames();
+		Collections.sort(names);
+		for (String name : names)
+			calendars.add(schedulerTemplate.getCalendar(name));
+		data.addData("calendarNames", names);
+		data.addData("calendars", calendars);
 		return data;
 	}
 	
@@ -96,13 +91,15 @@ public class JobController {
 			@RequestParam String triggerName,
 			@RequestParam String triggerGroup,
 			HttpSession session) {
-		logger.info("Unscheduling trigger name=" + triggerName + ", group=" + triggerGroup);
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		logger.debug("Unscheduling trigger name=" + triggerName + ", group=" + triggerGroup);
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 		DataModelMap data = new DataModelMap();
 		Trigger trigger = schedulerTemplate.uncheduleJob(triggerName, triggerGroup);
 		data.put("trigger", trigger);
 		try {
-			JobDetail jobDetail = schedulerTemplate.getJobDetail(trigger.getJobName(), trigger.getJobGroup());
+			JobKey key = trigger.getJobKey();
+			JobDetail jobDetail = schedulerTemplate.getJobDetail(key.getName(), key.getGroup());
 			data.put("jobDetail", jobDetail);
 		} catch (ErrorCodeException e) {
 			// Job no longer exists, and we allow this scenario, so do nothing. 
@@ -115,10 +112,11 @@ public class JobController {
 			@RequestParam String jobName,
 			@RequestParam String jobGroup,
 			HttpSession session) {
-		logger.info("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		logger.debug("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 		JobDetail jobDetail = schedulerTemplate.getJobDetail(jobName, jobGroup);
-		List<Trigger> triggers = schedulerTemplate.deleteJob(jobName, jobGroup);
+		List<? extends Trigger> triggers = schedulerTemplate.deleteJob(jobName, jobGroup);
 
 		DataModelMap data = new DataModelMap();
 		data.put("jobDetail", jobDetail);
@@ -132,8 +130,9 @@ public class JobController {
 			@RequestParam String jobName,
 			@RequestParam String jobGroup,
 			HttpSession session) {
-		logger.info("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
+		logger.debug("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 		schedulerTemplate.runJobNow(jobName, jobGroup);		
 		return "redirect:list";
 	}
@@ -151,9 +150,9 @@ public class JobController {
 	public ModelAndView loadXmlAction(
 			@RequestParam String xml, 
 			HttpSession session) {
-		logger.info("Loading xml jobs.");
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
-		
+		logger.debug("Loading xml jobs.");
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 		try {
 			XmlJobLoader loader = schedulerTemplate.scheduleXmlSchedulingData(xml);
 			JobLoadPageData data = new JobLoadPageData();
@@ -179,13 +178,22 @@ public class JobController {
 			@RequestParam String jobName, 
 			@RequestParam String jobGroup, 
 			HttpSession session) {
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
 		logger.debug("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
-		JobDetail jobDetail = schedulerTemplate.getJobDetail(jobName, jobGroup);
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		JobDetail jobDetail = st.getJobDetail(jobName, jobGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setTriggers(schedulerTemplate.getTriggers(jobDetail));
+		data.setTriggers(st.getTriggers(jobDetail));
 		data.setJobDetail(jobDetail);
 		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
+
+		List<String> triggerStatusList = new ArrayList<String>();
+		for (Trigger trigger : data.getTriggers()) {
+			TriggerKey tk = trigger.getKey();
+			triggerStatusList.add(st.getTriggerState(tk.getName(), tk.getGroup()).toString());
+		}
+		data.setTriggerStatusList(triggerStatusList);
+		
 		return new DataModelMap(data);
 	}
 
@@ -196,14 +204,18 @@ public class JobController {
 			@RequestParam String triggerGroup,
 			@RequestParam int fireTimesCount, 
 			HttpSession session) {
-		logger.debug("Viewing detail of triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + "[fireTimesCount=" + fireTimesCount + "]");
-		SchedulerTemplate schedulerTemplate = schedulerServiceFinder.findSchedulerTemplate(session);
-		Trigger trigger = schedulerTemplate.getTrigger(triggerName, triggerGroup);
-		List<Date> nextFireTimes = schedulerTemplate.getNextFireTimes(trigger, new Date(), fireTimesCount);
+		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
+		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+		Trigger trigger = st.getTrigger(triggerName, triggerGroup);
+		List<Date> nextFireTimes = st.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setJobDetail(schedulerTemplate.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
+		JobKey jobKey = trigger.getJobKey();
+		TriggerKey triggerKey = trigger.getKey();
+		data.setJobDetail(st.getJobDetail(jobKey.getName(), jobKey.getGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
+		String statusStr = st.getTriggerState(triggerKey.getName(), triggerKey.getGroup()).toString();
+		data.setTriggerStatusList(Arrays.asList(new String[]{ statusStr }));
 		data.setNextFireTimes(nextFireTimes);
 		
 		// Calculate excludeByCalendar
@@ -211,7 +223,7 @@ public class JobController {
 		String calName = trigger.getCalendarName();
 		if (calName != null) {
 			try {
-				Scheduler scheduler = schedulerTemplate.getScheduler();
+				Scheduler scheduler = st.getScheduler();
 				Calendar cal = scheduler.getCalendar(calName);
 				for (Date dt : nextFireTimes) {
 					if (!cal.isTimeIncluded(dt.getTime())) {
@@ -234,29 +246,27 @@ public class JobController {
 	        return new DataModelMap();
 	}
 
-	protected List<String> getTriggerFullNames(List<Trigger> triggers) {
+	protected List<String> getTriggerFullNames(List<MutableTrigger> triggers) {
 		List<String> list = new ArrayList<String>();
 		for (Trigger trigger : triggers)
-			list.add(trigger.getFullName());
+			list.add(trigger.getKey().toString());
 		return list;
 	}
 
 	protected List<String> getJobDetailFullNames(List<JobDetail> jobDetails) {
 		List<String> list = new ArrayList<String>();
 		for (JobDetail jobDetail : jobDetails)
-			list.add(jobDetail.getFullName());
+			list.add(jobDetail.getKey().toString());
 		return list;
 	}
 	
 	/** Return only jobs with trigger associated. */
-	protected JobListPageData getJobListPageData(SchedulerTemplate schedulerTemplate) {
-		List<Trigger> triggers = new ArrayList<Trigger>();
-		
+	protected JobListPageData getJobListPageData(QuartzSchedulerService schedulerService) {
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
+		List<Trigger> triggers = new ArrayList<Trigger>();		
 		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
-		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
-		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
+			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() > 0) {
 				triggers.addAll(jobTriggers);
 			}
@@ -265,31 +275,28 @@ public class JobController {
 
 		// Let's sort them.
 		sortJobListTriggers(triggers);
-		
 		JobListPageData data = new JobListPageData();
 		data.setTriggers(triggers);
+		data.setSchedulerService(schedulerService);
 		return data;
 	}
 
 	/** Return only jobs without trigger associated. */
-	protected Object getNoTriggerJobListPageData(SchedulerTemplate schedulerTemplate) {
+	protected Object getNoTriggerJobListPageData(QuartzSchedulerService schedulerService) {
+		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
-		
 		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
-		logger.debug("There are total " + allJobDetails.size() + " jobDetails");
-		
 		for (JobDetail jobDetail : allJobDetails) {
-			List<Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
+			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
 			if (jobTriggers.size() == 0) {
 				noTriggerJobDetails.add(jobDetail);
 			}
 		}
-		logger.debug("Found " + noTriggerJobDetails.size() + " noTriggerJobDetails.");
-
 		// Let's sort them.
 		sortJobListNoTriggerJobDetails(noTriggerJobDetails);
 		
 		JobListPageData data = new JobListPageData();
+		data.setSchedulerService(schedulerService);
 		data.setNoTriggerJobDetails(noTriggerJobDetails);
 		return data;
 	}
@@ -297,7 +304,6 @@ public class JobController {
 	/**
 	 * Sort by Trigger's default comparator provided by Quartz.
 	 */
-	@SuppressWarnings("unchecked")
 	protected void sortJobListTriggers(List<Trigger> triggers) {
 		Collections.sort(triggers);
 	}
@@ -309,9 +315,9 @@ public class JobController {
 		Collections.sort(triggers, new Comparator<Trigger>() {
 			@Override
 			public int compare(Trigger o1, Trigger o2) {
-				int ret = o1.getFullJobName().compareTo(o2.getFullJobName());
+				int ret = o1.getJobKey().compareTo(o2.getJobKey());
 				if (ret == 0) {
-					ret = o1.getFullName().compareTo(o2.getFullName());
+					ret = o1.getKey().compareTo(o2.getKey());
 				}
 				return ret;
 			}
@@ -326,7 +332,7 @@ public class JobController {
 		Collections.sort(noTriggerJobDetails, new Comparator<JobDetail>() {
 			@Override
 			public int compare(JobDetail o1, JobDetail o2) {
-				return o1.getFullName().compareTo(o2.getFullName());
+				return o1.getKey().compareTo(o2.getKey());
 			}			
 		});
 	}

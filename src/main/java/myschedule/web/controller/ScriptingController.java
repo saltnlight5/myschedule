@@ -8,10 +8,10 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
-import myschedule.service.SchedulerService;
-import myschedule.service.SchedulerServiceFinder;
+import myschedule.service.QuartzSchedulerService;
 import myschedule.service.ScriptingService;
 import myschedule.service.quartz.SchedulerTemplate;
+import myschedule.web.SessionSchedulerServiceFinder;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -48,11 +48,11 @@ public class ScriptingController implements ServletContextAware {
 	
 	protected ServletContext servletContext;
 	
-	@Autowired
+	@Autowired @Qualifier("groovyScriptingService")
 	protected ScriptingService scriptingService;
 	
 	@Autowired @Qualifier("schedulerServiceFinder")
-	protected SchedulerServiceFinder schedulerServiceFinder;
+	protected SessionSchedulerServiceFinder schedulerServiceFinder;
 	
 	public void setScriptingService(ScriptingService scriptingService) {
 		this.scriptingService = scriptingService;
@@ -70,11 +70,11 @@ public class ScriptingController implements ServletContextAware {
 		logger.debug("Running Groovy Script Text.");
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		PrintWriter webOut = new PrintWriter(outStream);
-		SchedulerService schedulerService = schedulerServiceFinder.find(session);
+		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("schedulerService", schedulerService);
-		variables.put("schedulerTemplate", new SchedulerTemplate(schedulerService.getUnderlyingScheduler()));
-		variables.put("quartzScheduler", schedulerService.getUnderlyingScheduler());
+		variables.put("schedulerTemplate", new SchedulerTemplate(schedulerService.getScheduler()));
+		variables.put("quartzScheduler", schedulerService.getScheduler());
 		variables.put("servletContext", servletContext);
 		variables.put("logger", logger);
 		variables.put("webOut", webOut);
@@ -84,6 +84,7 @@ public class ScriptingController implements ServletContextAware {
 			Object scriptingOutput = scriptingService.run(groovyScriptText, variables );
 			data.addData("scriptingOutput", scriptingOutput);
 		} catch (Exception e) {
+			logger.error("Failed to run script text.", e);
 			data.addData("errorMessage", ExceptionUtils.getMessage(e));
 			data.addData("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
 			data.addData("groovyScriptText", groovyScriptText);

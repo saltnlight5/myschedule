@@ -10,14 +10,18 @@ public class JobTriggerDetailPageData {
 	protected int fireTimesCount;
 	protected List<Date> nextFireTimes;
 	protected JobDetail jobDetail;
-	protected List<Trigger> triggers;
+	protected List<? extends Trigger> triggers;
+	protected List<String> triggerStatusList;
 	protected boolean jobDetailShouldRecover;
 	protected List<String> excludeByCalendar;
 	
-	public Trigger getFirstTrigger() {
-		return triggers.get(0);
+	public List<String> getTriggerStatusList() {
+		return triggerStatusList;
 	}
-
+	public void setTriggerStatusList(List<String> triggerStatusList) {
+		this.triggerStatusList = triggerStatusList;
+	}
+	
 	public boolean isJobDetailShouldRecover() {
 		return jobDetailShouldRecover;
 	}
@@ -34,11 +38,11 @@ public class JobTriggerDetailPageData {
 		this.fireTimesCount = fireTimesCount;
 	}
 	
-	public List<Trigger> getTriggers() {
+	public List<? extends Trigger> getTriggers() {
 		return triggers;
 	}
 	
-	public void setTriggers(List<Trigger> triggers) {
+	public void setTriggers(List<? extends Trigger> triggers) {
 		this.triggers = triggers;
 	}
 	

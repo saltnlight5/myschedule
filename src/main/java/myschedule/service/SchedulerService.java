@@ -1,60 +1,17 @@
 package myschedule.service;
 
-import java.util.Properties;
-
-import org.quartz.Scheduler;
 
 /**
- * Lifecycle for a scheduler service. This is not the same as the {@link Service} due to special
- * needs of the scheduler.
- *
- * <p>
- * A SchedulerService may be use the {@link SchedulerServiceContainer} to auto manage the lifecycle invocations.
+ * A scheduler service that contains its config and the actual underlying scheduler.
+ * 
+ * @param T the underlying scheduler type.
  * 
  * @author Zemian Deng
  */
-public interface SchedulerService {
+public interface SchedulerService<T> extends Service {
 
-	void setConfigProps(Properties configProps);
+	SchedulerConfig getSchedulerConfig();
 	
-	boolean isConfigModifiable();
-	
-	String getConfigSchedulerName();
-	
-	boolean isAutoStart();
-
-	boolean isWaitForJobsToComplete();
-
-	Scheduler getUnderlyingScheduler();
-
-	String getName();
-	
-	Properties getConfigProps();
-
-	void pause();
-	
-	void resume();
-
-	void standby();
-
-	void start();
-
-	void shutdown();
-
-	void init();
-
-	void destroy();
-
-	boolean isInit();
-	
-	boolean isPaused();
-
-	boolean isRemote();
+	T getScheduler();
 		
-	boolean isStarted();
-
-	boolean isStandby();
-
-	boolean isShutdown();
-	
 }

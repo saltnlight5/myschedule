@@ -46,11 +46,11 @@ $(document).ready(function() {
 <h1>Job Detail and Its Associated Triggers</h1>
 
 <div>
-<a id="delete" href="${ mainPath }/job/delete?jobName=${ data.jobDetail.name }&jobGroup=${ data.jobDetail.group }">
+<a id="delete" href="${ mainPath }/job/delete?jobName=${ data.jobDetail.key.name }&jobGroup=${ data.jobDetail.key.group }">
 DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </div>
 
-<h2>Job : ${ data.jobDetail.fullName }</h2>
+<h2>Job : ${ data.jobDetail.key }</h2>
 <table id="jobs">
 	<thead>
 	<tr>
@@ -59,15 +59,13 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	</tr>
 	</thead>
 	<tbody>
-	<tr><td>Name</td><td>${ data.jobDetail.name }</td></tr>
-	<tr><td>Group</td><td>${ data.jobDetail.group }</td></tr>
-	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
 	<tr><td>Key</td><td>${ data.jobDetail.key }</td></tr>
+	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
 	<tr><td>Description</td><td>${ data.jobDetail.description }</td></tr>
-	<tr><td>Durability</td><td>${ data.jobDetail.durable }</td></tr>
-	<tr><td>Stateful</td><td>${ data.jobDetail.stateful }</td></tr>
-	<tr><td>Volatile</td><td>${ data.jobDetail.volatile }</td></tr>
-	<tr><td>Should Recover</td><td>${ data.jobDetailShouldRecover }</td></tr>
+	<tr><td>Durable</td><td>${ data.jobDetail.durable }</td></tr>
+	<tr><td>PersistJobDataAfterExecution</td><td>${ data.jobDetail.persistJobDataAfterExecution }</td></tr>
+	<tr><td>ConcurrentExectionDisallowed</td><td>${ data.jobDetail.concurrentExectionDisallowed }</td></tr>
+	<tr><td>Request Recovery</td><td>${ data.jobDetailShouldRecover }</td></tr>
 	
 	<c:forEach items="${ data.jobDetail.jobDataMap }" var="item">
 	<tr><td>Job Data Map: ${ item.key }</td><td>${ item.value }</td></tr>
@@ -77,7 +75,8 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 
 <c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
 	<c:set var="trigger" value="${ trigger }" scope="request"/>
-	<c:set var="loopIndex" value="${ status.index }" scope="request"/>	
+	<c:set var="triggerStatus" value="${ data.triggerStatusList[status.index] }" scope="request"/>
+	<c:set var="loopIndex" value="${ status.index }" scope="request"/>
 	<script>
 	$(document).ready(function() {
 		// use dataTables plugin
