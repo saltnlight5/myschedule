@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project 
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -93,9 +91,8 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Spring development libraries 
-		We would use jcl-over-slf4j instead of common-logging.
-		-->
+		<!-- Spring development libraries We would use jcl-over-slf4j instead of 
+			common-logging. -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -142,7 +139,8 @@
 			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Note: Tomcat6 (webapp-2.5) still require these jars to be packaged at runtime! -->
+		<!-- Note: Tomcat6 (webapp-2.5) still require these jars to be packaged 
+			at runtime! -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
@@ -160,31 +158,28 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.1.0</version>
+			<version>1.8.5</version>
 		</dependency>
 		<dependency>
-		    <groupId>c3p0</groupId>
-		    <artifactId>c3p0</artifactId>
-		    <version>0.9.1.2</version>
-		    <scope>runtime</scope>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.3</version>
+			<optional>true</optional>
 		</dependency>
-
-		<!-- Quartz Oracle and JDBC Driver
 		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz-oracle</artifactId>
-			<version>2.0.2</version>
-	      	<scope>runtime</scope>
-		</dependency>
-	    <dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc5</artifactId>
-			<version>11.2.0</version>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.3</version>
 			<scope>runtime</scope>
-	    </dependency>
-	    -->
+		</dependency>
 
-		<!-- MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.) -->
+		<!-- Quartz Oracle and JDBC Driver <dependency> <groupId>org.quartz-scheduler</groupId> 
+			<artifactId>quartz-oracle</artifactId> <version>2.0.2</version> <scope>runtime</scope> 
+			</dependency> <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc5</artifactId> 
+			<version>11.2.0</version> <scope>runtime</scope> </dependency> -->
+
+		<!-- MySql JDBC Driver (Note: there is no extra quartz component is needed 
+			with MySql.) -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -192,12 +187,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Apache Commons -->		
+		<!-- Apache Commons -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.0.1</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>

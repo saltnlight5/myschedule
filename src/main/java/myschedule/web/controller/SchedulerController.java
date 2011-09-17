@@ -18,13 +18,13 @@ import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.web.SessionSchedulerServiceFinder;
 
 import org.quartz.JobDetail;
-import org.quartz.ListenerManager;
+import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SchedulerListener;
 import org.quartz.SchedulerMetaData;
 import org.quartz.Trigger;
-import org.quartz.Trigger.TriggerState;
-import org.quartz.TriggerKey;
+import org.quartz.TriggerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,10 +68,23 @@ public class SchedulerController {
 		copySchedulerStatusData(schedulerService, data);
 		Scheduler scheduler = schedulerService.getScheduler();
 		try {
-			ListenerManager listenerManager = scheduler.getListenerManager();
-			data.addData("jobListeners", listenerManager.getJobListeners());
-			data.addData("triggerListeners", listenerManager.getTriggerListeners());
-			data.addData("schedulerListeners", listenerManager.getSchedulerListeners());
+			List<JobListener> jobListeners = new ArrayList<JobListener>();
+			List<TriggerListener> triggerListeners = new ArrayList<TriggerListener>();
+			List<SchedulerListener> schedulerListeners = new ArrayList<SchedulerListener>();
+			
+			for (Object nameObj : scheduler.getJobListenerNames()) {
+				jobListeners.add(scheduler.getJobListener(nameObj.toString()));
+			}
+			for (Object nameObj : scheduler.getTriggerListenerNames()) {
+				triggerListeners.add(scheduler.getTriggerListener(nameObj.toString()));
+			}
+			for (Object listenerObj : scheduler.getSchedulerListeners()) {
+				schedulerListeners.add((SchedulerListener)listenerObj);
+			}
+			
+			data.addData("jobListeners", jobListeners);
+			data.addData("triggerListeners", triggerListeners);
+			data.addData("schedulerListeners", schedulerListeners);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to retrieve scheduler listeners.", e);
 		}
@@ -147,8 +160,7 @@ public class SchedulerController {
 		for (JobDetail jobDetail : st.getJobDetails()) {
 			List<? extends Trigger> jobTriggers = st.getTriggers(jobDetail);
 			for (Trigger trigger : jobTriggers) {
-				TriggerKey tk = trigger.getKey();
-				if (st.getTriggerState(tk.getName(), tk.getGroup()) != TriggerState.PAUSED) {
+				if (st.getTriggerState(trigger.getName(), trigger.getGroup()) != Trigger.STATE_PAUSED) {
 					nonPausedTriggers.add(trigger);
 				}
 			}

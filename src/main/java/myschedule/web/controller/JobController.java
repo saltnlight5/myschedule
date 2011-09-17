@@ -20,12 +20,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerKey;
-import org.quartz.spi.MutableTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +95,7 @@ public class JobController {
 		Trigger trigger = schedulerTemplate.uncheduleJob(triggerName, triggerGroup);
 		data.put("trigger", trigger);
 		try {
-			JobKey key = trigger.getJobKey();
-			JobDetail jobDetail = schedulerTemplate.getJobDetail(key.getName(), key.getGroup());
+			JobDetail jobDetail = schedulerTemplate.getJobDetail(trigger.getName(), trigger.getGroup());
 			data.put("jobDetail", jobDetail);
 		} catch (ErrorCodeException e) {
 			// Job no longer exists, and we allow this scenario, so do nothing. 
@@ -189,12 +185,32 @@ public class JobController {
 
 		List<String> triggerStatusList = new ArrayList<String>();
 		for (Trigger trigger : data.getTriggers()) {
-			TriggerKey tk = trigger.getKey();
-			triggerStatusList.add(st.getTriggerState(tk.getName(), tk.getGroup()).toString());
+			int state = st.getTriggerState(trigger.getName(), trigger.getGroup());
+			triggerStatusList.add(getTriggerStateName(state));
 		}
 		data.setTriggerStatusList(triggerStatusList);
 		
 		return new DataModelMap(data);
+	}
+	
+	protected String getTriggerStateName(int triggerState) {
+		switch (triggerState) {
+		case Trigger.STATE_BLOCKED:
+			return "BLOCKED";
+		case Trigger.STATE_COMPLETE:
+			return "COMPLETE";
+		case Trigger.STATE_ERROR:
+			return "ERROR";
+		case Trigger.STATE_NONE:
+			return "NONE";
+		case Trigger.STATE_NORMAL:
+			return "NORMAL";
+		case Trigger.STATE_PAUSED:
+			return "PAUSED";
+		default:
+			// This should not happen!
+			return "*** UNKNOWN! ***";
+		}
 	}
 
 	/** Show a trigger and its job detail page. */
@@ -209,12 +225,10 @@ public class JobController {
 		Trigger trigger = st.getTrigger(triggerName, triggerGroup);
 		List<Date> nextFireTimes = st.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		JobKey jobKey = trigger.getJobKey();
-		TriggerKey triggerKey = trigger.getKey();
-		data.setJobDetail(st.getJobDetail(jobKey.getName(), jobKey.getGroup()));
+		data.setJobDetail(st.getJobDetail(trigger.getJobName(), trigger.getJobGroup()));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
-		String statusStr = st.getTriggerState(triggerKey.getName(), triggerKey.getGroup()).toString();
+		String statusStr = getTriggerStateName(st.getTriggerState(trigger.getName(), trigger.getGroup()));
 		data.setTriggerStatusList(Arrays.asList(new String[]{ statusStr }));
 		data.setNextFireTimes(nextFireTimes);
 		
@@ -246,7 +260,7 @@ public class JobController {
 	        return new DataModelMap();
 	}
 
-	protected List<String> getTriggerFullNames(List<MutableTrigger> triggers) {
+	protected List<String> getTriggerFullNames(List<Trigger> triggers) {
 		List<String> list = new ArrayList<String>();
 		for (Trigger trigger : triggers)
 			list.add(trigger.getKey().toString());
@@ -304,6 +318,7 @@ public class JobController {
 	/**
 	 * Sort by Trigger's default comparator provided by Quartz.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void sortJobListTriggers(List<Trigger> triggers) {
 		Collections.sort(triggers);
 	}
@@ -315,13 +330,16 @@ public class JobController {
 		Collections.sort(triggers, new Comparator<Trigger>() {
 			@Override
 			public int compare(Trigger o1, Trigger o2) {
-				int ret = o1.getJobKey().compareTo(o2.getJobKey());
+				String jobName1 = o1.getJobGroup() + o1.getJobName();
+				String jobName2 = o2.getJobGroup() + o2.getJobName();
+				int ret = jobName1.compareTo(jobName2);
 				if (ret == 0) {
-					ret = o1.getKey().compareTo(o2.getKey());
+					String name1 = o1.getGroup() + o1.getName();
+					String name2 = o2.getGroup() + o2.getName();
+					ret = name1.compareTo(name2);
 				}
 				return ret;
-			}
-			
+			}			
 		});
 	}
 
@@ -332,7 +350,9 @@ public class JobController {
 		Collections.sort(noTriggerJobDetails, new Comparator<JobDetail>() {
 			@Override
 			public int compare(JobDetail o1, JobDetail o2) {
-				return o1.getKey().compareTo(o2.getKey());
+				String name1 = o1.getGroup() + o1.getName();
+				String name2 = o2.getGroup() + o2.getName();
+				return name1.compareTo(name2);
 			}			
 		});
 	}

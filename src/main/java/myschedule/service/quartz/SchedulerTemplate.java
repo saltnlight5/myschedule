@@ -1,44 +1,30 @@
 package myschedule.service.quartz;
 
 import static myschedule.service.ErrorCode.SCHEDULER_PROBLEM;
-import static org.quartz.CalendarIntervalScheduleBuilder.calendarIntervalSchedule;
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import myschedule.job.GroovyScriptJob;
 import myschedule.service.ErrorCodeException;
 
 import org.quartz.Calendar;
-import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
-import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobKey;
-import org.quartz.ListenerManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-import org.quartz.Trigger.TriggerState;
-import org.quartz.TriggerKey;
-import org.quartz.impl.matchers.GroupMatcher;
-import org.quartz.spi.MutableTrigger;
-import org.quartz.spi.OperableTrigger;
 
 /**
  * A template to simplify creation and scheduling of Quartz jobs. This class can be very handy as one stop shop for
@@ -65,7 +51,8 @@ public class SchedulerTemplate {
 
 	public List<String> getCalendarNames() {
 		try {
-			return scheduler.getCalendarNames();
+			String[] names = scheduler.getCalendarNames();
+			return Arrays.asList(names);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -122,11 +109,10 @@ public class SchedulerTemplate {
 	public List<JobDetail> getJobDetails() {
 		try {
 			List<JobDetail> jobs = new ArrayList<JobDetail>();
-			List<String> groups = scheduler.getJobGroupNames();
+			String[] groups = scheduler.getJobGroupNames();
 			for (String group : groups) {
-				Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(group));
-				for (JobKey key : keys) {
-					JobDetail jobDetail = scheduler.getJobDetail(key);
+				for (String name : scheduler.getJobNames(group)) {
+					JobDetail jobDetail = scheduler.getJobDetail(name, group);
 					jobs.add(jobDetail);
 				}
 			}
@@ -139,8 +125,8 @@ public class SchedulerTemplate {
 	/** Get all the triggers in the scheduler. */
 	public List<? extends Trigger> getTriggers(JobDetail jobDetail) {
 		try {
-			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobDetail.getKey());
-			return triggers;
+			Trigger[] triggers = scheduler.getTriggersOfJob(jobDetail.getName(), jobDetail.getGroup());
+			return Arrays.asList(triggers);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -148,8 +134,7 @@ public class SchedulerTemplate {
 	
 	public JobDetail getJobDetail(String jobName, String group) {	
 		try {
-			JobKey key = JobKey.jobKey(jobName, group);
-			return scheduler.getJobDetail(key);
+			return scheduler.getJobDetail(jobName, group);
 		} catch (Exception e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -157,8 +142,7 @@ public class SchedulerTemplate {
 
 	public Trigger getTrigger(String triggerName, String group) {	
 		try {
-			TriggerKey key = TriggerKey.triggerKey(triggerName, group);
-			return scheduler.getTrigger(key);
+			return scheduler.getTrigger(triggerName, group);
 		} catch (Exception e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -178,7 +162,7 @@ public class SchedulerTemplate {
 	 */
 	public List<Date> getNextFireTimes(Trigger trigger, Date startTime, int maxCount) {
 		// We will clone the original trigger so we may call its triggered() to get a proper fireTime.
-		OperableTrigger clonedTrigger = (OperableTrigger)((OperableTrigger)trigger).clone();
+		Trigger clonedTrigger = (Trigger)trigger.clone();
 		Calendar cal = null;
 		
         if (clonedTrigger.getNextFireTime() == null) {
@@ -223,7 +207,7 @@ public class SchedulerTemplate {
 	/** Update existing job with newJobDetail and return the old one. */
 	public JobDetail updateJobDetail(JobDetail newJobDetail) {
 		try {
-			JobDetail oldJob = scheduler.getJobDetail(newJobDetail.getKey());
+			JobDetail oldJob = scheduler.getJobDetail(newJobDetail.getName(), newJobDetail.getGroup());
 			scheduler.addJob(newJobDetail, true);
 			return oldJob;
 		} catch (SchedulerException e) {
@@ -234,8 +218,8 @@ public class SchedulerTemplate {
 	/** Update existing trigger with newTrigger and return the old one. */
 	public Trigger updateTrigger(Trigger newTrigger) {
 		try {
-			Trigger oldTrigger = scheduler.getTrigger(newTrigger.getKey());
-			scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
+			Trigger oldTrigger = scheduler.getTrigger(newTrigger.getName(), newTrigger.getGroup());
+			scheduler.rescheduleJob(oldTrigger.getName(), oldTrigger.getGroup(), newTrigger);
 			return oldTrigger;
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
@@ -264,8 +248,8 @@ public class SchedulerTemplate {
 	/** Remove a trigger and its JobDetail if it's not set durable. */
 	public Trigger uncheduleJob(String triggerName, String triggerGroup) {
 		try {
-			Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
-			boolean success = scheduler.unscheduleJob(trigger.getKey());
+			Trigger trigger = scheduler.getTrigger(triggerName, triggerGroup);
+			boolean success = scheduler.unscheduleJob(trigger.getName(), trigger.getGroup());
 			if (!success)
 				throw new SchedulerException("Failed to unschedule job. Trigger name=" + 
 						triggerName + ", group=" + triggerGroup);
@@ -286,12 +270,11 @@ public class SchedulerTemplate {
 	/** Remove a JobDetail and all the triggers associated with it. */
 	public List<? extends Trigger> deleteJob(String jobName, String group) {
 		try {
-			JobKey key = JobKey.jobKey(jobName, group);
-			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(key);
-			boolean success = scheduler.deleteJob(key);
+			Trigger[] triggers = scheduler.getTriggersOfJob(jobName, group);
+			boolean success = scheduler.deleteJob(jobName, group);
 			if (!success)
-				throw new SchedulerException("Unable to delete job " + key);
-			return triggers;
+				throw new SchedulerException("Unable to delete job: " + jobName + ", group=" + group);
+			return Arrays.asList(triggers);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -318,8 +301,7 @@ public class SchedulerTemplate {
 	/** Run a job immediately with a non-volatile trigger (remove as soon as it's finished.) */
 	public void runJobNow(String name, String group) {
 		try {
-			JobKey key = JobKey.jobKey(name, group);
-			scheduler.triggerJob(key);
+			scheduler.triggerJob(name, group);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
@@ -346,49 +328,21 @@ public class SchedulerTemplate {
 	}
 	
 	public static JobDetail createJobDetail(String name, String group, Class<? extends Job> jobClass, Map<String, Object> data) {
-		JobDetail jobDetail = newJob(jobClass).withIdentity(name, group).build();
+		JobDetail jobDetail = new JobDetail(name, group, jobClass);
 		if (data != null)
 			jobDetail.getJobDataMap().putAll(data);
 		return jobDetail;
 	}
-	
-	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, int interval, IntervalUnit intervalUnit) {
-		return createCalendarIntervalTrigger(name, interval, intervalUnit, new Date());
-	}
-
-	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, int interval, IntervalUnit intervalUnit, Date startTime) {
-		return createCalendarIntervalTrigger(name, null, interval, intervalUnit, startTime, null);
-	}
-	
-	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, String group,
-			int interval, IntervalUnit intervalUnit,
-			Date startTime, Date endTime) {
-		if (group == null)
-			group = Scheduler.DEFAULT_GROUP;
 		
-		if (startTime == null)
-			startTime = new Date();
-		
-		CalendarIntervalTrigger trigger = newTrigger()
-				.withIdentity(name, group)
-				.startAt(startTime).endAt(endTime)
-				.withSchedule(calendarIntervalSchedule().withInterval(interval, intervalUnit))
-				.build();
-		return (MutableTrigger)trigger;
-	}
-	
-	public static MutableTrigger createCronTrigger(String name, String cron) {
+	public static CronTrigger createCronTrigger(String name, String cron) {
 		return createCronTrigger(name, null, cron, new Date(), null);
 	}
 
-	public static MutableTrigger createCronTrigger(String name, String cron, Date startTime) {
+	public static CronTrigger createCronTrigger(String name, String cron, Date startTime) {
 		return createCronTrigger(name, null, cron, startTime, null);
 	}
 	
-	public static MutableTrigger createCronTrigger(String name, String group, String cron, Date startTime, Date endTime) {
+	public static CronTrigger createCronTrigger(String name, String group, String cron, Date startTime, Date endTime) {
 		if (group == null)
 			group = Scheduler.DEFAULT_GROUP;
 		
@@ -396,30 +350,28 @@ public class SchedulerTemplate {
 			startTime = new Date();
 		
 		try {
-			CronTrigger trigger = newTrigger()
-					.withIdentity(name, group)
-					.startAt(startTime).endAt(endTime)
-					.withSchedule(cronSchedule(cron))
-					.build();
-			return (MutableTrigger)trigger;
+			CronTrigger trigger = new CronTrigger(name, group, cron);
+			trigger.setStartTime(startTime);
+			trigger.setEndTime(endTime);
+			return trigger;
 		} catch (ParseException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
 	
-	public static MutableTrigger createSimpleTrigger(String name) {
+	public static SimpleTrigger createSimpleTrigger(String name) {
 		return createSimpleTrigger(name, 1, 0);
 	}
 	
-	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval) {
+	public static SimpleTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval) {
 		return createSimpleTrigger(name, repeatTotalCount, interval, new Date());
 	}
 
-	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval, Date startTime) {
+	public static SimpleTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval, Date startTime) {
 		return createSimpleTrigger(name, Scheduler.DEFAULT_GROUP, repeatTotalCount, interval, startTime, null);
 	}
 	
-	public static MutableTrigger createSimpleTrigger(String name, String group, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
+	public static SimpleTrigger createSimpleTrigger(String name, String group, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
 		if (group == null)
 			group = Scheduler.DEFAULT_GROUP;
 		
@@ -431,15 +383,8 @@ public class SchedulerTemplate {
 		if (repeatTotalCount < 0)
 			repeatCount = SimpleTrigger.REPEAT_INDEFINITELY;
 		
-		SimpleTrigger trigger = newTrigger()
-			.withIdentity(name, group)
-			.startAt(startTime).endAt(endTime)
-			.withSchedule(
-					simpleSchedule()
-					.withRepeatCount(repeatCount)
-					.withIntervalInMilliseconds(repeatInterval))
-			.build();
-		return (MutableTrigger)trigger;
+		SimpleTrigger trigger = new SimpleTrigger(name, group, startTime, endTime, repeatCount, repeatInterval); 
+		return trigger;
 	}
 	
 	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass) {
@@ -541,22 +486,15 @@ public class SchedulerTemplate {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}
 	}
-	public ListenerManager getListenerManager() {
-		try {
-			return scheduler.getListenerManager();
-		} catch (SchedulerException e) {
-			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
-		}
-	}
+	
 	public List<Trigger> getPausedTriggers() {
 		try {
 			List<Trigger> result = new ArrayList<Trigger>();
-			List<String> groups = scheduler.getTriggerGroupNames();
+			String[] groups = scheduler.getTriggerGroupNames();
 			for (String group : groups) {
-				Set<TriggerKey> triggerKeys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(group));
-				for (TriggerKey key : triggerKeys) {
-					if (scheduler.getTriggerState(key) == TriggerState.PAUSED) {
-						result.add(scheduler.getTrigger(key));
+				for (String name : scheduler.getTriggerNames(group)) {
+					if (scheduler.getTriggerState(name, group) == Trigger.STATE_PAUSED) {
+						result.add(scheduler.getTrigger(name, group));
 					}
 				}
 			}
@@ -566,9 +504,9 @@ public class SchedulerTemplate {
 		}
 	}
 
-	public TriggerState getTriggerState(String name, String group) {
+	public int getTriggerState(String name, String group) {
 		try {
-			return scheduler.getTriggerState(TriggerKey.triggerKey(name, group));
+			return scheduler.getTriggerState(name, group);
 		} catch (SchedulerException e) {
 			throw new ErrorCodeException(SCHEDULER_PROBLEM, e);
 		}

@@ -24,7 +24,7 @@ User need not to defined and instantiate actual Quartz Scheduler object.
 	</bean>
 	
 	<bean name="schedulerConfigDao" class="myschedule.service.FileSchedulerConfigDao">
-		<property name="storeDir" value="${user.home}/myschedule2/configs"></property>
+		<property name="storeDir" value="${user.home}/myschedule1/configs"></property>
 	</bean>
 	
 	<bean name="schedulerConfigService" class="myschedule.service.SchedulerConfigService">
