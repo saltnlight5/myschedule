@@ -7,7 +7,7 @@
 #
 
 # Main Quartz configuration
-org.quartz.scheduler.instanceName= QuartzScheduler'
+org.quartz.scheduler.instanceName= QuartzScheduler
 org.quartz.scheduler.instanceId=NON_CLUSTERED
 org.quartz.scheduler.instanceIdGenerator.class=org.quartz.simpl.SimpleInstanceIdGenerator
 org.quartz.scheduler.threadName= # Default: instanceName + '_QuartzSchedulerThread'
@@ -25,39 +25,43 @@ org.quartz.scheduler.batchTriggerAcquisitionMaxCount=1
 org.quartz.scheduler.batchTriggerAcquisitionFireAheadTimeWindow=0
 
 # Thread pool
-org.quartz.threadPool.class=
+org.quartz.threadPool.class=org.quartz.simpl.SimpleThreadPool
 org.quartz.threadPool.threadCount=-1
 org.quartz.threadPool.threadPriority=5
+# This is SimpleThreadPool specific
+org.quartz.threadPool.makeThreadsDaemons=false
+org.quartz.threadPool.threadsInheritGroupOfInitializingThread=true
+org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread=false
 
 # Trigger Trigger Listeners
-#org.quartz.triggerListener.NAME.class = com.foo.MyListenerClass
-#org.quartz.triggerListener.NAME.propName = propValue
-#org.quartz.triggerListener.NAME.prop2Name = prop2Value
+#org.quartz.triggerListener.NAME.class=com.foo.MyListenerClass
+#org.quartz.triggerListener.NAME.propName=propValue
+#org.quartz.triggerListener.NAME.prop2Name=prop2Value
 
 # Trigger Job Listeners
-#org.quartz.jobListener.NAME.class = com.foo.MyListenerClass
-#org.quartz.jobListener.NAME.propName = propValue
-#org.quartz.jobListener.NAME.prop2Name = prop2Value
+#org.quartz.jobListener.NAME.class=com.foo.MyListenerClass
+#org.quartz.jobListener.NAME.propName=propValue
+#org.quartz.jobListener.NAME.prop2Name=prop2Value
 
 # Plugins
-#org.quartz.plugin.NAME.class = com.foo.MyPluginClass
-#org.quartz.plugin.NAME.propName = propValue
-#org.quartz.plugin.NAME.prop2Name = prop2Value
+#org.quartz.plugin.NAME.class=com.foo.MyPluginClass
+#org.quartz.plugin.NAME.propName=propValue
+#org.quartz.plugin.NAME.prop2Name=prop2Value
 
 # RMI client/server
 org.quartz.scheduler.rmi.export=false
 org.quartz.scheduler.rmi.registryHost=localhost
 org.quartz.scheduler.rmi.registryPort=1099
 org.quartz.scheduler.rmi.createRegistry=never
-org.quartz.scheduler.rmi.serverPort=random
+org.quartz.scheduler.rmi.serverPort=
 org.quartz.scheduler.rmi.proxy=
 
 # JobStore Option#1: In Memory
-org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+org.quartz.jobStore.class=org.quartz.simpl.RAMJobStore
 org.quartz.jobStore.misfireThreshold=60000
 
 # JobStore Option#2: JDBC JobStoreTx
-org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTX
+org.quartz.jobStore.class=org.quartz.impl.jdbcjobstore.JobStoreTX
 org.quartz.jobStore.driverDelegateClass=
 org.quartz.jobStore.dataSource=NAME
 org.quartz.jobStore.tablePrefix=QRTZ_
@@ -67,14 +71,14 @@ org.quartz.jobStore.isClustered=false
 org.quartz.jobStore.clusterCheckinInterval=15000
 org.quartz.jobStore.maxMisfiresToHandleAtATime=20
 org.quartz.jobStore.dontSetAutoCommitFalse=false
-org.quartz.jobStore.selectWithLockSQL=SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE
+org.quartz.jobStore.selectWithLockSQL=SELECT * FROM {0}LOCKS WHERE LOCK_NAME=? FOR UPDATE
 org.quartz.jobStore.txIsolationLevelSerializable=false
 org.quartz.jobStore.acquireTriggersWithinLock=false
 org.quartz.jobStore.lockHandler.class=
-org.quartz.jobStore.driverDelegateInitString=
+#org.quartz.jobStore.driverDelegateInitString=
 
 # JobStore Option#3: JDBC jobStoreCMT
-org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreCMT
+org.quartz.jobStore.class=org.quartz.impl.jdbcjobstore.JobStoreCMT
 org.quartz.jobStore.driverDelegateClass=
 org.quartz.jobStore.dataSource=NAME
 org.quartz.jobStore.nonManagedTXDataSource=
@@ -86,12 +90,12 @@ org.quartz.jobStore.clusterCheckinInterval=15000
 org.quartz.jobStore.maxMisfiresToHandleAtATime=20
 org.quartz.jobStore.dontSetAutoCommitFalse=false
 org.quartz.jobStore.dontSetNonManagedTXConnectionAutoCommitFalse=false
-org.quartz.jobStore.selectWithLockSQL=SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE
+org.quartz.jobStore.selectWithLockSQL=SELECT * FROM {0}LOCKS WHERE LOCK_NAME=? FOR UPDATE
 org.quartz.jobStore.txIsolationLevelSerializable=false
 org.quartz.jobStore.txIsolationLevelReadCommitted=false
 org.quartz.jobStore.acquireTriggersWithinLock=false
 org.quartz.jobStore.lockHandler.class=
-org.quartz.jobStore.driverDelegateInitString=
+#org.quartz.jobStore.driverDelegateInitString=
 
 # DataSource Option#1: A conn pooled DataSource for one of JDBC JobStore above (You may replace and use any NAME)
 org.quartz.dataSource.NAME.driver=
@@ -102,7 +106,7 @@ org.quartz.dataSource.NAME.maxConnections=10
 org.quartz.dataSource.NAME.validationQuery=
 org.quartz.dataSource.NAME.idleConnectionValidationSeconds=50
 org.quartz.dataSource.NAME.validateOnCheckout=false
-org.quartz.dataSource.NAME.discardIdleConnectionsSeconds=0 #(disabled)
+org.quartz.dataSource.NAME.discardIdleConnectionsSeconds=0
 
 # DataSource Option#2: A JNDI DataSource for one of JDBC JobStore above (You may replace and use any NAME)
 org.quartz.dataSource.NAME.jndiURL=
@@ -113,4 +117,4 @@ org.quartz.dataSource.NAME.java.naming.security.credentials=
 
 # DataSource Option#3: A user custom DataSource for one of JDBC JobStore above (You may replace and use any NAME)
 # The user class must implements org.quartz.utils.ConnectionProvider interface.
-org.quartz.dataSource.NAME.connectionProvider.class=my.ConnectionProviderImpl #You own conn pool impl.
+#org.quartz.dataSource.NAME.connectionProvider.class=my.ConnectionProviderImpl #You own conn pool impl.

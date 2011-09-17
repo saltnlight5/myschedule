@@ -42,7 +42,7 @@ org.quartz.dataSource.nonManagedTxQuartzDataSource.driver = com.mysql.jdbc.Drive
 org.quartz.dataSource.nonManagedTxQuartzDataSource.URL = jdbc:mysql://localhost:3306/quartz2
 org.quartz.dataSource.nonManagedTxQuartzDataSource.user = quartz2
 org.quartz.dataSource.nonManagedTxQuartzDataSource.password = quartz2123
-org.quartz.dataSource.nonManagedTxQuartzDataSource.maxConnections = 9 // Recommend threadPool size + 4
+org.quartz.dataSource.nonManagedTxQuartzDataSource.maxConnections = 4
 
 # DataSource #2: A JNDI DataSource for Quartz to participate in JTA (A JTA managed tx)
 org.quartz.dataSource.NAME.jndiURL=/datasource/Quartz2XaDs
