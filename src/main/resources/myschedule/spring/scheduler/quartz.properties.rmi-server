@@ -13,6 +13,8 @@ org.quartz.scheduler.rmi.registryHost = localhost
 org.quartz.scheduler.rmi.registryPort = 1099
 org.quartz.scheduler.rmi.serverPort = 1100
 
-# MySchedule scheduler service parameters
+# MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)
+# NOTE: Quartz RMI connections are not fault tolerant! It means you have to live with the fact that there
+# is one connection point of failure.
 myschedule.schedulerService.autoStart = true
 myschedule.schedulerService.waitForJobsToComplete = true
