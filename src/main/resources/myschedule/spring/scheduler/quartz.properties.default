@@ -21,8 +21,6 @@ org.quartz.context.key.SOME_KEY=
 org.quartz.scheduler.userTransactionURL=java:comp/UserTransaction
 org.quartz.scheduler.wrapJobExecutionInUserTransaction=false
 org.quartz.scheduler.skipUpdateCheck=false
-org.quartz.scheduler.batchTriggerAcquisitionMaxCount=1
-org.quartz.scheduler.batchTriggerAcquisitionFireAheadTimeWindow=0
 
 # Thread pool
 org.quartz.threadPool.class=org.quartz.simpl.SimpleThreadPool
