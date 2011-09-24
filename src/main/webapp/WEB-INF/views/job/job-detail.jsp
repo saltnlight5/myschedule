@@ -63,8 +63,8 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
 	<tr><td>Description</td><td>${ data.jobDetail.description }</td></tr>
 	<tr><td>Durable</td><td>${ data.jobDetail.durable }</td></tr>
-	<tr><td>PersistJobDataAfterExecution</td><td>${ data.jobDetail.persistJobDataAfterExecution }</td></tr>
-	<tr><td>ConcurrentExectionDisallowed</td><td>${ data.jobDetail.concurrentExectionDisallowed }</td></tr>
+	<tr><td>Volatile</td><td>${ data.jobDetail.volatile }</td></tr>
+	<tr><td>Stateful</td><td>${ data.jobDetail.stateful }</td></tr>
 	<tr><td>Request Recovery</td><td>${ data.jobDetailShouldRecover }</td></tr>
 	
 	<c:forEach items="${ data.jobDetail.jobDataMap }" var="item">
