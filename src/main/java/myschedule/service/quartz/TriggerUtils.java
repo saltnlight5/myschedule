@@ -5,6 +5,14 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
 public class TriggerUtils {
+	public static boolean isSimpleTrigger(Object trigger) {
+		return trigger instanceof SimpleTrigger;
+	}
+	
+	public static boolean isCronTrigger(Object trigger) {
+		return trigger instanceof CronTrigger;
+	}
+	
 	public static String getMisfireInstructionName(Trigger trigger) {
 		int code = trigger.getMisfireInstruction();
 		if (trigger instanceof SimpleTrigger) {
