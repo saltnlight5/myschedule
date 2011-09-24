@@ -19,7 +19,7 @@ $(document).ready(function() {
 <table id="calendars-table" class="display">
 	<thead>
 	<tr>
-		<th> COUNT </th>
+		<th> INDEX </th>
 		<th> NAME </th>
 		<th> CLASS </th>
 		<th> DESC </th>
@@ -29,10 +29,11 @@ $(document).ready(function() {
 	
 	<tbody>
 	<c:forEach items="${ data.calendars }" var="item" varStatus="loop">
+	<c:set var="item" value="${ item }" scope="request" />
 	<tr>
 		<td> ${ loop.index + 1 }</td>
 		<td> ${ data.calendarNames[loop.index] } </td>
-		<td> ${ item.class.name } </td>
+		<td> <%= request.getAttribute("item").getClass().getName() %> </td>
 		<td> ${ item.description } </td>
 		<td> ${ item } </td>
 	</tr>
