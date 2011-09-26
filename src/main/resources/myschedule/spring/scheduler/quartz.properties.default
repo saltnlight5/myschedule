@@ -3,7 +3,8 @@
 # NOTE: Some settings are mutually exclusive, and you must pick an option and remove the rest. But they are all listed
 # here for convenience.
 #
-# Full detail of Quartz configuration documentation can be found at http://www.quartz-scheduler.org/docs/configuration
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
 #
 
 # Main Quartz configuration

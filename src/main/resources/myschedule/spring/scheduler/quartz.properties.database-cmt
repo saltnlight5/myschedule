@@ -16,7 +16,8 @@
 # a copy of the database schema here:
 # http://svn.terracotta.org/fisheye/browse/Quartz/tags/quartz-2.0.2/docs/dbTables
 #
-# Full detail of Quartz configuration documentation can be found at http://www.quartz-scheduler.org/docs/configuration
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
 #
 
 # Main Quartz configuration
