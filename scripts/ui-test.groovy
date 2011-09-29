@@ -1,3 +1,14 @@
+/*
+// Delete all jobs first!!!!
+count = 0
+schedulerTemplate.jobDetails.each{ job -> 
+  schedulerTemplate.deleteJob(job.name, job.group)
+  webOut.println("job deleted: " + job.name)
+  count += 1
+}
+webOut.println(count + " jobs deleted.")
+*/
+
 // Create long running job
 job = schedulerTemplate.createJobDetail('LongRunningJob', GroovyScriptJob.class)
 job.getJobDataMap().put('groovyScriptText', 'logger.info("will sleep a min."); sleep(60000)')

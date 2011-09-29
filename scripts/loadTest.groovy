@@ -1,6 +1,17 @@
 import org.quartz.*
 import myschedule.job.sample.*
 
+/*
+// Delete all jobs first!!!!
+count = 0
+schedulerTemplate.jobDetails.each{ job -> 
+  schedulerTemplate.deleteJob(job.name, job.group)
+  webOut.println("job deleted: " + job.name)
+  count += 1
+}
+webOut.println(count + " jobs deleted.")
+*/
+
 // Generate jobs: every_christmas_morning
 trigger = new CronTrigger('every_christmas', 'DEFAULT', '0 0 0 25 DEC ?')
 quartzScheduler.scheduleJob(jobDetail, trigger)
