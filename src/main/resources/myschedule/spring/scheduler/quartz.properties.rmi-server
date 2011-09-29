@@ -3,9 +3,10 @@
 # NOTE: Quartz RMI connections are not fault tolerant! It means you have to live with the fact that there
 # is one connection point of failure.
 #
-# Full detail of Quartz configuration documentation can be found at http://www.quartz-scheduler.org/docs/configuration
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
 #
-s
+
 # Main Quartz configuration
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = RmiQuartzScheduler

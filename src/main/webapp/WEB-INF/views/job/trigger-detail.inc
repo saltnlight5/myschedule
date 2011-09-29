@@ -1,4 +1,4 @@
-<h2>Trigger : ${ trigger.class } (Status: ${triggerStatus})</h2>
+<h2>Trigger : <%= request.getAttribute("trigger").getClass().getName() %> (Status: ${triggerStatus})</h2>
 <table id="triggers-${loopIndex}">
 	<thead>
 	<tr>
@@ -16,27 +16,23 @@
 	<tr><td>Priority</td><td>${ trigger.priority }</td></tr>
 	<tr><td>Trigger Listeners</td><td>${ triggerListenerNames }</td></tr>
 	
-	<tr><td>Trigger Class</td><td>${ trigger.class }</td></tr>
+	<tr><td>Trigger Class</td><td><%= request.getAttribute("trigger").getClass().getName() %></td></tr>
 	<tr><td>Next Fire Time</td><td>${ trigger.nextFireTime }</td></tr>
 	<tr><td>Previous Fire Time</td><td>${ trigger.previousFireTime }</td></tr>
 	<tr><td>Start Time</td><td>${ trigger.startTime }</td></tr>
 	<tr><td>End Time</td><td>${ trigger.endTime }</td></tr>
 	
-	<c:choose>
-	<c:when test="${ 'org.quartz.SimpleTrigger' == trigger.class.name }">
+	<% if (myschedule.service.quartz.TriggerUtils.isSimpleTrigger(request.getAttribute("trigger"))) { %>
 	<tr><td>Final Fire Time</td><td>${ trigger.finalFireTime }</td></tr>
 	<tr><td>Repeat Count</td><td>${ trigger.repeatCount }</td></tr>
 	<tr><td>Repeat Interval</td><td>${ trigger.repeatInterval }</td></tr>
 	<tr><td>Times Triggered</td><td>${ trigger.timesTriggered }</td></tr>
-	</c:when>
 	
-	<c:when test="${ 'org.quartz.CronTrigger' == trigger.class.name }">
+	<% } else if (myschedule.service.quartz.TriggerUtils.isCronTrigger(request.getAttribute("trigger"))) { %>
 	<tr><td>Cron Expression</td><td>${ trigger.cronExpression }</td></tr>
 	<tr><td>Expression Summary</td><td><pre>${ trigger.expressionSummary }</pre></td></tr>
 	<tr><td>Time Zone</td><td>${ trigger.timeZone.displayName }</td></tr>
-	</c:when>
-	
-	</c:choose>
+	<% } %>
 	
 	<c:forEach items="${ trigger.jobDataMap }" var="item">
 	<tr><td>Job Data Map: ${ item.key }</td><td>${ item.value }</td></tr>

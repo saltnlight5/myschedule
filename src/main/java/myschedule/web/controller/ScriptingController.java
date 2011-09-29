@@ -74,7 +74,8 @@ public class ScriptingController implements ServletContextAware {
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("schedulerService", schedulerService);
 		variables.put("schedulerTemplate", new SchedulerTemplate(schedulerService.getScheduler()));
-		variables.put("quartzScheduler", schedulerService.getScheduler());
+		variables.put("scheduler", schedulerService.getScheduler());
+		variables.put("quartzScheduler", schedulerService.getScheduler()); // redundant, but keep for compability sake.
 		variables.put("servletContext", servletContext);
 		variables.put("logger", logger);
 		variables.put("webOut", webOut);

@@ -40,7 +40,7 @@ public class GroovyScriptJob implements Job {
 	public static final String GROOVY_SCRIPT_FILE_KEY = "groovyScriptFile";
 
 	/**
-	 * Run the job to evaluate the Groovy script text.
+	 * Run the job to evaluate the Groovy script text or file.
 	 * @param jobExecutionContext
 	 * @throws JobExecutionException
 	 */
@@ -48,7 +48,7 @@ public class GroovyScriptJob implements Job {
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		try {
 			JobDetail jobDetail = jobExecutionContext.getJobDetail();
-			logger.info("Running Groovy Script Job {}." + jobDetail.getKey());
+			logger.info("Running Groovy Script Job {}.", jobDetail.getKey());
 			JobDataMap dataMap = jobDetail.getJobDataMap();
 			String scriptText = dataMap.getString(GROOVY_SCRIPT_TEXT_KEY);
 			String filename = null;
@@ -75,8 +75,8 @@ public class GroovyScriptJob implements Job {
 				variables.put("groovyScriptFile", file);
 				result = scriptService.runScript(file, variables);
 			}
-			logger.info("Groovy script " + (filename == null ? "text" : filename) + 
-					" evaluated. Result: " + result);
+			logger.info("Groovy script {} has been evaluated. Result: {}", 
+					(filename == null ? "text" : filename), result);
 		} catch (Exception e) {
 			throw new JobExecutionException("Failed executing GroovyScriptJob.", e);
 		}
