@@ -20,7 +20,7 @@ public class WebAppContextListener implements ServletContextListener {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	public static final String DEFAULT_THEME_NAME = "smoothness";
 	public static final String MAIN_PATH = "/main";
-	public static final String VIEWS_PATH = "/WEB-INF/views";
+	public static final String VIEWS_PATH = "/WEB-INF/jsp";
 	public static final String VERSION_RES_NAME = "myschedule/version.properties";
 	
 	@Override
