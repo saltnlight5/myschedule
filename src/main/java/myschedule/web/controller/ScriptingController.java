@@ -4,15 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-
 import myschedule.service.QuartzSchedulerService;
 import myschedule.service.ScriptingService;
-import myschedule.service.quartz.SchedulerTemplate;
+import myschedule.service.quartz.SchedulerTemplateExt;
 import myschedule.web.SessionSchedulerServiceFinder;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +70,7 @@ public class ScriptingController implements ServletContextAware {
 		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("schedulerService", schedulerService);
-		variables.put("schedulerTemplate", new SchedulerTemplate(schedulerService.getScheduler()));
+		variables.put("schedulerTemplate", new SchedulerTemplateExt(schedulerService.getScheduler()));
 		variables.put("scheduler", schedulerService.getScheduler());
 		variables.put("quartzScheduler", schedulerService.getScheduler()); // redundant, but keep for compability sake.
 		variables.put("servletContext", servletContext);

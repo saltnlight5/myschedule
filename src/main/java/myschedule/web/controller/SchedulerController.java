@@ -145,7 +145,7 @@ public class SchedulerController {
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
 		List<Trigger> nonPausedTriggers = new ArrayList<Trigger>();
 		for (JobDetail jobDetail : st.getJobDetails()) {
-			List<? extends Trigger> jobTriggers = st.getTriggers(jobDetail);
+			List<? extends Trigger> jobTriggers = st.getTriggersOfJob(jobDetail.getKey());
 			for (Trigger trigger : jobTriggers) {
 				TriggerKey tk = trigger.getKey();
 				if (st.getTriggerState(tk.getName(), tk.getGroup()) != TriggerState.PAUSED) {
@@ -153,7 +153,7 @@ public class SchedulerController {
 				}
 			}
 		}
-		st.pauseAllTriggers();
+		st.pauseAll();
 		logger.info("Paused {} triggers in scheduler {}.", nonPausedTriggers.size(), st.getSchedulerName());
 		return new DataModelMap("triggers", nonPausedTriggers);
 	}

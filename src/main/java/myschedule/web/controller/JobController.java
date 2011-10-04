@@ -133,7 +133,7 @@ public class JobController {
 		logger.debug("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		schedulerTemplate.runJobNow(jobName, jobGroup);		
+		schedulerTemplate.triggerJob(jobName, jobGroup);		
 		return "redirect:list";
 	}
 	
@@ -183,7 +183,7 @@ public class JobController {
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
 		JobDetail jobDetail = st.getJobDetail(jobName, jobGroup);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-		data.setTriggers(st.getTriggers(jobDetail));
+		data.setTriggers(st.getTriggersOfJob(jobDetail.getKey()));
 		data.setJobDetail(jobDetail);
 		data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
 
@@ -266,7 +266,7 @@ public class JobController {
 		List<Trigger> triggers = new ArrayList<Trigger>();		
 		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
 		for (JobDetail jobDetail : allJobDetails) {
-			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
+			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggersOfJob(jobDetail.getKey());
 			if (jobTriggers.size() > 0) {
 				triggers.addAll(jobTriggers);
 			}
@@ -287,7 +287,7 @@ public class JobController {
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
 		for (JobDetail jobDetail : allJobDetails) {
-			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggers(jobDetail);
+			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggersOfJob(jobDetail.getKey());
 			if (jobTriggers.size() == 0) {
 				noTriggerJobDetails.add(jobDetail);
 			}
