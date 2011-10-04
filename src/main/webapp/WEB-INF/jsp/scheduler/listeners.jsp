@@ -62,7 +62,7 @@ $(document).ready(function() {
 <table class="listeners-table">
 	<thead>
 	<tr>
-		<th>COUNT</th>
+		<th>INDEX</th>
 		<th>NAME</th>
 		<th>LISTENER CLASS</th>
 	</tr>
