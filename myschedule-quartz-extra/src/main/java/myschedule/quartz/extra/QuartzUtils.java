@@ -5,7 +5,7 @@ import org.quartz.CronTrigger;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
-public class TriggerUtils {
+public class QuartzUtils {
 	
 	public static boolean isSimpleTrigger(Object trigger) {
 		return trigger instanceof SimpleTrigger;
