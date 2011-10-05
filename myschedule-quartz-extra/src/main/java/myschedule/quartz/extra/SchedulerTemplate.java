@@ -58,11 +58,16 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	public SchedulerTemplate(Scheduler scheduler) {
-		this.scheduler = scheduler;
+	public SchedulerTemplate(String quartzConfigFilename) {
+		try {
+			StdSchedulerFactory factory = new StdSchedulerFactory(quartzConfigFilename);
+			scheduler = factory.getScheduler();
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException("Failed to obtain default scheduler.", e);
+		}
 	}
-
-	public void setScheduler(Scheduler scheduler) {
+	
+	public SchedulerTemplate(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
 	
@@ -514,16 +519,9 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	// We change the return type for better/correct API usage.	
 	public List<JobExecutionContext> getCurrentlyExecutingJobs() {
 		try {
-			List<JobExecutionContext> result = new ArrayList<JobExecutionContext>();
-			List<?> jobs = scheduler.getCurrentlyExecutingJobs();
-			for (Object job : jobs) {
-				JobExecutionContext jobec = (JobExecutionContext)job;
-				result.add(jobec);
-			}
-			return result;
+			return scheduler.getCurrentlyExecutingJobs();
 		} catch (SchedulerException e) {
 			throw new QuartzRuntimeException(e);
 		}
