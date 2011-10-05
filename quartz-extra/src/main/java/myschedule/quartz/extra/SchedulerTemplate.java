@@ -30,6 +30,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
+import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.MutableTrigger;
@@ -50,6 +51,11 @@ public class SchedulerTemplate {
 	protected Scheduler scheduler;
 	
 	public SchedulerTemplate() {
+		try {
+			scheduler = StdSchedulerFactory.getDefaultScheduler();
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException("Failed to obtain default scheduler.", e);
+		}
 	}
 	
 	public SchedulerTemplate(Scheduler scheduler) {
@@ -526,6 +532,54 @@ public class SchedulerTemplate {
 	//
 	// # These are convenient methods to easy scheduling programming.
 	//
+	
+	/**
+	 * Start scheduler, wait for some times, then shutdown scheduler to wait for all jobs to be complete.
+	 * 
+	 * @param waitTimeInMillis
+	 */
+	public void startAndShutdown(long waitTimeInMillis) {
+		start();
+		synchronized(this) {
+			try {
+				this.wait(waitTimeInMillis);
+			} catch (InterruptedException e) {
+				throw new QuartzRuntimeException("Failed to wait after scheduler started.", e);
+			}
+		}
+		shutdown(true);
+	}
+	
+	/**
+	 * Start the scheduler and put this template instance into wait state until notified or interrupted.
+	 * 
+	 * <p>Note this method will block main thread execution!
+	 */
+	public void startAndWait() {
+		startAndWait(0);
+	}
+	
+	/** 
+	 * Start the scheduler with a delay time, and put this template instance into wait state until notified or interrupted.
+	 * 
+	 * <p>Note this method will block main thread execution!
+	 * 
+	 * @param startDelayInSeconds
+	 */
+	public void startAndWait(int startDelayInSeconds) {
+		if (startDelayInSeconds <= 0) {
+			start();
+		} else {
+			startDelayed(startDelayInSeconds);
+		}
+		synchronized(this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				throw new QuartzRuntimeException("Failed to wait after scheduler started.", e);
+			}
+		}
+	}
 
 	public List<JobDetail> getAllJobDetails() {
 		try {
@@ -713,7 +767,7 @@ public class SchedulerTemplate {
 	}
 	
 	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(name, 1, 1, jobClass);
+		return scheduleRepeatableJob(name, 1, 1, jobClass, null);
 	}
 	
 	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass, Date startTime) {
