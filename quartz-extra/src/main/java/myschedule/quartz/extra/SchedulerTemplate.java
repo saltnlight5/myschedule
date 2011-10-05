@@ -676,12 +676,12 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	public Date scheduleCronJob(JobKey jobKey, String cron, Class<? extends Job> jobClass) {
-		return scheduleCronJob(jobKey, cron, jobClass, new Date());
+	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass) {
+		return scheduleCronJob(name, cron, jobClass, new Date());
 	}
 	
-	public Date scheduleCronJob(JobKey jobKey, String cron, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleCronJob(jobKey, cron, jobClass, null, startTime, null);
+	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, null, startTime, null);
 	}
 	
 	public Date scheduleCronJob(
@@ -694,12 +694,12 @@ public class SchedulerTemplate {
 		return scheduleJob(job, trigger);
 	}
 
-	public Date scheduleRepeatableJob(JobKey jobKey, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(jobKey, -1, repeatInterval, jobClass, null);
+	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
+		return scheduleRepeatableJob(name, -1, repeatInterval, jobClass, null);
 	}
 	
-	public Date scheduleRepeatableJob(JobKey jobKey, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleRepeatableJob(jobKey, startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
+	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleRepeatableJob(JobKey.jobKey(name), startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
 	}
 	
 	public Date scheduleRepeatableJob(
@@ -712,17 +712,17 @@ public class SchedulerTemplate {
 		return scheduleJob(job, trigger);
 	}
 	
-	public Date scheduleOnetimeJob(JobKey jobKey, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(jobKey, 1, 0, jobClass);
+	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass) {
+		return scheduleRepeatableJob(name, 1, 1, jobClass);
 	}
 	
-	public Date scheduleOnetimeJob(JobKey jobKey, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleRepeatableJob(jobKey, 1, 0, jobClass, startTime);
+	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleRepeatableJob(name, 1, 1, jobClass, startTime);
 	}
 	
 	public Date scheduleOnetimeJob(JobKey jobKey, Date startTime, Date endTime, 
 			Class<? extends Job> jobClass, Map<String, Object> data) {
-		return scheduleRepeatableJob(jobKey, startTime, endTime, 1, 0, jobClass, data);
+		return scheduleRepeatableJob(jobKey, startTime, endTime, 1, 1, jobClass, data);
 	}
 	
 
@@ -739,8 +739,8 @@ public class SchedulerTemplate {
 	// # Static methods to create triggers and jobs
 	//
 	
-	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass) {
-		return createJobDetail(jobKey, jobClass, null);
+	public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass) {
+		return createJobDetail(JobKey.jobKey(name), jobClass, null);
 	}
 	
 	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass, Map<String, Object> data) {
@@ -751,13 +751,13 @@ public class SchedulerTemplate {
 	}
 	
 	public static MutableTrigger createCalendarIntervalTrigger(
-			TriggerKey triggerKey, int interval, IntervalUnit intervalUnit) {
-		return createCalendarIntervalTrigger(triggerKey, interval, intervalUnit, new Date());
+			String name, int interval, IntervalUnit intervalUnit) {
+		return createCalendarIntervalTrigger(name, interval, intervalUnit, new Date());
 	}
 
 	public static MutableTrigger createCalendarIntervalTrigger(
-			TriggerKey triggerKey, int interval, IntervalUnit intervalUnit, Date startTime) {
-		return createCalendarIntervalTrigger(triggerKey, interval, intervalUnit, startTime, null);
+			String name, int interval, IntervalUnit intervalUnit, Date startTime) {
+		return createCalendarIntervalTrigger(TriggerKey.triggerKey(name), interval, intervalUnit, startTime, null);
 	}
 	
 	public static MutableTrigger createCalendarIntervalTrigger(
@@ -775,12 +775,12 @@ public class SchedulerTemplate {
 		return (MutableTrigger)trigger;
 	}
 	
-	public static MutableTrigger createCronTrigger(TriggerKey triggerKey, String cron) {
-		return createCronTrigger(triggerKey, cron, new Date(), null);
+	public static MutableTrigger createCronTrigger(String name, String cron) {
+		return createCronTrigger(TriggerKey.triggerKey(name), cron, new Date(), null);
 	}
 
-	public static MutableTrigger createCronTrigger(TriggerKey triggerKey, String cron, Date startTime) {
-		return createCronTrigger(triggerKey, cron, startTime, null);
+	public static MutableTrigger createCronTrigger(String name, String cron, Date startTime) {
+		return createCronTrigger(TriggerKey.triggerKey(name), cron, startTime, null);
 	}
 	
 	public static MutableTrigger createCronTrigger(TriggerKey triggerKey, String cron, Date startTime, Date endTime) {
@@ -799,16 +799,16 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey) {
-		return createSimpleTrigger(triggerKey, 1, 0);
+	public static MutableTrigger createSimpleTrigger(String name) {
+		return createSimpleTrigger(name, 1, 0);
 	}
 	
-	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey, int repeatTotalCount, int interval) {
-		return createSimpleTrigger(triggerKey, repeatTotalCount, interval, new Date());
+	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval) {
+		return createSimpleTrigger(name, repeatTotalCount, interval, new Date());
 	}
 
-	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey, int repeatTotalCount, int interval, Date startTime) {
-		return createSimpleTrigger(triggerKey, repeatTotalCount, interval, startTime, null);
+	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval, Date startTime) {
+		return createSimpleTrigger(TriggerKey.triggerKey(name), repeatTotalCount, interval, startTime, null);
 	}
 	
 	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {

@@ -42,4 +42,12 @@ public class QuartzRuntimeException extends RuntimeException {
 	public QuartzRuntimeException(String message, Throwable cause) {
 		super(message, cause);
 	}
+	
+	@Override
+	public String toString() {
+		if (schedulerException != null) {
+			return schedulerException.toString();
+		}
+		return super.toString();
+	}
 }

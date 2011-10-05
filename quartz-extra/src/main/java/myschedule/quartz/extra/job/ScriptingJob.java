@@ -128,6 +128,8 @@ public class ScriptingJob implements Job {
 				}
 			}
 			
+			// Store the result
+			jobExecutionContext.setResult(result);
 			logger.info("Job {} has been executed. Result: {}", jobDetail.getKey(), result);
 		} catch (Exception e) {
 			throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);

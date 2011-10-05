@@ -1,13 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<!-- 
-A quartz extra extention and misc jobs.
--->	
+	<!-- A quartz extra extention and misc jobs. -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>myschedule</groupId>
 	<artifactId>quartz-extra</artifactId>
 	<version>2.2.0-SNAPSHOT</version>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -19,7 +17,7 @@ A quartz extra extention and misc jobs.
 			<artifactId>quartz</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-		
+
 		<!-- Unit testing -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -39,7 +37,7 @@ A quartz extra extention and misc jobs.
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
-	
+
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -56,6 +54,19 @@ A quartz extra extention and misc jobs.
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
