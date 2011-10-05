@@ -5,7 +5,6 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -501,6 +500,14 @@ public class SchedulerTemplate {
 		}
 	}
 	
+	public void addJob(JobDetail job, boolean replace) {
+		try {
+			scheduler.addJob(job, replace);
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
+	
 	// We change the return type for better/correct API usage.	
 	public List<JobExecutionContext> getCurrentlyExecutingJobs() {
 		try {
@@ -520,8 +527,7 @@ public class SchedulerTemplate {
 	// # These are convenient methods to easy scheduling programming.
 	//
 
-	/** Get all the JobDetails in the scheduler. */
-	public List<JobDetail> getJobDetails() {
+	public List<JobDetail> getAllJobDetails() {
 		try {
 			List<JobDetail> jobs = new ArrayList<JobDetail>();
 			List<String> groups = scheduler.getJobGroupNames();
@@ -537,25 +543,7 @@ public class SchedulerTemplate {
 			throw new QuartzRuntimeException(e);
 		}
 	}
-	
-	public JobDetail getJobDetail(String jobName, String group) {	
-		try {
-			JobKey key = JobKey.jobKey(jobName, group);
-			return scheduler.getJobDetail(key);
-		} catch (Exception e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}
-
-	public Trigger getTrigger(String triggerName, String group) {	
-		try {
-			TriggerKey key = TriggerKey.triggerKey(triggerName, group);
-			return scheduler.getTrigger(key);
-		} catch (Exception e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}
-	
+		
 	/**
 	 * Get a list of next fire time dates up to maxCount time. If next fire time needed
 	 * before maxCount, then there should be a null object in the last element of the list.
@@ -627,126 +615,16 @@ public class SchedulerTemplate {
 	}
 	
 	/** Remove a trigger and its JobDetail if it's not set durable. */
-	public Trigger uncheduleJob(String triggerName, String triggerGroup) {
+	public Trigger uncheduleJob(TriggerKey triggerKey) {
 		try {
-			Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
+			Trigger trigger = scheduler.getTrigger(triggerKey);
 			boolean success = scheduler.unscheduleJob(trigger.getKey());
 			if (!success)
-				throw new SchedulerException("Failed to unschedule job. Trigger name=" + 
-						triggerName + ", group=" + triggerGroup);
+				throw new SchedulerException("Failed to unschedule job with trigger key " + triggerKey);
 			return trigger;
 		} catch (SchedulerException e) {
 			throw new QuartzRuntimeException(e);
 		}
-	}
-	
-	public void addJob(JobDetail job, boolean replace) {
-		try {
-			scheduler.addJob(job, replace);
-		} catch (SchedulerException e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}
-
-	/** Remove a JobDetail and all the triggers associated with it. */
-	public List<? extends Trigger> deleteJob(String jobName, String group) {
-		try {
-			JobKey key = JobKey.jobKey(jobName, group);
-			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(key);
-			boolean success = scheduler.deleteJob(key);
-			if (!success)
-				throw new SchedulerException("Unable to delete job " + key);
-			return triggers;
-		} catch (SchedulerException e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}
-
-	/**
-	 * Load job scheduling data xml using XMLSchedulingDataProcessor.
-	 * @param xml - xml content of job_scheduling_data xml.
-	 * @return XMLSchedulingDataProcessor instance will contain all the jobs parse in xml.
-	 */
-	public XmlJobLoader scheduleXmlSchedulingData(String xml) {
-		try {
-			// XmlJobLoader is not only just a loader, but also use to store what's loaded!
-			XmlJobLoader xmlJobLoader = XmlJobLoader.newInstance(); 
-			String systemId = XmlJobLoader.XML_SYSTEM_ID;
-			InputStream istream = new ByteArrayInputStream(xml.getBytes());
-			xmlJobLoader.processStreamAndScheduleJobs(istream, systemId, scheduler);
-			return xmlJobLoader;
-		} catch (Exception e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}
-
-	/** Run a job immediately with a non-volatile trigger (remove as soon as it's finished.) */
-	public void triggerJob(String name, String group) {
-		try {
-			JobKey key = JobKey.jobKey(name, group);
-			scheduler.triggerJob(key);
-		} catch (SchedulerException e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}
-	
-	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass) {
-		return scheduleCronJob(name, cron, jobClass, new Date());
-	}
-	
-	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleCronJob(name, Scheduler.DEFAULT_GROUP, cron, jobClass, null, startTime, null);
-	}
-	
-	public Date scheduleCronJob(
-			String name, String group, String cron, 
-			Class<? extends Job> jobClass, Map<String, Object> data, 
-			Date startTime, Date endTime) {
-		JobDetail job = createJobDetail(name, group, jobClass, data);
-		Trigger trigger = createCronTrigger(name, group, cron, startTime, endTime);
-		return scheduleJob(job, trigger);
-	}
-
-	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(name, -1, repeatInterval, jobClass, null);
-	}
-	
-	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleRepeatableJob(name, Scheduler.DEFAULT_GROUP, startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
-	}
-	
-	public Date scheduleRepeatableJob(
-			String name, String group, Date startTime, Date endTime,
-			int repeatTotalCount, long repeatInterval,
-			Class<? extends Job> jobClass, Map<String, Object> data) {
-		JobDetail job = createJobDetail(name, group, jobClass, data);
-		Trigger trigger = createSimpleTrigger(name, group, repeatTotalCount, repeatInterval, startTime, endTime);
-		return scheduleJob(job, trigger);
-	}
-	
-	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(name, 1, 0, jobClass);
-	}
-	
-	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleRepeatableJob(name, 1, 0, jobClass, startTime);
-	}
-	
-	public Date scheduleOnetimeJob(String name, String group, Date startTime, Date endTime, 
-			Class<? extends Job> jobClass, Map<String, Object> data) {
-		return scheduleRepeatableJob(name, group, startTime, endTime, 1, 0, jobClass, data);
-	}
-	
-	public TriggerState getTriggerState(String name, String group) {
-		try {
-			return scheduler.getTriggerState(TriggerKey.triggerKey(name, group));
-		} catch (SchedulerException e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}	
-
-	public String getSchedulerNameAndId() {
-		return getSchedulerName() + "_$_" + getSchedulerInstanceId();
 	}
 
 	public List<Trigger> getPausedTriggers() {
@@ -766,6 +644,91 @@ public class SchedulerTemplate {
 			throw new QuartzRuntimeException(e);
 		}
 	}
+
+	/** Remove a JobDetail and all the triggers associated with it. */
+	public List<? extends Trigger> deleteJobAndGetTriggers(JobKey key) {
+		try {
+			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(key);
+			boolean success = scheduler.deleteJob(key);
+			if (!success)
+				throw new SchedulerException("Unable to delete job " + key);
+			return triggers;
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
+
+	/**
+	 * Load job scheduling data xml using XMLSchedulingDataProcessor.
+	 * 
+	 * @param inStream - input stream of content for job_scheduling_data xml.
+	 * @return XMLSchedulingDataProcessor instance will contain all the jobs parsed from xml input.
+	 */
+	public XmlJobLoader scheduleXmlSchedulingData(InputStream inStream) {
+		try {
+			// XmlJobLoader is not only just a loader, but also use to store what's loaded!
+			XmlJobLoader xmlJobLoader = XmlJobLoader.newInstance(); 
+			String systemId = XmlJobLoader.XML_SYSTEM_ID;
+			xmlJobLoader.processStreamAndScheduleJobs(inStream, systemId, scheduler);
+			return xmlJobLoader;
+		} catch (Exception e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
+	
+	public Date scheduleCronJob(JobKey jobKey, String cron, Class<? extends Job> jobClass) {
+		return scheduleCronJob(jobKey, cron, jobClass, new Date());
+	}
+	
+	public Date scheduleCronJob(JobKey jobKey, String cron, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleCronJob(jobKey, cron, jobClass, null, startTime, null);
+	}
+	
+	public Date scheduleCronJob(
+			JobKey jobKey, String cron, 
+			Class<? extends Job> jobClass, Map<String, Object> data, 
+			Date startTime, Date endTime) {
+		JobDetail job = createJobDetail(jobKey, jobClass, data);
+		TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
+		Trigger trigger = createCronTrigger(triggerKey, cron, startTime, endTime);
+		return scheduleJob(job, trigger);
+	}
+
+	public Date scheduleRepeatableJob(JobKey jobKey, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
+		return scheduleRepeatableJob(jobKey, -1, repeatInterval, jobClass, null);
+	}
+	
+	public Date scheduleRepeatableJob(JobKey jobKey, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleRepeatableJob(jobKey, startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
+	}
+	
+	public Date scheduleRepeatableJob(
+			JobKey jobKey, Date startTime, Date endTime,
+			int repeatTotalCount, long repeatInterval,
+			Class<? extends Job> jobClass, Map<String, Object> data) {
+		JobDetail job = createJobDetail(jobKey, jobClass, data);
+		TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
+		Trigger trigger = createSimpleTrigger(triggerKey, repeatTotalCount, repeatInterval, startTime, endTime);
+		return scheduleJob(job, trigger);
+	}
+	
+	public Date scheduleOnetimeJob(JobKey jobKey, Class<? extends Job> jobClass) {
+		return scheduleRepeatableJob(jobKey, 1, 0, jobClass);
+	}
+	
+	public Date scheduleOnetimeJob(JobKey jobKey, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleRepeatableJob(jobKey, 1, 0, jobClass, startTime);
+	}
+	
+	public Date scheduleOnetimeJob(JobKey jobKey, Date startTime, Date endTime, 
+			Class<? extends Job> jobClass, Map<String, Object> data) {
+		return scheduleRepeatableJob(jobKey, startTime, endTime, 1, 0, jobClass, data);
+	}
+	
+
+	public String getSchedulerNameAndId() {
+		return getSchedulerName() + "_$_" + getSchedulerInstanceId();
+	}
 	
 	@Override
 	public String toString() {
@@ -773,70 +736,60 @@ public class SchedulerTemplate {
 	}
 	
 	//
-	// # Static methods to create trigger types
+	// # Static methods to create triggers and jobs
 	//
 	
-	public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass) {
-		return createJobDetail(name, jobClass, null);
+	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass) {
+		return createJobDetail(jobKey, jobClass, null);
 	}
 	
-	public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass, Map<String, Object> data) {
-		return createJobDetail(name, Scheduler.DEFAULT_GROUP, jobClass, data);
-	}
-	
-	public static JobDetail createJobDetail(String name, String group, Class<? extends Job> jobClass, Map<String, Object> data) {
-		JobDetail jobDetail = newJob(jobClass).withIdentity(name, group).build();
+	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass, Map<String, Object> data) {
+		JobDetail jobDetail = newJob(jobClass).withIdentity(jobKey).build();
 		if (data != null)
 			jobDetail.getJobDataMap().putAll(data);
 		return jobDetail;
 	}
 	
 	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, int interval, IntervalUnit intervalUnit) {
-		return createCalendarIntervalTrigger(name, interval, intervalUnit, new Date());
+			TriggerKey triggerKey, int interval, IntervalUnit intervalUnit) {
+		return createCalendarIntervalTrigger(triggerKey, interval, intervalUnit, new Date());
 	}
 
 	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, int interval, IntervalUnit intervalUnit, Date startTime) {
-		return createCalendarIntervalTrigger(name, null, interval, intervalUnit, startTime, null);
+			TriggerKey triggerKey, int interval, IntervalUnit intervalUnit, Date startTime) {
+		return createCalendarIntervalTrigger(triggerKey, interval, intervalUnit, startTime, null);
 	}
 	
 	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, String group,
+			TriggerKey triggerKey,
 			int interval, IntervalUnit intervalUnit,
 			Date startTime, Date endTime) {
-		if (group == null)
-			group = Scheduler.DEFAULT_GROUP;
-		
 		if (startTime == null)
 			startTime = new Date();
 		
 		CalendarIntervalTrigger trigger = newTrigger()
-				.withIdentity(name, group)
+				.withIdentity(triggerKey)
 				.startAt(startTime).endAt(endTime)
 				.withSchedule(calendarIntervalSchedule().withInterval(interval, intervalUnit))
 				.build();
 		return (MutableTrigger)trigger;
 	}
 	
-	public static MutableTrigger createCronTrigger(String name, String cron) {
-		return createCronTrigger(name, null, cron, new Date(), null);
+	public static MutableTrigger createCronTrigger(TriggerKey triggerKey, String cron) {
+		return createCronTrigger(triggerKey, cron, new Date(), null);
 	}
 
-	public static MutableTrigger createCronTrigger(String name, String cron, Date startTime) {
-		return createCronTrigger(name, null, cron, startTime, null);
+	public static MutableTrigger createCronTrigger(TriggerKey triggerKey, String cron, Date startTime) {
+		return createCronTrigger(triggerKey, cron, startTime, null);
 	}
 	
-	public static MutableTrigger createCronTrigger(String name, String group, String cron, Date startTime, Date endTime) {
-		if (group == null)
-			group = Scheduler.DEFAULT_GROUP;
-		
+	public static MutableTrigger createCronTrigger(TriggerKey triggerKey, String cron, Date startTime, Date endTime) {
 		if (startTime == null)
 			startTime = new Date();
 		
 		try {
 			CronTrigger trigger = newTrigger()
-					.withIdentity(name, group)
+					.withIdentity(triggerKey)
 					.startAt(startTime).endAt(endTime)
 					.withSchedule(cronSchedule(cron))
 					.build();
@@ -846,22 +799,19 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	public static MutableTrigger createSimpleTrigger(String name) {
-		return createSimpleTrigger(name, 1, 0);
+	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey) {
+		return createSimpleTrigger(triggerKey, 1, 0);
 	}
 	
-	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval) {
-		return createSimpleTrigger(name, repeatTotalCount, interval, new Date());
+	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey, int repeatTotalCount, int interval) {
+		return createSimpleTrigger(triggerKey, repeatTotalCount, interval, new Date());
 	}
 
-	public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval, Date startTime) {
-		return createSimpleTrigger(name, Scheduler.DEFAULT_GROUP, repeatTotalCount, interval, startTime, null);
+	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey, int repeatTotalCount, int interval, Date startTime) {
+		return createSimpleTrigger(triggerKey, repeatTotalCount, interval, startTime, null);
 	}
 	
-	public static MutableTrigger createSimpleTrigger(String name, String group, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
-		if (group == null)
-			group = Scheduler.DEFAULT_GROUP;
-		
+	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
 		if (startTime == null)
 			startTime = new Date();
 		
@@ -871,7 +821,7 @@ public class SchedulerTemplate {
 			repeatCount = SimpleTrigger.REPEAT_INDEFINITELY;
 		
 		SimpleTrigger trigger = newTrigger()
-			.withIdentity(name, group)
+			.withIdentity(triggerKey)
 			.startAt(startTime).endAt(endTime)
 			.withSchedule(
 					simpleSchedule()

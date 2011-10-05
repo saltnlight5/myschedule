@@ -65,7 +65,7 @@ public class ScriptingJob implements Job {
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		JobDetail jobDetail = jobExecutionContext.getJobDetail();
 		try {
-			logger.debug("Running ScriptJob {}.", jobDetail.getKey());
+			logger.debug("Running job {}.", jobDetail.getKey());
 			String scriptType = SCRIPT_TEXT_KEY;
 						
 			// Extract job data map to setup script engine.
@@ -114,7 +114,7 @@ public class ScriptingJob implements Job {
 					logger.debug("Evaluating scriptText length {}.", scriptText.length());
 				}
 				result = scriptEngine.eval(scriptText, scriptContext);
-			} else if (scriptType.equals(SCRIPT_FILE_KEY)) {
+			} else {
 				engineScope.put("scriptFile", filename);
 				logger.debug("Binding variables added: jobExecutionContext, logger, scriptFile");
 
@@ -127,10 +127,10 @@ public class ScriptingJob implements Job {
 					reader.close();
 				}
 			}
-			logger.info("{} was evaluated by ScriptEngine {}. Result: {}", 
-					new Object[]{scriptType, engineName, result});
+			
+			logger.info("Job {} has been executed. Result: {}", jobDetail.getKey(), result);
 		} catch (Exception e) {
-			throw new JobExecutionException("Failed to execute ScriptJob " + jobDetail.getKey(), e);
+			throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
 		}
 	}	
 
