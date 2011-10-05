@@ -1,8 +1,10 @@
 syntax: glob
-*.bak
-tmp/*
-log/*
 target/*
-.settings/*
-.project
-.classpath
+quartz-extra/target/*
+quartz-extra/.settings/*
+quartz-extra/.project
+quartz-extra/.classpath
+myschedule-web/target/*
+myschedule-web/.settings/*
+myschedule-web/.project
+myschedule-web/.classpath
