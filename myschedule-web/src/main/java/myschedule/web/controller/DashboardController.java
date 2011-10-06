@@ -98,10 +98,11 @@ public class DashboardController {
 		schedulerServiceFinder.switchSchedulerService(configId, session);
 		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		String mainPath = WebAppContextListener.MAIN_PATH;
-		if (schedulerService.isInited())
-			return "redirect:" + mainPath + "/scheduler/summary";
-		else
+		if (schedulerService.isInited()) {
 			return "redirect:" + mainPath + "/job/list";
+		} else {
+			return "redirect:" + mainPath + "/scheduler/summary";
+		}
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.GET)
