@@ -159,7 +159,7 @@ public class DashboardController {
 		return getSchedulerNamesDataModelMap();
 	}
 	
-	@RequestMapping(value="/delete-action", method=RequestMethod.POST)
+	@RequestMapping(value="/delete-action", method=RequestMethod.GET)
 	public DataModelMap deleteAction(
 			@RequestParam String configId,
 			HttpSession session) {

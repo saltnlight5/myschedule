@@ -13,11 +13,32 @@ $(document).ready(function() {
 		"bJQueryUI": true,
 	});
 	
-	// Confirm unschedule job
+	// Confirm shutdown scheduler
 	$("#shutdown-confirm").hide()
 	$("#scheduler-list .shutdown-link").click(function() {
 		var linkUrl = $(this).attr("href");
 		$("#shutdown-confirm").dialog({
+			resizable: false,
+			height:200,
+			width:400,
+			modal: true,
+			buttons: {
+				"Yes": function() {
+					window.location.href=linkUrl;
+				},
+				Cancel: function() {
+					$(this).dialog("close");
+				}
+			}
+		});
+		return false;
+	});
+	
+	// Confirm Delete config
+	$("#delete-config-confirm").hide()
+	$("#scheduler-list .delete-config-link").click(function() {
+		var linkUrl = $(this).attr("href");
+		$("#delete-config-confirm").dialog({
 			resizable: false,
 			height:200,
 			width:400,
@@ -42,6 +63,12 @@ $(document).ready(function() {
 	</p>
 </div>
 
+<div id="delete-config-confirm">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	Are you sure you want to delete this scheduler configuration?
+	</p>
+</div>
+
 <h1>List of All Schedulers</h1>
 <table id="scheduler-list" class="display">
 	<thead>
@@ -49,8 +76,6 @@ $(document).ready(function() {
 			<th>SCHEDULER NAME</th>
 			<th>INITIALIZED</th>
 			<th>STARTED</th>
-			<th>STANDBY</th>
-			<th>PERSISTENCE</th>
 			<th>RUNNING SINCE</th>
 			<th># JOBS</th>
 			<th>ACTION</th>
@@ -67,18 +92,24 @@ $(document).ready(function() {
 		<td>${ schedulerStatus.initialized }</td>
 		<c:choose><c:when test="${ schedulerStatus.initialized }">
 			<td>${ schedulerStatus.started }</td>
-			<td>${ schedulerStatus.standby }</td>
-			<td>${ schedulerStatus.schedulerMetaData.jobStoreSupportsPersistence }</td>
 			<td><fmt:formatDate value="${ schedulerStatus.schedulerMetaData.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
 			<td>${ schedulerStatus.jobCount }</td>
-			<td><a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerStatus.configId }">Shutdown</a></td>
+			<td>
+				<a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerStatus.configId }">Shutdown</a> |
+				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify Config</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete Config</a>
+			</td>
 		</c:when><c:otherwise>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
-			<td><a href="${ mainPath }/dashboard/init?configId=${ schedulerStatus.configId }">Initialize</a></td>
+			<td>
+				<a href="${ mainPath }/dashboard/init?configId=${ schedulerStatus.configId }">Initialize</a> |
+				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify Config</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete Config</a>
+			</td>
 		</c:otherwise></c:choose>
 	</tr>
 	</c:forEach>
