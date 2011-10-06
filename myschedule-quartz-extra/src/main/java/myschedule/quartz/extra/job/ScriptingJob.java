@@ -47,7 +47,7 @@ public class ScriptingJob implements Job {
 	
 	public static final String DEFAULT_SCRIPT_ENGINE_NAME = "JavaScript";
 
-	public static final String SCRIPT_ENGINE_NAME = "ScriptEgnineName";
+	public static final String SCRIPT_ENGINE_NAME = "ScriptEngineName";
 	
 	public static final String SCRIPT_TEXT_KEY = "ScriptText";
 	
