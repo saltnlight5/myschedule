@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.QuartzSchedulerService;
@@ -14,7 +15,6 @@ import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
 import myschedule.service.Utils;
 import myschedule.service.Utils.Getter;
-import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.web.SessionSchedulerServiceFinder;
 
 import org.quartz.JobDetail;
@@ -132,7 +132,7 @@ public class SchedulerController {
 		DataModelMap data = new DataModelMap();
 		copySchedulerStatusData(schedulerService, data);
 		if (schedulerTemplate.isStarted() && !schedulerTemplate.isShutdown()) {
-			data.addData("jobCount", "" + schedulerTemplate.getJobDetails().size());
+			data.addData("jobCount", "" + schedulerTemplate.getAllJobDetails().size());
 			SchedulerMetaData schedulerMetaData = schedulerTemplate.getSchedulerMetaData();
 			data.addData("schedulerDetailMap", getSchedulerDetail(schedulerMetaData));
 		}
@@ -144,11 +144,11 @@ public class SchedulerController {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
 		List<Trigger> nonPausedTriggers = new ArrayList<Trigger>();
-		for (JobDetail jobDetail : st.getJobDetails()) {
+		for (JobDetail jobDetail : st.getAllJobDetails()) {
 			List<? extends Trigger> jobTriggers = st.getTriggersOfJob(jobDetail.getKey());
 			for (Trigger trigger : jobTriggers) {
 				TriggerKey tk = trigger.getKey();
-				if (st.getTriggerState(tk.getName(), tk.getGroup()) != TriggerState.PAUSED) {
+				if (st.getTriggerState(tk) != TriggerState.PAUSED) {
 					nonPausedTriggers.add(trigger);
 				}
 			}

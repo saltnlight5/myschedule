@@ -1,4 +1,4 @@
-package myschedule.service.quartz;
+package myschedule.service;
 
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;

@@ -12,7 +12,7 @@
 	<tr><td>Description</td><td>${ trigger.description }</td></tr>
 	<tr><td>Calendar Name</td><td>${ trigger.calendarName }</td></tr>
 	<tr><td>Fire Instance Id</td><td>${ trigger.fireInstanceId }</td></tr>
-	<tr><td>Misfire Instruction</td><td><%= myschedule.service.quartz.QuartzUtils.getMisfireInstructionName((org.quartz.Trigger)request.getAttribute("trigger")) %></td></tr>
+	<tr><td>Misfire Instruction</td><td><%= myschedule.service.QuartzUtils.getMisfireInstructionName((org.quartz.Trigger)request.getAttribute("trigger")) %></td></tr>
 	<tr><td>Priority</td><td>${ trigger.priority }</td></tr>
 	<tr><td>Trigger Listeners</td><td>${ triggerListenerNames }</td></tr>
 	
@@ -22,13 +22,13 @@
 	<tr><td>Start Time</td><td>${ trigger.startTime }</td></tr>
 	<tr><td>End Time</td><td>${ trigger.endTime }</td></tr>
 	
-	<% if (myschedule.service.quartz.QuartzUtils.isSimpleTrigger(request.getAttribute("trigger"))) { %>
+	<% if (myschedule.service.QuartzUtils.isSimpleTrigger(request.getAttribute("trigger"))) { %>
 	<tr><td>Final Fire Time</td><td>${ trigger.finalFireTime }</td></tr>
 	<tr><td>Repeat Count</td><td>${ trigger.repeatCount }</td></tr>
 	<tr><td>Repeat Interval</td><td>${ trigger.repeatInterval }</td></tr>
 	<tr><td>Times Triggered</td><td>${ trigger.timesTriggered }</td></tr>
 	
-	<% } else if (myschedule.service.quartz.QuartzUtils.isCronTrigger(request.getAttribute("trigger"))) { %>
+	<% } else if (myschedule.service.QuartzUtils.isCronTrigger(request.getAttribute("trigger"))) { %>
 	<tr><td>Cron Expression</td><td>${ trigger.cronExpression }</td></tr>
 	<tr><td>Expression Summary</td><td><pre>${ trigger.expressionSummary }</pre></td></tr>
 	<tr><td>Time Zone</td><td>${ trigger.timeZone.displayName }</td></tr>

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.ExceptionHolder;
@@ -17,7 +18,6 @@ import myschedule.service.QuartzSchedulerService;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
-import myschedule.service.quartz.SchedulerTemplate;
 import myschedule.web.SessionSchedulerServiceFinder;
 import myschedule.web.WebAppContextListener;
 import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
@@ -235,7 +235,7 @@ public class DashboardController {
 					sstatus.setStarted(ss.isStarted());
 					sstatus.setShutdown(st.isShutdown());
 					sstatus.setStandby(st.isInStandbyMode());
-					sstatus.setJobCount(st.getJobDetails().size());
+					sstatus.setJobCount(st.getAllJobDetails().size());
 				} catch (RuntimeException e) {
 					logger.error("Failed to get scheduler information for configId {}.", e, configId);
 					

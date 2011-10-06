@@ -4,12 +4,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+
+import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.QuartzSchedulerService;
 import myschedule.service.ScriptingService;
-import myschedule.service.quartz.SchedulerTemplateExt;
 import myschedule.web.SessionSchedulerServiceFinder;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
  * 
  * <pre>
  *   webOut - An instance of java.io.PrintWriter to allow script to display output to web page after Run.
- *   quartzScheduler - An instance of org.quartz.Scheduler scheduler in this application.
- *   servletContext - The ServletContext of this webapp.
+ *   scheduler - An instance of myschedule.quartz.extra.SchedulerTemplate that wraps a quartz scheduler.
  *   logger - An instance of org.slf4j.Logger with name="myschedule.web.controller.ScriptingController".
  *            The logger output will only appear in the server side, not web page.
  * </pre>
@@ -69,11 +71,7 @@ public class ScriptingController implements ServletContextAware {
 		PrintWriter webOut = new PrintWriter(outStream);
 		QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("schedulerService", schedulerService);
-		variables.put("schedulerTemplate", new SchedulerTemplateExt(schedulerService.getScheduler()));
-		variables.put("scheduler", schedulerService.getScheduler());
-		variables.put("quartzScheduler", schedulerService.getScheduler()); // redundant, but keep for compability sake.
-		variables.put("servletContext", servletContext);
+		variables.put("scheduler", new SchedulerTemplate(schedulerService.getScheduler()));
 		variables.put("logger", logger);
 		variables.put("webOut", webOut);
 

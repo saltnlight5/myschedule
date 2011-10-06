@@ -17,10 +17,11 @@ import org.slf4j.LoggerFactory;
 public class GroovyScriptingService extends AbstractService implements ScriptingService {
 
 	private static final Logger logger = LoggerFactory.getLogger(GroovyScriptingService.class);
-	private static final String SCHEDULER_IMPORTS = "import org.quartz.*\n" +
+	private static final String SCHEDULER_IMPORTS = 
+			"import org.quartz.*\n" +
 			"import org.quartz.jobs.*\n" +
-			"import myschedule.job.*\n" +
-			"import myschedule.job.sample.*\n\n";
+			"import myschedule.quartz.extra.*\n" +
+			"import myschedule.quartz.extra.job.*\n\n";
 	protected boolean autoImportSchedulerPackage = true;
 	
 	public void setAutoImportSchedulerPackage(boolean autoImportSchedulerPackage) {

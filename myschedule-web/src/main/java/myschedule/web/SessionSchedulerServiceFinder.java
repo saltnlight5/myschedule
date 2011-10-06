@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.QuartzSchedulerService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
-import myschedule.service.quartz.SchedulerTemplate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

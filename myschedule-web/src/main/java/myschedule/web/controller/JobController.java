@@ -1,5 +1,8 @@
 package myschedule.web.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,11 +12,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import myschedule.quartz.extra.SchedulerTemplate;
+import myschedule.quartz.extra.XmlJobLoader;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.QuartzSchedulerService;
-import myschedule.service.quartz.SchedulerTemplate;
-import myschedule.service.quartz.XmlJobLoader;
 import myschedule.web.SessionSchedulerServiceFinder;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -95,11 +98,11 @@ public class JobController {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 		DataModelMap data = new DataModelMap();
-		Trigger trigger = schedulerTemplate.uncheduleJob(triggerName, triggerGroup);
+		Trigger trigger = schedulerTemplate.uncheduleJob(TriggerKey.triggerKey(triggerName, triggerGroup));
 		data.put("trigger", trigger);
 		try {
 			JobKey key = trigger.getJobKey();
-			JobDetail jobDetail = schedulerTemplate.getJobDetail(key.getName(), key.getGroup());
+			JobDetail jobDetail = schedulerTemplate.getJobDetail(key);
 			data.put("jobDetail", jobDetail);
 		} catch (ErrorCodeException e) {
 			// Job no longer exists, and we allow this scenario, so do nothing. 
@@ -115,8 +118,8 @@ public class JobController {
 		logger.debug("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		JobDetail jobDetail = schedulerTemplate.getJobDetail(jobName, jobGroup);
-		List<? extends Trigger> triggers = schedulerTemplate.deleteJob(jobName, jobGroup);
+		JobDetail jobDetail = schedulerTemplate.getJobDetail(JobKey.jobKey(jobName, jobGroup));
+		List<? extends Trigger> triggers = schedulerTemplate.deleteJobAndGetTriggers(JobKey.jobKey(jobName, jobGroup));
 
 		DataModelMap data = new DataModelMap();
 		data.put("jobDetail", jobDetail);
@@ -133,7 +136,7 @@ public class JobController {
 		logger.debug("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
-		schedulerTemplate.triggerJob(jobName, jobGroup);		
+		schedulerTemplate.triggerJob(JobKey.jobKey(jobName, jobGroup));		
 		return "redirect:list";
 	}
 	
@@ -153,8 +156,10 @@ public class JobController {
 		logger.debug("Loading xml jobs.");
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
+		InputStream inStream = null;
 		try {
-			XmlJobLoader loader = schedulerTemplate.scheduleXmlSchedulingData(xml);
+			inStream = new ByteArrayInputStream(xml.getBytes());
+			XmlJobLoader loader = schedulerTemplate.scheduleXmlSchedulingData(inStream);
 			JobLoadPageData data = new JobLoadPageData();
 			data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
 			data.setOverWriteExistingData(loader.isOverWriteExistingData());
@@ -169,6 +174,14 @@ public class JobController {
 			data.addData("errorMessage", ExceptionUtils.getMessage(e));
 			data.addData("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
 			return new ModelAndView("job/load-xml", data);
+		} finally {
+			if (inStream != null) {
+				try {
+					inStream.close();
+				} catch (IOException e) {
+					throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to read job data xml input stream.", e);
+				}
+			}
 		}
 	}
 
@@ -181,7 +194,7 @@ public class JobController {
 		logger.debug("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
-		JobDetail jobDetail = st.getJobDetail(jobName, jobGroup);
+		JobDetail jobDetail = st.getJobDetail(JobKey.jobKey(jobName, jobGroup));
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
 		data.setTriggers(st.getTriggersOfJob(jobDetail.getKey()));
 		data.setJobDetail(jobDetail);
@@ -190,7 +203,7 @@ public class JobController {
 		List<String> triggerStatusList = new ArrayList<String>();
 		for (Trigger trigger : data.getTriggers()) {
 			TriggerKey tk = trigger.getKey();
-			triggerStatusList.add(st.getTriggerState(tk.getName(), tk.getGroup()).toString());
+			triggerStatusList.add(st.getTriggerState(tk).toString());
 		}
 		data.setTriggerStatusList(triggerStatusList);
 		
@@ -206,15 +219,15 @@ public class JobController {
 			HttpSession session) {
 		QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
-		Trigger trigger = st.getTrigger(triggerName, triggerGroup);
+		Trigger trigger = st.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
 		List<Date> nextFireTimes = st.getNextFireTimes(trigger, new Date(), fireTimesCount);
 		JobTriggerDetailPageData data = new JobTriggerDetailPageData();
 		JobKey jobKey = trigger.getJobKey();
 		TriggerKey triggerKey = trigger.getKey();
-		data.setJobDetail(st.getJobDetail(jobKey.getName(), jobKey.getGroup()));
+		data.setJobDetail(st.getJobDetail(jobKey));
 		data.setFireTimesCount(fireTimesCount);
 		data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
-		String statusStr = st.getTriggerState(triggerKey.getName(), triggerKey.getGroup()).toString();
+		String statusStr = st.getTriggerState(triggerKey).toString();
 		data.setTriggerStatusList(Arrays.asList(new String[]{ statusStr }));
 		data.setNextFireTimes(nextFireTimes);
 		
@@ -264,7 +277,7 @@ public class JobController {
 	protected JobListPageData getJobListPageData(QuartzSchedulerService schedulerService) {
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
 		List<Trigger> triggers = new ArrayList<Trigger>();		
-		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
+		List<JobDetail> allJobDetails = schedulerTemplate.getAllJobDetails();
 		for (JobDetail jobDetail : allJobDetails) {
 			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggersOfJob(jobDetail.getKey());
 			if (jobTriggers.size() > 0) {
@@ -285,7 +298,7 @@ public class JobController {
 	protected Object getNoTriggerJobListPageData(QuartzSchedulerService schedulerService) {
 		SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerService.getScheduler());
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
-		List<JobDetail> allJobDetails = schedulerTemplate.getJobDetails();
+		List<JobDetail> allJobDetails = schedulerTemplate.getAllJobDetails();
 		for (JobDetail jobDetail : allJobDetails) {
 			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggersOfJob(jobDetail.getKey());
 			if (jobTriggers.size() == 0) {
