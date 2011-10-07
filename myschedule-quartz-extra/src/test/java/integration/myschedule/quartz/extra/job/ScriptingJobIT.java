@@ -2,7 +2,7 @@ package integration.myschedule.quartz.extra.job;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import integration.myschedule.quartz.extra.TestJobListener;
+import integration.myschedule.quartz.extra.ResultJobListener;
 
 import java.io.File;
 
@@ -16,24 +16,24 @@ import org.quartz.Trigger;
 public class ScriptingJobIT {
 	@Test
 	public void testScriptTextJob() {
-		TestJobListener.resetResult();
+		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new TestJobListener());
+		st.getListenerManager().addJobListener(new ResultJobListener());
 		
 		JobDetail job = ScriptingJob.createJobDetail("JavaScript", "MyScriptingJobTest", "1 + 99;");
 		Trigger trigger = SchedulerTemplate.createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
-		assertThat(TestJobListener.result.jobResults.size(), is(1));
-		assertThat((Double)TestJobListener.result.jobResults.get(0), is(new Double(100.0)));
+		assertThat(ResultJobListener.result.jobResults.size(), is(1));
+		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
 	}
 	
 	@Test
 	public void testScriptTextJobWithDefaultEngineName() {
-		TestJobListener.resetResult();
+		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new TestJobListener());
+		st.getListenerManager().addJobListener(new ResultJobListener());
 		
 		JobDetail job = SchedulerTemplate.createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99;");
@@ -41,15 +41,15 @@ public class ScriptingJobIT {
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
-		assertThat(TestJobListener.result.jobResults.size(), is(1));
-		assertThat((Double)TestJobListener.result.jobResults.get(0), is(new Double(100.0)));
+		assertThat(ResultJobListener.result.jobResults.size(), is(1));
+		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
 	}
 	
 	@Test
 	public void testScriptTextJobLogText() {
-		TestJobListener.resetResult();
+		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new TestJobListener());
+		st.getListenerManager().addJobListener(new ResultJobListener());
 		
 		JobDetail job = ScriptingJob.createJobDetail("JavaScript", "MyScriptingJobTest", "1 + 99;");
 		job.getJobDataMap().put(ScriptingJob.LOG_SCRIPT_TEXT_KEY, "true");
@@ -57,15 +57,15 @@ public class ScriptingJobIT {
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
-		assertThat(TestJobListener.result.jobResults.size(), is(1));
-		assertThat((Double)TestJobListener.result.jobResults.get(0), is(new Double(100.0)));
+		assertThat(ResultJobListener.result.jobResults.size(), is(1));
+		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
 	}
 	
 	@Test
 	public void testScriptFileJob() {
-		TestJobListener.resetResult();
+		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new TestJobListener());
+		st.getListenerManager().addJobListener(new ResultJobListener());
 		
 		File file = new File("src/test/resources/integration/myschedule/quartz/extra/job/ScriptingJobIT-Test1.js");
 		JobDetail job = ScriptingJob.createJobDetail("JavaScript", "MyScriptingJobTest", file);
@@ -73,7 +73,7 @@ public class ScriptingJobIT {
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
-		assertThat(TestJobListener.result.jobResults.size(), is(1));
-		assertThat((Double)TestJobListener.result.jobResults.get(0), is(new Double(100.0)));
+		assertThat(ResultJobListener.result.jobResults.size(), is(1));
+		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
 	}
 }

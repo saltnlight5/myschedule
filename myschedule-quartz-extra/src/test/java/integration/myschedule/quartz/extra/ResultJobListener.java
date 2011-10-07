@@ -8,7 +8,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 
-public class TestJobListener implements JobListener {
+public class ResultJobListener implements JobListener {
 	public static Result result = new Result();
 	public static void resetResult() {
 		result = new Result();
