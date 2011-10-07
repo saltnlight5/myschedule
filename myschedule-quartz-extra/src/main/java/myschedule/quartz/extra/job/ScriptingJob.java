@@ -68,24 +68,25 @@ public class ScriptingJob implements Job {
 		JobDetail jobDetail = jobExecutionContext.getJobDetail();
 		try {
 			logger.debug("Running job {}.", jobDetail.getKey());
-			String scriptType = SCRIPT_TEXT_KEY;
 						
 			// Extract job data map to setup script engine.
 			JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();		
-			String engineName = dataMap.getString(SCRIPT_ENGINE_NAME_KEY);
-			if (engineName == null) {
-				engineName = DEFAULT_SCRIPT_ENGINE_NAME;
+			String engineName = DEFAULT_SCRIPT_ENGINE_NAME;
+			if (dataMap.containsKey(SCRIPT_ENGINE_NAME_KEY)) {
+				engineName = dataMap.getString(SCRIPT_ENGINE_NAME_KEY);
 			}
-			String scriptText = dataMap.getString(SCRIPT_TEXT_KEY);
+			String scriptText = null;
 			String filename = null;
-			if (scriptText == null) {
-				// Try to look for file
+			String scriptType = null;
+			if (dataMap.containsKey(SCRIPT_TEXT_KEY)) {
+				scriptText = dataMap.getString(SCRIPT_TEXT_KEY);
+				scriptType = SCRIPT_TEXT_KEY;
+			} else if (dataMap.containsKey(SCRIPT_FILE_KEY)) {
 				filename = dataMap.getString(SCRIPT_FILE_KEY);
-				if (filename == null) {
-					throw new JobExecutionException("No " + SCRIPT_TEXT_KEY + " or " + SCRIPT_FILE_KEY + 
-							" found in data map.");
-				}
 				scriptType = SCRIPT_FILE_KEY;
+			} else {
+				throw new JobExecutionException("Neither " + SCRIPT_TEXT_KEY + " nor " + 
+						SCRIPT_FILE_KEY + " is found in data map."); 
 			}
 			logger.debug("Creating ScriptEngine {} to evaluate {}.", engineName, scriptType);
 			
@@ -117,6 +118,7 @@ public class ScriptingJob implements Job {
 				}
 				result = scriptEngine.eval(scriptText, scriptContext);
 			} else {
+				// We only have two options, and this is the last case.
 				engineScope.put("scriptFile", filename);
 				logger.debug("Binding variables added: jobExecutionContext, logger, scriptFile");
 
