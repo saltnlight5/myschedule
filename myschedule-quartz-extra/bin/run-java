@@ -1,0 +1,141 @@
+#!/usr/bin/bash
+#
+# A wrapper script that run any Java application in unix/cygwin env.
+#
+# This script is assumed to be located in an application's "bin" directory. It will
+# auto resolve any symbolic link and always run in relative to this application 
+# directory (which is one parent up from the script.) Therefore, this script can be
+# run any where in the file system and it will still reference this application 
+# directory.
+#
+# This script will by default auto setup a Java classpath that picks up any "config"
+# and "lib" directories under the application directory. It also will also add a 
+# any typical Maven project output directories such as "target/test-classes", 
+# "target/classes", and "target/dependency" into classpath. This can be disable by 
+# setting RUN_JAVA_NO_PARSE=1.
+#
+# If the "Default parameters" section bellow doesn't match to user's env, then user
+# may override these variables in their terminal session or preset them in shell's 
+# profile startup script. The values of all path should be in cygwin/unix path, 
+# and this script will auto convert them into Windows path where is needed.
+#
+# User may customize the Java classpath by setting RUN_JAVA_CP, which will prefix to existing
+# classpath, or use the "-cp" option, which will postfix to existing classpath.
+# 
+# Usage:
+#   run-java [java_opts] <java_main_class> [-cp /more/classpath] [-Dsysprop=value]
+#
+# Example:
+#   run-java example.Hello
+#   run-java example.Hello -Dname=World
+#   run-java org.junit.runner.JUnitCore example.HelloTest -cp "C:\apps\lib\junit4.8.2\*"
+#
+# Created by: Zemian Deng 03/15/2011
+#
+
+# This run script dir (resolve to absolute path without symbolic link)
+SCRIPT_DIR=$(readlink -f $(cd $(dirname $0) && pwd))  # This dir is where this script live.
+APP_DIR=$(cd $SCRIPT_DIR/.. && pwd)                   # Assume the application dir is one level up from script dir.
+
+# Default parameters
+JAVA_HOME=${JAVA_HOME:=/c/apps/jdk}        # This is the home directory of Java development kit.
+RUN_JAVA_CP=${RUN_JAVA_CP:=$CLASSPATH}     # A classpath prefix before -classpath option, default to $CLASSPATH
+RUN_JAVA_OPTS=${RUN_JAVA_OPTS:=}           # Java options (-Xmx512m -XX:MaxPermSize=128m etc)
+RUN_JAVA_DEBUG=${RUN_JAVA_DEBUG:=}         # If not empty, print the full java command line before executing it.
+RUN_JAVA_NO_PARSE=${RUN_JAVA_NO_PARSE:=}   # If not empty, skip the auto parsing of -D and -cp options from script arguments.
+RUN_JAVA_NO_AUTOCP=${RUN_JAVA_NO_AUTOCP:=} # If not empty, do not auto setup Java classpath
+RUN_JAVA_DRY=${RUN_JAVA_DRY:=}             # If not empty, do not exec Java command, but just print
+
+# Provide Windows directory conversion
+JAVA_HOME_WIN=$(cygpath -w -a "$JAVA_HOME")
+APP_DIR_WIN=$(cygpath -w -a "$APP_DIR")
+
+# Define where is the java executable is
+JAVA_CMD=java
+if [ -d "$JAVA_HOME" ]; then
+	JAVA_CMD="$JAVA_HOME/bin/java"
+fi
+
+# Auto setup applciation's Java Classpath (only if they exists)
+if [ -z "$RUN_JAVA_NO_AUTOCP" ]; then
+	if [ "$OS" = "Windows_NT" ]; then
+		if [ -d "$APP_DIR_WIN\config" ]; then RUN_JAVA_CP="$RUN_JAVA_CP;$APP_DIR_WIN\config" ; fi
+		if [ -d "$APP_DIR_WIN\target\test-classes" ]; then RUN_JAVA_CP="$RUN_JAVA_CP;$APP_DIR_WIN\target\test-classes" ; fi
+		if [ -d "$APP_DIR_WIN\target\classes" ]; then RUN_JAVA_CP="$RUN_JAVA_CP;$APP_DIR_WIN\target\classes" ; fi
+		if [ -d "$APP_DIR_WIN\target\dependency" ]; then RUN_JAVA_CP="$RUN_JAVA_CP;$APP_DIR_WIN\target\dependency\*" ; fi
+		if [ -d "$APP_DIR/lib" ]; then
+			for DIR in $(find "$APP_DIR/lib" -type d); do
+				RUN_JAVA_CP="$RUN_JAVA_CP;$(cygpath -w -a $DIR)\*"
+			done
+		fi
+	else
+		if [ -d "$APP_DIR/config" ]; then RUN_JAVA_CP="$RUN_JAVA_CP:$APP_DIR/config" ; fi
+		if [ -d "$APP_DIR/target/test-classes" ]; then RUN_JAVA_CP="$RUN_JAVA_CP:$APP_DIR/target/test-classes" ; fi
+		if [ -d "$APP_DIR/target/classes" ]; then RUN_JAVA_CP="$RUN_JAVA_CP:$APP_DIR/target/classes" ; fi
+		if [ -d "$APP_DIR/target/dependency" ]; then RUN_JAVA_CP="$RUN_JAVA_CP:$APP_DIR/target/dependency/*" ; fi
+		if [ -d "$APP_DIR/lib" ]; then
+			for DIR in $(find "$APP_DIR/lib -type d"); do
+				RUN_JAVA_CP="$RUN_JAVA_CP;$DIR/*"
+			done
+		fi
+	fi
+fi
+
+# Parse addition "-cp" and "-D" after the Java main class from script arguments
+#   This is done for convenient sake so users do not have to export RUN_JAVA_CP and RUN_JAVA_OPTS
+#   saparately, but now they can pass into end of this run-java script instead.
+#   This can be disable by setting RUN_JAVA_NO_PARSE=1.
+if [ -z "$RUN_JAVA_NO_PARSE" ]; then	
+	# Prepare variables for parsing
+	FOUND_CP=
+	declare -a NEW_ARGS
+	IDX=0
+	
+	# Parse all arguments and look for "-cp" and "-D"
+	for ARG in "$@"; do
+		if [[ -n $FOUND_CP ]]; then	
+			if [ "$OS" = "Windows_NT" ]; then
+				# Can't use cygpath here, because cygpath will auto expand "*", which we do not
+				# want. User will just have to use OS path when specifying "-cp" option.	
+				#ARG=$(cygpath -w -a $ARG)
+				RUN_JAVA_CP="$RUN_JAVA_CP;$ARG"
+			else
+				RUN_JAVA_CP="$RUN_JAVA_CP:$ARG"
+			fi
+			FOUND_CP=
+		else
+			case $ARG in
+			'-cp')
+				FOUND_CP=1
+				;;
+			'-D'*)
+				RUN_JAVA_OPTS="$RUN_JAVA_OPTS $ARG"
+				;;
+			*)
+				NEW_ARGS[$IDX]="$ARG"
+				let IDX=$IDX+1
+				;;
+			esac
+		fi
+	done
+		
+	# Display full Java command.
+	if [ -n "$RUN_JAVA_DEBUG" ] || [ -n "$RUN_JAVA_DRY" ]; then
+		echo "$JAVA_CMD" $RUN_JAVA_OPTS -cp "$RUN_JAVA_CP" "${NEW_ARGS[@]}"
+	fi
+	
+	# Run Java Main class using parsed variables
+	if [ -z "$RUN_JAVA_DRY" ]; then
+		"$JAVA_CMD" $RUN_JAVA_OPTS -cp "$RUN_JAVA_CP" "${NEW_ARGS[@]}"
+	fi
+else
+	# Display full Java command.
+	if [ -n "$RUN_JAVA_DEBUG" ] || [ -n "$RUN_JAVA_DRY" ]; then
+		echo "$JAVA_CMD" $RUN_JAVA_OPTS -cp "$RUN_JAVA_CP" "$@"
+	fi
+	
+	# Run Java Main class
+	if [ -z "$RUN_JAVA_DRY" ]; then
+		"$JAVA_CMD" $RUN_JAVA_OPTS -cp "$RUN_JAVA_CP" "$@"
+	fi
+fi
