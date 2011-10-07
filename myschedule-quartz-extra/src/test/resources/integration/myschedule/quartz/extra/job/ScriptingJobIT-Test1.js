@@ -1,1 +1,1 @@
-logger.info("testing scripting job.");
+1 + 99;
