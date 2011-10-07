@@ -1,0 +1,1 @@
+logger.info("testing scripting job.");

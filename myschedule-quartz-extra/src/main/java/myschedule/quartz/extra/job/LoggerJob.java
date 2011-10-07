@@ -23,7 +23,6 @@ public class LoggerJob implements Job {
 	 */
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-		logger.debug("JobExecutionContext: {}", jobExecutionContext);
 		logger.debug("JobInstance: {}", jobExecutionContext.getJobInstance());
 		logger.debug("JobRunTime: {}", jobExecutionContext.getJobRunTime());
 		logger.debug("FireTime: {}", jobExecutionContext.getFireTime());
@@ -35,7 +34,7 @@ public class LoggerJob implements Job {
 		logger.debug("Calendar: {}", jobExecutionContext.getCalendar());
 		logger.debug("FireInstanceId: {}", jobExecutionContext.getFireInstanceId());
 		logger.debug("Scheduler: {}", jobExecutionContext.getScheduler());
-		logger.debug("MergedJobDataMap: {}", jobExecutionContext.getMergedJobDataMap());
+		logger.debug("MergedJobDataMap: {}", jobExecutionContext.getMergedJobDataMap().getWrappedMap());
 		logger.debug("JobDetail: {}", jobExecutionContext.getJobDetail());
 		logger.debug("Trigger: {}", jobExecutionContext.getTrigger());
 		

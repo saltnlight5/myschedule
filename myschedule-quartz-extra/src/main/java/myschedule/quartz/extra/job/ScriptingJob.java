@@ -1,11 +1,13 @@
 package myschedule.quartz.extra.job;
 
+import java.io.File;
 import java.io.FileReader;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleScriptContext;
+import myschedule.quartz.extra.SchedulerTemplate;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -31,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * <p>Only one 'ScriptFile' or 'ScriptText' can be use, and if both given, then 'ScriptText' will be used. Obviously
  * the 'LogScriptText' will only be used when 'ScriptText' is given.
  * 
- * <p>Before evaluating the script, the following implicit variables will be binded: 
+ * <p>Before evaluating the script, the following implicit variables will be binded and available to the script: 
  * <ul>
  *   <li>jobExecutionContext - instance of org.quartz.JobExecutionContext when this job is run.</li>
  *   <li>logger - instance of org.slf4j.Logger from this class.</li>
@@ -47,7 +49,7 @@ public class ScriptingJob implements Job {
 	
 	public static final String DEFAULT_SCRIPT_ENGINE_NAME = "JavaScript";
 
-	public static final String SCRIPT_ENGINE_NAME = "ScriptEngineName";
+	public static final String SCRIPT_ENGINE_NAME_KEY = "ScriptEngineName";
 	
 	public static final String SCRIPT_TEXT_KEY = "ScriptText";
 	
@@ -70,7 +72,7 @@ public class ScriptingJob implements Job {
 						
 			// Extract job data map to setup script engine.
 			JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();		
-			String engineName = dataMap.getString(SCRIPT_ENGINE_NAME);
+			String engineName = dataMap.getString(SCRIPT_ENGINE_NAME_KEY);
 			if (engineName == null) {
 				engineName = DEFAULT_SCRIPT_ENGINE_NAME;
 			}
@@ -91,7 +93,7 @@ public class ScriptingJob implements Job {
 			ScriptEngineManager factory = new ScriptEngineManager();
 	        ScriptEngine scriptEngine = factory.getEngineByName(engineName);	        
 	        if (scriptEngine == null) {
-				throw new JobExecutionException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME); 	        	
+				throw new JobExecutionException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY); 	        	
 	        }
 
 			// Script engine binding variables.
@@ -135,5 +137,23 @@ public class ScriptingJob implements Job {
 			throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
 		}
 	}	
+	
+	/** A convenient method to create an JobDetail instance with this ScriptingJob pre-setup the data map. */
+	public static JobDetail createJobDetail(String engineName, String jobName, String scriptText) {
+		JobDetail job = SchedulerTemplate.createJobDetail(jobName, ScriptingJob.class);
+		JobDataMap dataMap = job.getJobDataMap();
+		dataMap.put(SCRIPT_ENGINE_NAME_KEY, engineName);
+		dataMap.put(SCRIPT_TEXT_KEY, scriptText);
+		return job;
+	}
+	
+	/** A convenient method to create an JobDetail instance with this ScriptingJob pre-setup the data map. */
+	public static JobDetail createJobDetail(String engineName, String jobName, File file) {
+		JobDetail job = SchedulerTemplate.createJobDetail(jobName, ScriptingJob.class);
+		JobDataMap dataMap = job.getJobDataMap();
+		dataMap.put(SCRIPT_ENGINE_NAME_KEY, engineName);
+		dataMap.put(SCRIPT_FILE_KEY, file.getAbsolutePath());
+		return job;
+	}
 
 }
