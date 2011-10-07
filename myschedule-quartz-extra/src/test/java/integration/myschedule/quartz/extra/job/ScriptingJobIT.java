@@ -1,7 +1,9 @@
-package myschedule.quartz.extra.job;
+package integration.myschedule.quartz.extra.job;
 
 import java.io.File;
 import myschedule.quartz.extra.SchedulerTemplate;
+import myschedule.quartz.extra.job.ScriptingJob;
+
 import org.junit.Test;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
@@ -39,7 +41,7 @@ public class ScriptingJobIT {
 	@Test
 	public void testScriptFileJob() {
 		SchedulerTemplate st = new SchedulerTemplate();
-		File file = new File("src/test/resources/myschedule/quartz/extra/job/ScriptingJobIT-Test1.js");
+		File file = new File("src/test/resources/integration/myschedule/quartz/extra/job/ScriptingJobIT-Test1.js");
 		JobDetail job = ScriptingJob.createJobDetail("JavaScript", "MyScriptingJobTest", file);
 		Trigger trigger = SchedulerTemplate.createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
