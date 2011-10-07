@@ -102,7 +102,7 @@ public class ProcessUtils {
 	 */
 	public static int run(long timeout, String[] commandArguments, LineAction lineAction) {
 		// We will use 10% of the timeout period as check interval.
-		long checkInterval = (int)(timeout * 0.10);
+		long checkInterval = (long)(timeout * 0.10);
 		return run(timeout, checkInterval, commandArguments, lineAction);
 	}
 	
@@ -150,7 +150,7 @@ public class ProcessUtils {
 					exitCode = bgProcess.getExitCode();
 				} else {
 					long stopTime = System.currentTimeMillis();
-					String msg = "Process has timed-out. It ran " + (stopTime - startTime) + "/" + timeout + " ms.";
+					String msg = "Process has timed-out. It ran for " + (stopTime - startTime) + "/" + timeout + " ms.";
 					logger.debug(msg);
 
 					// Process is still running. We must force determination of the Process.

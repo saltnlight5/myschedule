@@ -24,15 +24,11 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>You need to customize this job using Quartz's data map with following keys:
  * <ul>
- *   <li>ScriptEgnineName - the name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
- *   <li>ScriptFile - set a script file to be evaluated when this job is executed. Default to null.</li>
- *   <li>ScriptText - set any script text to be evaluated when this job is executed. Default to ''.</li>
- *   <li>LogScriptText - flag to log entire script text or not as INFO level. Default to 'false'</li>
+ *   <li>ScriptEgnineName - Required. The name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
+ *   <li>ScriptText or ScriptFile - Required. Specify where to find the script to run. Only one is needed. No default.</li>
+ *   <li>LogScriptText - Optional. A boolean flag to log ScriptText value or not as INFO level. Default to 'false'.</li>
  * </ul>
- * 
- * <p>Only one 'ScriptFile' or 'ScriptText' can be use, and if both given, then 'ScriptText' will be used. Obviously
- * the 'LogScriptText' will only be used when 'ScriptText' is given.
- * 
+ *  
  * <p>Before evaluating the script, the following implicit variables will be binded and available to the script: 
  * <ul>
  *   <li>jobExecutionContext - instance of org.quartz.JobExecutionContext when this job is run.</li>

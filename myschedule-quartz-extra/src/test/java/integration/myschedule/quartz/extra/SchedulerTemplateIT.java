@@ -1,4 +1,4 @@
-package integration.myschedule.quartz.extra.job;
+package integration.myschedule.quartz.extra;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

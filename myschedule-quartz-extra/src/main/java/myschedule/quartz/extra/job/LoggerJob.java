@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 
 /** 
  * A simple quartz job that just log runtime information.
+ * 
+ * <p>
+ * This job logs many job runtime information as DEBUG level msgs, and then a completed status INFO msg at 
+ * the end of job.
  *
  * @author Zemian Deng
  */
@@ -16,7 +20,7 @@ public class LoggerJob implements Job {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	/**
-	 * Log many job runtime information as DEBUG level msgs, and then a completed status INFO msg at the end of job.
+	 * Log information.
 	 * 
 	 * @param jobExecutionContext
 	 * @throws JobExecutionException
