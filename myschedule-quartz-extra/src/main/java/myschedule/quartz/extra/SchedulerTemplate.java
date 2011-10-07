@@ -729,18 +729,18 @@ public class SchedulerTemplate {
 	}
 	
 	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass) {
-		return scheduleCronJob(name, cron, jobClass, new Date());
+		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, null, new Date(), null);
 	}
 	
-	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, null, startTime, null);
+	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Map<String, Object> dataMap) {
+		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, dataMap, new Date(), null);
 	}
 	
 	public Date scheduleCronJob(
 			JobKey jobKey, String cron, 
-			Class<? extends Job> jobClass, Map<String, Object> data, 
+			Class<? extends Job> jobClass, Map<String, Object> dataMap, 
 			Date startTime, Date endTime) {
-		JobDetail job = createJobDetail(jobKey, jobClass, data);
+		JobDetail job = createJobDetail(jobKey, jobClass, dataMap);
 		TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
 		Trigger trigger = createCronTrigger(triggerKey, cron, startTime, endTime);
 		return scheduleJob(job, trigger);
@@ -757,8 +757,8 @@ public class SchedulerTemplate {
 	public Date scheduleRepeatableJob(
 			JobKey jobKey, Date startTime, Date endTime,
 			int repeatTotalCount, long repeatInterval,
-			Class<? extends Job> jobClass, Map<String, Object> data) {
-		JobDetail job = createJobDetail(jobKey, jobClass, data);
+			Class<? extends Job> jobClass, Map<String, Object> dataMap) {
+		JobDetail job = createJobDetail(jobKey, jobClass, dataMap);
 		TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
 		Trigger trigger = createSimpleTrigger(triggerKey, repeatTotalCount, repeatInterval, startTime, endTime);
 		return scheduleJob(job, trigger);
@@ -773,8 +773,8 @@ public class SchedulerTemplate {
 	}
 	
 	public Date scheduleOnetimeJob(JobKey jobKey, Date startTime, Date endTime, 
-			Class<? extends Job> jobClass, Map<String, Object> data) {
-		return scheduleRepeatableJob(jobKey, startTime, endTime, 1, 1, jobClass, data);
+			Class<? extends Job> jobClass, Map<String, Object> dataMap) {
+		return scheduleRepeatableJob(jobKey, startTime, endTime, 1, 1, jobClass, dataMap);
 	}
 	
 
@@ -795,10 +795,10 @@ public class SchedulerTemplate {
 		return createJobDetail(JobKey.jobKey(name), jobClass, null);
 	}
 	
-	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass, Map<String, Object> data) {
+	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass, Map<String, Object> dataMap) {
 		JobDetail jobDetail = newJob(jobClass).withIdentity(jobKey).build();
-		if (data != null)
-			jobDetail.getJobDataMap().putAll(data);
+		if (dataMap != null)
+			jobDetail.getJobDataMap().putAll(dataMap);
 		return jobDetail;
 	}
 	

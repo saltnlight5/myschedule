@@ -31,19 +31,17 @@ scheduler           An instance of myschedule.quartz.extra.SchedulerTemplate tha
 webOut              An instance of java.io.PrintWriter to allow script to display text output back to web page for debug purpose.
 </pre>
 
-<p>For example, here is how you schedule a new job to the scheduler that runs every MON-FRI at 8am.</p>
+<p>For example, here is how you add a new job to the scheduler that runs every MON-FRI at 8am.</p>
 <pre>
 import myschedule.quartz.extra.job.*
-job = scheduler.createJobDetail('MyDailyJob', ScriptingJob.class)
-map = job.getJobDataMap()
-map.put('ScriptEngineName', 'Groovy')
-map.put('ScriptText', 
-'''
-  logger.info("It will take me a min to wake up.")
-  sleep(60000)
-''')
-trigger = scheduler.createCronTrigger('MyDailyJob', '0 0 8 ? * MON-FRI')
-nextFireTime = scheduler.scheduleJob(job, trigger)
+dataMap = [
+  'ScriptEngineName': 'Groovy',
+  'ScriptText': '''
+    logger.info("It will take me a min to wake up.")
+    sleep(60000)
+  '''
+]
+nextFireTime = scheduler.scheduleCronJob('MyDailyJob', '0 0 8 ? * MON-FRI', ScriptingJob.class, dataMap)
 webOut.println('MyDailyJob has been scheduled. Next fire time: ' + nextFireTime)
 </pre>
 
