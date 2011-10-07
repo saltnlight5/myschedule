@@ -44,5 +44,9 @@ public class MainController {
 			}
 		}
 	}
+	
+	@RequestMapping(value="/about", method=RequestMethod.GET)
+	public void help() {
+	}
 
 }

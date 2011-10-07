@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpSession;
-
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
@@ -21,7 +17,6 @@ import myschedule.service.SchedulerServiceRepository;
 import myschedule.web.SessionSchedulerServiceFinder;
 import myschedule.web.WebAppContextListener;
 import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.SchedulerMetaData;
@@ -127,36 +122,6 @@ public class DashboardController {
 					schedulerService.getSchedulerConfig().getConfigId(), st.getSchedulerName());
 			return new DataModelMap("schedulerService", schedulerService);
 		}
-	}
-	
-	@RequestMapping(value="/modify-get-names", method=RequestMethod.GET)
-	public DataModelMap modifyGetNames(HttpSession session) {
-		return getSchedulerNamesDataModelMap();
-	}
-	
-	protected DataModelMap getSchedulerNamesDataModelMap() {
-		List<String> configIds = schedulerConfigService.getSchedulerServiceConfigIds();
-		logger.debug("There are {} configIds.", configIds.size());
-		Map<String, String> schedulerNamesMap = new HashMap<String, String>();
-		for (String configId : configIds) {
-			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
-			String name = null;
-			if (ss.isInited()) {
-				SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
-				name = st.getSchedulerName();
-			} else {
-				name = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
-			}
-			schedulerNamesMap.put(configId, name);
-			logger.debug("Mapping configId {} to schedulerName {}.", configId, name);
-		}
-		DataModelMap data = new DataModelMap("schedulerNamesMap", schedulerNamesMap);
-		return data;
-	}
-
-	@RequestMapping(value="/delete-get-names", method=RequestMethod.GET)
-	public DataModelMap deleteGetNames() {
-		return getSchedulerNamesDataModelMap();
 	}
 	
 	@RequestMapping(value="/delete-action", method=RequestMethod.GET)

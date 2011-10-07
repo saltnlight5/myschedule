@@ -26,20 +26,25 @@ $(document).ready(function() {
 <div id="help">
 <p>In your script, these variables are available to use immediately.</p>
 <pre>
-webOut              An instance of java.io.PrintWriter to allow script to display output to web page after Run.
-schedulerTemplate   An instance of myschedule.service.quartz.SchedulerTemplate that provide simplified 
-                    template to manage a scheduler implemenation (such as the Quartz's Scheduler).
-quartzScheduler     An instance of org.quartz.Scheduler scheduler in this application.
+scheduler           An instance of myschedule.quartz.extra.SchedulerTemplate that wraps org.quartz.Scheuler API, and it
+                    provides many additional convenient methods for scheduling jobs.
+webOut              An instance of java.io.PrintWriter to allow script to display text output back to web page for debug purpose.
 </pre>
 
-<p>For example, here is how you schedule three new jobs to the scheduler that each runs every minute.</p>
+<p>For example, here is how you schedule a new job to the scheduler that runs every MON-FRI at 8am.</p>
 <pre>
-name = 'MintelyJob'
-repeatForever = -1
-repeatMillisInterval = 60000
-jobClass = myschedule.job.sample.SimpleJob.class
-schedulerTemplate.scheduleRepeatableJob(name, repeatForever, repeatMillisInterval, jobClass)
-webOut.println('Job scheduled successfully: ' + name)
+import myschedule.quartz.extra.job.*
+job = scheduler.createJobDetail('MyDailyJob', ScriptingJob.class)
+map = job.getJobDataMap()
+map.put('ScriptEngineName', 'Groovy')
+map.put('ScriptText', 
+'''
+  logger.info("It will take me a min to wake up.")
+  sleep(60000)
+''')
+trigger = scheduler.createCronTrigger('MyDailyJob', '0 0 8 ? * MON-FRI')
+nextFireTime = scheduler.scheduleJob(job, trigger)
+webOut.println('MyDailyJob has been scheduled. Next fire time: ' + nextFireTime)
 </pre>
 
 You can find more <a href="http://code.google.com/p/myschedule/wiki/ScriptingScheduler">examples here.</a>

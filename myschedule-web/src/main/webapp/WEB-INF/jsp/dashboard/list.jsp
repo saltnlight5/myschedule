@@ -96,8 +96,8 @@ $(document).ready(function() {
 			<td>${ schedulerStatus.jobCount }</td>
 			<td>
 				<a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerStatus.configId }">Shutdown</a> |
-				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify Config</a> |
-				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete Config</a>
+				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete</a>
 			</td>
 		</c:when><c:otherwise>
 			<td>N/A</td>
@@ -107,8 +107,8 @@ $(document).ready(function() {
 			<td>N/A</td>
 			<td>
 				<a href="${ mainPath }/dashboard/init?configId=${ schedulerStatus.configId }">Initialize</a> |
-				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify Config</a> |
-				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete Config</a>
+				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete</a>
 			</td>
 		</c:otherwise></c:choose>
 	</tr>

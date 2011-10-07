@@ -28,14 +28,14 @@
 <h1>Modify Scheduler Config</h1>
 
 <div class="warning">
-Modifying config props will auto re-initialize your scheduler!
+Modifying configuration will auto restart your scheduler upon save!
 </div>
 
 <div id="modify-scheduler-service">
 <form method="post" action="modify-action">
 
 <div>
-<label class="label">Quartz Scheduler Config Properties</label>
+<label class="label">Quartz Scheduler Properties</label>
 <textarea id="configPropsText" name="configPropsText">${ data.configPropsText }</textarea>
 </div>
 
