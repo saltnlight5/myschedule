@@ -534,7 +534,9 @@ public class SchedulerTemplate {
 	/**
 	 * Start scheduler, wait for some times, then shutdown scheduler to wait for all jobs to be complete.
 	 * 
-	 * @param waitTimeInMillis
+	 * <p>Note that you if you pass in waitTimeInMillis=0, it will wait forever!
+	 * 
+	 * @param waitTimeInMillis - number of milliseconds to wait before shutdown.
 	 */
 	public void startAndShutdown(long waitTimeInMillis) {
 		start();
@@ -545,6 +547,7 @@ public class SchedulerTemplate {
 				throw new QuartzRuntimeException("Failed to wait after scheduler started.", e);
 			}
 		}
+		// true => Wait for job to complete before shutdown.
 		shutdown(true);
 	}
 	
