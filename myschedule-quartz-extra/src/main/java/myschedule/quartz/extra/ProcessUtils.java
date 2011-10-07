@@ -40,8 +40,7 @@ public class ProcessUtils {
 	 * 
 	 * @throw TimeoutException - if timeout >=0 and has reached it.
 	 */
-	public static BackgroundProcess runInBackground(final String[] commandArguments, final LineAction lineAction) {
-		logger.info("Run external command=" + Arrays.asList(commandArguments));
+	public static BackgroundProcess runInBackground(String[] commandArguments, final LineAction lineAction) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.redirectErrorStream(true);
 		processBuilder.command(commandArguments);
@@ -59,7 +58,7 @@ public class ProcessUtils {
 							lineAction.onLine(line);
 						}
 					} catch (IOException e) {
-						logger.error("Failed to read sub-process STDOUT.", e);
+						logger.error("Failed to read process STDOUT.", e);
 					} finally {
 						if (inStream != null)
 							try {
@@ -71,9 +70,9 @@ public class ProcessUtils {
 				};
 			};
 			stdoutReadingThread.start();
-			BackgroundProcess backgroundProcess = new BackgroundProcess(commandArguments, process, stdoutReadingThread);
-			logger.info("Process started: {}" + backgroundProcess);
-			return backgroundProcess;
+			BackgroundProcess bgProcess = new BackgroundProcess(commandArguments, process, stdoutReadingThread);
+			logger.debug("Command started: {}", bgProcess);
+			return bgProcess;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -101,25 +100,58 @@ public class ProcessUtils {
 	 * 
 	 * @throw TimeoutException - if timeout >=0 and has reached it.
 	 */
-	public static int run(final long timeout, final String[] commandArguments, final LineAction lineAction) {
+	public static int run(long timeout, String[] commandArguments, LineAction lineAction) {
+		// We will use 10% of the timeout period as check interval.
+		long checkInterval = (int)(timeout * 0.10);
+		return run(timeout, checkInterval, commandArguments, lineAction);
+	}
+	
+	/**
+	 * Run an external command and read STDOUT and STDERR from the sub-process and process each line from output.
+	 * 
+	 * <p>
+	 * This method will block caller until command is done, or timeout is up (if set that is.)
+	 * 
+	 * <p>
+	 * You may set an timeout value to ensure sub-process will terminate after certain milliseconds. A timeout value of
+	 * <= 0 will be ignored and run as long as the sub-process will take. If timeout is set, and exceeded, it will throw
+	 * an RuntimeException.
+	 * 
+	 * @param timeout
+	 *            Timeout in milliseconds if external command did not return.
+	 * @param timeoutCheckInterval
+	 *            if timeout > 0, then this will set pausing interval in millis to check for timeout/process completion.
+	 * @param commandArguments
+	 *            External command and arguments
+	 * @param lineAction
+	 *            A action processing each output line.
+	 * 
+	 * @return exitCode - the external program exit code if it completed successfully.
+	 * 
+	 * @throw TimeoutException - if timeout >=0 and has reached it.
+	 */
+	public static int run(long timeout, long timeoutCheckInterval, final String[] commandArguments, 
+			final LineAction lineAction) {
 		try {
 			long startTime = System.currentTimeMillis();
 			final BackgroundProcess bgProcess = runInBackground(commandArguments, lineAction);
 			int exitCode = 0;
 			if (timeout > 0) {
-				logger.info("Monitoring process with timeout period of {} ms.", timeout);
 				// Let's loop until timeout or Process is done.
 				// The loop is necessary because in some OS, the process.getInputStream() might return null
-				// prematurely before the process is started or even terminated
+				// prematurely before the process is started or even terminated, so we can not depend on just
+				// reading the STDOUT steam.
+				logger.debug("Monitoring process with timeout period of {} ms with check interval: {} ms.", 
+						timeout, timeoutCheckInterval);
 				while ((System.currentTimeMillis() - startTime) < timeout && !bgProcess.isDone()) {
-					Thread.sleep(377); // pause briefly.
+					Thread.sleep(timeoutCheckInterval);
 				}
 				if (bgProcess.isDone()) {
 					exitCode = bgProcess.getExitCode();
 				} else {
 					long stopTime = System.currentTimeMillis();
 					String msg = "Process has timed-out. It ran " + (stopTime - startTime) + "/" + timeout + " ms.";
-					logger.info(msg);
+					logger.debug(msg);
 
 					// Process is still running. We must force determination of the Process.
 					bgProcess.destroy();
@@ -168,7 +200,7 @@ public class ProcessUtils {
 		LineCollector lineCollector = new LineCollector();
 		run(timeout, commandArguments, lineCollector);
 		List<String> outputs = lineCollector.getLines();
-		logger.info("Process completed with output lines size {}.", outputs.size());
+		logger.debug("Process completed with output lines size {}.", outputs.size());
 		return outputs;
 	}
 
@@ -223,7 +255,7 @@ public class ProcessUtils {
 		LineCollector lineCollector = new LineCollector();
 		runJavaWithOpts(timeout, javaOpts, javaCmdArgs, lineCollector);
 		List<String> outputs = lineCollector.getLines();
-		logger.info("Java process completed with output lines size {}.", outputs.size());
+		logger.debug("Java process completed with output lines size {}.", outputs.size());
 		return outputs;
 	}
 
@@ -350,7 +382,7 @@ public class ProcessUtils {
 	 * 
 	 * @author Zemian Deng
 	 */
-	private static class LineCollector implements LineAction {
+	public static class LineCollector implements LineAction {
 		/** Line storage. */
 		private List<String> lines = new ArrayList<String>();
 
@@ -384,6 +416,7 @@ public class ProcessUtils {
 	}
 
 	public static class BackgroundProcess {
+		protected boolean destroyed;
 		protected Date startTime = new Date();
 		protected String[] commandArgs;
 		protected Process process;
@@ -394,6 +427,10 @@ public class ProcessUtils {
 			this.process = process;
 			this.stdoutReadingThread = stdoutReadingThread;
 		}
+		
+		public boolean isDestroyed() {
+			return destroyed;
+		}
 
 		public int getExitCode() {
 			return process.exitValue();
@@ -403,6 +440,7 @@ public class ProcessUtils {
 			logger.debug("Destroying running process {}.", this);
 			stdoutReadingThread.interrupt();
 			process.destroy();
+			destroyed = true;
 			logger.info("{} destroyed.", this);
 		}
 		
