@@ -20,6 +20,32 @@ import org.quartz.spi.SchedulerPlugin;
 public class SchedulerMainIT {
 	public static File PLUGIN_RESULT_FILE = createTempFile("SchedulerMainIT-ResultSchedulerPlugin.tmp");
 	
+	public static File createTempFile(String filename) {
+		return new File(System.getProperty("java.io.tmpdir") + "/" + filename);
+	}
+
+	public static void resetResult() {
+		// Reset file content
+		try {
+			FileUtils.writeStringToFile(PLUGIN_RESULT_FILE, "");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void writeResult(String text) {
+		FileWriter writer = null;
+		try {
+			writer = new FileWriter(PLUGIN_RESULT_FILE, true);
+			IOUtils.write(text, writer);
+			writer.flush();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(writer);
+		}
+	}
+
 	@Test
 	public void testMainWithTimeout() throws Exception {		
 		try {
@@ -63,19 +89,11 @@ public class SchedulerMainIT {
 		}
 	}
 	
-	public static File createTempFile(String filename) {
-		return new File(System.getProperty("java.io.tmpdir") + "/" + filename);
-	}
-
 	public static class ResultSchedulerPlugin implements SchedulerPlugin {
 		public ResultSchedulerPlugin() {
-			// Reset file content
-			try {
-				FileUtils.writeStringToFile(PLUGIN_RESULT_FILE, "");
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			resetResult();
 		}
+		
 		@Override
 		public void initialize(String name, Scheduler scheduler) throws SchedulerException {
 			writeResult("name: " + name + "\n");
@@ -90,19 +108,6 @@ public class SchedulerMainIT {
 		@Override
 		public void shutdown() {
 			writeResult("shutdown: " + new Date() + "\n");
-		}
-		
-		protected void writeResult(String text) {
-			FileWriter writer = null;
-			try {
-				writer = new FileWriter(PLUGIN_RESULT_FILE, true);
-				IOUtils.write(text, writer);
-				writer.flush();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} finally {
-				IOUtils.closeQuietly(writer);
-			}
 		}
 	}
 }
