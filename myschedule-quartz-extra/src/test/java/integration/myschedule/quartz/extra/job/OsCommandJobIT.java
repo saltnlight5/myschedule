@@ -3,7 +3,7 @@ package integration.myschedule.quartz.extra.job;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import integration.myschedule.quartz.extra.ProcessUtilsTest;
+import integration.myschedule.quartz.extra.ProcessUtilsIT;
 import integration.myschedule.quartz.extra.ResultJobListener;
 
 import java.io.File;
@@ -23,7 +23,7 @@ public class OsCommandJobIT {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
 		String classpath = System.getProperty("java.class.path");
-		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
+		Class<?> mainClass = ProcessUtilsIT.RunBackgroundProcessMain.class;
 		String[] cmdArgs = new String[]{ javaBin, "-cp", classpath, mainClass.getName(), "500" };
 		
 		ResultJobListener.resetResult();
@@ -47,7 +47,7 @@ public class OsCommandJobIT {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
 		String classpath = System.getProperty("java.class.path");
-		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
+		Class<?> mainClass = ProcessUtilsIT.RunBackgroundProcessMain.class;
 		String[] cmdArgs = new String[]{ javaBin, "-cp", classpath, mainClass.getName(), "400" };
 		
 		ResultJobListener.resetResult();
@@ -73,7 +73,7 @@ public class OsCommandJobIT {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
 		String classpath = System.getProperty("java.class.path");
-		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
+		Class<?> mainClass = ProcessUtilsIT.RunBackgroundProcessMain.class;
 		String[] cmdArgs = new String[]{ javaBin, "-cp", classpath, mainClass.getName(), "3000" };
 		
 		ResultJobListener.resetResult();
