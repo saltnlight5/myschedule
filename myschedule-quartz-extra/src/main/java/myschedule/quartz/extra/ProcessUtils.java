@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
  * Utilities to help run external sub-process, and external java process that has the same classpath setup as the one
  * started the parent JVM.
  * 
+ * <p>Note that if process has timeout, it is destroyed. In case of JVM sub process, it will not invoke shutdown hook!
+ * 
  * @author Zemian Deng
  */
 public class ProcessUtils {
@@ -383,8 +385,11 @@ public class ProcessUtils {
 	 * @author Zemian Deng
 	 */
 	public static class LineCollector implements LineAction {
+		
+		private static final Logger logger = LoggerFactory.getLogger(ProcessUtils.LineCollector.class);
+		
 		/** Line storage. */
-		private List<String> lines = new ArrayList<String>();
+		protected List<String> lines = new ArrayList<String>();
 
 		/**
 		 * Getter.
@@ -402,6 +407,7 @@ public class ProcessUtils {
 		 *            input.
 		 */
 		public void onLine(final String line) {
+			logger.debug("Line: {}", line);
 			lines.add(line);
 		}
 	}
