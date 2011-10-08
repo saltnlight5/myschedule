@@ -749,15 +749,15 @@ public class SchedulerTemplate {
 		return scheduleJob(job, trigger);
 	}
 
-	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(name, repeatTotalCount, repeatInterval, jobClass, null);
+	public Date scheduleSimpleJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
+		return scheduleSimpleJob(name, repeatTotalCount, repeatInterval, jobClass, null);
 	}
 	
-	public Date scheduleRepeatableJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleRepeatableJob(JobKey.jobKey(name), startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
+	public Date scheduleSimpleJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
+		return scheduleSimpleJob(JobKey.jobKey(name), startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
 	}
 	
-	public Date scheduleRepeatableJob(
+	public Date scheduleSimpleJob(
 			JobKey jobKey, Date startTime, Date endTime,
 			int repeatTotalCount, long repeatInterval,
 			Class<? extends Job> jobClass, Map<String, Object> dataMap) {
@@ -766,20 +766,6 @@ public class SchedulerTemplate {
 		Trigger trigger = createSimpleTrigger(triggerKey, repeatTotalCount, repeatInterval, startTime, endTime);
 		return scheduleJob(job, trigger);
 	}
-	
-	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass) {
-		return scheduleRepeatableJob(name, 1, 1, jobClass, null);
-	}
-	
-	public Date scheduleOnetimeJob(String name, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleRepeatableJob(name, 1, 1, jobClass, startTime);
-	}
-	
-	public Date scheduleOnetimeJob(JobKey jobKey, Date startTime, Date endTime, 
-			Class<? extends Job> jobClass, Map<String, Object> dataMap) {
-		return scheduleRepeatableJob(jobKey, startTime, endTime, 1, 1, jobClass, dataMap);
-	}
-	
 
 	public String getSchedulerNameAndId() {
 		return getSchedulerName() + "_$_" + getSchedulerInstanceId();

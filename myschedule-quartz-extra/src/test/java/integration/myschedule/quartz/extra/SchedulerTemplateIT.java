@@ -60,29 +60,29 @@ public class SchedulerTemplateIT {
 		st.startAndShutdown(700);
 		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
 	}
-	
-	@Test
-	public void testScheduleRepeatJob() throws Exception {
-		SchedulerTemplate st = new SchedulerTemplate();
-		TestJob.resetResult();
-		st.scheduleRepeatableJob("test", 2, 500, TestJob.class);
-		st.startAndShutdown(1300);
-		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
-		
-		st = new SchedulerTemplate();
-		TestJob.resetResult();
-		st.scheduleRepeatableJob(JobKey.jobKey("test"), new Date(), null, 2, 500, TestJob.class, null);
-		st.startAndShutdown(1300);
-		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
-	}
 
 	@Test
 	public void testScheduleOnetimeJob() throws Exception {
 		SchedulerTemplate st = new SchedulerTemplate();
 		TestJob.resetResult();
-		st.scheduleOnetimeJob("test", TestJob.class);
+		st.scheduleSimpleJob("test", 1, 0, TestJob.class);
 		st.startAndShutdown(99);
 		assertThat(TestJob.jobResult.executionTimes.size(), is(1));
+	}
+	
+	@Test
+	public void testScheduleSimpleJob() throws Exception {
+		SchedulerTemplate st = new SchedulerTemplate();
+		TestJob.resetResult();
+		st.scheduleSimpleJob("test", 2, 500, TestJob.class);
+		st.startAndShutdown(1300);
+		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
+		
+		st = new SchedulerTemplate();
+		TestJob.resetResult();
+		st.scheduleSimpleJob(JobKey.jobKey("test"), new Date(), null, 2, 500, TestJob.class, null);
+		st.startAndShutdown(1300);
+		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
 	}
 	
 	@Test

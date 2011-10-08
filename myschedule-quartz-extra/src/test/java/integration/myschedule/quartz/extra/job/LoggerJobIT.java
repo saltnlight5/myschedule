@@ -15,7 +15,7 @@ public class LoggerJobIT {
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.getListenerManager().addJobListener(new ResultJobListener());
 		
-		st.scheduleOnetimeJob("test", LoggerJob.class);
+		st.scheduleSimpleJob("test", 1, 0, LoggerJob.class);
 		st.startAndShutdown(99);
 		
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));

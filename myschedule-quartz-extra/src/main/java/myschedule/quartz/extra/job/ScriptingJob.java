@@ -1,13 +1,11 @@
 package myschedule.quartz.extra.job;
 
-import java.io.File;
 import java.io.FileReader;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleScriptContext;
-import myschedule.quartz.extra.SchedulerTemplate;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -135,24 +133,6 @@ public class ScriptingJob implements Job {
 		} catch (Exception e) {
 			throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
 		}
-	}	
-	
-	/** A convenient method to create an JobDetail instance with this ScriptingJob pre-setup the data map. */
-	public static JobDetail createJobDetail(String engineName, String jobName, String scriptText) {
-		JobDetail job = SchedulerTemplate.createJobDetail(jobName, ScriptingJob.class);
-		JobDataMap dataMap = job.getJobDataMap();
-		dataMap.put(SCRIPT_ENGINE_NAME_KEY, engineName);
-		dataMap.put(SCRIPT_TEXT_KEY, scriptText);
-		return job;
-	}
-	
-	/** A convenient method to create an JobDetail instance with this ScriptingJob pre-setup the data map. */
-	public static JobDetail createJobDetail(String engineName, String jobName, File file) {
-		JobDetail job = SchedulerTemplate.createJobDetail(jobName, ScriptingJob.class);
-		JobDataMap dataMap = job.getJobDataMap();
-		dataMap.put(SCRIPT_ENGINE_NAME_KEY, engineName);
-		dataMap.put(SCRIPT_FILE_KEY, file.getAbsolutePath());
-		return job;
 	}
 
 }

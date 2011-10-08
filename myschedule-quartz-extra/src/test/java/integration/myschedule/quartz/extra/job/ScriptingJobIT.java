@@ -2,6 +2,7 @@ package integration.myschedule.quartz.extra.job;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static myschedule.quartz.extra.SchedulerTemplate.*;
 import integration.myschedule.quartz.extra.ResultJobListener;
 
 import java.io.File;
@@ -20,8 +21,10 @@ public class ScriptingJobIT {
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.getListenerManager().addJobListener(new ResultJobListener());
 		
-		JobDetail job = ScriptingJob.createJobDetail("JavaScript", "MyScriptingJobTest", "1 + 99;");
-		Trigger trigger = SchedulerTemplate.createSimpleTrigger("MyScriptingJobTest");
+		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99;");
+		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
@@ -35,9 +38,9 @@ public class ScriptingJobIT {
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.getListenerManager().addJobListener(new ResultJobListener());
 		
-		JobDetail job = SchedulerTemplate.createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99;");
-		Trigger trigger = SchedulerTemplate.createSimpleTrigger("MyScriptingJobTest");
+		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
@@ -50,10 +53,12 @@ public class ScriptingJobIT {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.getListenerManager().addJobListener(new ResultJobListener());
-		
-		JobDetail job = ScriptingJob.createJobDetail("JavaScript", "MyScriptingJobTest", "1 + 99;");
+
+		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99;");
 		job.getJobDataMap().put(ScriptingJob.LOG_SCRIPT_TEXT_KEY, "true");
-		Trigger trigger = SchedulerTemplate.createSimpleTrigger("MyScriptingJobTest");
+		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
@@ -68,8 +73,10 @@ public class ScriptingJobIT {
 		st.getListenerManager().addJobListener(new ResultJobListener());
 		
 		File file = new File("src/test/resources/integration/myschedule/quartz/extra/job/ScriptingJobIT-Test1.js");
-		JobDetail job = ScriptingJob.createJobDetail("JavaScript", "MyScriptingJobTest", file);
-		Trigger trigger = SchedulerTemplate.createSimpleTrigger("MyScriptingJobTest");
+		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_FILE_KEY, file.getAbsolutePath());
+		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
