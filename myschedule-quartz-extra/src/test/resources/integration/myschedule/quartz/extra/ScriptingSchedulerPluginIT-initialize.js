@@ -3,5 +3,5 @@
 logger.info("Plugin initialize");
 
 importClass(Packages.integration.myschedule.quartz.extra.ScriptingSchedulerPluginIT);
-ScriptingSchedulerPluginIT.writeResult('name: ' + schedulerPlugin.getName() + '\n');
-ScriptingSchedulerPluginIT.writeResult('initialize: ' + new Date() + '\n');
+ScriptingSchedulerPluginIT.RESULT_FILE.writeLine('name: ' + schedulerPlugin.getName());
+ScriptingSchedulerPluginIT.RESULT_FILE.writeLine('initialize: ' + new Date());
