@@ -23,6 +23,26 @@ public class SchedulerMainIT {
 	@Test
 	public void testMainWithTimeout() throws Exception {		
 		try {
+			// Run SchedulerMain with timeout settings so it should exit automatically.
+			String config = "integration/myschedule/quartz/extra/SchedulerMainIT-quartz.properties";
+			String[] javaCmdArgs = { SchedulerMain.class.getName(), config };
+			String[] javaOpts = { "-DSchedulerMain.Timeout=700" };
+			ProcessUtils.runJavaWithOpts(3000, javaOpts, javaCmdArgs);
+			
+			List<String> result = FileUtils.readLines(PLUGIN_RESULT_FILE);
+			assertThat(result.size(), is(4));
+			assertThat(result.get(0), is("name: MyResultSchedulerPluginTest"));
+			assertThat(result.get(1), containsString("initialize:"));
+			assertThat(result.get(2), containsString("start:"));
+			assertThat(result.get(3), containsString("shutdown:"));
+		} finally {
+			PLUGIN_RESULT_FILE.delete();
+		}
+	}
+	
+	@Test
+	public void testMainAsServer() throws Exception {		
+		try {
 			try {
 				// Default SchedulerMain will run as server, so this should cause test to timeout.
 				String config = "integration/myschedule/quartz/extra/SchedulerMainIT-quartz.properties";

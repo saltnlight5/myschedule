@@ -10,7 +10,10 @@ import org.quartz.SchedulerException;
  *
  */
 public class SchedulerMain {
-	public static void main(String[] args) throws SchedulerException {
+	
+	public static final String TIMEOUT_KEY = "SchedulerMain.Timeout";
+	
+	public static void main(String[] args) throws SchedulerException {		
 		// Create a scheduler
 		final SchedulerTemplate scheduler;
 		if (args.length > 0) {
@@ -18,16 +21,22 @@ public class SchedulerMain {
 			scheduler = new SchedulerTemplate(quartzConfig);
 		} else {
 			scheduler = new SchedulerTemplate();
-		}		
+		}
 		
-		// Register a shutdown hook to bring down scheduler
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
-				scheduler.shutdown(true); // true => wait for jobs to complete.
-			}
-		});
-		
-		// Start the scheduler.
-		scheduler.startAndWait();
+		long timeout = Long.parseLong(System.getProperty(TIMEOUT_KEY, "-1"));
+		if (timeout < 0) {
+			// Register a shutdown hook to bring down scheduler
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					scheduler.shutdown(true); // true => wait for jobs to complete.
+				}
+			});
+			
+			// Start the scheduler and run as server.
+			scheduler.startAndWait();
+		} else {
+			// Start the scheduler and shutdown after certain time.
+			scheduler.startAndShutdown(timeout);
+		}
 	}
 }
