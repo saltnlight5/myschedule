@@ -38,8 +38,11 @@ import org.quartz.spi.OperableTrigger;
 
 /**
  * A template to simplify creation and scheduling of Quartz jobs. This class can be very handy as one stop shop for
- * simple needs. It also shields away Quartz's "checked" SchedulerException into an "unchecked" ErrorCodeException, so
- * you can be more productive.
+ * simple scheduling needs, and yet you still have full power of the original org.quartz.Scheduler API equivalent 
+ * available. 
+ * 
+ * <p>This class also shields away Quartz's "checked" SchedulerException into an "unchecked" QuartzRuntimeException, 
+ * so you can be more productive.
  *
  * @author Zemian Deng
  */
