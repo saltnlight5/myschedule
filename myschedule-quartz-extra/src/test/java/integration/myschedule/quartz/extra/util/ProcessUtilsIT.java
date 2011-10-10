@@ -1,4 +1,4 @@
-package integration.myschedule.quartz.extra;
+package integration.myschedule.quartz.extra.util;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -8,8 +8,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.List;
 
-import myschedule.quartz.extra.ProcessUtils;
-import myschedule.quartz.extra.ProcessUtils.BackgroundProcess;
+import myschedule.quartz.extra.util.ProcessUtils;
+import myschedule.quartz.extra.util.ProcessUtils.BackgroundProcess;
 
 import org.junit.Test;
 

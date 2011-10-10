@@ -3,6 +3,8 @@ package integration.myschedule.quartz.extra;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import integration.myschedule.quartz.extra.util.ResultFile;
+
 import java.util.List;
 import myschedule.quartz.extra.SchedulerTemplate;
 import org.junit.Test;

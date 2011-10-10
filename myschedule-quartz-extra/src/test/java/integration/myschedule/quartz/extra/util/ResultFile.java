@@ -1,4 +1,4 @@
-package integration.myschedule.quartz.extra;
+package integration.myschedule.quartz.extra.util;
 
 import java.io.File;
 import java.io.FileWriter;

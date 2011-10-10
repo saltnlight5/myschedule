@@ -2,8 +2,8 @@ package myschedule.quartz.extra.job;
 
 import java.util.Arrays;
 
-import myschedule.quartz.extra.ProcessUtils;
-import myschedule.quartz.extra.ProcessUtils.BackgroundProcess;
+import myschedule.quartz.extra.util.ProcessUtils;
+import myschedule.quartz.extra.util.ProcessUtils.BackgroundProcess;
 
 import org.quartz.InterruptableJob;
 import org.quartz.Job;

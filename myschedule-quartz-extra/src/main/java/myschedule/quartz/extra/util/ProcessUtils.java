@@ -1,4 +1,4 @@
-package myschedule.quartz.extra;
+package myschedule.quartz.extra.util;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -3,8 +3,8 @@ package integration.myschedule.quartz.extra.job;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import integration.myschedule.quartz.extra.ProcessUtilsIT;
 import integration.myschedule.quartz.extra.ResultJobListener;
+import integration.myschedule.quartz.extra.util.ProcessUtilsIT;
 
 import java.io.File;
 

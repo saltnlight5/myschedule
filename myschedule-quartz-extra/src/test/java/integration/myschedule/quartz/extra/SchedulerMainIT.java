@@ -4,10 +4,13 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import integration.myschedule.quartz.extra.util.ResultFile;
+
 import java.util.Date;
 import java.util.List;
-import myschedule.quartz.extra.ProcessUtils;
 import myschedule.quartz.extra.SchedulerMain;
+import myschedule.quartz.extra.util.ProcessUtils;
+
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
