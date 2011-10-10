@@ -82,33 +82,40 @@ $(document).ready(function() {
 		</tr>
 	</thead>
 	<tbody>
-	<c:forEach items="${ data.schedulerStatusList }" var="schedulerStatus" varStatus="loop">
+	<c:forEach items="${ data.schedulerRows }" var="scheduler" varStatus="loop">
 	<tr>
-		<c:choose><c:when test="${ schedulerStatus.initialized }">
-			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ schedulerStatus.configId }">${ schedulerStatus.name }</a></td>
+		<c:choose><c:when test="${ scheduler.initialized }">
+			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ scheduler.configId }">${ scheduler.name }</a></td>
 		</c:when><c:otherwise>
-			<td>${ schedulerStatus.name }</td>
+			<td>${ scheduler.name }</td>
 		</c:otherwise></c:choose>
-		<td>${ schedulerStatus.initialized }</td>
-		<c:choose><c:when test="${ schedulerStatus.initialized }">
-			<td>${ schedulerStatus.started }</td>
-			<td><fmt:formatDate value="${ schedulerStatus.schedulerMetaData.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
-			<td>${ schedulerStatus.jobCount }</td>
+		<c:choose><c:when test="${ scheduler.initialized }">
+
+			<c:choose><c:when test="${ scheduler.connExceptionExists }">
+			<td>true / Error: + ${ scheduler.connExceptionString })</td>
+			</c:when><c:otherwise>
+			<td>true</td>
+			</c:otherwise></c:choose>
+			
+			<td>${ scheduler.started }</td>
+			<td><fmt:formatDate value="${ scheduler.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
+			<td>${ scheduler.numOfJobs }</td>
 			<td>
-				<a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerStatus.configId }">Shutdown</a> |
-				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify</a> |
-				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete</a>
+				<a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ scheduler.configId }">Shutdown</a> |
+				<a href="${ mainPath }/dashboard/modify?configId=${ scheduler.configId }">Modify</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ scheduler.configId }">Delete</a>
 			</td>
 		</c:when><c:otherwise>
+			<td>false</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>N/A</td>
 			<td>
-				<a href="${ mainPath }/dashboard/init?configId=${ schedulerStatus.configId }">Initialize</a> |
-				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerStatus.configId }">Modify</a> |
-				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerStatus.configId }">Delete</a>
+				<a href="${ mainPath }/dashboard/init?configId=${ scheduler.configId }">Initialize</a> |
+				<a href="${ mainPath }/dashboard/modify?configId=${ scheduler.configId }">Modify</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ scheduler.configId }">Delete</a>
 			</td>
 		</c:otherwise></c:choose>
 	</tr>

@@ -23,6 +23,14 @@
 	</properties>
 
 	<dependencies>
+		<!-- Getter and Setter Generator -->	
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>0.10.1</version>
+			<scope>provided</scope>
+		</dependency>
+	
 		<!-- Quartz extra -->
 		<dependency>
 		<groupId>myschedule</groupId>

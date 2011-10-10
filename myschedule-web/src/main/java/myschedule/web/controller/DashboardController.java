@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpSession;
+
+import lombok.Getter;
+import lombok.Setter;
+import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
@@ -14,9 +20,12 @@ import myschedule.service.QuartzSchedulerService;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
+import myschedule.web.PageData;
 import myschedule.web.SessionSchedulerServiceFinder;
 import myschedule.web.WebAppContextListener;
+import myschedule.web.controller.DashboardController.ListPageData.SchedulerRow;
 import myschedule.web.controller.SchedulerStatusListPageData.SchedulerStatus;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.SchedulerMetaData;
@@ -25,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +48,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(value="/dashboard")
 public class DashboardController {
 	
+	public static final String PAGE_DATA_KEY = "data";
+	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired @Qualifier("schedulerServiceFinder")
@@ -47,6 +59,41 @@ public class DashboardController {
 	protected SchedulerConfigService schedulerConfigService;
 	
 	protected SchedulerServiceRepository schedulerServiceRepo = SchedulerServiceRepository.getInstance();
+	
+	@RequestMapping(value="/list", method=RequestMethod.GET)
+	public ModelMap list() {
+		ListPageData listPageData = new ListPageData();
+		List<String> configIds = schedulerServiceRepo.getSchedulerServiceConfigIds();
+		for (String configId : configIds) {
+			SchedulerRow schedulerRow = new SchedulerRow();
+			listPageData.getSchedulerRows().add(schedulerRow);
+			
+			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+			schedulerRow.setConfigId(configId);
+			schedulerRow.setInitialized(ss.isInited());
+			if (ss.isInited()) {
+				try {
+					SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
+					schedulerRow.setName(st.getSchedulerName());
+					schedulerRow.setStarted(ss.isStarted());
+					schedulerRow.setNumOfJobs(st.getAllJobDetails().size());
+					schedulerRow.setRunningSince(st.getSchedulerMetaData().getRunningSince());
+				} catch (QuartzRuntimeException e) {
+					logger.error("Failed to get scheduler information for configId {}.", e, configId);
+					
+					String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+					schedulerRow.setName(schedulerName);
+					schedulerRow.setConnExceptionExists(true);
+					String exeptionStr = ExceptionUtils.getFullStackTrace(e);
+					schedulerRow.setConnExceptionString(exeptionStr);
+				}
+			} else {
+				String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+				schedulerRow.setName(schedulerName);
+			}
+		}
+		return new ModelMap(PAGE_DATA_KEY, listPageData);
+	}
 	
 	@RequestMapping(value="/modify", method=RequestMethod.GET)
 	public DataModelMap modify(
@@ -76,14 +123,6 @@ public class DashboardController {
 		}
 		data.addData("schedulerService", ss);
 		return data;
-	}
-	
-	@RequestMapping(value="/list", method=RequestMethod.GET)
-	public DataModelMap list() {
-		SchedulerStatusListPageData data = new SchedulerStatusListPageData();
-		List<SchedulerStatus> schedulerStatusList = getSchedulerStatusList();
-		data.setSchedulerStatusList(schedulerStatusList);
-		return new DataModelMap(data);
 	}
 
 	@RequestMapping(value="/switch-scheduler", method=RequestMethod.GET)
@@ -224,5 +263,22 @@ public class DashboardController {
 			result.add(sstatus);
 		}
 		return result;
+	}
+	
+	@Getter
+	public static class ListPageData extends PageData {
+		protected List<SchedulerRow> schedulerRows = new ArrayList<SchedulerRow>();
+		
+		@Getter @Setter
+		public static class SchedulerRow {
+			protected String configId;
+			protected String name;
+			protected boolean initialized;
+			protected boolean started;
+			protected Date runningSince;
+			protected int numOfJobs;
+			protected boolean connExceptionExists;
+			protected String connExceptionString; // If started, but failed to get information.
+		}
 	}
 }
