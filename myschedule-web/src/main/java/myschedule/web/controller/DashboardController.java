@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -20,6 +21,7 @@ import myschedule.service.QuartzSchedulerService;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
+import myschedule.service.Utils;
 import myschedule.web.PageData;
 import myschedule.web.SessionSchedulerServiceFinder;
 import myschedule.web.WebAppContextListener;
@@ -79,8 +81,8 @@ public class DashboardController {
 					schedulerRow.setNumOfJobs(st.getAllJobDetails().size());
 					schedulerRow.setRunningSince(st.getSchedulerMetaData().getRunningSince());
 				} catch (QuartzRuntimeException e) {
-					logger.error("Failed to get scheduler information for configId {}.", e, configId);
-					
+					logger.error("Failed to get scheduler information for configId " + configId + 
+							". Will save exception string", e);
 					String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
 					schedulerRow.setName(schedulerName);
 					schedulerRow.setConnExceptionExists(true);
@@ -94,6 +96,22 @@ public class DashboardController {
 		}
 		return new ModelMap(PAGE_DATA_KEY, listPageData);
 	}
+		
+	@RequestMapping(value="/init", method=RequestMethod.GET)
+	public String init(@RequestParam String configId, HttpSession session) {
+		QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		try {
+			schedulerService.init();
+			schedulerService.start(); // This is myschedule auto start if possible feature, not direct Quartz start. So safe to call.
+		} catch (ErrorCodeException e) {
+			logger.error("Failed to initialize scheduler with configId " + configId, e);
+			String execeptionStr = ExceptionUtils.getFullStackTrace(e);
+			Map<String, Object> map = Utils.createMap("msg", execeptionStr, "msgType", "error");
+			session.setAttribute("flashMsg", map);
+		}
+		return "redirect:list";
+	}
+	
 	
 	@RequestMapping(value="/modify", method=RequestMethod.GET)
 	public DataModelMap modify(
@@ -185,14 +203,6 @@ public class DashboardController {
 		logger.info("Removed scheduler configId {} and from session data.", configId);
 		
 		return data;
-	}
-	
-	@RequestMapping(value="/init", method=RequestMethod.GET)
-	public String init(@RequestParam String configId) {
-		QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
-		schedulerService.init();
-		schedulerService.start(); // This is myschedule auto start if possible feature, not direct Quartz start. So safe to call.
-		return "redirect:list";
 	}
 	
 	@RequestMapping(value="/shutdown", method=RequestMethod.GET)
