@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project 
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>myschedule</groupId>
 	<artifactId>myschedule-parent</artifactId>
-	<version>2.2.0-SNAPSHOT</version>
+	<version>2.3.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -26,7 +23,7 @@
 			<timezone>-5</timezone>
 		</developer>
 	</developers>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,5 +35,29 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
-	
+
+	<distributionManagement>
+		<repository>
+			<id>local-m2-repo</id>
+			<url>file:///${user.home}/.m2/repository</url>
+			<uniqueVersion>true</uniqueVersion>
+		</repository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:hg:file:///${basedir}</connection>
+		<developerConnection>scm:hg:file:///${basedir}</developerConnection>
+		<url>http://code.google.com/p/myschedule/source/browse</url>
+	</scm>
+
+	<build>
+		<plugins>			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.1</version>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
