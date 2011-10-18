@@ -40,7 +40,18 @@ foreground by their script like this:
 	$ cd $TOMCAT_HOME
 	$ bin/catalina.bat run
 
-== Want more? ==
+= Performing Releases =
+In Windows + Cygwin, you must use a Mercurial for Windows (hg.exe) in PATH in order to work with Maven release plugin!
+
+$ mvn release:prepare
+$ mvn release:perform
+
+If you need to clean up file when things went wrong, try:
+$ mvn release:clean
+
+* Note that the default install repository for the release is  configured to local ${user.home}/.m2/repository directory.
+
+= Want more? =
 Check out some related, experimental projects in here:
 (you will find notes on how to run myschedule.war in JBoss6 etc.) 
 http://code.google.com/p/myschedule/source/browse/?repo=experiment
