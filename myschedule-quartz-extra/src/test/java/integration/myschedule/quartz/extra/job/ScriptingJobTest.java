@@ -19,7 +19,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJob() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new ResultJobListener());
+		st.addListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
@@ -36,7 +36,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJobWithDefaultEngineName() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new ResultJobListener());
+		st.addListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99;");
@@ -52,7 +52,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJobLogText() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new ResultJobListener());
+		st.addListener(new ResultJobListener());
 
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
@@ -70,7 +70,7 @@ public class ScriptingJobTest {
 	public void testScriptFileJob() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.getListenerManager().addJobListener(new ResultJobListener());
+		st.addListener(new ResultJobListener());
 		
 		File file = new File("src/test/resources/integration/myschedule/quartz/extra/job/ScriptingJobTest-1.js");
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);

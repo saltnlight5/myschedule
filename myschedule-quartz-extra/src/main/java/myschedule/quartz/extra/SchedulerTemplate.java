@@ -5,6 +5,7 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
+
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.quartz.Calendar;
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
@@ -21,15 +23,18 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
+import org.quartz.JobListener;
 import org.quartz.ListenerManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerContext;
 import org.quartz.SchedulerException;
+import org.quartz.SchedulerListener;
 import org.quartz.SchedulerMetaData;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
+import org.quartz.TriggerListener;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
@@ -533,6 +538,32 @@ public class SchedulerTemplate {
 	//
 	// # These are convenient methods to easy scheduling programming.
 	//
+	
+	@SuppressWarnings("unchecked")
+	public void addListener(JobListener listener) {
+		try {
+			scheduler.getListenerManager().addJobListener(listener);
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void addListner(TriggerListener listener) {
+		try {
+			scheduler.getListenerManager().addTriggerListener(listener);
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
+	
+	public void addListner(SchedulerListener listener) {
+		try {
+			scheduler.getListenerManager().addSchedulerListener(listener);
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
 	
 	/**
 	 * Start scheduler, wait for some times, then shutdown scheduler to wait for all jobs to be complete.
