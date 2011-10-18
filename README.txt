@@ -6,7 +6,7 @@ The project home page is at: http://code.google.com/p/myschedule
 
 = Getting started =
 To build this project source, you would need Maven 3 build tool, and run:
-	mvn package
+	mvn install
 
 To run this project with latest code, you may try using the Maven tomcat plugin. Try to run:
 	mvn tomcat:run
@@ -32,7 +32,7 @@ The project is an Open Source, and licensed with Apache License 2.0.
 
 Feel free to contribute, provide feedback and ask questions through the project site.
 
-= Production Deployment Notes =
+= Deployment =
 The default myscheduler.war file can be drop into any Servlet 2.5 + Web Container and it should work.
 
 The myscheduler.war has been tested on tomcat-6.0.32 and tomcat-7.0.8. You may start Tomcat in the
