@@ -10,14 +10,14 @@ import myschedule.quartz.extra.SchedulerTemplate;
 import org.junit.Test;
 
 public class ScriptingSchedulerPluginTest {
-	public static ResultFile RESULT_FILE = new ResultFile("ScriptingSchedulerPluginIT.tmp");
+	public static ResultFile RESULT_FILE = new ResultFile("ScriptingSchedulerPluginTest.tmp");
 	
 	@Test
 	public void testScriptingSchedulerPlugin() throws Exception {
 		try {
 			// We will use the script to write to result file then verify
 			RESULT_FILE.resetFile();
-			SchedulerTemplate st = new SchedulerTemplate("integration/myschedule/quartz/extra/ScriptingSchedulerPluginIT-quartz.properties");
+			SchedulerTemplate st = new SchedulerTemplate("integration/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz.properties");
 			st.startAndShutdown(700);
 			
 			List<String> result = RESULT_FILE.readLines();
