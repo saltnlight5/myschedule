@@ -90,7 +90,7 @@ $(document).ready(function() {
 	<c:forEach items="${ data.schedulerRows }" var="schedulerRow" varStatus="loop">
 	<tr>
 		<c:choose><c:when test="${ schedulerRow.initialized }">
-			<td><a href="${ mainPath }/dashboard/switch-schedulerRow?configId=${ schedulerRow.configId }">${ schedulerRow.name }</a></td>
+			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ schedulerRow.configId }">${ schedulerRow.name }</a></td>
 			<td>true</td> <!-- initialize -->
 						
 			<c:choose><c:when test="${ schedulerRow.connExceptionExists }">

@@ -39,7 +39,7 @@ $(document).ready(function() {
         <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>job</span><span style='color:#a65700; '>></span>
             <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>name</span><span style='color:#a65700; '>></span>minute_job<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>name</span><span style='color:#a65700; '>></span>
             <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>group</span><span style='color:#a65700; '>></span>DEFAULT<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>group</span><span style='color:#a65700; '>></span>
-            <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>job-class</span><span style='color:#a65700; '>></span>myschedule.job.sample.SimpleJob<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>job-class</span><span style='color:#a65700; '>></span>
+            <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>job-class</span><span style='color:#a65700; '>></span>myschedule.quartz.extra.job.LoggerJob<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>job-class</span><span style='color:#a65700; '>></span>
         <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>job</span><span style='color:#a65700; '>></span>        
         <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>trigger</span><span style='color:#a65700; '>></span>
             <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>simple</span><span style='color:#a65700; '>></span>
