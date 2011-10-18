@@ -13,7 +13,7 @@ import myschedule.quartz.extra.util.ProcessUtils.BackgroundProcess;
 
 import org.junit.Test;
 
-public class ProcessUtilsIT {
+public class ProcessUtilsTest {
 	@Test
 	public void testRunJava() throws Exception {
 		String[] javaCmdArgs = new String[]{ RunJavaMain.class.getName() };

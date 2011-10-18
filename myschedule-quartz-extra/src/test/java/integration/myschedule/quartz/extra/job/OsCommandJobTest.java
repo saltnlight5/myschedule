@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import integration.myschedule.quartz.extra.ResultJobListener;
-import integration.myschedule.quartz.extra.util.ProcessUtilsIT;
+import integration.myschedule.quartz.extra.util.ProcessUtilsTest;
 
 import java.io.File;
 
@@ -16,14 +16,14 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
-public class OsCommandJobIT {
+public class OsCommandJobTest {
 	@Test
 	public void testJavaOsCommandJob() {
 		String pathSep = File.separator;
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
 		String classpath = System.getProperty("java.class.path");
-		Class<?> mainClass = ProcessUtilsIT.RunBackgroundProcessMain.class;
+		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
 		String[] cmdArgs = new String[]{ javaBin, "-cp", classpath, mainClass.getName(), "500" };
 		
 		ResultJobListener.resetResult();
@@ -47,7 +47,7 @@ public class OsCommandJobIT {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
 		String classpath = System.getProperty("java.class.path");
-		Class<?> mainClass = ProcessUtilsIT.RunBackgroundProcessMain.class;
+		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
 		String[] cmdArgs = new String[]{ javaBin, "-cp", classpath, mainClass.getName(), "400" };
 		
 		ResultJobListener.resetResult();
@@ -73,7 +73,7 @@ public class OsCommandJobIT {
 		String javaHome = System.getProperty("java.home");
 		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
 		String classpath = System.getProperty("java.class.path");
-		Class<?> mainClass = ProcessUtilsIT.RunBackgroundProcessMain.class;
+		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
 		String[] cmdArgs = new String[]{ javaBin, "-cp", classpath, mainClass.getName(), "3000" };
 		
 		ResultJobListener.resetResult();

@@ -32,7 +32,7 @@ import org.quartz.spi.MutableTrigger;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class SchedulerTemplateIT {
+public class SchedulerTemplateTest {
 
 	@Test
 	public void testCalIntervalJob() throws Exception {

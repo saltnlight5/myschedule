@@ -8,7 +8,7 @@ import myschedule.quartz.extra.job.LoggerJob;
 
 import org.junit.Test;
 
-public class LoggerJobIT {
+public class LoggerJobTest {
 	@Test
 	public void testJob() {
 		ResultJobListener.resetResult();

@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 
-public class ScriptingJobIT {
+public class ScriptingJobTest {
 	@Test
 	public void testScriptTextJob() {
 		ResultJobListener.resetResult();

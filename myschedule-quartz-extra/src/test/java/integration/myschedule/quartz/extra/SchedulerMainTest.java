@@ -16,7 +16,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.spi.SchedulerPlugin;
 
-public class SchedulerMainIT {
+public class SchedulerMainTest {
 	public static ResultFile RESULT_FILE = new ResultFile("SchedulerMainIT.tmp");
 	
 	@Test

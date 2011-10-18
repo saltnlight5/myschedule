@@ -9,7 +9,7 @@ import java.util.List;
 import myschedule.quartz.extra.SchedulerTemplate;
 import org.junit.Test;
 
-public class ScriptingSchedulerPluginIT {
+public class ScriptingSchedulerPluginTest {
 	public static ResultFile RESULT_FILE = new ResultFile("ScriptingSchedulerPluginIT.tmp");
 	
 	@Test
