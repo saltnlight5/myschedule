@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * A holder for a viewName and dataMap that are used to render view.
@@ -32,7 +33,7 @@ public class ViewData {
 		this.dataMap.putAll(dataMap);
 	}
 	
-	public ViewData addNestedMap(String key, Object ... dataArray) {
+	public ViewData addNestedData(String key, Object ... dataArray) {
 		dataMap.put(key, mkMap(dataArray));		
 		return this;
 	}
@@ -42,7 +43,7 @@ public class ViewData {
 		return this;
 	}
 	
-	public ViewData addMap(Map<String, Object> dataMap) {
+	public ViewData addData(Map<String, Object> dataMap) {
 		this.dataMap.putAll(dataMap);
 		return this;
 	}
@@ -59,9 +60,69 @@ public class ViewData {
 		return dataMap;
 	}
 	
+	/**
+	 * Try to find data in dataMap and, if present, the request parameters and attribute, and session space. If
+	 * not found, it will return the defVal passed in.
+	 * 
+	 * @param key The key to search data with.
+	 * @return Found value or the defVal.
+	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getData(String key) {
-		return (T)dataMap.get(key);
+	public <T> T findData(String key, T defVal) {
+		Object result = null;
+		
+		// 1. Search this dataMap. 
+		result = dataMap.get(key);
+		if (result != null) {
+			return (T)result;
+		}
+		
+		// 2. Search the request if presents
+		if (request != null) {
+			String[] val = request.getParameterValues(key);
+			if (val != null) {
+				if (val.length == 1) {
+					return (T)val[0];
+				} else if (val.length > 1) {
+					return (T)val;
+				} else {
+					// Something is not right about the Web server b/c this should not happen.
+					throw new RuntimeException("We found a Http request parameter " + key + " that has zero " +
+							"length array value!");
+				}
+			}
+			
+			// 3. Search request attributes
+			result = request.getAttribute(key);
+			if (result != null) {
+				return (T)result;
+			}
+			
+			// 4. Search request session
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				result = session.getAttribute(key);
+				if (result != null) {
+					return (T)result;
+				}
+			}
+		}
+		return defVal;
+	}
+	
+	/**
+	 * Try to find data in this dataMap and, if present, the request parameters and attribute, and session space. If
+	 * not found, it will throw IllegalArgumentException.
+	 * 
+	 * @param key The key to search data with.
+	 * @return Found value.
+	 */
+	public <T> T findData(String key) {
+		T result = findData(key, null);
+		if (result == null) {
+			throw new IllegalArgumentException("No data found using key: " + key);
+		}
+		return result;
 	}
 	
 	public HttpServletRequest getRequest() {

@@ -71,7 +71,7 @@ public class DashboardHandlers {
 	protected ActionHandler configExampleHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String name = viewData.getData("name");
+			String name = viewData.findData("name");
 			logger.debug("Getting resource: {}", name);
 			ClassLoader classLoader = getClassLoader();
 			InputStream inStream = classLoader.getResourceAsStream("myschedule/config/examples/" + name);
@@ -96,11 +96,11 @@ public class DashboardHandlers {
 	protected ActionHandler createActionHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configPropsText = viewData.getData("configPropsText");	
+			String configPropsText = viewData.findData("configPropsText");	
 			ExceptionHolder eh = new ExceptionHolder();
 			SchedulerService<?> ss = schedulerConfigService.createSchedulerService(configPropsText, eh);
 			if (eh.hasException()) {
-				viewData.addNestedMap(PAGE_DATA_KEY,
+				viewData.addNestedData(PAGE_DATA_KEY,
 						"schedulerService", ss,
 						"initFailedExceptionString", ExceptionUtils.getFullStackTrace(eh.getException()));
 			} else {
@@ -108,7 +108,7 @@ public class DashboardHandlers {
 				SchedulerTemplate st = new SchedulerTemplate(schedulerService.getScheduler());
 				logger.info("New scheduler service configId {} has been saved. The scheduler name is {}", 
 						schedulerService.getSchedulerConfig().getConfigId(), st.getSchedulerName());
-				viewData.addNestedMap(PAGE_DATA_KEY, "schedulerService", schedulerService);
+				viewData.addNestedData(PAGE_DATA_KEY, "schedulerService", schedulerService);
 			}
 		}
 	};
@@ -155,10 +155,10 @@ public class DashboardHandlers {
 	protected ActionHandler modifyHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.getData("configId");
+			String configId = viewData.findData("configId");
 			String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(configId);
 			logger.debug("Modifying configId={}", configId);
-			viewData.addNestedMap(PAGE_DATA_KEY, 
+			viewData.addNestedData(PAGE_DATA_KEY, 
 					"configPropsText", configPropsText,
 					"configId", configId);
 		}
@@ -168,8 +168,8 @@ public class DashboardHandlers {
 	protected ActionHandler modifyActionHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.getData("configId");
-			String configPropsText = viewData.getData("configPropsText");
+			String configId = viewData.findData("configId");
+			String configPropsText = viewData.findData("configPropsText");
 			String schedulerName = null;
 			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
 			schedulerConfigService.modifySchedulerService(configId, configPropsText);
@@ -178,7 +178,7 @@ public class DashboardHandlers {
 			} else {
 				schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
 			}
-			viewData.addNestedMap(PAGE_DATA_KEY,
+			viewData.addNestedData(PAGE_DATA_KEY,
 					"schedulerName", schedulerName,
 					"configId", configId);
 		}
@@ -189,7 +189,7 @@ public class DashboardHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			HttpSession session = viewData.getRequest().getSession(true);
-			String configId = viewData.getData("configId");
+			String configId = viewData.findData("configId");
 			String schedulerName = null;
 			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
 			// We might be deleting a scheduler service that hasn't been initialized yet. so scheduler name 
@@ -204,7 +204,7 @@ public class DashboardHandlers {
 			session.removeAttribute(SessionSchedulerServiceFinder.SESSION_DATA_KEY);
 			logger.info("Removed scheduler configId {} and from session data.", configId);
 
-			viewData.addNestedMap(PAGE_DATA_KEY,
+			viewData.addNestedData(PAGE_DATA_KEY,
 					"schedulerName", schedulerName,
 					"configId", configId);
 		}
@@ -214,7 +214,7 @@ public class DashboardHandlers {
 	protected ActionHandler shutdownHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.getData("configId");
+			String configId = viewData.findData("configId");
 			QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
 			schedulerService.destroy();
 			viewData.setViewName("redirect:/dashboard/list");
@@ -225,7 +225,7 @@ public class DashboardHandlers {
 	protected ActionHandler initHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.getData("configId");
+			String configId = viewData.findData("configId");
 			QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
 			try {
 				schedulerService.init();
@@ -246,7 +246,7 @@ public class DashboardHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			HttpSession session = viewData.getRequest().getSession(true);
-			String configId = viewData.getData("configId");
+			String configId = viewData.findData("configId");
 			schedulerServiceFinder.switchSchedulerService(configId, session);
 			QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
 			if (schedulerService.isInited()) {
