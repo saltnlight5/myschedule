@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import myschedule.service.QuartzSchedulerService;
-import myschedule.web.SessionSchedulerServiceFinder;
 import myschedule.web.WebAppContextListener;
+import myschedule.web.session.SessionSchedulerServiceFinder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

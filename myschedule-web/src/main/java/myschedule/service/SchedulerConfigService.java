@@ -28,7 +28,11 @@ public class SchedulerConfigService extends AbstractService {
 	
 	protected SchedulerConfigDao schedulerConfigDao;
 	protected Set<String> daoConfigIds = new HashSet<String>(); // Ones loaded by this service only.
-	protected SchedulerServiceRepository schedulerServiceRepo = SchedulerServiceRepository.getInstance();
+	protected SchedulerServiceRepository schedulerServiceRepo;
+	
+	public void setSchedulerServiceRepo(SchedulerServiceRepository schedulerServiceRepo) {
+		this.schedulerServiceRepo = schedulerServiceRepo;
+	}
 	
 	public void setSchedulerConfigDao(SchedulerConfigDao schedulerConfigDao) {
 		this.schedulerConfigDao = schedulerConfigDao;

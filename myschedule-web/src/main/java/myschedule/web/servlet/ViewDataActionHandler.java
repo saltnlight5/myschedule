@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A simple ActionHandler implementation that will hide the Http request and response objects, and let subclass
  * handle the {@link ViewData} instead. Any data added into the ViewData will be available in the View rendering.
@@ -32,9 +35,9 @@ public class ViewDataActionHandler implements ActionHandler {
 	
 	public static final String DEFAULT_VIEW_NAME = "/index";
 
-	private static final String REQUEST_ATTRS = "attrs";
+	public static final String REQUEST_ATTRS = "attrs";
 
-	private static final String REQUEST_PARAMS = "params";
+	public static final String REQUEST_PARAMS = "params";
 	
 	protected String defaultViewName = DEFAULT_VIEW_NAME;
 	
@@ -43,6 +46,8 @@ public class ViewDataActionHandler implements ActionHandler {
 	protected boolean addRequestParametersToViewData = true;
 	
 	protected boolean useRequestKeys = false;
+	
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public ViewDataActionHandler() {
 	}
@@ -69,12 +74,12 @@ public class ViewDataActionHandler implements ActionHandler {
 		if (viewName.equals("")) {
 			viewName = getDefaultViewName();
 		}
-		ViewData viewData = createViewData(viewName, req);
+		ViewData viewData = createViewData(viewName, req, resp);
 		handleViewData(viewData);
 		return viewData;
 	}
 	
-	private ViewData createViewData(String viewName, HttpServletRequest req) {
+	protected ViewData createViewData(String viewName, HttpServletRequest req, HttpServletResponse resp) {
 		ViewData viewData = ViewData.view(viewName);
 		if (addRequestAttributesToViewData) {
 			Map<String, Object> reqAttrs = new HashMap<String, Object>();
@@ -94,7 +99,13 @@ public class ViewDataActionHandler implements ActionHandler {
 			Map<?, ?> paramMap = req.getParameterMap();
 			for (Map.Entry<?, ?> entry : paramMap.entrySet()){
 				String key = (String)entry.getKey();
-				reqParams.put(key, entry.getValue());
+				Object[] values = (Object[])entry.getValue();
+				if (values.length == 1) {
+					// If it's single parameter, store it as plain object rather than array.
+					reqParams.put(key, values[0]);
+				} else {
+					reqParams.put(key, values);
+				}				
 			}
 			if (useRequestKeys) {
 				viewData.addData(REQUEST_PARAMS, reqParams);
@@ -102,6 +113,11 @@ public class ViewDataActionHandler implements ActionHandler {
 				viewData.addMap(reqParams);
 			}
 		}
+		
+		// Auto save and expose these to subclass.
+		viewData.setRequest(req);
+		viewData.setResponse(resp);
+		
 		return viewData;
 	}
 

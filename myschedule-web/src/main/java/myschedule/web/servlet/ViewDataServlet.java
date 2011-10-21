@@ -32,15 +32,19 @@ import org.slf4j.LoggerFactory;
  */
 abstract public class ViewDataServlet extends HttpServlet {
 
-	private static final String JSP_NAME_SUFFIX = ".jsp";
-
 	private static final String JSP_NAME_PREFIX = "/WEB-INF/jsp";
+
+	private static final String JSP_NAME_SUFFIX = ".jsp";
 
 	private static final String REDIRECT_PREFIX = "redirect:";
 
 	private static final long serialVersionUID = 1L;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
+	protected String jspNamePrefix = JSP_NAME_PREFIX;
+	
+	protected String jspNameSuffix = JSP_NAME_SUFFIX;
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -64,20 +68,29 @@ abstract public class ViewDataServlet extends HttpServlet {
 
 	protected void processViewData(ViewData viewData, HttpServletRequest req, HttpServletResponse resp) 
 			throws ServletException, IOException {
+		if (viewData == null) {
+			return;
+		}
 		String viewName = viewData.getViewName();
 		logger.debug("View name: {}", viewName);
-		if (viewName != null && viewName.length() > 0) {
-			if (viewName.startsWith(REDIRECT_PREFIX)) {
-				String redirectName = viewName.substring(REDIRECT_PREFIX.length());
-				logger.debug("Redirect: {}", redirectName);
-				resp.sendRedirect(redirectName);
-			}
-			String servletPath = req.getServletPath();
-			String jspName = JSP_NAME_PREFIX + servletPath + viewName + JSP_NAME_SUFFIX;
-			logger.debug("Forward: {}", jspName);
-			transferViewDataToRequestAttr(viewData, req);
-			req.getRequestDispatcher(jspName).forward(req, resp);
+		if (viewName == null || viewName.equals("")) {
+			return;
 		}
+		
+		// Process viewName.
+		if (viewName.startsWith(REDIRECT_PREFIX)) {
+			String ctxPath = req.getContextPath();
+			String servletPath = req.getServletPath();
+			String redirectName = ctxPath + servletPath + viewName.substring(REDIRECT_PREFIX.length());
+			logger.debug("Redirect: {}", redirectName);
+			resp.sendRedirect(redirectName);
+			return;
+		}
+		String servletPath = req.getServletPath();
+		String jspName = jspNamePrefix + servletPath + viewName + jspNameSuffix;
+		logger.debug("Forward: {}", jspName);
+		transferViewDataToRequestAttr(viewData, req);
+		req.getRequestDispatcher(jspName).forward(req, resp);
 	}
 
 	protected void transferViewDataToRequestAttr(ViewData viewData, HttpServletRequest req) {

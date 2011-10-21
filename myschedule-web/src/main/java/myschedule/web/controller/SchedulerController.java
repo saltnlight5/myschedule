@@ -15,7 +15,7 @@ import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
 import myschedule.service.Utils;
 import myschedule.service.Utils.Getter;
-import myschedule.web.SessionSchedulerServiceFinder;
+import myschedule.web.session.SessionSchedulerServiceFinder;
 
 import org.quartz.JobDetail;
 import org.quartz.ListenerManager;

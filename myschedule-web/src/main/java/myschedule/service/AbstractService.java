@@ -2,6 +2,9 @@ package myschedule.service;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * An abstract Service implementation that provided basic synchronized flags for started 
  * and initialized state. Subclass should use the initService/startService/stopService/destroyService.
@@ -11,8 +14,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Zemian Deng
  */
-public abstract class AbstractService implements Service {
-
+abstract public class AbstractService implements Service {
+	
+	protected Logger logger = LoggerFactory.getLogger(getClass());	
 	protected AtomicBoolean started = new AtomicBoolean(false);
 	protected AtomicBoolean inited = new AtomicBoolean(false);
 	

@@ -5,8 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import myschedule.service.SchedulerServiceRepository;
-import myschedule.web.SessionSchedulerServiceFinder;
 import myschedule.web.WebAppContextListener;
+import myschedule.web.session.SessionSchedulerServiceFinder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -6,52 +6,29 @@
 	version="2.5">
 
 	<description>MySchedule - A Quartz Scheduler Dashboard</description>
-	   
-	<!-- Spring Application Context
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/application-context.xml</param-value>
-	</context-param> -->
 	
 	<!-- MySchedule Web App Context Listener -->
 	<listener>
 		<listener-class>myschedule.web.WebAppContextListener</listener-class>
 	</listener>
 	
-	<!-- Spring MVC Dispatcher Servlet
+	<!-- MySchedule Servlet Mappings -->
 	<servlet>
-		<servlet-name>main-dispatcher</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/spring/main-dispatcher-context.xml</param-value>
-		</init-param>
+		<servlet-name>MainServlet</servlet-name>
+		<servlet-class>myschedule.web.servlet.app.MainServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>main-dispatcher</servlet-name>
+		<servlet-name>MainServlet</servlet-name>
 		<url-pattern>/main/*</url-pattern>
-	</servlet-mapping> -->
-	
-	<!-- MySchedule Servlet Mappings -->
-	<servlet>
-		<servlet-name>DemoServlet</servlet-name>
-		<servlet-class>myschedule.web.servlet.app.DemoServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DemoServlet</servlet-name>
-		<url-pattern>/demo/*</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>DashboardServlet</servlet-name>
-		<servlet-class>myschedule.web.servlet.app.DashboardServlet</servlet-class>
+		<servlet-name>DebugServlet</servlet-name>
+		<servlet-class>myschedule.web.servlet.app.DebugServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>DashboardServlet</servlet-name>
-		<url-pattern>/dashboard/*</url-pattern>
+		<servlet-name>DebugServlet</servlet-name>
+		<url-pattern>/debug/*</url-pattern>
 	</servlet-mapping>
 	
 	<!-- Session timeout in minutes. 1440 mins = 24 hours. -->
@@ -61,6 +38,6 @@
 
 	<error-page>
 		<exception-type>java.lang.Exception</exception-type>
-		<location>/WEB-INF/jsp/error.jsp</location>
+		<location>/WEB-INF/jsp/main/error.jsp</location>
 	</error-page>	
 </web-app>

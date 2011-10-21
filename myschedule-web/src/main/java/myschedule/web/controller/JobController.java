@@ -17,7 +17,7 @@ import myschedule.quartz.extra.XmlJobLoader;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.QuartzSchedulerService;
-import myschedule.web.SessionSchedulerServiceFinder;
+import myschedule.web.session.SessionSchedulerServiceFinder;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;

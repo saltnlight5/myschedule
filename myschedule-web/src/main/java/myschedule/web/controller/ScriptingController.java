@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.QuartzSchedulerService;
 import myschedule.service.ScriptingService;
-import myschedule.web.SessionSchedulerServiceFinder;
+import myschedule.web.session.SessionSchedulerServiceFinder;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;

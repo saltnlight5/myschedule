@@ -78,12 +78,5 @@ public class ViewDataTest {
 		} catch (IllegalArgumentException e) {
 			assertThat(e.getMessage(), containsString("Key must be a String type, but got: "));
 		}
-		
-		try {
-			ViewData.viewData(null, "test", "foo");
-			Assert.fail("We should not allow null view name.");
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), containsString("View name should not be null."));
-		}
 	}
 }
