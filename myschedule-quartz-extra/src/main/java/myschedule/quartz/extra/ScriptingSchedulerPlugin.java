@@ -1,8 +1,13 @@
 package myschedule.quartz.extra;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -39,6 +44,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	
+	private static final String CLASSPATH_PREFIX = "classpath:";
+
 	private static final Logger logger = LoggerFactory.getLogger(ScriptingSchedulerPlugin.class);
 	
 	protected String name;
@@ -113,23 +120,46 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	        runScript(shutdownScript);
 		}
 	}
+	
+	protected URL getResource(String resName) {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		return loader.getResource(resName);
+	}
 
 	protected void runScript(String filename) {
-		FileReader reader = null;
+		logger.debug("Run script {}", filename);
+		URL url = null;
+		Reader reader = null;
 		try {
-			reader = new FileReader(filename);
+			if (filename.startsWith(CLASSPATH_PREFIX)) {
+				String resName = filename.substring(CLASSPATH_PREFIX.length());
+				url = getResource(resName);
+			} else {
+				try {
+					url = new URL(filename);
+				} catch (MalformedURLException e) {
+					url = new File(filename).toURI().toURL();
+				}
+			}
+			logger.debug("Reading url {}", url);
+			InputStream inStream = url.openStream();
+			reader = new InputStreamReader(inStream);
 			scriptEngine.eval(reader, scriptContext);
 		} catch (FileNotFoundException e) {
 			throw new QuartzRuntimeException("Failed to find script " + filename, e);
 		} catch (ScriptException e) {
 			throw new QuartzRuntimeException("Failed to run script " + filename, e);
+		} catch (IOException e) {
+			throw new QuartzRuntimeException("Failed to read script " + filename, e);
 		} finally {
 			try {
-				reader.close();
+				if (reader != null) {
+					reader.close();
+				}
 			} catch (IOException e) {
 				throw new QuartzRuntimeException("Failed to close reader for script " + filename, e);
 			}
 		}
-		logger.info("Script ran successfully. Filename: {}", filename);
+		logger.info("Script {} ran successfully.", filename);
 	}
 }
