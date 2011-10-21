@@ -27,7 +27,6 @@ public class Application extends AbstractService {
 	// Application static configuration
 	// ================================
 	protected ServiceContainer serviceContainer = new ServiceContainer();
-	protected UrlRequestMapper urlRequestMapper = new UrlRequestMapper();
 	
 	@Override
 	protected void startService() {

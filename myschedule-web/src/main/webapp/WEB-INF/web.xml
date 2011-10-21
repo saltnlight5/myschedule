@@ -7,21 +7,21 @@
 
 	<description>MySchedule - A Quartz Scheduler Dashboard</description>
 	   
-	<!-- Spring Application Context -->
+	<!-- Spring Application Context
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>/WEB-INF/spring/application-context.xml</param-value>
-	</context-param>
+	</context-param> -->
 	
 	<!-- MySchedule Web App Context Listener -->
 	<listener>
 		<listener-class>myschedule.web.WebAppContextListener</listener-class>
 	</listener>
 	
-	<!-- Spring MVC Dispatcher Servlet -->
+	<!-- Spring MVC Dispatcher Servlet
 	<servlet>
 		<servlet-name>main-dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -31,10 +31,27 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>main-dispatcher</servlet-name>
 		<url-pattern>/main/*</url-pattern>
+	</servlet-mapping> -->
+	
+	<!-- MySchedule Servlet Mappings -->
+	<servlet>
+		<servlet-name>DemoServlet</servlet-name>
+		<servlet-class>myschedule.web.servlet.DemoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DemoServlet</servlet-name>
+		<url-pattern>/demo/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DashboardServlet</servlet-name>
+		<servlet-class>myschedule.web.servlet.DashboardServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DashboardServlet</servlet-name>
+		<url-pattern>/dashboard/*</url-pattern>
 	</servlet-mapping>
 	
 	<!-- Session timeout in minutes. 1440 mins = 24 hours. -->
