@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ViewData {
-	public static final String VIEW_DATA_KEY = "v";
-	
 	protected String viewName;
 	protected Map<String, Object> dataMap = new HashMap<String, Object>();
 	
@@ -20,7 +18,7 @@ public class ViewData {
 	
 	public ViewData addData(Object ... dataArray) {
 		if (dataArray.length % 2 != 0) {
-			throw new IllegalArgumentException("Data must come in pair: key, value.");
+			throw new IllegalArgumentException("Data must come in pair: key and value.");
 		}
 		
 		for (int i = 0; i < dataArray.length; i++) {
@@ -36,6 +34,10 @@ public class ViewData {
 		return viewName;
 	}
 	
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+	
 	public Map<String, Object> getDataMap() {
 		return dataMap;
 	}
@@ -45,5 +47,10 @@ public class ViewData {
 	}
 	public static ViewData viewData(String viewName, Object ... dataArray) {
 		return new ViewData(viewName, dataArray);
+	}
+	
+	@Override
+	public String toString() {
+		return "ViewData[" + viewName + ", " + dataMap + "]";
 	}
 }
