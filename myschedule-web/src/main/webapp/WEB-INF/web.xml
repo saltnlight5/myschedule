@@ -39,7 +39,7 @@
 	<!-- MySchedule Servlet Mappings -->
 	<servlet>
 		<servlet-name>DemoServlet</servlet-name>
-		<servlet-class>myschedule.web.servlet.DemoServlet</servlet-class>
+		<servlet-class>myschedule.web.servlet.app.DemoServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DemoServlet</servlet-name>
@@ -47,7 +47,7 @@
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DashboardServlet</servlet-name>
-		<servlet-class>myschedule.web.servlet.DashboardServlet</servlet-class>
+		<servlet-class>myschedule.web.servlet.app.DashboardServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DashboardServlet</servlet-name>
@@ -61,6 +61,6 @@
 
 	<error-page>
 		<exception-type>java.lang.Exception</exception-type>
-		<location>/WEB-INF/views/error.jsp</location>
+		<location>/WEB-INF/jsp/error.jsp</location>
 	</error-page>	
 </web-app>

@@ -189,7 +189,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>myschedule-${pom.version}</finalName>		
+		<finalName>myschedule-${project.version}</finalName>		
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

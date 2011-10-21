@@ -1,10 +1,14 @@
-package myschedule.web.servlet;
+package myschedule.web.servlet.app;
 
-import javax.servlet.http.HttpServletRequest;
+import myschedule.web.servlet.ActionHandler;
+import myschedule.web.servlet.ActionHandlerServlet;
+import myschedule.web.servlet.ViewData;
+import myschedule.web.servlet.ViewDataActionHandler;
+
 
 
 /**
- *
+ * Just a demo. Not in use for project.
 
  * <p>Here are some general servlet request infromation:
  * <pre>
@@ -26,20 +30,15 @@ public class DemoServlet extends ActionHandlerServlet {
 
 	private static final long serialVersionUID = 1L;
 
-//	@Override
-//	protected ViewData processRequest(HttpServletRequest req) {
-//		logger.info("Just a demo");
-//		return ViewData.viewData("demo/test", "message", "ServerTime=" + new java.util.Date());
-//	}
-	
-	public DemoServlet() {
-		addActionHandler("/demo", new SimpleActionHandler("/demo/index"));
-		addActionHandler("/demo/test", testAction);
+	@Override
+	public void init() {
+		addActionHandler("", new ViewDataActionHandler());
+		addActionHandler("/test", testAction);
 	}
 	
-	ActionHandler testAction = new SimpleActionHandler() {
+	protected ActionHandler testAction = new ViewDataActionHandler() {
 		@Override
-		protected void processAction(String actionPath, ViewData viewData) {
+		protected void handleViewData(ViewData viewData) {
 			viewData.addData("message", "ServerTime=" + new java.util.Date());
 		}			
 	};

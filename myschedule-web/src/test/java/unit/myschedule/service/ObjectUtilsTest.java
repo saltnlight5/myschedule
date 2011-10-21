@@ -1,9 +1,11 @@
-package myschedule.service;
+package unit.myschedule.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import myschedule.service.Utils;
 
 import org.junit.Test;
 
