@@ -2,7 +2,7 @@ package myschedule.web.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class DashboardServlet extends JspViewServlet {
+public class DashboardServlet extends ViewDataServlet {
 
 	private static final long serialVersionUID = 1L;
 

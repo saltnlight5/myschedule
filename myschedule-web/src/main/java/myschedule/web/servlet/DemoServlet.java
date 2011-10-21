@@ -22,7 +22,7 @@ Req getRequestURL: http://localhost:8080/myschedule-web/dashboard/foo
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class DemoServlet extends JspViewServlet {
+public class DemoServlet extends ViewDataServlet {
 
 	private static final long serialVersionUID = 1L;
 

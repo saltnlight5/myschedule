@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public abstract class JspViewServlet extends HttpServlet {
+public abstract class ViewDataServlet extends HttpServlet {
 
 	private static final String JSP_NAME_SUFFIX = ".jsp";
 
