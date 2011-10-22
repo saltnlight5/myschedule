@@ -96,12 +96,6 @@
 			<artifactId>quartz</artifactId>
 			<version>${quartz.version}</version>
 		</dependency>
-		<dependency>
-		    <groupId>c3p0</groupId>
-		    <artifactId>c3p0</artifactId>
-		    <version>0.9.1.2</version>
-		    <scope>runtime</scope>
-		</dependency>
 	</dependencies>
 	
 	<build>
@@ -170,6 +164,13 @@
 					<version>1.8.2</version>
 				</dependency>
 				
+				<!-- Quartz database conn pool -->
+				<dependency>
+				    <groupId>c3p0</groupId>
+				    <artifactId>c3p0</artifactId>
+				    <version>0.9.1.2</version>
+				    <scope>runtime</scope>
+				</dependency>
 				
 				<!-- Quartz MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.) -->
 				<dependency>
