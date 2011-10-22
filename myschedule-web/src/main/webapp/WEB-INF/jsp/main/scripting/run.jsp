@@ -73,13 +73,13 @@ $(document).ready(function() {
 </c:if>
 
 <form method="post" action="${ mainPath }/scripting/run-action">
+<textarea  style="width: 100%; height: 15em;" name="scriptText">${ data.groovyScriptText }</textarea>
+<br/>
 Scripting Language: <select name="scriptEngineName">
 <c:forEach items="${ data.scriptEngineNames }" var="name">
 <option value="${ name }">${ name }</option>
 </c:forEach>
 </select>
-<br/>
-<textarea  style="width: 100%; height: 15em;" name="scriptText">${ data.groovyScriptText }</textarea>
 <br/>
 <input type="submit" value="Run"></input>
 </form>
