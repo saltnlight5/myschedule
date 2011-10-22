@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpSession;
+
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -26,6 +28,7 @@ import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.servlet.app.handler.DashboardHandlers.ListPageData.SchedulerRow;
 import myschedule.web.servlet.app.handler.pagedata.PageData;
 import myschedule.web.session.SessionSchedulerServiceFinder;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -94,17 +97,18 @@ public class DashboardHandlers {
 			String configPropsText = viewData.findData("configPropsText");	
 			ExceptionHolder eh = new ExceptionHolder();
 			SchedulerService<?> ss = schedulerConfigService.createSchedulerService(configPropsText, eh);
+			Map<String, Object> map = ViewData.mkMap();
 			if (eh.hasException()) {
-				viewData.addNestedData("data",
-						"schedulerService", ss,
-						"initFailedExceptionString", ExceptionUtils.getFullStackTrace(eh.getException()));
+				map.put("schedulerService", ss);
+				map.put("initFailedExceptionString", ExceptionUtils.getFullStackTrace(eh.getException()));
 			} else {
 				QuartzSchedulerService schedulerService = (QuartzSchedulerService)ss;
 				SchedulerTemplate st = new SchedulerTemplate(schedulerService.getScheduler());
 				logger.info("New scheduler service configId {} has been saved. The scheduler name is {}", 
 						schedulerService.getSchedulerConfig().getConfigId(), st.getSchedulerName());
-				viewData.addNestedData("data", "schedulerService", schedulerService);
+				map.put("schedulerService", schedulerService);
 			}
+			viewData.addData("data", map);
 		}
 	};
 		
@@ -153,9 +157,9 @@ public class DashboardHandlers {
 			String configId = viewData.findData("configId");
 			String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(configId);
 			logger.debug("Modifying configId={}", configId);
-			viewData.addNestedData("data", 
+			viewData.addData("data", ViewData.mkMap(
 					"configPropsText", configPropsText,
-					"configId", configId);
+					"configId", configId));
 		}
 	};
 	
@@ -173,9 +177,9 @@ public class DashboardHandlers {
 			} else {
 				schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
 			}
-			viewData.addNestedData("data",
+			viewData.addData("data", ViewData.mkMap( 
 					"schedulerName", schedulerName,
-					"configId", configId);
+					"configId", configId));
 		}
 	};
 		
@@ -199,9 +203,9 @@ public class DashboardHandlers {
 			session.removeAttribute(SessionSchedulerServiceFinder.SESSION_DATA_KEY);
 			logger.info("Removed scheduler configId {} and from session data.", configId);
 
-			viewData.addNestedData("data",
+			viewData.addData("data", ViewData.mkMap(
 					"schedulerName", schedulerName,
-					"configId", configId);
+					"configId", configId));
 		}
 	};
 	

@@ -33,11 +33,6 @@ public class ViewData {
 		this.dataMap.putAll(dataMap);
 	}
 	
-	public ViewData addNestedData(String key, Object ... dataArray) {
-		dataMap.put(key, mkMap(dataArray));		
-		return this;
-	}
-	
 	public ViewData addData(Object ... dataArray) {
 		dataMap.putAll(mkMap(dataArray));		
 		return this;

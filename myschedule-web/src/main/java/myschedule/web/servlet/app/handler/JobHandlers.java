@@ -10,7 +10,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpSession;
+
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.SchedulerTemplate;
@@ -25,6 +27,7 @@ import myschedule.web.servlet.app.handler.pagedata.JobListPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobTriggerDetailPageData;
 import myschedule.web.session.SessionSchedulerServiceFinder;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
@@ -63,7 +66,7 @@ public class JobHandlers {
 			QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 			SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 			List<JobExecutionContext> jobs = schedulerTemplate.getCurrentlyExecutingJobs();
-			viewData.addNestedData("data", "jobExecutionContextList", jobs);
+			viewData.addData("data", ViewData.mkMap("jobExecutionContextList", jobs));
 		}
 	};
 	
@@ -90,7 +93,7 @@ public class JobHandlers {
 			for (String name : names) {
 				calendars.add(schedulerTemplate.getCalendar(name));
 			}
-			viewData.addNestedData("data", "calendarNames", names, "calendars", calendars);
+			viewData.addData("data", ViewData.mkMap("calendarNames", names, "calendars", calendars));
 		}
 	};
 
@@ -129,7 +132,7 @@ public class JobHandlers {
 			SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 			JobDetail jobDetail = schedulerTemplate.getJobDetail(JobKey.jobKey(jobName, jobGroup));
 			List<? extends Trigger> triggers = schedulerTemplate.deleteJobAndGetTriggers(JobKey.jobKey(jobName, jobGroup));
-			viewData.addNestedData("data", "jobDetail", jobDetail, "triggers", triggers);
+			viewData.addData("data", ViewData.mkMap("jobDetail", jobDetail, "triggers", triggers));
 		}
 	};
 	
@@ -175,10 +178,10 @@ public class JobHandlers {
 				viewData.addData("data", data);
 			} catch (Exception e) {
 				viewData.setViewName("/job/load-xml");
-				viewData.addNestedData("data", 
+				viewData.addData("data", ViewData.mkMap( 
 						"xml", xml,
 						"errorMessage", ExceptionUtils.getMessage(e),
-						"fullStackTrace", ExceptionUtils.getFullStackTrace(e));
+						"fullStackTrace", ExceptionUtils.getFullStackTrace(e)));
 			} finally {
 				if (inStream != null) {
 					try {

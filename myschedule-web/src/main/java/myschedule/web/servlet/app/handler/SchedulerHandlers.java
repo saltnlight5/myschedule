@@ -72,10 +72,10 @@ public class SchedulerHandlers {
 			String configId = ss.getSchedulerConfig().getConfigId();
 			String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(configId);
 			
-			viewData.addNestedData("data",
+			viewData.addData("data", ViewData.mkMap(
 				"configPropsText", configPropsText,
 				"configId", configId,
-				"isStandby", st.isInStandbyMode());
+				"isStandby", st.isInStandbyMode()));
 		}
 	};
 
@@ -93,10 +93,10 @@ public class SchedulerHandlers {
 			} else {
 				schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
 			}
-			viewData.addNestedData("data", 
+			viewData.addData("data", ViewData.mkMap( 
 				"configId", configId,
 				"schedulerService", ss,
-				"schedulerName", schedulerName);
+				"schedulerName", schedulerName));
 		}
 	};
 	
@@ -155,7 +155,7 @@ public class SchedulerHandlers {
 			}
 			st.pauseAll();
 			logger.info("Paused {} triggers in scheduler {}.", nonPausedTriggers.size(), st.getSchedulerName());
-			viewData.addNestedData("data", "triggers", nonPausedTriggers);
+			viewData.addData("data",  ViewData.mkMap("triggers", nonPausedTriggers));
 		}
 	};
 	
@@ -169,7 +169,7 @@ public class SchedulerHandlers {
 			List<Trigger> pausedTriggers = st.getPausedTriggers();
 			st.resumeAllTriggers();
 			logger.info("Resumed {} triggers in scheduler {}.", pausedTriggers.size(), st.getSchedulerName());
-			viewData.addNestedData("data", "triggers", pausedTriggers);
+			viewData.addData("data",  ViewData.mkMap("triggers", pausedTriggers));
 		}
 	};
 	
