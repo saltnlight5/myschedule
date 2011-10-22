@@ -78,7 +78,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listCalendarHandler = new ViewDataActionHandler() {
+	protected ActionHandler listCalendarsHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			HttpSession session = viewData.getRequest().getSession(true);
@@ -113,7 +113,7 @@ public class JobHandlers {
 			} catch (ErrorCodeException e) {
 				// Job no longer exists, and we allow this scenario, so do nothing. 
 			}
-			viewData.addNestedData("data", map);
+			viewData.addData("data", map);
 		}
 	};
 
@@ -171,10 +171,10 @@ public class JobHandlers {
 				data.setTriggerGroupsToNeverDelete(loader.getTriggerGroupsToNeverDelete());
 				data.setLoadedJobs(getJobDetailFullNames(loader.getLoadedJobs()));
 				data.setLoadedTriggers(getTriggerFullNames(loader.getLoadedTriggers()));
-				viewData.setViewName("job/load-xml-action");
+				viewData.setViewName("/job/load-xml-action");
 				viewData.addData("data", data);
 			} catch (Exception e) {
-				viewData.setViewName("job/load-xml");
+				viewData.setViewName("/job/load-xml");
 				viewData.addNestedData("data", 
 						"xml", xml,
 						"errorMessage", ExceptionUtils.getMessage(e),
@@ -225,7 +225,7 @@ public class JobHandlers {
 			HttpSession session = viewData.getRequest().getSession(true);
 			String triggerName = viewData.findData("triggerName");
 			String triggerGroup = viewData.findData("triggerGroup");
-			Integer fireTimesCount = viewData.findData("fireTimesCount");
+			int fireTimesCount = Integer.parseInt(viewData.findData("fireTimesCount", "20"));
 			QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
 			SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
 			Trigger trigger = st.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));

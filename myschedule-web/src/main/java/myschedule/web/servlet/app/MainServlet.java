@@ -41,11 +41,13 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/job/list", jobHandlers.getListHandler());
 		addActionHandler("/job/delete", jobHandlers.getDeleteHandler());
 		addActionHandler("/job/job-detail", jobHandlers.getJobDetailHandler());
-		addActionHandler("/job/list-calendar", jobHandlers.getListCalendarHandler());
+		addActionHandler("/job/list-calendars", jobHandlers.getListCalendarsHandler());
 		addActionHandler("/job/list-executing-jobs", jobHandlers.getListExecutingJobsHandler());
 		addActionHandler("/job/list-no-trigger-jobs", jobHandlers.getListNoTriggerJobsHandler());
 		addActionHandler("/job/load-xml", jobHandlers.getLoadXmlHandler());
+		addActionHandler("/job/load-xml-action", jobHandlers.getLoadXmlActionHandler());
 		addActionHandler("/job/run-job", jobHandlers.getRunJobHandler());
+		addActionHandler("/job/unschedule", jobHandlers.getUnscheduleHandler());
 		addActionHandler("/job/scheduler-down", jobHandlers.getSchedulerDownHandler());
 		addActionHandler("/job/trigger-detail", jobHandlers.getTriggerDetailHandler());
 		
@@ -56,6 +58,7 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/scheduler/pause-all-triggers", schedulerHandlers.getPauseAllTriggersHandler());
 		addActionHandler("/scheduler/resume-all-triggers", schedulerHandlers.getResumeAllTriggersHandler());
 		addActionHandler("/scheduler/standby", schedulerHandlers.getStandbyHandler());
+		addActionHandler("/scheduler/start", schedulerHandlers.getStartHandler());
 		addActionHandler("/scheduler/summary", schedulerHandlers.getSummaryHandler());
 		
 		addActionHandler("/scripting/run", scriptingHandlers.getRunHandler());
