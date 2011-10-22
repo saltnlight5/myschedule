@@ -19,8 +19,7 @@ $(document).ready(function() {
 <div id="page-container">
 <h1>Scheduler Scripting</h1>
 
-<p>This is for the power user who want to manipulate the scheduler with 
-<a href="http://groovy.codehaus.org">Groovy</a> scripting.</p>
+<p>This is for the power user who want to manipulate the scheduler with a ScriptingEngine.</p>
 
 <a id="show-help" href="#">Show an example</a>
 <div id="help">
@@ -31,7 +30,7 @@ scheduler           An instance of myschedule.quartz.extra.SchedulerTemplate tha
 webOut              An instance of java.io.PrintWriter to allow script to display text output back to web page for debug purpose.
 </pre>
 
-<p>For example, here is how you add a new job to the scheduler that runs every MON-FRI at 8am.</p>
+<p>For example, using Groovy, here is how you add a new job to the scheduler that runs every MON-FRI at 8am.</p>
 <pre>
 import myschedule.quartz.extra.job.*
 dataMap = [
@@ -46,12 +45,6 @@ webOut.println('MyDailyJob has been scheduled. Next fire time: ' + nextFireTime)
 </pre>
 
 You can find more <a href="http://code.google.com/p/myschedule/wiki/ScriptingScheduler">examples here.</a>
-
-<div class="warning">
-Warning: Groovy is a full featured programming language on top of Java. There is no 
-restriction on what you can do with Groovy here. So do not do anything destructive such
-as deleting files on system etc!
-</div>
 
 </div><!-- div.help -->
 
