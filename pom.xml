@@ -49,7 +49,72 @@
 		<developerConnection>scm:hg:file:///${basedir}</developerConnection>
 		<url>http://code.google.com/p/myschedule/source/browse</url>
 	</scm>
-
+		
+	<dependencies>
+		<!-- Getter and Setter Generator -->	
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>0.10.1</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Testing libraries -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>1.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- Logging libraries -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.3</version>
+		</dependency>		
+		 				
+		<!-- Quartz library -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>c3p0</groupId>
+		    <artifactId>c3p0</artifactId>
+		    <version>0.9.1.2</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
+		<!-- Quartz Oracle and JDBC Driver
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-oracle</artifactId>
+			<version>2.0.2</version>
+	      	<scope>runtime</scope>
+		</dependency>
+	    <dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc5</artifactId>
+			<version>11.2.0</version>
+			<scope>runtime</scope>
+	    </dependency>
+	    -->
+	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -58,9 +123,11 @@
 				<version>2.5</version>
 				<configuration>
 					<disableXmlReport>true</disableXmlReport>
+					<!-- Include only unit tests
 					<includes>
 						<include>unit/**/*Test.java</include>
 					</includes>
+					-->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -94,6 +161,7 @@
 						<version>2.5</version>
 						<configuration>
 							<disableXmlReport>true</disableXmlReport>
+							<!-- Include only integration tests -->
 							<includes>
 								<include>integration/**/*Test.java</include>
 							</includes>
