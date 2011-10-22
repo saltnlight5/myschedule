@@ -39,8 +39,28 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/dashboard/switch-scheduler", dashboardHandlers.getSwitchSchedulerHandler());
 		
 		addActionHandler("/job/list", jobHandlers.getListHandler());
+		addActionHandler("/job/delete", jobHandlers.getDeleteHandler());
+		addActionHandler("/job/job-detail", jobHandlers.getJobDetailHandler());
+		addActionHandler("/job/list-calendar", jobHandlers.getListCalendarHandler());
+		addActionHandler("/job/list-executing-jobs", jobHandlers.getListExecutingJobsHandler());
+		addActionHandler("/job/list-no-trigger-jobs", jobHandlers.getListNoTriggerJobsHandler());
+		addActionHandler("/job/load-xml", jobHandlers.getLoadXmlHandler());
+		addActionHandler("/job/run-job", jobHandlers.getRunJobHandler());
+		addActionHandler("/job/scheduler-down", jobHandlers.getSchedulerDownHandler());
+		addActionHandler("/job/trigger-detail", jobHandlers.getTriggerDetailHandler());
+		
 		addActionHandler("/scheduler/detail", schedulerHandlers.getDetailHandler());
+		addActionHandler("/scheduler/listeners", schedulerHandlers.getListenersHandler());
+		addActionHandler("/scheduler/modify", schedulerHandlers.getModifyHandler());
+		addActionHandler("/scheduler/modify-action", schedulerHandlers.getModifyActionHandler());
+		addActionHandler("/scheduler/pause-all-triggers", schedulerHandlers.getPauseAllTriggersHandler());
+		addActionHandler("/scheduler/resume-all-triggers", schedulerHandlers.getResumeAllTriggersHandler());
+		addActionHandler("/scheduler/standby", schedulerHandlers.getStandbyHandler());
+		addActionHandler("/scheduler/summary", schedulerHandlers.getSummaryHandler());
+		
 		addActionHandler("/scripting/run", scriptingHandlers.getRunHandler());
+		addActionHandler("/scripting/run-action", scriptingHandlers.getRunActionHandler());
+		
 		addActionHandler("/about", new ViewDataActionHandler());
 	}	
 }

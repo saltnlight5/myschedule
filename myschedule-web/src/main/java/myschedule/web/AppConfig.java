@@ -3,14 +3,11 @@ package myschedule.web;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-
 import lombok.Getter;
 import myschedule.service.AbstractService;
 import myschedule.service.FileSchedulerConfigDao;
-import myschedule.service.SchedulerConfigDao;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerServiceRepository;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
@@ -45,7 +42,7 @@ public class AppConfig extends AbstractService {
 	@Getter
 	protected SchedulerServiceRepository schedulerServiceRepo;
 	@Getter
-	protected SchedulerConfigDao schedulerConfigDao;
+	protected FileSchedulerConfigDao schedulerConfigDao;
 	@Getter
 	protected SchedulerConfigService schedulerConfigService;
 	@Getter
@@ -105,11 +102,10 @@ public class AppConfig extends AbstractService {
 	@Override
 	protected void startService() {
 		schedulerServiceRepo = SchedulerServiceRepository.getInstance();
-		
-		FileSchedulerConfigDao fileSchedulerConfigDao = new FileSchedulerConfigDao();
+
 		String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
-		fileSchedulerConfigDao.setStoreDir(new File(myScheduleDir));
-		schedulerConfigDao = fileSchedulerConfigDao;
+		schedulerConfigDao = new FileSchedulerConfigDao();
+		schedulerConfigDao.setStoreDir(new File(myScheduleDir));
 		
 		schedulerConfigService = new SchedulerConfigService();
 		schedulerConfigService.setSchedulerConfigDao(schedulerConfigDao);
@@ -127,15 +123,20 @@ public class AppConfig extends AbstractService {
 		jobHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
 		
 		schedulerHandlers = new SchedulerHandlers();
+		schedulerHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
+		schedulerHandlers.setSchedulerConfigService(schedulerConfigService);
+		schedulerHandlers.setSchedulerServiceRepo(schedulerServiceRepo);
 		
 		scriptingHandlers = new ScriptingHandlers();
+		scriptingHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
 		
-		fileSchedulerConfigDao.start();
+		schedulerConfigDao.start();
 		schedulerConfigService.start();
 	}
 	
 	@Override
 	protected void stopService() {
 		schedulerConfigService.stop();
+		schedulerConfigDao.stop();
 	}
 }

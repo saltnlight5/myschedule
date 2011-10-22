@@ -1,4 +1,4 @@
-package myschedule.web.controller;
+package myschedule.web.servlet.app.handler.pagedata;
 
 import java.util.Date;
 import java.util.List;
