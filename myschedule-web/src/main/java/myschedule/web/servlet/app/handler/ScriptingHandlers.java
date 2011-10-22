@@ -2,13 +2,18 @@ package myschedule.web.servlet.app.handler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleScriptContext;
 import javax.servlet.http.HttpSession;
+
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.SchedulerTemplate;
@@ -19,6 +24,7 @@ import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.session.SessionSchedulerServiceFinder;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class ScriptingHandlers {
@@ -27,7 +33,22 @@ public class ScriptingHandlers {
 	protected SessionSchedulerServiceFinder schedulerServiceFinder;
 		
 	@Getter
-	protected ActionHandler runHandler = new ViewDataActionHandler();
+	protected ActionHandler runHandler = new ViewDataActionHandler(){
+		@Override
+		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
+			List<String> scriptEngineNames = new ArrayList<String>();
+			ScriptEngineManager factory = new ScriptEngineManager();
+			for (ScriptEngineFactory fac : factory.getEngineFactories()) {
+				String name = fac.getLanguageName();
+				// JavaScript is a better name.
+				if (name.equals("ECMAScript")) {
+					name = "JavaScript";
+				}
+				scriptEngineNames.add(name);
+			}
+			viewData.addData("data", ViewData.mkMap("scriptEngineNames", scriptEngineNames));
+		}
+	};
 	
 	@Getter
 	protected ActionHandler runActionHandler = new ViewDataActionHandler() {
