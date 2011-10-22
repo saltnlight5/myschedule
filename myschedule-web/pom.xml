@@ -65,6 +65,7 @@
 			<artifactId>groovy</artifactId>
 			<version>1.8.2</version>
 			<scope>runtime</scope>
+			<optional>true</optional>
 		</dependency>
 		
 		<!-- Servlet and JSP -->
