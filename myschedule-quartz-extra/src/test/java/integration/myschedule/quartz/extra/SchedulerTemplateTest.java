@@ -57,7 +57,7 @@ public class SchedulerTemplateTest {
 		SchedulerTemplate st = new SchedulerTemplate();
 		TestJob.resetResult();
 		st.scheduleCronJob("test", "* * * * * ?", TestJob.class);
-		st.startAndShutdown(700);
+		st.startAndShutdown(1100);
 		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
 	}
 
