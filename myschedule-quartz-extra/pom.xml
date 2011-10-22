@@ -32,16 +32,6 @@
 	
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
-				<configuration>
-					<!-- Exclude any war packaging 
-					<packagingExcludes>WEB-INF/web.xml</packagingExcludes>
-					-->
-					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 </project>
