@@ -3,13 +3,9 @@ package myschedule.web.servlet.app.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpSession;
-
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -25,10 +21,9 @@ import myschedule.service.Utils;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
-import myschedule.web.servlet.app.handler.DashboardHandlers.ListPageData.SchedulerRow;
-import myschedule.web.servlet.app.handler.pagedata.PageData;
+import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData;
+import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData.SchedulerRow;
 import myschedule.web.session.SessionSchedulerServiceFinder;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -116,7 +111,7 @@ public class DashboardHandlers {
 	protected ActionHandler listHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {			
-			ListPageData listPageData = new ListPageData();
+			DashboardListPageData listPageData = new DashboardListPageData();
 			List<String> configIds = schedulerServiceRepo.getSchedulerServiceConfigIds();
 			for (String configId : configIds) {
 				SchedulerRow schedulerRow = new SchedulerRow();
@@ -256,24 +251,7 @@ public class DashboardHandlers {
 		}
 	};
 	
-	@Getter
-	public static class ListPageData extends PageData {
-		protected List<SchedulerRow> schedulerRows = new ArrayList<SchedulerRow>();
-		
-		@Getter @Setter
-		public static class SchedulerRow {
-			protected String configId;
-			protected String name;
-			protected boolean initialized;
-			protected boolean started;
-			protected Date runningSince;
-			protected int numOfJobs;
-			protected boolean connExceptionExists;
-			protected String connExceptionString; // If started, but failed to get information.
-		}
-	}
-	
 	protected ClassLoader getClassLoader() {
 		return Thread.currentThread().getContextClassLoader();
-	}
+	}	
 }
