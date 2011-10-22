@@ -36,16 +36,7 @@ public class ScriptingHandlers {
 	protected ActionHandler runHandler = new ViewDataActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
-			List<String> scriptEngineNames = new ArrayList<String>();
-			ScriptEngineManager factory = new ScriptEngineManager();
-			for (ScriptEngineFactory fac : factory.getEngineFactories()) {
-				String name = fac.getLanguageName();
-				// JavaScript is a better name.
-				if (name.equals("ECMAScript")) {
-					name = "JavaScript";
-				}
-				scriptEngineNames.add(name);
-			}
+			List<String> scriptEngineNames = getScriptingEngineNames();
 			viewData.addData("data", ViewData.mkMap("scriptEngineNames", scriptEngineNames));
 		}
 	};
@@ -87,7 +78,8 @@ public class ScriptingHandlers {
 				map.put("errorMessage", ExceptionUtils.getMessage(e));
 				map.put("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
 				map.put("groovyScriptText", scriptText);
-				viewData.setViewName("scripting/run");
+				map.put("scriptEngineNames", getScriptingEngineNames());
+				viewData.setViewName("/scripting/run");
 			} finally {
 				webOut.close();
 				String webOutResult = outStream.toString();
@@ -96,4 +88,18 @@ public class ScriptingHandlers {
 			viewData.addData("data", map);
 		};
 	};
+	
+	protected List<String> getScriptingEngineNames() {
+		List<String> scriptEngineNames = new ArrayList<String>();
+		ScriptEngineManager factory = new ScriptEngineManager();
+		for (ScriptEngineFactory fac : factory.getEngineFactories()) {
+			String name = fac.getLanguageName();
+			// JavaScript is a better name.
+			if (name.equals("ECMAScript")) {
+				name = "JavaScript";
+			}
+			scriptEngineNames.add(name);
+		}
+		return scriptEngineNames;
+	}
 }
