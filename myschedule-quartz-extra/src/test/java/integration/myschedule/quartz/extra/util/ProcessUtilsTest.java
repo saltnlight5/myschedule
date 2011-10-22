@@ -73,6 +73,7 @@ public class ProcessUtilsTest {
 		assertThat(bgProcess.isDone(), is(false));
 		assertThat(bgProcess.isDestroyed(), is(false));
 		bgProcess.destroy();
+		Thread.sleep(700); //sometimes we need to wait just a bit to let the process die.
 		assertThat(bgProcess.isDone(), is(true));
 		assertThat(bgProcess.isDestroyed(), is(true));
 	}
