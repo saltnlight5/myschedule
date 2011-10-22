@@ -13,6 +13,14 @@
 	<packaging>war</packaging>
 	
 	<dependencies>
+
+		<!-- Quartz extra -->
+		<dependency>
+			<groupId>myschedule</groupId>
+			<artifactId>myschedule-quartz-extra</artifactId>
+			<version>2.3.0-SNAPSHOT</version>
+		</dependency>
+		
 		<!-- Testing lib
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -20,15 +28,6 @@
 			<version>3.0.5.RELEASE</version>
 			<scope>test</scope>
 		</dependency> -->
-
-		<!-- SLF4j impl -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
 
 		<!-- Apache Commons -->
 		<dependency>
@@ -40,31 +39,6 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
-		</dependency>
-
-		<!-- Quartz extra -->
-		<dependency>
-			<groupId>myschedule</groupId>
-			<artifactId>myschedule-quartz-extra</artifactId>
-			<version>2.3.0-SNAPSHOT</version>
-		</dependency>
-
-		<!-- MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.) -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.16</version>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- Groovy Scripting Engine -->
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
-			<version>1.8.2</version>
-			<scope>runtime</scope>
-			<optional>true</optional>
 		</dependency>
 
 		<!-- Servlet and JSP -->
@@ -93,6 +67,34 @@
 			<version>1.1.2</version>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<!-- MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.)
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.16</version>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency> -->
+
+		<!-- Groovy Scripting Engine
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>1.8.2</version>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency> -->
+
+		<!-- SLF4j impl
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency> -->
+		
 	</dependencies>
 	<build>
 		<finalName>myschedule-${project.version}</finalName>
@@ -108,6 +110,16 @@
 						<version>6.0.32</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<!-- Exclude any war packaging 
+					<packagingExcludes>WEB-INF/web.xml</packagingExcludes>
+					-->
+					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
