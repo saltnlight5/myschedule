@@ -3,13 +3,16 @@ package myschedule.web;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+
 import lombok.Getter;
 import myschedule.service.AbstractService;
 import myschedule.service.FileSchedulerConfigDao;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerServiceRepository;
+import myschedule.web.servlet.app.SessionFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
 import myschedule.web.servlet.app.handler.SchedulerHandlers;
@@ -98,6 +101,8 @@ public class AppConfig extends AbstractService {
 	protected SchedulerHandlers schedulerHandlers;
 	@Getter
 	protected ScriptingHandlers scriptingHandlers;
+	@Getter
+	protected SessionFilter sessionFilter;
 	
 	@Override
 	protected void startService() {
@@ -129,6 +134,9 @@ public class AppConfig extends AbstractService {
 		
 		scriptingHandlers = new ScriptingHandlers();
 		scriptingHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
+		
+		sessionFilter = new SessionFilter();
+		sessionFilter.setSchedulerServiceFinder(schedulerServiceFinder);
 		
 		schedulerConfigDao.start();
 		schedulerConfigService.start();

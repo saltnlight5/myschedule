@@ -2,6 +2,7 @@ package myschedule.web.servlet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +42,8 @@ abstract public class ActionHandlerServlet extends ViewDataServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected Map<String, ActionHandler> actionHandlerMappings = new HashMap<String, ActionHandler>();
-	
+	protected Map<String, ActionFilter> actionFilterMappings = new HashMap<String, ActionFilter>();
+		
 	/** Allow subclass to add URL action path to a handler. This should be called in init() method of subclass. */
 	protected void addActionHandler(String actionPath, ActionHandler handler) {
 		// Ensure action path is consistent.
@@ -70,6 +72,11 @@ abstract public class ActionHandlerServlet extends ViewDataServlet {
 		}
 		actionHandlerMappings.put(actionPath, handler);
 	}
+	
+	protected void addActionFilter(String actionPath, ActionFilter filter) {
+		logger.info("Adding filter on action path starting with: {}", actionPath);
+		actionFilterMappings.put(actionPath, filter);
+	}
 		
 	@Override
 	protected ViewData process(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -86,11 +93,50 @@ abstract public class ActionHandlerServlet extends ViewDataServlet {
 			String actionServletPath = req.getServletPath()  + actionPath;
 			throw new RuntimeException("Unable to find action handler for path: " + actionServletPath);
 		}
+		
+		ActionFilter filter = findActionFilter(actionPath, req);
+		if (filter != null) {
+			ViewData viewData = filter.beforeAction(actionPath, req, resp);
+			if (viewData != null) {
+				logger.debug("Filter has stopped the before action path: {}.", actionPath);
+				return viewData;
+			}
+		}
+		
 		ViewData viewData = handler.handleAction(actionPath, req, resp);
 		logger.trace("Handler result: {}", viewData);
+		
+		if (filter != null) {
+			filter.afterAction(viewData, actionPath, req, resp);
+		}
 		return viewData;
 	}
 	
+	/** 
+	 * We assume all filter actionPath are added and match by the front of the actionPath (String.startsWith). It's not
+	 * the same as the action handler where it match by exact name!
+	 * 
+	 * @param actionPath
+	 * @param req
+	 * @return
+	 */
+	protected ActionFilter findActionFilter(String actionPath, HttpServletRequest req) {
+		Set<String> filterNames = actionFilterMappings.keySet();
+		String matchedName = null;
+		for (String name : filterNames) {
+			if (actionPath.startsWith(name)) {
+				matchedName = name;
+				break;
+			}
+		}
+		
+		ActionFilter result = null;
+		if (matchedName != null) {
+			result = actionFilterMappings.get(matchedName);
+		}
+		return result;
+	}
+
 	/** Extract action Path from request URI after the servletPath portion. */
 	protected String getActionPath(HttpServletRequest req) {
 		String contextPath = req.getContextPath();
