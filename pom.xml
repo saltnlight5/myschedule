@@ -27,6 +27,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<!-- Library version -->
+		<slf4j.version>1.6.3</slf4j.version>
+		<quartz.version>2.1.0</quartz.version>
 	</properties>
 
 	<licenses>
@@ -74,8 +78,8 @@
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
+			<artifactId>junit-dep</artifactId>
+			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
 		
@@ -83,14 +87,14 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.3</version>
+			<version>${slf4j.version}</version>
 		</dependency>		
 		 				
 		<!-- Quartz library -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.1.0</version>
+			<version>${quartz.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>c3p0</groupId>
@@ -103,13 +107,13 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz-oracle</artifactId>
-			<version>2.0.2</version>
+			<version>${quartz.version}</version>
 	      	<scope>runtime</scope>
 		</dependency>
 	    <dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc5</artifactId>
-			<version>11.2.0</version>
+			<version>${quartz.version}</version>
 			<scope>runtime</scope>
 	    </dependency>
 	    -->
@@ -138,12 +142,14 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
-			</plugin>		
+			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.2.1</version>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 
