@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
+
 	<parent>
 		<groupId>myschedule</groupId>
 		<artifactId>myschedule</artifactId>
@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>myschedule-web</artifactId>
 	<packaging>war</packaging>
-	
+
 	<dependencies>
 
 		<!-- Quartz extra -->
@@ -20,14 +20,9 @@
 			<artifactId>myschedule-quartz-extra</artifactId>
 			<version>2.3.0-SNAPSHOT</version>
 		</dependency>
-		
-		<!-- Testing lib
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>3.0.5.RELEASE</version>
-			<scope>test</scope>
-		</dependency> -->
+
+		<!-- Testing lib <dependency> <groupId>org.springframework</groupId> <artifactId>spring-test</artifactId> 
+			<version>3.0.5.RELEASE</version> <scope>test</scope> </dependency> -->
 
 		<!-- Apache Commons -->
 		<dependency>
@@ -54,7 +49,8 @@
 			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Note: Tomcat6 (webapp-2.5) still require these jars to be packaged at runtime! -->
+		<!-- Note: Tomcat6 (webapp-2.5) still require these jars to be packaged 
+			at runtime! -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
@@ -66,7 +62,7 @@
 			<artifactId>standard</artifactId>
 			<version>1.1.2</version>
 			<scope>runtime</scope>
-		</dependency>		
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>myschedule-${project.version}</finalName>
@@ -86,8 +82,13 @@
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
+				<!-- 
+				Prevent the default warnings. 
+				http://jira.codehaus.org/browse/MWAR-248
+				-->
 				<configuration>
-					<webxml>src/main/webapp/WEB-INF/web.xml</webxml>
+                    <packagingExcludes>WEB-INF/web.xml</packagingExcludes>
+					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
 				</configuration>
 			</plugin>
 		</plugins>
