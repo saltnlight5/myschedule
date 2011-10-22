@@ -40,7 +40,7 @@ public class ProcessUtils {
 	 * 
 	 * @return exitCode - the external program exit code if it completed successfully.
 	 * 
-	 * @throw TimeoutException - if timeout >=0 and has reached it.
+	 * @throws TimeoutException - if timeout >=0 and has reached it.
 	 */
 	public static BackgroundProcess runInBackground(String[] commandArguments, final LineAction lineAction) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
@@ -100,7 +100,7 @@ public class ProcessUtils {
 	 * 
 	 * @return exitCode - the external program exit code if it completed successfully.
 	 * 
-	 * @throw TimeoutException - if timeout >=0 and has reached it.
+	 * @throws TimeoutException - if timeout >=0 and has reached it.
 	 */
 	public static int run(long timeout, String[] commandArguments, LineAction lineAction) {
 		// We will use 10% of the timeout period as check interval.
@@ -130,7 +130,7 @@ public class ProcessUtils {
 	 * 
 	 * @return exitCode - the external program exit code if it completed successfully.
 	 * 
-	 * @throw TimeoutException - if timeout >=0 and has reached it.
+	 * @throws TimeoutException - if timeout >=0 and has reached it.
 	 */
 	public static int run(long timeout, long timeoutCheckInterval, final String[] commandArguments, 
 			final LineAction lineAction) {
@@ -196,7 +196,7 @@ public class ProcessUtils {
 	 *            External command and arguments
 	 * @return A list of all output from the external program.
 	 * 
-	 * @throw TimeoutException - if timeout >=0 and has reached it.
+	 * @throws TimeoutException - if timeout >=0 and has reached it.
 	 */
 	public static List<String> run(final long timeout, final String... commandArguments) {
 		LineCollector lineCollector = new LineCollector();
@@ -279,7 +279,7 @@ public class ProcessUtils {
 	 * 
 	 * @return exitCode - the Java (JVM) exit code if it completed successfully.
 	 * 
-	 * @throw TimeoutException - if timeout >=0 and has reached it.
+	 * @throws TimeoutException - if timeout >=0 and has reached it.
 	 */
 	public static int runJavaWithOpts(final long timeout, final String[] javaOpts, final String[] javaCmdArgs,
 			final LineAction lineAction) {

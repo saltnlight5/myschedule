@@ -47,19 +47,13 @@ public class XmlJobLoader extends XMLSchedulingDataProcessor {
 		super(clhelper);
 	}
 		
-	/**
-	 * Expose getter with public access.
-	 * @return
-	 */
+	/** Expose getter with public access. */
 	@Override
 	public List<JobDetail> getLoadedJobs() {
 		return super.getLoadedJobs();
 	}
 	
-	/**
-	 * Expose getter with public access.
-	 * @return
-	 */
+	/** Expose getter with public access. */
 	@Override
 	public List<MutableTrigger> getLoadedTriggers() {
 		return super.getLoadedTriggers();
