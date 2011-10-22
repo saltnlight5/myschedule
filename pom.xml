@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>myschedule</groupId>
@@ -27,7 +28,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		
+
 		<!-- Library version -->
 		<slf4j.version>1.6.3</slf4j.version>
 		<quartz.version>2.1.0</quartz.version>
@@ -53,16 +54,16 @@
 		<developerConnection>scm:hg:file:///${basedir}</developerConnection>
 		<url>http://code.google.com/p/myschedule/source/browse</url>
 	</scm>
-		
+
 	<dependencies>
-		<!-- Getter and Setter Generator -->	
+		<!-- Getter and Setter Generator -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>0.10.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Testing libraries -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -82,14 +83,14 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- Logging libraries -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-		</dependency>		
-		 				
+		</dependency>
+
 		<!-- Quartz library -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
@@ -97,7 +98,7 @@
 			<version>${quartz.version}</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -143,7 +144,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>opt</id>
 			<activation>
@@ -156,23 +157,50 @@
 					<artifactId>slf4j-log4j12</artifactId>
 					<version>${slf4j.version}</version>
 				</dependency>
-				
+
 				<!-- Groovy Scripting Engine -->
 				<dependency>
 					<groupId>org.codehaus.groovy</groupId>
 					<artifactId>groovy</artifactId>
 					<version>1.8.2</version>
 				</dependency>
-								 
-				<!-- Quartz MySql JDBC Driver (Note: there is no extra quartz component is needed with MySql.) -->
+
+				<!-- Quartz MySql JDBC Driver (Note: there is no extra quartz component 
+					is needed with MySql.) -->
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
 					<version>5.1.16</version>
 				</dependency>
 			</dependencies>
+			<build>
+				<plugins>
+					<!-- Use to copy src/test/resources into main for tomcat:run uses. -->
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<configuration>
+									<target>
+										<copy todir="target/classes">
+											<fileset dir="src/test/resources">
+												<include name="log4j.properties" />
+											</fileset>
+										</copy>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
-		
+
 		<profile>
 			<id>oracle</id>
 			<activation>
@@ -185,11 +213,11 @@
 					<artifactId>quartz-oracle</artifactId>
 					<version>${quartz.version}</version>
 				</dependency>
-			    <dependency>
+				<dependency>
 					<groupId>com.oracle</groupId>
 					<artifactId>ojdbc6</artifactId>
 					<version>11.2.0.2.0</version>
-			    </dependency>
+				</dependency>
 			</dependencies>
 		</profile>
 	</profiles>
