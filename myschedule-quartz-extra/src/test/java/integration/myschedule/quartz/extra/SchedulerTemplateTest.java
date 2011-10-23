@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import myschedule.quartz.extra.SchedulerTemplate;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.Job;
