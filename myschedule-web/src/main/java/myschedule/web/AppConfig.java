@@ -5,9 +5,11 @@ import java.io.InputStream;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import lombok.Getter;
-import myschedule.service.AbstractService;
 import myschedule.service.FileSchedulerConfigDao;
+import myschedule.service.Initable;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerServiceRepository;
 import myschedule.service.ServiceContainer;
@@ -24,7 +26,10 @@ import myschedule.web.session.SessionSchedulerServiceFinder;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class AppConfig extends AbstractService {
+public class AppConfig implements Initable {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
+	
 	// This class singleton instance access
 	// ====================================
 	protected static AppConfig instance;
@@ -107,7 +112,7 @@ public class AppConfig extends AbstractService {
 	protected SessionDataFilter sessionDataFilter;
 	
 	@Override
-	protected void startService() {		
+	public void init() {
 		schedulerServiceRepo = SchedulerServiceRepository.getInstance();
 
 		String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
@@ -149,8 +154,13 @@ public class AppConfig extends AbstractService {
 	}
 	
 	@Override
-	protected void stopService() {
+	public void destroy() {
 		serviceContainer.destroy();
 		serviceContainer.stop();
+	}
+	
+	@Override
+	public boolean isInited() {
+		throw new RuntimeException("Not yet implemented.");
 	}
 }

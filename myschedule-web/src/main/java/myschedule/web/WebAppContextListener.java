@@ -26,7 +26,7 @@ public class WebAppContextListener implements ServletContextListener {
 		logger.debug("Initializing MySchedule on server: " + ctx.getServerInfo());
 		
 		AppConfig appConfig = AppConfig.getInstance();
-		appConfig.start();
+		appConfig.init();
 		appConfig.contextInitialized(sce);
 		logger.info("Web application initialized.");
 	}
@@ -34,7 +34,7 @@ public class WebAppContextListener implements ServletContextListener {
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		AppConfig appConfig = AppConfig.getInstance();
-		appConfig.stop();
+		appConfig.destroy();
 		logger.info("Web application destroyed.");
 	}
 
