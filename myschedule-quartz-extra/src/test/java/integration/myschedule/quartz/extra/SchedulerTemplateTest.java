@@ -1,19 +1,18 @@
 package integration.myschedule.quartz.extra;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import myschedule.quartz.extra.SchedulerTemplate;
-
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.Job;
@@ -58,7 +57,7 @@ public class SchedulerTemplateTest {
 		TestJob.resetResult();
 		st.scheduleCronJob("test", "* * * * * ?", TestJob.class);
 		st.startAndShutdown(1100);
-		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
+		assertThat(TestJob.jobResult.executionTimes.size(), greaterThanOrEqualTo(2));
 	}
 
 	@Test
