@@ -11,7 +11,7 @@ import myschedule.service.FileSchedulerConfigDao;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerServiceRepository;
 import myschedule.service.ServiceContainer;
-import myschedule.web.servlet.app.SessionFilter;
+import myschedule.web.servlet.app.SessionDataFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
 import myschedule.web.servlet.app.handler.SchedulerHandlers;
@@ -104,7 +104,7 @@ public class AppConfig extends AbstractService {
 	@Getter
 	protected ScriptingHandlers scriptingHandlers;
 	@Getter
-	protected SessionFilter sessionFilter;
+	protected SessionDataFilter sessionDataFilter;
 	
 	@Override
 	protected void startService() {		
@@ -137,8 +137,8 @@ public class AppConfig extends AbstractService {
 		scriptingHandlers = new ScriptingHandlers();
 		scriptingHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
 		
-		sessionFilter = new SessionFilter();
-		sessionFilter.setSchedulerServiceFinder(schedulerServiceFinder);
+		sessionDataFilter = new SessionDataFilter();
+		sessionDataFilter.setSchedulerServiceFinder(schedulerServiceFinder);
 
 		serviceContainer = new ServiceContainer();
 		serviceContainer.addService(schedulerConfigDao);

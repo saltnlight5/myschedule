@@ -66,9 +66,9 @@ public class MainServlet extends ActionHandlerServlet {
 		
 		addActionHandler("/about", new ViewDataActionHandler());
 		
-		SessionFilter sessionFilter = appConfig.getSessionFilter();
-		addActionFilter("/job", sessionFilter);
-		addActionFilter("/scheduler", sessionFilter);
-		addActionFilter("/scripting", sessionFilter);
+		SessionDataFilter sessionDataFilter = appConfig.getSessionDataFilter();
+		addActionFilter("/job", sessionDataFilter);
+		addActionFilter("/scheduler", sessionDataFilter);
+		addActionFilter("/scripting", sessionDataFilter);
 	}	
 }

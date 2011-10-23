@@ -19,9 +19,9 @@ import myschedule.web.session.SessionSchedulerServiceFinder;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class SessionFilter implements ActionFilter {
+public class SessionDataFilter implements ActionFilter {
 	
-	private static final Logger logger = LoggerFactory.getLogger(SessionFilter.class);
+	private static final Logger logger = LoggerFactory.getLogger(SessionDataFilter.class);
 	
 	@Setter
 	protected SessionSchedulerServiceFinder schedulerServiceFinder;
