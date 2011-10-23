@@ -130,6 +130,7 @@ public class ScriptingJobTest {
 		st.addListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+		job.getJobDataMap().put(ScriptingJob.USE_JOB_EXECUTION_EXCEPTION_KEY, "true");
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99; throw 'An expected error.';");
 		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
@@ -142,7 +143,5 @@ public class ScriptingJobTest {
 		// Notice the count is one!
 		assertThat(ResultJobListener.result.jobResults.size(), is(1));
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
-		
-		// TODO: how can we verify the exception that the script has thrown occurred?
 	}
 }

@@ -25,6 +25,9 @@ import org.slf4j.LoggerFactory;
  *   <li>ScriptEgnineName - Required. The name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
  *   <li>ScriptText or ScriptFile - Required. Specify where to find the script to run. Only one is needed. No default.</li>
  *   <li>LogScriptText - Optional. A boolean flag to log ScriptText value or not as INFO level. Default to 'false'.</li>
+ *   <li>UseJobExecutionException - Optional. A boolean flag to use JobExecutionException or a RuntimeException wrapper
+ *   when script is throwing an exception. (Note: JobExecutionException will not cause Quartz to trigger
+ *   listener callback!) Default to 'false'.</li>
  * </ul>
  *  
  * <p>Before evaluating the script, the following implicit variables will be binded and available to the script: 
@@ -49,11 +52,11 @@ public class ScriptingJob implements Job {
 	
 	public static final String LOG_SCRIPT_TEXT_KEY = "LogScriptText";
 	
-	public static final String USE_JOB_EXECUTION_EXCEPTION = "true";
+	public static final String USE_JOB_EXECUTION_EXCEPTION_KEY = "UseJobExecutionException";
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected boolean useJobExecutionException = true;
+	protected boolean useJobExecutionException = false;
 	
 	/**
 	 * Run the job to evaluate the script text or file using an javax.script.ScriptEngine impl.
@@ -89,8 +92,8 @@ public class ScriptingJob implements Job {
 			logger.debug("Creating ScriptEngine {} to evaluate {}.", engineName, scriptType);
 
 			// Extract flag
-			if (dataMap.containsKey(USE_JOB_EXECUTION_EXCEPTION)) {
-				useJobExecutionException = dataMap.getBoolean(USE_JOB_EXECUTION_EXCEPTION);
+			if (dataMap.containsKey(USE_JOB_EXECUTION_EXCEPTION_KEY)) {
+				useJobExecutionException = dataMap.getBoolean(USE_JOB_EXECUTION_EXCEPTION_KEY);
 				logger.debug("Setting useJobExecutionException: {}", useJobExecutionException);
 			}
 			
@@ -98,10 +101,7 @@ public class ScriptingJob implements Job {
 			ScriptEngineManager factory = new ScriptEngineManager();
 	        ScriptEngine scriptEngine = factory.getEngineByName(engineName);	        
 	        if (scriptEngine == null) {
-	        	if (useJobExecutionException) {
-	        		throw new JobExecutionException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY);
-	        	}
-	        	throw new RuntimeException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY);
+	        	throw new IllegalArgumentException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY);
 	        }
 
 			// Script engine binding variables.
