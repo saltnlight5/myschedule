@@ -41,13 +41,13 @@ public class ScriptingJobTest {
 		st.addListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
-		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99;");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "2 + 99;");
 		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
 		assertThat(ResultJobListener.result.jobResults.size(), is(1));
-		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
+		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(101.0)));
 		assertThat(ResultJobListener.result.jobToBeExecutedTimes.size(), is(1));
 		assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
@@ -61,14 +61,14 @@ public class ScriptingJobTest {
 
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
-		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99;");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "3 + 99;");
 		job.getJobDataMap().put(ScriptingJob.LOG_SCRIPT_TEXT_KEY, "true");
 		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
 		
 		assertThat(ResultJobListener.result.jobResults.size(), is(1));
-		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
+		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(102.0)));
 		assertThat(ResultJobListener.result.jobToBeExecutedTimes.size(), is(1));
 		assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
@@ -114,4 +114,24 @@ public class ScriptingJobTest {
 		assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
 	}
+	
+	//TODO: Why this test is not working?
+//	@Test
+//	public void testScriptTextJobWithException() {
+//		ResultJobListener.resetResult();
+//		SchedulerTemplate st = new SchedulerTemplate();
+//		st.addListener(new ResultJobListener());
+//		
+//		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+//		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
+//		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99; throw 'An expected error.';");
+//		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
+//		st.scheduleJob(job, trigger);
+//		st.startAndShutdown(99);
+//		
+//		assertThat(ResultJobListener.result.jobToBeExecutedTimes.size(), is(1));
+//		assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
+//		assertThat(ResultJobListener.result.jobResults.size(), is(0));
+//		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(0));
+//	}
 }
