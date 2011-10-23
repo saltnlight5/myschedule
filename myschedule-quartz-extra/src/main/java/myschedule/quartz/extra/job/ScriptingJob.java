@@ -38,9 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng
  */
 public class ScriptingJob implements Job {
-	
-	protected Logger logger = LoggerFactory.getLogger(getClass());
-	
+		
 	public static final String DEFAULT_SCRIPT_ENGINE_NAME = "JavaScript";
 
 	public static final String SCRIPT_ENGINE_NAME_KEY = "ScriptEngineName";
@@ -50,6 +48,12 @@ public class ScriptingJob implements Job {
 	public static final String SCRIPT_FILE_KEY = "ScriptFile";
 	
 	public static final String LOG_SCRIPT_TEXT_KEY = "LogScriptText";
+	
+	public static final String USE_JOB_EXECUTION_EXCEPTION = "true";
+
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
+	protected boolean useJobExecutionException = true;
 	
 	/**
 	 * Run the job to evaluate the script text or file using an javax.script.ScriptEngine impl.
@@ -62,7 +66,7 @@ public class ScriptingJob implements Job {
 		JobDetail jobDetail = jobExecutionContext.getJobDetail();
 		try {
 			logger.debug("Running job {}.", jobDetail.getKey());
-						
+									
 			// Extract job data map to setup script engine.
 			JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();		
 			String engineName = DEFAULT_SCRIPT_ENGINE_NAME;
@@ -83,12 +87,21 @@ public class ScriptingJob implements Job {
 						SCRIPT_FILE_KEY + " is found in data map."); 
 			}
 			logger.debug("Creating ScriptEngine {} to evaluate {}.", engineName, scriptType);
+
+			// Extract flag
+			if (dataMap.containsKey(USE_JOB_EXECUTION_EXCEPTION)) {
+				useJobExecutionException = dataMap.getBoolean(USE_JOB_EXECUTION_EXCEPTION);
+				logger.debug("Setting useJobExecutionException: {}", useJobExecutionException);
+			}
 			
 			// Create a Java ScriptEngine
 			ScriptEngineManager factory = new ScriptEngineManager();
 	        ScriptEngine scriptEngine = factory.getEngineByName(engineName);	        
 	        if (scriptEngine == null) {
-				throw new JobExecutionException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY); 	        	
+	        	if (useJobExecutionException) {
+	        		throw new JobExecutionException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY);
+	        	}
+	        	throw new RuntimeException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY);
 	        }
 
 			// Script engine binding variables.
@@ -132,7 +145,10 @@ public class ScriptingJob implements Job {
 			logger.info("Job {} has been executed. Result type: {}, value: {}", 
 					new Object[]{ jobDetail.getKey(), resultClass, result });
 		} catch (Exception e) {
-			throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
+        	if (useJobExecutionException) {
+        		throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
+        	}
+        	throw new RuntimeException("Failed to execute job " + jobDetail.getKey(), e);
 		}
 	}
 
