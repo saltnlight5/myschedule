@@ -21,14 +21,6 @@
 			<version>2.3.0-SNAPSHOT</version>
 		</dependency>
 		
-		<!-- SLF4j impl -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-
 		<!-- Apache Commons -->
 		<dependency>
 			<groupId>commons-io</groupId>
