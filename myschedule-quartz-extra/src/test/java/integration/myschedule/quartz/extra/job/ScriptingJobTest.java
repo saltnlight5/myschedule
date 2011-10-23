@@ -115,23 +115,34 @@ public class ScriptingJobTest {
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
 	}
 	
-	//TODO: Why this test is not working?
-//	@Test
-//	public void testScriptTextJobWithException() {
-//		ResultJobListener.resetResult();
-//		SchedulerTemplate st = new SchedulerTemplate();
-//		st.addListener(new ResultJobListener());
-//		
-//		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
-//		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
-//		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99; throw 'An expected error.';");
-//		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
-//		st.scheduleJob(job, trigger);
-//		st.startAndShutdown(99);
-//		
-//		assertThat(ResultJobListener.result.jobToBeExecutedTimes.size(), is(1));
-//		assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
-//		assertThat(ResultJobListener.result.jobResults.size(), is(0));
-//		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(0));
-//	}
+	/**
+	 * Note: even if script throws exception, the job will complete because the ScriptingJob
+	 * will catch and re-wrap into JobExecutionException, which Quartz will treat it with log msg, and continue as 
+	 * job is successful!
+	 * 
+	 * If the ScriptpingJob were to throw anything Exception other than JobExecutionException, only then a 
+	 * SchedulerListener will be notify with error.
+	 */
+	@Test
+	public void testScriptTextJobWithException() {
+		ResultJobListener.resetResult();
+		SchedulerTemplate st = new SchedulerTemplate();
+		st.addListener(new ResultJobListener());
+		
+		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99; throw 'An expected error.';");
+		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
+		st.scheduleJob(job, trigger);
+		st.startAndShutdown(99);
+		
+		assertThat(ResultJobListener.result.jobToBeExecutedTimes.size(), is(1));
+		assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
+		
+		// Notice the count is one!
+		assertThat(ResultJobListener.result.jobResults.size(), is(1));
+		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
+		
+		// TODO: how can we verify the exception that the script has thrown occurred?
+	}
 }
