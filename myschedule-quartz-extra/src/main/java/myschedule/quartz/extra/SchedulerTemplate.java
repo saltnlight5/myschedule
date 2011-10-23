@@ -549,7 +549,7 @@ public class SchedulerTemplate {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void addListner(TriggerListener listener) {
+	public void addListener(TriggerListener listener) {
 		try {
 			scheduler.getListenerManager().addTriggerListener(listener);
 		} catch (SchedulerException e) {
@@ -557,7 +557,7 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	public void addListner(SchedulerListener listener) {
+	public void addListener(SchedulerListener listener) {
 		try {
 			scheduler.getListenerManager().addSchedulerListener(listener);
 		} catch (SchedulerException e) {
