@@ -149,7 +149,7 @@ public class SchedulerConfigService extends AbstractService {
 	}
 	
 	@Override
-	protected void destroyService() {		
+	protected void destroyService() {
 		// Stop and destroy loaded scheduler services
 		for (String configId : daoConfigIds) {
 			SchedulerService<?> schedulerService = schedulerServiceRepo.getSchedulerService(configId);

@@ -3,15 +3,14 @@ package myschedule.web;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-
 import lombok.Getter;
 import myschedule.service.AbstractService;
 import myschedule.service.FileSchedulerConfigDao;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerServiceRepository;
+import myschedule.service.ServiceContainer;
 import myschedule.web.servlet.app.SessionFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
@@ -50,6 +49,9 @@ public class AppConfig extends AbstractService {
 	protected SchedulerConfigService schedulerConfigService;
 	@Getter
 	protected SessionSchedulerServiceFinder schedulerServiceFinder;
+	
+	// Can leave out the getter
+	protected ServiceContainer serviceContainer;
 		
 	// Web App Config
 	// ==============
@@ -105,7 +107,7 @@ public class AppConfig extends AbstractService {
 	protected SessionFilter sessionFilter;
 	
 	@Override
-	protected void startService() {
+	protected void startService() {		
 		schedulerServiceRepo = SchedulerServiceRepository.getInstance();
 
 		String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
@@ -137,14 +139,18 @@ public class AppConfig extends AbstractService {
 		
 		sessionFilter = new SessionFilter();
 		sessionFilter.setSchedulerServiceFinder(schedulerServiceFinder);
-		
-		schedulerConfigDao.start();
-		schedulerConfigService.start();
+
+		serviceContainer = new ServiceContainer();
+		serviceContainer.addService(schedulerConfigDao);
+		serviceContainer.addService(schedulerConfigService);
+
+		serviceContainer.init();
+		serviceContainer.start();
 	}
 	
 	@Override
 	protected void stopService() {
-		schedulerConfigService.stop();
-		schedulerConfigDao.stop();
+		serviceContainer.destroy();
+		serviceContainer.stop();
 	}
 }
