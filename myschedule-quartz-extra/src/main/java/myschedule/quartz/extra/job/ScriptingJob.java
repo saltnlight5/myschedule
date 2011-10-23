@@ -128,8 +128,9 @@ public class ScriptingJob implements Job {
 			
 			// Store the result in case there is JobListener or TriggerListener setup to retrieve it.
 			jobExecutionContext.setResult(result);
+			Class<?> resultClass = (result == null) ? null : result.getClass();
 			logger.info("Job {} has been executed. Result type: {}, value: {}", 
-					new Object[]{ jobDetail.getKey(), result.getClass(), result });
+					new Object[]{ jobDetail.getKey(), resultClass, result });
 		} catch (Exception e) {
 			throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
 		}
