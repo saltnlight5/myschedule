@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import myschedule.quartz.extra.SchedulerTemplate;
 import org.junit.Test;
-import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -22,7 +21,6 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
-import org.quartz.spi.MutableTrigger;
 
 /**
  * Integration test for SchedulerTemplate.

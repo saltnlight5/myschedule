@@ -1,11 +1,9 @@
 package myschedule.quartz.extra;
 
-import static org.quartz.CalendarIntervalScheduleBuilder.calendarIntervalSchedule;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
-
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -13,11 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.quartz.Calendar;
-import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
-import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
