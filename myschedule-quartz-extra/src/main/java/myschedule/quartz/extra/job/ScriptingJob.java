@@ -143,9 +143,6 @@ public class ScriptingJob implements Job {
 			logger.info("Job {} has been executed. Result type: {}, value: {}", 
 					new Object[]{ jobDetail.getKey(), resultClass, result });
 		} catch (Exception e) {
-			if (e instanceof JobExecutionException) {
-				throw (JobExecutionException)e;
-			}
 			if (useJobExecutionException) {
 				throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
 			}
