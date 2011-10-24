@@ -63,3 +63,8 @@ scheduler.addJob(job, false)
   trigger.setJobKey(job.key)
   scheduler.scheduleJob(trigger)
 }
+
+scheduler.scheduleSimpleJob("MySimpleJob1", -1, 60000, myschedule.quartz.extra.job.LoggerJob.class)
+scheduler.scheduleSimpleJob("MySimpleJob2", 10, 72000, myschedule.quartz.extra.job.LoggerJob.class)
+scheduler.scheduleSimpleJob("MySimpleJob3", 24, 60*60*1000, myschedule.quartz.extra.job.LoggerJob.class)
+
