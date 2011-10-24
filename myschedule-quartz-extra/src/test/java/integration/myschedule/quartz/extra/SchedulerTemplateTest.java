@@ -31,24 +31,6 @@ import org.quartz.spi.MutableTrigger;
  *
  */
 public class SchedulerTemplateTest {
-
-	@Test
-	public void testCalIntervalJob() throws Exception {
-		Date startTime = new Date();
-		SchedulerTemplate st = new SchedulerTemplate();
-		TestJob.resetResult();
-		JobDetail job = SchedulerTemplate.createJobDetail("test", TestJob.class);
-		MutableTrigger trigger = SchedulerTemplate.createCalendarIntervalTrigger("test", 72, IntervalUnit.SECOND);
-		trigger.setStartTime(startTime);
-		st.scheduleJob(job, trigger);
-		st.start();
-		Thread.sleep(99);
-		assertThat(TestJob.jobResult.executionTimes.size(), is(1));
-		Trigger trigger2 = st.getTrigger(TriggerKey.triggerKey("test"));
-		Date nextFireTime = trigger2.getNextFireTime();
-		assertThat(nextFireTime, is(new Date(startTime.getTime() + 72 * 1000)));
-		st.shutdown(true);
-	}
 	
 	@Test
 	public void testScheduleCronJob() throws Exception {
