@@ -12,12 +12,9 @@ it.</p>
 
 <p>This web application is powered by the following technologies and libraries.</p>
 <div id="poweredBy">
-	<a href="http://www.oracle.com/java">Java</a> 
-	<a href="http://www.quartz-shecheduler.org">Quartz</a> 
-	<a href="http://www.springframework.org">Spring</a>
-	<a href="http://groovy.codehaus.org">Groovy</a>
+	<a href="http://www.oracle.com/java">Java/Servlet</a>
+	<a href="http://www.quartz-shecheduler.org">Quartz</a>
 	<a href="http://www.jquery.org">jQuery/UI</a>
-	<a href="http://www.datatables.net">jQuery.DataTables</a>
 </div>
 
 <%@ include file="/WEB-INF/jsp/main/page-b.inc" %>
