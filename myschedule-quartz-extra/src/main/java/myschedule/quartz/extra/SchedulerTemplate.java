@@ -824,32 +824,7 @@ public class SchedulerTemplate {
 			jobDetail.getJobDataMap().putAll(dataMap);
 		return jobDetail;
 	}
-	
-	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, int interval, IntervalUnit intervalUnit) {
-		return createCalendarIntervalTrigger(name, interval, intervalUnit, new Date());
-	}
-
-	public static MutableTrigger createCalendarIntervalTrigger(
-			String name, int interval, IntervalUnit intervalUnit, Date startTime) {
-		return createCalendarIntervalTrigger(TriggerKey.triggerKey(name), interval, intervalUnit, startTime, null);
-	}
-	
-	public static MutableTrigger createCalendarIntervalTrigger(
-			TriggerKey triggerKey,
-			int interval, IntervalUnit intervalUnit,
-			Date startTime, Date endTime) {
-		if (startTime == null)
-			startTime = new Date();
 		
-		CalendarIntervalTrigger trigger = newTrigger()
-				.withIdentity(triggerKey)
-				.startAt(startTime).endAt(endTime)
-				.withSchedule(calendarIntervalSchedule().withInterval(interval, intervalUnit))
-				.build();
-		return (MutableTrigger)trigger;
-	}
-	
 	public static MutableTrigger createCronTrigger(String name, String cron) {
 		return createCronTrigger(TriggerKey.triggerKey(name), cron, new Date(), null);
 	}
