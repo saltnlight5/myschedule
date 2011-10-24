@@ -25,9 +25,7 @@ import org.slf4j.LoggerFactory;
  *   <li>ScriptEgnineName - Required. The name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
  *   <li>ScriptText or ScriptFile - Required. Specify where to find the script to run. Only one is needed. No default.</li>
  *   <li>LogScriptText - Optional. A boolean flag to log ScriptText value or not as INFO level. Default to 'false'.</li>
- *   <li>UseJobExecutionException - Optional. A boolean flag to use JobExecutionException or a RuntimeException wrapper
- *   when script is throwing an exception. (Note: JobExecutionException will not cause Quartz to trigger
- *   listener callback!) Default to 'false'.</li>
+ *   <li>UseJobExecutionException - Optional. Set true if you want wrap any script exception. Default to 'false'.</li>
  * </ul>
  *  
  * <p>Before evaluating the script, the following implicit variables will be binded and available to the script: 
@@ -53,7 +51,7 @@ public class ScriptingJob implements Job {
 	public static final String LOG_SCRIPT_TEXT_KEY = "LogScriptText";
 	
 	public static final String USE_JOB_EXECUTION_EXCEPTION_KEY = "UseJobExecutionException";
-
+	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	protected boolean useJobExecutionException = false;
@@ -86,11 +84,11 @@ public class ScriptingJob implements Job {
 				filename = dataMap.getString(SCRIPT_FILE_KEY);
 				scriptType = SCRIPT_FILE_KEY;
 			} else {
-				throw new JobExecutionException("Neither " + SCRIPT_TEXT_KEY + " nor " + 
+				throw new IllegalArgumentException("Neither " + SCRIPT_TEXT_KEY + " nor " + 
 						SCRIPT_FILE_KEY + " is found in data map."); 
 			}
 			logger.debug("Creating ScriptEngine {} to evaluate {}.", engineName, scriptType);
-
+			
 			// Extract flag
 			if (dataMap.containsKey(USE_JOB_EXECUTION_EXCEPTION_KEY)) {
 				useJobExecutionException = dataMap.getBoolean(USE_JOB_EXECUTION_EXCEPTION_KEY);
@@ -145,9 +143,12 @@ public class ScriptingJob implements Job {
 			logger.info("Job {} has been executed. Result type: {}, value: {}", 
 					new Object[]{ jobDetail.getKey(), resultClass, result });
 		} catch (Exception e) {
-        	if (useJobExecutionException) {
-        		throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
-        	}
+			if (e instanceof JobExecutionException) {
+				throw (JobExecutionException)e;
+			}
+			if (useJobExecutionException) {
+				throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
+			}
         	throw new RuntimeException("Failed to execute job " + jobDetail.getKey(), e);
 		}
 	}
