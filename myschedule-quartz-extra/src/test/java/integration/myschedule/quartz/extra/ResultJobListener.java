@@ -30,14 +30,14 @@ public class ResultJobListener implements JobListener {
 
 	@Override
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
-		result.jobWasExecutedTimes.add(new Date());
+		result.jobWasExecutedTimes.add(new Object[]{ new Date(), context, jobException });
 		result.jobResults.add(context.getResult());
 	}
 	
 	public static class Result {
 		public List<Date> jobToBeExecutedTimes = new ArrayList<Date>();
 		public List<Date> jobExecutionVetoedTimes = new ArrayList<Date>();
-		public List<Date> jobWasExecutedTimes = new ArrayList<Date>();
+		public List<Object[]> jobWasExecutedTimes = new ArrayList<Object[]>();
 		public List<Object> jobResults = new ArrayList<Object>();
 	}
 	

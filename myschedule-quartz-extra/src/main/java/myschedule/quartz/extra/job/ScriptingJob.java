@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
  *   <li>ScriptEgnineName - Required. The name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
  *   <li>ScriptText or ScriptFile - Required. Specify where to find the script to run. Only one is needed. No default.</li>
  *   <li>LogScriptText - Optional. A boolean flag to log ScriptText value or not as INFO level. Default to 'false'.</li>
- *   <li>UseJobExecutionException - Optional. Set true if you want wrap any script exception. Default to 'false'.</li>
+ *   <li>JobExecutionExceptionParams - Optional. Three booleans (refire, unscheduleAllTrigger, unscheduleTrigg) used to 
+ *   populate JobExecutionException object if the script were to throw an exception that this job will wrap in. 
+ *   Default to 'false, false, false'.</li>
  * </ul>
  *  
  * <p>Before evaluating the script, the following implicit variables will be binded and available to the script: 
@@ -39,7 +41,12 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng
  */
 public class ScriptingJob implements Job {
-		
+	
+	/** Only used when script throws an exception. Value is a string: refire, unscheduleAllTrigger, unscheduleTrigg.
+	 * Will use default if not found.
+	 */
+	public static final String JOB_EXECUTION_EXCEPTION_PARAMS_KEY = "JobExecutionExceptionParams";
+	
 	public static final String DEFAULT_SCRIPT_ENGINE_NAME = "JavaScript";
 
 	public static final String SCRIPT_ENGINE_NAME_KEY = "ScriptEngineName";
@@ -50,11 +57,7 @@ public class ScriptingJob implements Job {
 	
 	public static final String LOG_SCRIPT_TEXT_KEY = "LogScriptText";
 	
-	public static final String USE_JOB_EXECUTION_EXCEPTION_KEY = "UseJobExecutionException";
-	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
-	
-	protected boolean useJobExecutionException = false;
 	
 	/**
 	 * Run the job to evaluate the script text or file using an javax.script.ScriptEngine impl.
@@ -65,11 +68,11 @@ public class ScriptingJob implements Job {
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		JobDetail jobDetail = jobExecutionContext.getJobDetail();
+		JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
 		try {
 			logger.debug("Running job {}.", jobDetail.getKey());
 									
-			// Extract job data map to setup script engine.
-			JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();		
+			// Extract job data map to setup script engine.		
 			String engineName = DEFAULT_SCRIPT_ENGINE_NAME;
 			if (dataMap.containsKey(SCRIPT_ENGINE_NAME_KEY)) {
 				engineName = dataMap.getString(SCRIPT_ENGINE_NAME_KEY);
@@ -88,12 +91,6 @@ public class ScriptingJob implements Job {
 						SCRIPT_FILE_KEY + " is found in data map."); 
 			}
 			logger.debug("Creating ScriptEngine {} to evaluate {}.", engineName, scriptType);
-			
-			// Extract flag
-			if (dataMap.containsKey(USE_JOB_EXECUTION_EXCEPTION_KEY)) {
-				useJobExecutionException = dataMap.getBoolean(USE_JOB_EXECUTION_EXCEPTION_KEY);
-				logger.debug("Setting useJobExecutionException: {}", useJobExecutionException);
-			}
 			
 			// Create a Java ScriptEngine
 			ScriptEngineManager factory = new ScriptEngineManager();
@@ -143,10 +140,20 @@ public class ScriptingJob implements Job {
 			logger.info("Job {} has been executed. Result type: {}, value: {}", 
 					new Object[]{ jobDetail.getKey(), resultClass, result });
 		} catch (Exception e) {
-			if (useJobExecutionException) {
-				throw new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
+			JobExecutionException jobEx = new JobExecutionException("Failed to execute job " + jobDetail.getKey(), e);
+			if (dataMap.containsKey(JOB_EXECUTION_EXCEPTION_PARAMS_KEY)) {
+				String[] booleanArrayStr = dataMap.getString(JOB_EXECUTION_EXCEPTION_PARAMS_KEY).split("\\s*,\\s*");
+				boolean refire = booleanArrayStr.length > 0 ? Boolean.parseBoolean(booleanArrayStr[0]) : false;
+				boolean unscheduleAllTrigger = booleanArrayStr.length > 1 ? Boolean.parseBoolean(booleanArrayStr[1]) : false;
+				boolean unscheduleTrigger = booleanArrayStr.length >2 ? Boolean.parseBoolean(booleanArrayStr[2]) : false;
+				
+				logger.info("Setting JobExecutionException with refire=" + refire + ", unscheduleAllTrigger=" + 
+						unscheduleAllTrigger + ", unscheduleTrigger " + unscheduleTrigger);
+				jobEx.setRefireImmediately(refire);
+				jobEx.setUnscheduleAllTriggers(unscheduleAllTrigger);
+				jobEx.setUnscheduleFiringTrigger(unscheduleTrigger);
 			}
-        	throw new RuntimeException("Failed to execute job " + jobDetail.getKey(), e);
+			throw jobEx;
 		}
 	}
 

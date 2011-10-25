@@ -4,18 +4,16 @@ import static myschedule.quartz.extra.SchedulerTemplate.createJobDetail;
 import static myschedule.quartz.extra.SchedulerTemplate.createSimpleTrigger;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import integration.myschedule.quartz.extra.ResultJobListener;
-import integration.myschedule.quartz.extra.ResultSchedulerListener;
 import java.io.File;
-import javax.script.ScriptException;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.job.ScriptingJob;
 import org.junit.Test;
 import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
+import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
 
 public class ScriptingJobTest {
@@ -120,21 +118,15 @@ public class ScriptingJobTest {
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
 	}
 	
-	/** 
-	 * If the ScriptpingJob were to throw anything Exception other than JobExecutionException, only then a 
-	 * SchedulerListener will be notify with error.
-	 */
 	@Test
 	public void testScriptTextJobWithException() {
 		ResultJobListener.resetResult();
-		ResultSchedulerListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.addListener(new ResultJobListener());
-		st.addListener(new ResultSchedulerListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
-		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "1 + 99; throw 'An expected error.';");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "2 + 99; throw 'An expected error.';");
 		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
@@ -146,33 +138,22 @@ public class ScriptingJobTest {
 		assertThat(ResultJobListener.result.jobResults.size(), is(1));
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
 		
-		// Scheduler listener should have been notified.
-		assertThat(ResultSchedulerListener.result.scheduleErrorTimes.size(), is(1));
-		assertThat((String)ResultSchedulerListener.result.scheduleErrorTimes.get(0)[1], containsString("exception"));
-		Throwable t = ((SchedulerException)
-				ResultSchedulerListener.result.scheduleErrorTimes.get(0)[2]).getUnderlyingException();
-		assertThat(t instanceof RuntimeException, is(true));
-		assertThat(t.getMessage(), startsWith("Failed to execute job"));
-		assertThat(t.getCause() instanceof ScriptException, is(true));
+		Object[] jobWasExecuteParams = ResultJobListener.result.jobWasExecutedTimes.get(0);
+		JobExecutionException ex = (JobExecutionException)jobWasExecuteParams[2];
+		assertThat(ex, notNullValue());
+		assertThat(ex.getMessage(), containsString("Failed to execute job"));
 	}
 	
-	/** 
-	 * Note: because we set flag to wrap any script exception into JobExecutionException, thus Quartz has no way of 
-	 * notifying listener other than just log it in this case.
-	 */
 	@Test
-	public void testScriptTextJobWithJobExecutionException() {
+	public void testScriptTextJobWithCustomJobExecutionException() {
 		ResultJobListener.resetResult();
-		ResultSchedulerListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.addListener(new ResultJobListener());
-		st.addListener(new ResultSchedulerListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
-		job.getJobDataMap().put(ScriptingJob.USE_JOB_EXECUTION_EXCEPTION_KEY, "true");
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
-		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, 
-				"2 + 99; throw Packages.org.quartz.JobExecutionException('An expected error.');");
+		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "2 + 99; throw 'An expected error.';");
+		job.getJobDataMap().put(ScriptingJob.JOB_EXECUTION_EXCEPTION_PARAMS_KEY, "false, false, true"); // unschedule trigger
 		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
 		st.scheduleJob(job, trigger);
 		st.startAndShutdown(99);
@@ -183,8 +164,14 @@ public class ScriptingJobTest {
 		// Notice the count is one!
 		assertThat(ResultJobListener.result.jobResults.size(), is(1));
 		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
+
+		Object[] jobWasExecuteParams = ResultJobListener.result.jobWasExecutedTimes.get(0);
+		JobExecutionException ex = (JobExecutionException)jobWasExecuteParams[2];
+		assertThat(ex, notNullValue());
+		assertThat(ex.getMessage(), containsString("Failed to execute job"));
+		assertThat(ex.refireImmediately(), is(false));
+		assertThat(ex.unscheduleAllTriggers(), is(false));
+		assertThat(ex.unscheduleFiringTrigger(), is(true));
 		
-		// Scheduler listener should have been notified.
-		assertThat(ResultSchedulerListener.result.scheduleErrorTimes.size(), is(0));
 	}
 }

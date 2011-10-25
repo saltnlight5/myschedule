@@ -161,6 +161,6 @@ public class AppConfig implements Initable {
 	
 	@Override
 	public boolean isInited() {
-		throw new RuntimeException("Not yet implemented.");
+		throw new RuntimeException("Not supported.");
 	}
 }
