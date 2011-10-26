@@ -1,15 +1,15 @@
-package integration.myschedule.quartz.extra;
+package unit.myschedule.quartz.extra;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import integration.myschedule.quartz.extra.util.ResultFile;
 import java.io.FileNotFoundException;
 import java.util.List;
 import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
 import org.junit.Assert;
 import org.junit.Test;
+import unit.myschedule.quartz.extra.util.ResultFile;
 
 public class ScriptingSchedulerPluginTest {
 	public static ResultFile RESULT_FILE = new ResultFile("ScriptingSchedulerPluginTest.tmp");

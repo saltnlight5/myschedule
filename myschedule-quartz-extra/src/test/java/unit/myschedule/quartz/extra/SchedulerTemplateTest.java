@@ -1,4 +1,4 @@
-package integration.myschedule.quartz.extra;
+package unit.myschedule.quartz.extra;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;

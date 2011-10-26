@@ -1,10 +1,9 @@
-package integration.myschedule.quartz.extra;
+package unit.myschedule.quartz.extra;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import integration.myschedule.quartz.extra.util.ResultFile;
 
 import java.util.Date;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.spi.SchedulerPlugin;
+import unit.myschedule.quartz.extra.util.ResultFile;
 
 public class SchedulerMainTest {
 	public static ResultFile RESULT_FILE = new ResultFile("SchedulerMainTest.tmp");

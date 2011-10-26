@@ -1,4 +1,4 @@
-package integration.myschedule.quartz.extra;
+package unit.myschedule.quartz.extra;
 
 import java.util.ArrayList;
 import java.util.Date;

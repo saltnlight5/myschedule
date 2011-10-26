@@ -1,4 +1,4 @@
-package integration.myschedule.quartz.extra.job;
+package unit.myschedule.quartz.extra.job;
 
 import static myschedule.quartz.extra.SchedulerTemplate.createJobDetail;
 import static myschedule.quartz.extra.SchedulerTemplate.createSimpleTrigger;
@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import integration.myschedule.quartz.extra.ResultJobListener;
 import java.io.File;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.job.ScriptingJob;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
+import unit.myschedule.quartz.extra.ResultJobListener;
 
 public class ScriptingJobTest {
 	@Test
