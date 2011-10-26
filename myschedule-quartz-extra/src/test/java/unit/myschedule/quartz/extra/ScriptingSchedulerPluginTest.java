@@ -19,7 +19,7 @@ public class ScriptingSchedulerPluginTest {
 		try {
 			// We will use the script to write to result file then verify
 			RESULT_FILE.resetFile();
-			SchedulerTemplate st = new SchedulerTemplate("integration/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz.properties");
+			SchedulerTemplate st = new SchedulerTemplate("unit/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz.properties");
 			st.startAndShutdown(700);
 			
 			List<String> result = RESULT_FILE.readLines();
@@ -37,7 +37,7 @@ public class ScriptingSchedulerPluginTest {
 	public void testScriptingSchedulerPluginFileNotFound() throws Exception {
 		try {
 			RESULT_FILE.resetFile();
-			SchedulerTemplate st = new SchedulerTemplate("integration/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-filenotfound.properties");
+			SchedulerTemplate st = new SchedulerTemplate("unit/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-filenotfound.properties");
 			st.startAndShutdown(700);
 			Assert.fail("We should faile with file not found.");
 		} catch (QuartzRuntimeException e) {
@@ -52,7 +52,7 @@ public class ScriptingSchedulerPluginTest {
 		try {
 			// We will use the script to write to result file then verify
 			RESULT_FILE.resetFile();
-			SchedulerTemplate st = new SchedulerTemplate("integration/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-classpath.properties");
+			SchedulerTemplate st = new SchedulerTemplate("unit/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-classpath.properties");
 			st.startAndShutdown(700);
 			
 			List<String> result = RESULT_FILE.readLines();

@@ -107,6 +107,10 @@
 				<version>2.10</version>
 				<configuration>
 					<disableXmlReport>true</disableXmlReport>
+					<!-- Include only unit tests -->
+					<includes>
+						<include>unit/**/*Test.java</include>
+					</includes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -123,7 +127,7 @@
 
 	<profiles>
 		<profile>
-			<id>unit</id>
+			<id>integration</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
@@ -135,9 +139,9 @@
 						<version>2.10</version>
 						<configuration>
 							<disableXmlReport>true</disableXmlReport>
-							<!-- Include only unit tests -->
+							<!-- Include integration tests -->
 							<includes>
-								<include>unit/**/*Test.java</include>
+								<include>integration/**/*Test.java</include>
 							</includes>
 						</configuration>
 					</plugin>

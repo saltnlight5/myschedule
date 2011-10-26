@@ -23,7 +23,7 @@ public class SchedulerMainTest {
 	public void testMainWithTimeout() throws Exception {		
 		try {
 			// Run SchedulerMain with timeout settings so it should exit automatically.
-			String config = "integration/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
+			String config = "unit/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
 			String[] javaCmdArgs = { SchedulerMain.class.getName(), config };
 			String[] javaOpts = { "-DSchedulerMain.Timeout=700" };
 			ProcessUtils.runJavaWithOpts(3000, javaOpts, javaCmdArgs);
@@ -44,7 +44,7 @@ public class SchedulerMainTest {
 		try {
 			try {
 				// Default SchedulerMain will run as server, so this should cause test to timeout.
-				String config = "integration/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
+				String config = "unit/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
 				ProcessUtils.runJava(700, SchedulerMain.class.getName(), config);
 				fail("We should have timed-out, but didn't.");
 			} catch (ProcessUtils.TimeoutException e) {
