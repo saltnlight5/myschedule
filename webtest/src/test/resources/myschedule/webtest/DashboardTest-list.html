@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/myschedule/themes/smoothness/jquery-ui.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/myschedule/themes/smoothness/main.css"/>
+    <link rel="stylesheet" type="text/css" href="/myschedule/themes/smoothness/datatables-css/table_jui.css"/>
+    <script src="/myschedule/js/jquery-1.6.1.js">
+    </script>
+    <script src="/myschedule/js/jquery-ui-1.8.13.custom.js">
+    </script>
+    <script src="/myschedule/js/jquery.dataTables-1.8.0.js">
+    </script>
+    <title>
+      MySchedule
+    </title>
+  </head>
+  <body>
+    <div id="body-container">
+      <div class="header">
+      </div>
+      <!-- div.header-->      <!-- A menu for the dashboard to manage multiple schedulers -->      <ul id="menu">
+        <li>
+          MySchedule: 
+        </li>
+        <li>
+          <a href="/myschedule/main/dashboard/list">
+            Dashboard
+          </a>
+        </li>
+      </ul>
+      <!-- dashboard specific menu -->      <ul id="submenu">
+        <li>
+          <a href="/myschedule/main/dashboard/create">
+            Create Scheduler
+          </a>
+        </li>
+      </ul>
+      <script>
+//<![CDATA[
+
+$(document).ready(function() {
+	// Use dataTables plugin
+	$("#schedulerRow-list").dataTable({		
+		"bPaginate": false,
+		"bLengthChange": false,
+		"bFilter": true,
+		"bSort": false,
+		"bInfo": true,
+		"bJQueryUI": true,
+	});
+	
+	// Confirm shutdown schedulerRow
+	$("#shutdown-confirm").hide()
+	$("#schedulerRow-list .shutdown-link").click(function() {
+		var linkUrl = $(this).attr("href");
+		$("#shutdown-confirm").dialog({
+			resizable: false,
+			height:200,
+			width:400,
+			modal: true,
+			buttons: {
+				"Yes": function() {
+					window.location.href=linkUrl;
+				},
+				Cancel: function() {
+					$(this).dialog("close");
+				}
+			}
+		});
+		return false;
+	});
+	
+	// Confirm Delete config
+	$("#delete-config-confirm").hide()
+	$("#schedulerRow-list .delete-config-link").click(function() {
+		var linkUrl = $(this).attr("href");
+		$("#delete-config-confirm").dialog({
+			resizable: false,
+			height:200,
+			width:400,
+			modal: true,
+			buttons: {
+				"Yes": function() {
+					window.location.href=linkUrl;
+				},
+				Cancel: function() {
+					$(this).dialog("close");
+				}
+			}
+		});
+		return false;
+	});
+});
+
+//]]>
+      </script>
+      <div id="shutdown-confirm" style="display: none;">
+        <p>
+          <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;">
+          </span>
+          
+	Are you sure you want to shutdown the schedulerRow?
+	
+        </p>
+      </div>
+      <div id="delete-config-confirm" style="display: none;">
+        <p>
+          <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;">
+          </span>
+          
+	Are you sure you want to delete this schedulerRow configuration?
+	
+        </p>
+      </div>
+      <h1>
+        List of All Schedulers
+      </h1>
+      <div class="dataTables_wrapper" id="schedulerRow-list_wrapper">
+        <div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix">
+          <div id="schedulerRow-list_filter" class="dataTables_filter">
+            Search: 
+            <input type="text" value=""/>
+          </div>
+        </div>
+        <table id="schedulerRow-list" class="display" style="">
+          <thead>
+            <tr>
+              <th class="ui-state-default" rowspan="1" colspan="1" style="width: 1243px;">
+                <div class="DataTables_sort_wrapper">
+                  SCHEDULER NAME
+                  <span class="DataTables_sort_icon">
+                  </span>
+                </div>
+              </th>
+              <th class="ui-state-default" rowspan="1" colspan="1" style="width: 1243px;">
+                <div class="DataTables_sort_wrapper">
+                  INITIALIZED
+                  <span class="DataTables_sort_icon">
+                  </span>
+                </div>
+              </th>
+              <th class="ui-state-default" rowspan="1" colspan="1" style="width: 1243px;">
+                <div class="DataTables_sort_wrapper">
+                  STARTED
+                  <span class="DataTables_sort_icon">
+                  </span>
+                </div>
+              </th>
+              <th class="ui-state-default" rowspan="1" colspan="1" style="width: 1243px;">
+                <div class="DataTables_sort_wrapper">
+                  RUNNING SINCE
+                  <span class="DataTables_sort_icon">
+                  </span>
+                </div>
+              </th>
+              <th class="ui-state-default" rowspan="1" colspan="1" style="width: 1243px;">
+                <div class="DataTables_sort_wrapper">
+                  # JOBS
+                  <span class="DataTables_sort_icon">
+                  </span>
+                </div>
+              </th>
+              <th class="ui-state-default" rowspan="1" colspan="1" style="width: 1243px;">
+                <div class="DataTables_sort_wrapper">
+                  ACTION
+                  <span class="DataTables_sort_icon">
+                  </span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="odd">
+              <td>
+                <a href="/myschedule/main/dashboard/switch-scheduler?configId=2f96991c-756f-4c13-b6ed-142f4e0bf967">
+                  InMemoryScheduler
+                </a>
+              </td>
+              <td>
+                true
+              </td>
+              <!-- initialize -->              <td>
+                true
+              </td>
+              <td>
+                10/25/2011 23:25
+              </td>
+              <td>
+                0
+              </td>
+              <td>
+                <a class="shutdown-link" href="/myschedule/main/dashboard/shutdown?configId=2f96991c-756f-4c13-b6ed-142f4e0bf967">
+                  Shutdown
+                </a>
+                 |
+				
+                <a href="/myschedule/main/dashboard/modify?configId=2f96991c-756f-4c13-b6ed-142f4e0bf967">
+                  Modify
+                </a>
+                 |
+				
+                <a class="delete-config-link" href="/myschedule/main/dashboard/delete-action?configId=2f96991c-756f-4c13-b6ed-142f4e0bf967">
+                  Delete
+                </a>
+              </td>
+            </tr>
+            <tr class="even">
+              <td>
+                <a href="/myschedule/main/dashboard/switch-scheduler?configId=d4e65367-6c4d-4596-b316-881098f3580c">
+                  DatabaseScheduler
+                </a>
+              </td>
+              <td>
+                true
+              </td>
+              <!-- initialize -->              <td>
+                true
+              </td>
+              <td>
+                10/25/2011 23:25
+              </td>
+              <td>
+                7
+              </td>
+              <td>
+                <a class="shutdown-link" href="/myschedule/main/dashboard/shutdown?configId=d4e65367-6c4d-4596-b316-881098f3580c">
+                  Shutdown
+                </a>
+                 |
+				
+                <a href="/myschedule/main/dashboard/modify?configId=d4e65367-6c4d-4596-b316-881098f3580c">
+                  Modify
+                </a>
+                 |
+				
+                <a class="delete-config-link" href="/myschedule/main/dashboard/delete-action?configId=d4e65367-6c4d-4596-b316-881098f3580c">
+                  Delete
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix">
+          <div class="dataTables_info" id="schedulerRow-list_info">
+            Showing 1 to 2 of 2 entries
+          </div>
+        </div>
+      </div>
+      <div id="footer">
+        <div id="productInfo">
+          <a href="/myschedule/main/about">
+            myschedule-2.2.0-SNAPSHOT
+          </a>
+           - Managing Quartz Schedulers with Ease.
+	
+        </div>
+      </div>
+      <!-- div.footer -->    </div>
+    <!-- body-container -->  </body>
+</html>
