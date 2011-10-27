@@ -40,11 +40,11 @@ import org.slf4j.LoggerFactory;
  */
 public class OsCommandJob implements Job, InterruptableJob {
 	
-	private static final Logger logger = LoggerFactory.getLogger(OsCommandJob.class);
 	public static final String CMD_ARGS_KEY = "CommandArguments";
 	public static final String TIMEOUT_KEY = "Timeout";
 	public static final String RUN_IN_BACKGROUND_KEY = "RunInBackground";
-	
+
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	protected BackgroundProcess bgProcess;
 	protected JobKey jobKey;
 	

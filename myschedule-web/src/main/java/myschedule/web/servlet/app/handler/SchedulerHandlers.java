@@ -14,7 +14,7 @@ import myschedule.service.QuartzSchedulerService;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
-import myschedule.service.Utils;
+import myschedule.service.ServiceUtils;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
@@ -205,14 +205,14 @@ public class SchedulerHandlers {
 	
 	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
-		List<Utils.Getter> getters = Utils.getGetters(schedulerMetaData);
-		for (Utils.Getter getter : getters) {
+		List<ServiceUtils.Getter> getters = ServiceUtils.getGetters(schedulerMetaData);
+		for (ServiceUtils.Getter getter : getters) {
 			String key = getter.getPropName();
 			if (key.length() >= 1) {
 				if (key.equals("summary")) // skip this field.
 					continue;
 				key = key.substring(0, 1).toUpperCase() + key.substring(1);
-				String value = Utils.getGetterStrValue(getter);
+				String value = ServiceUtils.getGetterStrValue(getter);
 				schedulerInfo.put(key, value);
 			} else {
 				logger.warn("Skipped a scheduler info key length less than 1 char. Key=" + key);

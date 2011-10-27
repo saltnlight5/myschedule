@@ -22,10 +22,11 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng
  */
 public class ProcessUtils {
-	private static final Logger logger = LoggerFactory.getLogger(ProcessUtils.class);
-
 	/** NO timeout constant */
 	public static final long NO_TIMEOUT = -1;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProcessUtils.class);
+
 
 	/**
 	 * Run an external command and read STDOUT and STDERR from the sub-process and process each line from output.

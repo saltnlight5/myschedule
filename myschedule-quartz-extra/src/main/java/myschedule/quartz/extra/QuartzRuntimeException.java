@@ -20,12 +20,8 @@ public class QuartzRuntimeException extends RuntimeException {
 		return schedulerException;
 	}
 	
-	public void setSchedulerException(SchedulerException schedulerException) {
-		this.schedulerException = schedulerException;
-	}
-	
 	public QuartzRuntimeException(SchedulerException schedulerException) {
-		setSchedulerException(schedulerException);
+		this.schedulerException = schedulerException;
 	}
 	
 	public QuartzRuntimeException() {

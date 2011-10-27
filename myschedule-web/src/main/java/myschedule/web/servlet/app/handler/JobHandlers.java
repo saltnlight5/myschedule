@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import lombok.Getter;
 import lombok.Setter;
+import myschedule.quartz.extra.QuartzExtraUtils;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.XmlJobLoader;
 import myschedule.service.ErrorCode;
@@ -162,11 +163,10 @@ public class JobHandlers {
 			String xml = viewData.findData("xml");
 			logger.debug("Loading xml jobs.");
 			QuartzSchedulerService ss = schedulerServiceFinder.findSchedulerService(session);
-			SchedulerTemplate schedulerTemplate = new SchedulerTemplate(ss.getScheduler());
 			InputStream inStream = null;
 			try {
 				inStream = new ByteArrayInputStream(xml.getBytes());
-				XmlJobLoader loader = schedulerTemplate.scheduleXmlSchedulingData(inStream);
+				XmlJobLoader loader = QuartzExtraUtils.scheduleXmlSchedulingData(inStream, ss.getScheduler());
 				JobLoadPageData data = new JobLoadPageData();
 				data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
 				data.setOverWriteExistingData(loader.isOverWriteExistingData());

@@ -4,7 +4,6 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,9 +47,6 @@ import org.quartz.spi.OperableTrigger;
  */
 public class SchedulerTemplate {
 
-	//
-	// # A internal quartz scheduler instance holder.
-	//
 	protected Scheduler scheduler;
 	
 	public SchedulerTemplate() {
@@ -78,9 +74,10 @@ public class SchedulerTemplate {
 		return scheduler;
 	}
 	
-	//
-	// # These are delegate methods from org.quartz.Scheduler interface
-	//
+
+	// ==============================================================
+	// Wrap The org.quartz.Scheduler methods with "uncheck" exception
+	// ==============================================================
 	public void addCalendar(String calName, Calendar calendar, boolean replace, boolean updateTriggers) {
 		try {
 			scheduler.addCalendar(calName, calendar, replace, updateTriggers);
@@ -530,9 +527,10 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	//
-	// # These are convenient methods to easy scheduling programming.
-	//
+	
+	// ======================================
+	// Additional methods for easy scheduling
+	// ======================================
 	
 	@SuppressWarnings("unchecked")
 	public void addListener(JobListener listener) {
@@ -741,24 +739,6 @@ public class SchedulerTemplate {
 			throw new QuartzRuntimeException(e);
 		}
 	}
-
-	/**
-	 * Load job scheduling data xml using XMLSchedulingDataProcessor.
-	 * 
-	 * @param inStream - input stream of content for job_scheduling_data xml.
-	 * @return XMLSchedulingDataProcessor instance will contain all the jobs parsed from xml input.
-	 */
-	public XmlJobLoader scheduleXmlSchedulingData(InputStream inStream) {
-		try {
-			// XmlJobLoader is not only just a loader, but also use to store what's loaded!
-			XmlJobLoader xmlJobLoader = XmlJobLoader.newInstance(); 
-			String systemId = XmlJobLoader.XML_SYSTEM_ID;
-			xmlJobLoader.processStreamAndScheduleJobs(inStream, systemId, scheduler);
-			return xmlJobLoader;
-		} catch (Exception e) {
-			throw new QuartzRuntimeException(e);
-		}
-	}
 	
 	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass) {
 		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, null, new Date(), null);
@@ -778,12 +758,15 @@ public class SchedulerTemplate {
 		return scheduleJob(job, trigger);
 	}
 
-	public Date scheduleSimpleJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
+	public Date scheduleSimpleJob(
+			String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
 		return scheduleSimpleJob(name, repeatTotalCount, repeatInterval, jobClass, null);
 	}
 	
-	public Date scheduleSimpleJob(String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
-		return scheduleSimpleJob(JobKey.jobKey(name), startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
+	public Date scheduleSimpleJob(
+			String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
+		return 
+			scheduleSimpleJob(JobKey.jobKey(name), startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
 	}
 	
 	public Date scheduleSimpleJob(
@@ -856,7 +839,8 @@ public class SchedulerTemplate {
 		return createSimpleTrigger(TriggerKey.triggerKey(name), repeatTotalCount, interval, startTime, null);
 	}
 	
-	public static MutableTrigger createSimpleTrigger(TriggerKey triggerKey, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
+	public static MutableTrigger createSimpleTrigger(
+			TriggerKey triggerKey, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
 		if (startTime == null)
 			startTime = new Date();
 		

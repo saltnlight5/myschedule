@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zemian Deng
  */
-public class Utils {
+public class ServiceUtils {
 	
-	private static Logger logger = LoggerFactory.getLogger(Utils.class);
+	private static Logger logger = LoggerFactory.getLogger(ServiceUtils.class);
 	
 	public static String propsToText(Properties configProps) {
 		StringWriter sWriter = new StringWriter();

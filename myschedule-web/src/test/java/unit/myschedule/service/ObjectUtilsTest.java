@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import myschedule.service.Utils;
+import myschedule.service.ServiceUtils;
 
 import org.junit.Test;
 
@@ -19,10 +19,10 @@ public class ObjectUtilsTest {
 	@Test
 	public void testDump() throws Exception {
 		//Utils.dump(System.getProperties());
-		Utils.dump(getMapSample());
-		Utils.dump(getListSample());
-		Utils.dump(new String[]{});
-		Utils.dump(new String[]{"a", "B"});
+		ServiceUtils.dump(getMapSample());
+		ServiceUtils.dump(getListSample());
+		ServiceUtils.dump(new String[]{});
+		ServiceUtils.dump(new String[]{"a", "B"});
 	}
 	
 	public Map<String, String> getMapSample() {

@@ -17,7 +17,7 @@ import myschedule.service.QuartzSchedulerService;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
-import myschedule.service.Utils;
+import myschedule.service.ServiceUtils;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
@@ -227,7 +227,7 @@ public class DashboardHandlers {
 			} catch (ErrorCodeException e) {
 				logger.error("Failed to initialize scheduler with configId " + configId, e);
 				String execeptionStr = ExceptionUtils.getFullStackTrace(e);
-				Map<String, Object> map = Utils.createMap("msg", execeptionStr, "msgType", "error");
+				Map<String, Object> map = ServiceUtils.createMap("msg", execeptionStr, "msgType", "error");
 				HttpSession session = viewData.getRequest().getSession(true);
 				session.setAttribute("flashMsg", map);
 			}

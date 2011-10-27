@@ -47,15 +47,25 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	private static final String CLASSPATH_PREFIX = "classpath:";
 
 	private static final Logger logger = LoggerFactory.getLogger(ScriptingSchedulerPlugin.class);
+
+	private String name;
+	private ScriptEngine scriptEngine;
+	private Scheduler scheduler;
 	
-	protected String name;
 	protected String scriptEngineName = "JavaScript";
 	protected String initializeScript;
 	protected String startScript;
 	protected String shutdownScript;
 	
-	protected ScriptEngine scriptEngine;
-	protected ScriptContext scriptContext;
+	public String getName() {
+		return name;
+	}
+	public ScriptEngine getScriptEngine() {
+		return scriptEngine;
+	}
+	public Scheduler getScheduler() {
+		return scheduler;
+	}
 	
 	public void setScriptEngineName(String scriptEngineName) {
 		this.scriptEngineName = scriptEngineName;
@@ -69,10 +79,7 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	public void setShutdownScript(String shutdownScript) {
 		this.shutdownScript = shutdownScript;
 	}
-		
-	public String getName() {
-		return name;
-	}
+	
 	public String getScriptEngineName() {
 		return scriptEngineName;
 	}
@@ -93,11 +100,6 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 		logger.debug("Initializing scripting plugin {} with ScriptEngine {}", name, scriptEngineName);
 		ScriptEngineManager factory = new ScriptEngineManager();
         scriptEngine = factory.getEngineByName(scriptEngineName);
-        scriptContext = new SimpleScriptContext();
-        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-        engineScope.put("schedulerPlugin", this);
-        engineScope.put("scheduler", new SchedulerTemplate(scheduler));
-		engineScope.put("logger", logger);
 		
 		if (initializeScript != null) {
 	        logger.debug("Running initialize script {}", initializeScript);
@@ -128,6 +130,13 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 
 	protected void runScript(String filename) {
 		logger.debug("Run script {}", filename);
+
+        ScriptContext scriptContext = new SimpleScriptContext();
+        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
+        engineScope.put("schedulerPlugin", this);
+        engineScope.put("scheduler", new SchedulerTemplate(scheduler));
+		engineScope.put("logger", logger);
+		
 		URL url = null;
 		Reader reader = null;
 		try {
