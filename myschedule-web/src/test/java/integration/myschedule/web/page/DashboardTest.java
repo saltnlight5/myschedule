@@ -1,4 +1,4 @@
-package integration.myschedule.web;
+package integration.myschedule.web.page;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
