@@ -67,6 +67,14 @@
 			<version>1.1.2</version>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<!-- HtmlUnit test lib -->
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.9</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>myschedule-${project.version}</finalName>
