@@ -8,11 +8,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class AboutTest {
+	private TestConfig testConfig = TestConfig.getInstance();
+	
 	@Test
 	public void testDashboardListPage() throws Exception {
 		WebClient webClient = new WebClient();
 		try {
-		    HtmlPage page = webClient.getPage("http://localhost:8080/myschedule/main/about");
+		    HtmlPage page = webClient.getPage(testConfig.getWebappUrl());
 		    assertThat(page.getTitleText(), is("MySchedule"));
 		    
 		    String pageText = page.asText();
