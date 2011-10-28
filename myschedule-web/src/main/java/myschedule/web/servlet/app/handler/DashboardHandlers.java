@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpSession;
+
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -23,7 +25,9 @@ import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData;
 import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData.SchedulerRow;
+import myschedule.web.session.SessionData;
 import myschedule.web.session.SessionSchedulerServiceFinder;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class DashboardHandlers {
@@ -191,7 +195,7 @@ public class DashboardHandlers {
 			}
 			// Now remove scheduler service.
 			schedulerConfigService.removeSchedulerService(configId);
-			session.removeAttribute(SessionSchedulerServiceFinder.SESSION_DATA_KEY);
+			session.removeAttribute(SessionData.SESSION_DATA_KEY);
 			logger.info("Removed scheduler configId {} and from session data.", configId);
 
 			viewData.addData("data", ViewData.mkMap(

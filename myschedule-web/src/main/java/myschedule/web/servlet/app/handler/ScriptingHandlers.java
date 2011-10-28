@@ -25,6 +25,7 @@ import myschedule.service.ResourceLoader;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.session.SessionData;
 import myschedule.web.session.SessionSchedulerServiceFinder;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -40,14 +41,15 @@ public class ScriptingHandlers {
 	static {
 		SCRIPT_EXT_MAPPINGS.put("JavaScript", ".js");
 		SCRIPT_EXT_MAPPINGS.put("Groovy", ".groovy");
-		SCRIPT_EXT_MAPPINGS.put("Ruby", ".rb");
+		SCRIPT_EXT_MAPPINGS.put("JRuby", ".rb");
 	}
 			
 	@Getter
 	protected ActionHandler runHandler = new ViewDataActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
-			String scriptEngineName = viewData.findData("scriptEngineName");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String scriptEngineName = sessionData.getScriptEngineName();
 			List<String> scriptEngineNames = getScriptingEngineNames();
 			viewData.addData("data", ViewData.mkMap(
 					"scriptEngineNames", scriptEngineNames)
@@ -63,6 +65,13 @@ public class ScriptingHandlers {
 			HttpSession session = viewData.getRequest().getSession(true);
 			String scriptEngineName = viewData.findData("scriptEngineName");
 			String scriptText = viewData.findData("scriptText");
+			
+			// Re-save the script engine name into session
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			if (!scriptEngineName.equals(sessionData.getScriptEngineName())) {
+				logger.debug("Changing session data scriptEngineName to {}", scriptEngineName);
+				sessionData.setScriptEngineName(scriptEngineName);
+			}
 
 			// Create a Java ScriptEngine
 			ScriptEngineManager factory = new ScriptEngineManager();
@@ -107,8 +116,9 @@ public class ScriptingHandlers {
 	protected ActionHandler scriptExampleHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String scriptEngineName = sessionData.getScriptEngineName();
 			String name = viewData.findData("name");
-			String scriptEngineName = viewData.findData("scriptEngineName");
 			String ext = SCRIPT_EXT_MAPPINGS.get(scriptEngineName);
 			if (ext == null) {
 				ext = ".js";
@@ -130,11 +140,11 @@ public class ScriptingHandlers {
 		ScriptEngineManager factory = new ScriptEngineManager();
 		for (ScriptEngineFactory fac : factory.getEngineFactories()) {
 			String name = fac.getLanguageName();
-			// Use consisten naming.
-			if (name.equals("ECMAScript")) {
+			// Use consistent naming.
+			if (name.toLowerCase().equals("ecmascript")) {
 				name = "JavaScript";
-			} else if (name.equals("ruby")) {
-				name = "Ruby";
+			} else if (name.toLowerCase().endsWith("ruby")) {
+				name = "JRuby";
 			}
 			scriptEngineNames.add(name);
 		}

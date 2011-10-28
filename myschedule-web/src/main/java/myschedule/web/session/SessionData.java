@@ -3,7 +3,10 @@ package myschedule.web.session;
 
 
 public class SessionData {
-	
+
+	public static final String SESSION_DATA_KEY = "sessionData";
+
+	protected String scriptEngineName = "JavaScript"; // Default to JavaScript.
 	protected String currentSchedulerName;
 	protected String currentSchedulerConfigId;
 	
@@ -15,11 +18,6 @@ public class SessionData {
 		return currentSchedulerConfigId;
 	}
 	
-	@Override
-	public String toString() {
-		return "SessionData[" + currentSchedulerName + "]";
-	}
-	
 	public String getCurrentSchedulerName() {
 		return currentSchedulerName;
 	}
@@ -27,5 +25,17 @@ public class SessionData {
 	public void setCurrentSchedulerName(String currentSchedulerServiceName) {
 		this.currentSchedulerName = currentSchedulerServiceName;
 	}
+
+	public String getScriptEngineName() {
+		return scriptEngineName;
+	}
 	
+	public void setScriptEngineName(String scriptEngineName) {
+		this.scriptEngineName = scriptEngineName;
+	}
+	
+	@Override
+	public String toString() {
+		return "SessionData[" + currentSchedulerName + "]";
+	}
 }

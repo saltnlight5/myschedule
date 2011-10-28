@@ -1,5 +1,7 @@
 package myschedule.web.session;
 
+import static myschedule.web.session.SessionData.SESSION_DATA_KEY;
+
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -23,8 +25,6 @@ public class SessionSchedulerServiceFinder {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SessionSchedulerServiceFinder.class);
 	
-	public static final String SESSION_DATA_KEY = "sessionData";
-
 	protected SchedulerServiceRepository schedulerServiceRepo;
 	
 	public void setSchedulerServiceRepo(SchedulerServiceRepository schedulerServiceRepo) {

@@ -18,8 +18,8 @@ $(document).ready(function() {
 	$("#script-simpleJobs").click(function() {
 		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=simpleJobs");
 	});
-	$("#script-triggerJobs").click(function() {
-		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=triggerJobs");
+	$("#script-cronJobs").click(function() {
+		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=cronJobs");
 	});
 });
 </script>
@@ -30,11 +30,10 @@ $(document).ready(function() {
 <p>Run any script using Java ScriptEngine to manage the scheduler. You will have these 
 <a id="variables-link" href="#">implicit variables </a> available. </p>
 <div id="variables">
-<p>In your script, these variables are available to use immediately.</p>
 <pre>
-scheduler           An instance of myschedule.quartz.extra.SchedulerTemplate that wraps org.quartz.Scheuler API, and it
-                    provides many additional convenient methods for scheduling jobs.
-webOut              An instance of java.io.PrintWriter to allow script to display text output back to web page for debug purpose.
+scheduler - An instance of myschedule.quartz.extra.SchedulerTemplate that wraps org.quartz.Scheuler API, and it
+            provides many additional convenient methods for scheduling jobs.
+webOut    - An instance of java.io.PrintWriter to allow script to display text output back to web page for debug purpose.
 </pre>
 </div><!-- div.variables -->
 
@@ -71,7 +70,11 @@ Script Examples:
 <br/>
 Scripting Language: <select name="scriptEngineName">
 <c:forEach items="${ data.scriptEngineNames }" var="name">
-<option value="${ name }">${ name }</option>
+<c:set var="selectedOpt" value=""/>
+<c:if test="${ name ==  selectedScriptEngineName }">
+	<c:set var="selectedOpt" value="selected=\"true\""/>
+</c:if>
+<option ${ selectedOpt } value="${ name }">${ name }</option>
 </c:forEach>
 </select>
 <br/>
