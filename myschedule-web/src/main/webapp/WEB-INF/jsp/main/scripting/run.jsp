@@ -9,9 +9,17 @@
 <script>
 $(document).ready(function() {
 	// Auto hide help page, and show when click.
-	$("#help").hide();
-	$('#show-help').click(function() {
-		$("#help").toggle('slow');
+	$("#variables").hide();
+	$('#variables-link').click(function() {
+		$("#variables").toggle('slow');
+	});
+	
+	// Click examles to load textarea.
+	$("#script-simpleJobs").click(function() {
+		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=simpleJobs");
+	});
+	$("#script-triggerJobs").click(function() {
+		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=triggerJobs");
 	});
 });
 </script>
@@ -19,31 +27,16 @@ $(document).ready(function() {
 <div id="page-container">
 <h1>Scheduler Scripting</h1>
 
-<p>This is for the power user who want to manipulate the scheduler with a ScriptingEngine.</p>
-
-<a id="show-help" href="#">Show an example</a>
-<div id="help">
+<p>Run any script using Java ScriptEngine to manage the scheduler. You will have these 
+<a id="variables-link" href="#">implicit variables </a> available. </p>
+<div id="variables">
 <p>In your script, these variables are available to use immediately.</p>
 <pre>
 scheduler           An instance of myschedule.quartz.extra.SchedulerTemplate that wraps org.quartz.Scheuler API, and it
                     provides many additional convenient methods for scheduling jobs.
 webOut              An instance of java.io.PrintWriter to allow script to display text output back to web page for debug purpose.
 </pre>
-
-<p>For example, using JavaScript, here is how you add a new job to the scheduler that runs every MON-FRI at 8am.</p>
-<pre>
-importPackage(Packages.myschedule.quartz.extra.job);
-importPackage(Packages.java.util);
-var dataMap = new HashMap();
-dataMap.put('ScriptEngineName', 'JavaScript');
-dataMap.put('ScriptText', 'logger.info("It will take me a min to wake up."); sleep(60000);');
-var nextFireTime = scheduler.scheduleCronJob('MyDailyJob', '0 0 8 ? * MON-FRI', ScriptingJob, dataMap);
-webOut.println('MyDailyJob has been scheduled. Next fire time: ' + nextFireTime);
-</pre>
-
-You can find more <a href="http://code.google.com/p/myschedule/wiki/ScriptingScheduler">examples here.</a>
-
-</div><!-- div.help -->
+</div><!-- div.variables -->
 
 <c:if test="${ not empty data.fullStackTrace }">
 <script>
@@ -63,7 +56,18 @@ $(document).ready(function() {
 </c:if>
 
 <form method="post" action="${ mainPath }/scripting/run-action">
-<textarea  style="width: 100%; height: 15em;" name="scriptText">${ data.groovyScriptText }</textarea>
+
+<label class="label">
+Script Examples:
+<span style="label-notes"> 
+	<a name="script-simpleJobs" id="script-simpleJobs">Fixed Interval Jobs</a>
+	, <a name="script-cronJobs" id="script-cronJobs">Cron Jobs</a>
+	, <a href="http://code.google.com/p/myschedule/wiki/ScriptingScheduler">More ...</a>
+</span>
+</label>
+
+<textarea  style="width: 100%; height: 15em;" id="scriptText" name="scriptText">${ data.scriptText }</textarea>
+
 <br/>
 Scripting Language: <select name="scriptEngineName">
 <c:forEach items="${ data.scriptEngineNames }" var="name">

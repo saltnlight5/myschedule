@@ -1,7 +1,6 @@
 package myschedule.web.servlet.app.handler;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.ExceptionHolder;
 import myschedule.service.QuartzSchedulerService;
+import myschedule.service.ResourceLoader;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerService;
 import myschedule.service.SchedulerServiceRepository;
@@ -24,7 +24,6 @@ import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData;
 import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData.SchedulerRow;
 import myschedule.web.session.SessionSchedulerServiceFinder;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class DashboardHandlers {
@@ -35,6 +34,8 @@ public class DashboardHandlers {
 	protected SchedulerConfigService schedulerConfigService;
 	@Setter
 	protected SessionSchedulerServiceFinder schedulerServiceFinder;
+	@Setter
+	protected ResourceLoader resourceLoader;
 	
 	@Getter
 	protected ActionHandler indexHandler = new ViewDataActionHandler() {
@@ -65,15 +66,10 @@ public class DashboardHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String name = viewData.findData("name");
-			logger.debug("Getting resource: {}", name);
-			ClassLoader classLoader = getClassLoader();
-			InputStream inStream = classLoader.getResourceAsStream("myschedule/config/examples/" + name);
+			String resName = "myschedule/config/examples/" + name;
 			try {
-				logger.info("Returning text from resource: " + name);
 				Writer writer = viewData.getResponse().getWriter();
-				IOUtils.copy(inStream, writer);
-				inStream.close();
-				writer.flush();
+				resourceLoader.copyResource(resName, writer);
 			} catch (IOException e) {
 				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to get resource " + name, e);
 			}
@@ -249,9 +245,5 @@ public class DashboardHandlers {
 				viewData.setViewName("redirect:/scheduler/summary");
 			}
 		}
-	};
-	
-	protected ClassLoader getClassLoader() {
-		return Thread.currentThread().getContextClassLoader();
-	}	
+	};	
 }

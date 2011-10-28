@@ -1,11 +1,13 @@
 package myschedule.web.servlet.app.handler;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -13,31 +15,43 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleScriptContext;
 import javax.servlet.http.HttpSession;
-
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.QuartzSchedulerService;
+import myschedule.service.ResourceLoader;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.session.SessionSchedulerServiceFinder;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class ScriptingHandlers {
 		
 	@Setter
 	protected SessionSchedulerServiceFinder schedulerServiceFinder;
-		
+	@Setter
+	protected ResourceLoader resourceLoader;
+	
+	private static final Map<String, String> SCRIPT_EXT_MAPPINGS = new HashMap<String, String>();
+	
+	static {
+		SCRIPT_EXT_MAPPINGS.put("JavaScript", ".js");
+		SCRIPT_EXT_MAPPINGS.put("Groovy", ".groovy");
+		SCRIPT_EXT_MAPPINGS.put("Ruby", ".rb");
+	}
+			
 	@Getter
 	protected ActionHandler runHandler = new ViewDataActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
+			String scriptEngineName = viewData.findData("scriptEngineName");
 			List<String> scriptEngineNames = getScriptingEngineNames();
-			viewData.addData("data", ViewData.mkMap("scriptEngineNames", scriptEngineNames));
+			viewData.addData("data", ViewData.mkMap(
+					"scriptEngineNames", scriptEngineNames)
+					, "selectedScriptEngineName", scriptEngineName);
 		}
 	};
 	
@@ -77,7 +91,7 @@ public class ScriptingHandlers {
 				logger.error("Failed to run script text.", e);
 				map.put("errorMessage", ExceptionUtils.getMessage(e));
 				map.put("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
-				map.put("groovyScriptText", scriptText);
+				map.put("scriptText", scriptText);
 				map.put("scriptEngineNames", getScriptingEngineNames());
 				viewData.setViewName("/scripting/run");
 			} finally {
@@ -89,14 +103,38 @@ public class ScriptingHandlers {
 		};
 	};
 	
+	@Getter
+	protected ActionHandler scriptExampleHandler = new ViewDataActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			String name = viewData.findData("name");
+			String scriptEngineName = viewData.findData("scriptEngineName");
+			String ext = SCRIPT_EXT_MAPPINGS.get(scriptEngineName);
+			if (ext == null) {
+				ext = ".js";
+			}
+			String resName = "myschedule/script/examples/" + name + ext;
+			try {
+				Writer writer = viewData.getResponse().getWriter();
+				resourceLoader.copyResource(resName, writer);
+			} catch (IOException e) {
+				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to get resource " + name, e);
+			}
+			// Set viewName to null, so it will not render view.
+			viewData.setViewName(null);
+		}
+	};
+	
 	protected List<String> getScriptingEngineNames() {
 		List<String> scriptEngineNames = new ArrayList<String>();
 		ScriptEngineManager factory = new ScriptEngineManager();
 		for (ScriptEngineFactory fac : factory.getEngineFactories()) {
 			String name = fac.getLanguageName();
-			// JavaScript is a better name.
+			// Use consisten naming.
 			if (name.equals("ECMAScript")) {
 				name = "JavaScript";
+			} else if (name.equals("ruby")) {
+				name = "Ruby";
 			}
 			scriptEngineNames.add(name);
 		}

@@ -3,6 +3,19 @@
 
 <h1>About MySchedule</h1>
 
+<p>
+The MySchedule is a web application UI for managing <a href="http://quartz-scheduler.org">Quartz Scheduler</a>.</p>
+
+<p>
+The Quartz Scheduler is a Java system that supports flexible scheduling such as fixed repeating interval or CRON jobs. 
+Developers may write custom job task in Java and use Quartz triggers to schedule the job. Quartz also has optional 
+database level data storage, and it allow fine control on job executions with thread pool and clustering capability.</p>
+
+<p>Although Quartz is a powerful library, but it's target users are developers. You can not get a job scheduled without 
+writing some Java code. The MySchedule project here provide not only some extra quartz components for easy programming, 
+but we also provide an end-user friendly way to access and manage the Quartz scheduler. You can get it up and running 
+without little or no programming necessary. It will host and run the full scheduler inside the servlet application.</p>
+
 <p>MySchedule is an Open Source software and licensed with Apache License 2.0. Please visit the 
 <a href="http://code.google.com/p/myschedule">project site</a> for more information.</p>
 

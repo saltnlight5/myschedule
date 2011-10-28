@@ -3,6 +3,7 @@ package myschedule.web.servlet.app;
 import myschedule.web.AppConfig;
 import myschedule.web.servlet.ActionHandlerServlet;
 import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.servlet.app.filter.SessionDataFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
 import myschedule.web.servlet.app.handler.SchedulerHandlers;
@@ -63,6 +64,7 @@ public class MainServlet extends ActionHandlerServlet {
 		
 		addActionHandler("/scripting/run", scriptingHandlers.getRunHandler());
 		addActionHandler("/scripting/run-action", scriptingHandlers.getRunActionHandler());
+		addActionHandler("/scripting/get-script-eg", scriptingHandlers.getScriptExampleHandler());
 		
 		addActionHandler("/about", new ViewDataActionHandler());
 		

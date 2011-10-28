@@ -5,20 +5,21 @@ import java.io.InputStream;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import lombok.Getter;
 import myschedule.service.FileSchedulerConfigDao;
 import myschedule.service.Initable;
+import myschedule.service.ResourceLoader;
 import myschedule.service.SchedulerConfigService;
 import myschedule.service.SchedulerServiceRepository;
 import myschedule.service.ServiceContainer;
-import myschedule.web.servlet.app.SessionDataFilter;
+import myschedule.web.servlet.app.filter.SessionDataFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
 import myschedule.web.servlet.app.handler.SchedulerHandlers;
 import myschedule.web.servlet.app.handler.ScriptingHandlers;
 import myschedule.web.session.SessionSchedulerServiceFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a singleton space to hold global application data.
@@ -54,6 +55,8 @@ public class AppConfig implements Initable {
 	protected SchedulerConfigService schedulerConfigService;
 	@Getter
 	protected SessionSchedulerServiceFinder schedulerServiceFinder;
+	@Getter
+	protected ResourceLoader resourceLoader;
 	
 	// Can leave out the getter
 	protected ServiceContainer serviceContainer;
@@ -113,6 +116,8 @@ public class AppConfig implements Initable {
 	
 	@Override
 	public void init() {
+		resourceLoader = new ResourceLoader();
+		
 		schedulerServiceRepo = SchedulerServiceRepository.getInstance();
 
 		String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
@@ -130,6 +135,7 @@ public class AppConfig implements Initable {
 		dashboardHandler.setSchedulerServiceFinder(schedulerServiceFinder);
 		dashboardHandler.setSchedulerConfigService(schedulerConfigService);
 		dashboardHandler.setSchedulerServiceRepo(schedulerServiceRepo);
+		dashboardHandler.setResourceLoader(resourceLoader);
 
 		jobHandlers = new JobHandlers();
 		jobHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
@@ -141,6 +147,7 @@ public class AppConfig implements Initable {
 		
 		scriptingHandlers = new ScriptingHandlers();
 		scriptingHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
+		scriptingHandlers.setResourceLoader(resourceLoader);
 		
 		sessionDataFilter = new SessionDataFilter();
 		sessionDataFilter.setSchedulerServiceFinder(schedulerServiceFinder);

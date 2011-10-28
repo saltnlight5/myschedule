@@ -1,4 +1,4 @@
-package myschedule.web.servlet.app;
+package myschedule.web.servlet.app.filter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
