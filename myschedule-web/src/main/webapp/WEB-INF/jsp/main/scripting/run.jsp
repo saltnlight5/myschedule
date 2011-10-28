@@ -16,10 +16,12 @@ $(document).ready(function() {
 	
 	// Click examles to load textarea.
 	$("#script-simpleJobs").click(function() {
-		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=simpleJobs");
+		var scriptEngineName =  $("#scriptEngineName option:selected").val();
+		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=simpleJobs&scriptEngineName=" + scriptEngineName);
 	});
 	$("#script-cronJobs").click(function() {
-		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=cronJobs");
+		var scriptEngineName =  $("#scriptEngineName option:selected").val();
+		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=cronJobs&scriptEngineName=" + scriptEngineName);
 	});
 });
 </script>
@@ -68,7 +70,8 @@ Script Examples:
 <textarea  style="width: 100%; height: 15em;" id="scriptText" name="scriptText">${ data.scriptText }</textarea>
 
 <br/>
-Scripting Language: <select name="scriptEngineName">
+Scripting Language: 
+<select id="scriptEngineName" name="scriptEngineName">
 <c:forEach items="${ data.scriptEngineNames }" var="name">
 <c:set var="selectedOpt" value=""/>
 <c:if test="${ name ==  selectedScriptEngineName }">

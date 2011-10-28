@@ -116,8 +116,7 @@ public class ScriptingHandlers {
 	protected ActionHandler scriptExampleHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
-			String scriptEngineName = sessionData.getScriptEngineName();
+			String scriptEngineName = viewData.findData("scriptEngineName");
 			String name = viewData.findData("name");
 			String ext = SCRIPT_EXT_MAPPINGS.get(scriptEngineName);
 			if (ext == null) {
