@@ -54,7 +54,7 @@ abstract public class ViewDataServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String requestURI = req.getRequestURI();
-		logger.debug("Process request: {}", requestURI);
+		logger.debug("Process request: {}, queryString={}", requestURI, req.getQueryString());
 		try {
 			ViewData viewData = process(req, resp);
 			processViewData(viewData, req, resp);
