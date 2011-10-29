@@ -4,6 +4,7 @@
 // ===================================================
 import myschedule.quartz.extra.job.LoggerJob
 import myschedule.quartz.extra.job.ScriptingJob
+
 // Schedule hourly job
 scheduler.scheduleSimpleJob("hourlyJob", -1, 60 * 60 * 1000L, LoggerJob.class)
 

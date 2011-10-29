@@ -4,6 +4,7 @@
 // ===================================================
 // Schedule hourly job
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
+importClass(Packages.myschedule.quartz.extra.job.ScriptingJob);
 importClass(Packages.java.lang.System);
 scheduler.scheduleSimpleJob("hourlyJob", -1, 60 * 60 * 1000, LoggerJob);
 
