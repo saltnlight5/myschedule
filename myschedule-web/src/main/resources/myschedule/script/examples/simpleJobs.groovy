@@ -20,7 +20,7 @@ scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, 
 		scheduler.mkMap(
 			'ScriptEngineName', 'Groovy', 
 			'ScriptText', '''
-				logger.info("I take a while to run...")
+				logger.info("I take 3 secs to run...")
 				sleep(20000L)
 				logger.info("I am done.")
 			'''
