@@ -79,7 +79,7 @@ Scripting Language:
 <select id="scriptEngineName" name="scriptEngineName">
 <c:forEach items="${ data.scriptEngineNames }" var="name">
 <c:set var="selectedOpt" value=""/>
-<c:if test="${ name ==  selectedScriptEngineName }">
+<c:if test="${ name ==  data.selectedScriptEngineName }">
 	<c:set var="selectedOpt" value="selected=\"true\""/>
 </c:if>
 <option ${ selectedOpt } value="${ name }">${ name }</option>
