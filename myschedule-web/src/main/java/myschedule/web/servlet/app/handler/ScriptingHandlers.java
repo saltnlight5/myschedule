@@ -102,6 +102,7 @@ public class ScriptingHandlers {
 				map.put("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
 				map.put("scriptText", scriptText);
 				map.put("scriptEngineNames", getScriptingEngineNames());
+				map.put("selectedScriptEngineName", scriptEngineName);
 				viewData.setViewName("/scripting/run");
 			} finally {
 				webOut.close();
