@@ -7,6 +7,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -752,7 +753,7 @@ public class SchedulerTemplate {
 			JobKey jobKey, String cron, 
 			Class<? extends Job> jobClass, Map<String, Object> dataMap, 
 			Date startTime, Date endTime) {
-		JobDetail job = createJobDetail(jobKey, jobClass, dataMap);
+		JobDetail job = createJobDetail(jobKey, jobClass, false, dataMap);
 		TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
 		Trigger trigger = createCronTrigger(triggerKey, cron, startTime, endTime);
 		return scheduleJob(job, trigger);
@@ -760,20 +761,28 @@ public class SchedulerTemplate {
 
 	public Date scheduleSimpleJob(
 			String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
-		return scheduleSimpleJob(name, repeatTotalCount, repeatInterval, jobClass, null);
-	}
-	
-	public Date scheduleSimpleJob(
-			String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, Date startTime) {
 		return 
-			scheduleSimpleJob(JobKey.jobKey(name), startTime, null, repeatTotalCount, repeatInterval, jobClass, null);
+			scheduleSimpleJob(JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, null, null, null);
 	}
 	
 	public Date scheduleSimpleJob(
-			JobKey jobKey, Date startTime, Date endTime,
-			int repeatTotalCount, long repeatInterval,
-			Class<? extends Job> jobClass, Map<String, Object> dataMap) {
-		JobDetail job = createJobDetail(jobKey, jobClass, dataMap);
+			String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass,
+			Map<String, Object> dataMap) {
+		return 
+			scheduleSimpleJob(JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, dataMap, null, null);
+	}
+	
+	public Date scheduleSimpleJob(
+			String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, 
+			Map<String, Object> dataMap, Date startTime) {
+		return 
+			scheduleSimpleJob(JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, dataMap, startTime, null);
+	}
+	
+	public Date scheduleSimpleJob(
+			JobKey jobKey, int repeatTotalCount, long repeatInterval,
+			Class<? extends Job> jobClass, Map<String, Object> dataMap, Date startTime, Date endTime) {
+		JobDetail job = createJobDetail(jobKey, jobClass, false, dataMap);
 		TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
 		Trigger trigger = createSimpleTrigger(triggerKey, repeatTotalCount, repeatInterval, startTime, endTime);
 		return scheduleJob(job, trigger);
@@ -793,11 +802,12 @@ public class SchedulerTemplate {
 	//
 	
 	public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass) {
-		return createJobDetail(JobKey.jobKey(name), jobClass, null);
+		return createJobDetail(JobKey.jobKey(name), jobClass, false, null);
 	}
 	
-	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass, Map<String, Object> dataMap) {
-		JobDetail jobDetail = newJob(jobClass).withIdentity(jobKey).build();
+	public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass, 
+		boolean durable, Map<String, Object> dataMap) {
+		JobDetail jobDetail = newJob(jobClass).withIdentity(jobKey).storeDurably(durable).build();
 		if (dataMap != null)
 			jobDetail.getJobDataMap().putAll(dataMap);
 		return jobDetail;
@@ -858,5 +868,23 @@ public class SchedulerTemplate {
 					.withIntervalInMilliseconds(repeatInterval))
 			.build();
 		return (MutableTrigger)trigger;
+	}
+	
+	public static Map<String, Object> mkMap(Object ... dataArray) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (dataArray.length % 2 != 0) {
+			throw new IllegalArgumentException("Data must come in pair: key and value.");
+		}
+		
+		for (int i = 0; i < dataArray.length; i++) {
+			Object keyObj = dataArray[i];
+			if (!(keyObj instanceof String)) {
+				throw new IllegalArgumentException("Key must be a String type, but got: " + keyObj.getClass());
+			}
+			String key = (String)keyObj;
+			Object value = dataArray[++i];
+			map.put(key, value);
+		}
+		return map;
 	}
 }

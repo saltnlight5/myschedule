@@ -58,7 +58,7 @@ public class SchedulerTemplateTest {
 		
 		st = new SchedulerTemplate();
 		TestJob.resetResult();
-		st.scheduleSimpleJob(JobKey.jobKey("test"), new Date(), null, 2, 500, TestJob.class, null);
+		st.scheduleSimpleJob(JobKey.jobKey("test"),  2, 500, TestJob.class, null, new Date(), null);
 		st.startAndShutdown(1300);
 		assertThat(TestJob.jobResult.executionTimes.size(), is(2));
 	}
