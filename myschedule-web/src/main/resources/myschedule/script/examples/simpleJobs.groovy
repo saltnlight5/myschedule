@@ -1,22 +1,26 @@
+// Groovy Examples
+
 // Using myschedule.quartz.extra.SchedulerTemplate API
 // ===================================================
+import myschedule.quartz.extra.job.LoggerJob
+import myschedule.quartz.extra.job.ScriptingJob
 // Schedule hourly job
-scheduler.scheduleSimpleJob("hourlyJob", -1, 60 * 60 * 1000L, myschedule.quartz.extra.job.LoggerJob.class)
+scheduler.scheduleSimpleJob("hourlyJob", -1, 60 * 60 * 1000L, LoggerJob.class)
 
 // Schedule minutely job
-scheduler.scheduleSimpleJob("minutelyJob", -1, 60 * 1000L, myschedule.quartz.extra.job.LoggerJob.class)
+scheduler.scheduleSimpleJob("minutelyJob", -1, 60 * 1000L, LoggerJob.class)
 
 // Schedule secondly job
-scheduler.scheduleSimpleJob("secondlyJob", -1, 1000L, myschedule.quartz.extra.job.LoggerJob.class)
+scheduler.scheduleSimpleJob("secondlyJob", -1, 1000L, LoggerJob.class)
 
 // Schedule secondly job that repeat total of 3 times.
-scheduler.scheduleSimpleJob("secondlyJobRepeat3", 3, 1000L, myschedule.quartz.extra.job.LoggerJob.class)
+scheduler.scheduleSimpleJob("secondlyJobRepeat3", 3, 1000L, LoggerJob.class)
 
 // Schedule onetime job that run immediately
-scheduler.scheduleSimpleJob("onetimeJob", 1, 0L, myschedule.quartz.extra.job.LoggerJob.class)
+scheduler.scheduleSimpleJob("onetimeJob", 1, 0L, LoggerJob.class)
 
 // Schedule hourly job with job data and start time of 20s delay.
-scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, myschedule.quartz.extra.job.ScriptingJob.class, 
+scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, ScriptingJob.class, 
 		scheduler.mkMap(
 			'ScriptEngineName', 'JavaScript', 
 			'ScriptText', '''
@@ -29,7 +33,8 @@ scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, 
 
 // Schedule one job with multiple triggers
 import org.quartz.*
-job = scheduler.createJobDetail(JobKey.jobKey("jobWithMutltipleTriggers"), myschedule.quartz.extra.job.LoggerJob.class, true, null)
+import myschedule.quartz.extra.job.LoggerJob
+job = scheduler.createJobDetail(JobKey.jobKey("jobWithMutltipleTriggers"), LoggerJob.class, true, null)
 scheduler.addJob(job, false)
 trigger1 = scheduler.createSimpleTrigger("trigger1", -1, 60 * 60 * 1000) // hourly trigger
 trigger1.setJobKey(job.getKey())
@@ -41,9 +46,10 @@ scheduler.scheduleJob(trigger2)
 // Using Java org.scheduler.Scheduler API
 // ===================================================
 import org.quartz.*
+import myschedule.quartz.extra.job.LoggerJob
 quartzScheduler = scheduler.getScheduler()
 job = JobBuilder
-	.newJob(myschedule.quartz.extra.job.LoggerJob.class)
+	.newJob(LoggerJob.class)
 	.withIdentity("hourlyJob2")
 	.build()
 trigger = TriggerBuilder
