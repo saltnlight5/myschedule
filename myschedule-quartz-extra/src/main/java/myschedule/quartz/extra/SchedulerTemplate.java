@@ -748,6 +748,11 @@ public class SchedulerTemplate {
 	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Map<String, Object> dataMap) {
 		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, dataMap, new Date(), null);
 	}
+
+	
+	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Map<String, Object> dataMap, Date startTime) {
+		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, dataMap, startTime, null);
+	}	
 	
 	public Date scheduleCronJob(
 			JobKey jobKey, String cron, 
