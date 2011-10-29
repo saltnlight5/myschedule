@@ -119,3 +119,11 @@ org.quartz.dataSource.NAME.java.naming.security.credentials=
 # DataSource Option#3: A user custom DataSource for one of JDBC JobStore above (You may replace and use any NAME)
 # The user class must implements org.quartz.utils.ConnectionProvider interface.
 #org.quartz.dataSource.NAME.connectionProvider.class=my.ConnectionProviderImpl #You own conn pool impl.
+
+# Quartz Extra - ScriptingPlugin
+# Scripting plugin
+org.quartz.plugin.MyScriptingPlugin.class = myschedule.quartz.extra.ScriptingSchedulerPlugin
+org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript
+org.quartz.plugin.MyScriptingPlugin.initializeScript = my-initialize.js
+#org.quartz.plugin.MyScriptingPlugin.startScript = my-start.js
+#org.quartz.plugin.MyScriptingPlugin.shutdownScript = my-shutdown.js
