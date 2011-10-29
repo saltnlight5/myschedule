@@ -16,8 +16,15 @@ scheduler.scheduleSimpleJob("secondlyJobRepeat3", 3, 1000L, myschedule.quartz.ex
 scheduler.scheduleSimpleJob("onetimeJob", 1, 0L, myschedule.quartz.extra.job.LoggerJob.class)
 
 // Schedule hourly job with job data and start time of 20s delay.
-scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, myschedule.quartz.extra.job.LoggerJob.class, 
-		scheduler.mkMap('color', 'RED'), 
+scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, myschedule.quartz.extra.job.ScriptingJob.class, 
+		scheduler.mkMap(
+			'ScriptEngineName', 'Groovy', 
+			'ScriptText', '''
+				logger.info("I take a while to run...")
+				sleep(20000L)
+				logger.info("I am done.")
+			'''
+		), 
 		new Date(System.currentTimeMillis() + 20 * 1000))
 
 // Schedule one job with multiple triggers
