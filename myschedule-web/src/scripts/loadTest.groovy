@@ -60,7 +60,7 @@ webOut.println("job scheduled " + jobDetail.fullName)
 (1 .. 10).each { i -> 
 	name = 'every_hour_with_endtime' + i
 	startTime = new Date()
-	endTime = new Date(startTime.getTime() + 24 * 60 * 60 * 1000) // 24 hours later.
+	endTime = new Date(startTime.getTime() + 60 * 60 * 1000)
 	repeatCount = -1
 	repeatInterval = 1 * 60 * 1000
 	trigger = new SimpleTrigger(name, startTime, endTime, repeatCount, repeatInterval)
