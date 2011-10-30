@@ -23,11 +23,11 @@ scheduler.scheduleSimpleJob("onetimeJob", 1, 0L, LoggerJob.class)
 // Schedule hourly job with job data and start time of 20s delay.
 scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, ScriptingJob.class, 
 		scheduler.mkMap(
-			'ScriptEngineName', 'JavaScript', 
+			'ScriptEngineName', 'Groovy', 
 			'ScriptText', '''
-				logger.info("I take 3 secs to run...");
-				sleep(20000L);
-				logger.info("I am done.");
+				logger.info("I take 3 secs to run...")
+				sleep(20000L)
+				logger.info("I am done.")
 			'''
 		), 
 		new Date(System.currentTimeMillis() + 20 * 1000))

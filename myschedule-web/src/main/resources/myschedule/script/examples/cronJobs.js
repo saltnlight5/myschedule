@@ -6,6 +6,8 @@
 // For more on CRON expression format, see http://www.quartz-scheduler.org/api/2.1.0/org/quartz/CronExpression.html
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
 importClass(Packages.java.lang.System);
+importClass(Packages.java.util.HashMap);
+
 // Schedule hourly job on every MON-FRI
 scheduler.scheduleCronJob("hourlyCronJob", "0 0 * ? * MON-FRI", Packages.myschedule.quartz.extra.job.LoggerJob);
 
@@ -16,8 +18,10 @@ scheduler.scheduleCronJob("minutelyCronJob", "0 * * * JUN,DEC ?", Packages.mysch
 scheduler.scheduleCronJob("secondlyCronJob", "* * * * * ?", Packages.myschedule.quartz.extra.job.LoggerJob);
 
 // Schedule hourly job with job data and start time of 20s delay.
+dataMap = HashMap();
+dataMap.put('color', 'RED');
 scheduler.scheduleCronJob("hourlyCronJobWithStartTimeDelay", "0 0 * * * ?", Packages.myschedule.quartz.extra.job.LoggerJob, 
-		scheduler.mkMap('color', 'RED'), 
+		dataMap, 
 		Packages.java.util.Date(System.currentTimeMillis() + 20 * 1000));
 
 // Schedule one job with multiple triggers

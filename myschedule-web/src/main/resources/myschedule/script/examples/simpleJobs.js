@@ -2,10 +2,12 @@
 
 // Using myschedule.quartz.extra.SchedulerTemplate API
 // ===================================================
-// Schedule hourly job
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
 importClass(Packages.myschedule.quartz.extra.job.ScriptingJob);
 importClass(Packages.java.lang.System);
+importClass(Packages.java.util.HashMap);
+
+//Schedule hourly job
 scheduler.scheduleSimpleJob("hourlyJob", -1, 60 * 60 * 1000, LoggerJob);
 
 // Schedule minutely job
@@ -21,14 +23,14 @@ scheduler.scheduleSimpleJob("secondlyJobRepeat3", 3, 1000, LoggerJob);
 scheduler.scheduleSimpleJob("onetimeJob", 1, 0, LoggerJob);
 
 // Schedule hourly job with job data and start time of 20s delay.
+dataMap = HashMap();
+dataMap.put('ScriptEngineName', 'JavaScript');
+dataMap.put('ScriptText', 
+		'logger.info("I take 3 secs to run...");\n' +
+		'sleep(3000);\n' +
+		'logger.info("I am done.");\n');
 scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000, ScriptingJob, 
-		scheduler.mkMap(
-			'ScriptEngineName', 'Groovy', 
-			'ScriptText', 
-				'logger.info("I take 3 secs to run...");\n' +
-				'sleep(3000L);\n' +
-				'logger.info("I am done.");\n'
-		), 
+		dataMap, 
 		Packages.java.util.Date(System.currentTimeMillis() + 20 * 1000));
 
 // Schedule one job with multiple triggers
