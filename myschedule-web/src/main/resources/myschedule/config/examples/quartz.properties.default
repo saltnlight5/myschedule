@@ -120,8 +120,7 @@ org.quartz.dataSource.NAME.java.naming.security.credentials=
 # The user class must implements org.quartz.utils.ConnectionProvider interface.
 #org.quartz.dataSource.NAME.connectionProvider.class=my.ConnectionProviderImpl #You own conn pool impl.
 
-# Quartz Extra - ScriptingPlugin
-# Scripting plugin
+# Quartz Extra - ScriptingSchedulerPlugin
 org.quartz.plugin.MyScriptingPlugin.class = myschedule.quartz.extra.ScriptingSchedulerPlugin
 org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript
 org.quartz.plugin.MyScriptingPlugin.initializeScript = my-initialize.js
