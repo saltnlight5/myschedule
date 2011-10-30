@@ -14,7 +14,7 @@ $(document).ready(function() {
 	});
 	
 	// Confirm shutdown schedulerRow
-	$("#shutdown-confirm").hide()
+	$("#shutdown-confirm").hide();
 	$("#schedulerRow-list .shutdown-link").click(function() {
 		var linkUrl = $(this).attr("href");
 		$("#shutdown-confirm").dialog({
@@ -35,7 +35,7 @@ $(document).ready(function() {
 	});
 	
 	// Confirm Delete config
-	$("#delete-config-confirm").hide()
+	$("#delete-config-confirm").hide();
 	$("#schedulerRow-list .delete-config-link").click(function() {
 		var linkUrl = $(this).attr("href");
 		$("#delete-config-confirm").dialog({
@@ -91,13 +91,18 @@ $(document).ready(function() {
 	<tr>
 		<c:choose><c:when test="${ schedulerRow.initialized }">
 			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ schedulerRow.configId }">${ schedulerRow.name }</a></td>
-			<td>true</td> <!-- initialize -->
-						
 			<c:choose><c:when test="${ schedulerRow.connExceptionExists }">
-				<td>Error: <pre>${ schedulerRow.connExceptionString }</pre></td> <!-- started -->
+				<td>
+					<span id="error_${ schedulerRow.configId }" style="color: red;">ERROR</span>
+					<!-- <div id="errormsg_${ schedulerRow.configId }">
+					<pre>${ schedulerRow.connExceptionString }</pre>
+					</div> -->
+				</td> <!-- initialized -->
+				<td>N/A</td> <!-- started -->
 				<td>N/A</td> <!-- runningSince -->
 				<td>N/A</td> <!-- numOfJobs -->
 			</c:when><c:otherwise>
+				<td>true</td> <!-- initialize -->
 				<td>${ schedulerRow.started }</td>
 				<td><fmt:formatDate value="${ schedulerRow.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
 				<td>${ schedulerRow.numOfJobs }</td>
