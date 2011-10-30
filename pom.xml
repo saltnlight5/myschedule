@@ -162,20 +162,20 @@
 					<version>${slf4j.version}</version>
 				</dependency>
 		
-				<!-- Groovy Scripting Engine
+				<!-- Groovy Scripting Engine -->
 				<dependency>
 					<groupId>org.codehaus.groovy</groupId>
 					<artifactId>groovy</artifactId>
 					<version>1.8.2</version>
-				</dependency>
-				-->
+				</dependency>				
 				 
-				<!-- JRuby Scripting Engine -->
+				<!-- JRuby Scripting Engine 
 				<dependency>
 				    <groupId>org.jruby</groupId>
 				    <artifactId>jruby</artifactId>
 				    <version>1.6.5</version>
 				</dependency>
+				-->
 
 				<!-- Quartz MySql JDBC Driver (Note: there is no extra quartz component 
 					is needed with MySql.) -->
