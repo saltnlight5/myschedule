@@ -36,6 +36,7 @@ public class SessionData {
 	
 	@Override
 	public String toString() {
-		return "SessionData[" + currentSchedulerName + "]";
+		return "SessionData[currentSchedulerName=" + currentSchedulerName + 
+				", scriptEngineName=" + scriptEngineName + "]";
 	}
 }

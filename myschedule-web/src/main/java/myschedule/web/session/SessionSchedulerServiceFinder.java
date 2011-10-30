@@ -33,43 +33,42 @@ public class SessionSchedulerServiceFinder {
 	
 	public QuartzSchedulerService findSchedulerService(HttpSession session) {
 		SessionData data = getOrCreateSessionData(session);
-		return getOrCreateSchedulerServiceSessionData(data);
+		String configId = data.getCurrentSchedulerConfigId();
+		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
+		return ss;
 	}
 	
-	protected QuartzSchedulerService getOrCreateSchedulerServiceSessionData(SessionData data) {;
-		String configId = data.getCurrentSchedulerConfigId();
-		if (configId == null) {
-			List<String> allConfigIds = schedulerServiceRepo.getSchedulerServiceConfigIds();
-			if (allConfigIds.size() < 1) {
+	protected SessionData createSessionData() {
+		String configId = null;
+
+		List<String> allConfigIds = schedulerServiceRepo.getSchedulerServiceConfigIds();
+		if (allConfigIds.size() < 1) {
+			throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
+					"There is no scheduler service available in repository. Please create a scheduler config first.");
+		} else {
+			// Find the first initialized services.
+			for (String configId2 : allConfigIds) {
+				SchedulerService<?> ss2 = schedulerServiceRepo.getSchedulerService(configId2);
+				if (ss2.isInited()) {
+					configId = configId2;
+					break;
+				}
+			}
+			if (configId == null) {
 				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
-						"There is no scheduler service available in repository. Please create a scheduler config first.");
-			} else {
-				// Find the first initialized services.
-				for (String configId2 : allConfigIds) {
-					SchedulerService<?> ss2 = schedulerServiceRepo.getSchedulerService(configId2);
-					if (ss2.isInited()) {
-						configId = configId2;
-						break;
-					}
-				}
-				if (configId == null) {
-					throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, 
-						"There are scheduler service available in repository, but none are initialized.");
-				}
+					"There are scheduler service available in repository, but none are initialized.");
 			}
 		}
 
 		QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
 		SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
-		data.setCurrentSchedulerName(st.getSchedulerName());
-		data.setCurrentSchedulerConfigId(configId);
-		return ss;
-	}
 
-	protected SessionData createSessionData() {
-		SessionData data = new SessionData();
-		logger.info("New session data created: " + data);
-		return data;
+		SessionData result = new SessionData();
+		result.setScriptEngineName("JavaScript");
+		result.setCurrentSchedulerName(st.getSchedulerName());
+		result.setCurrentSchedulerConfigId(configId);		
+		logger.info("New session data created: {}", result);
+		return result;
 	}
 	
 	protected boolean hasSessionData(HttpSession session) {
