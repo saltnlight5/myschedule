@@ -74,8 +74,12 @@ public class ScriptingHandlers {
 			}
 
 			// Create a Java ScriptEngine
+			String langName = scriptEngineName;
+			if (langName.equals("JRuby")) {
+				langName = "ruby"; // JRuby's engine name is 'ruby' or else it won't find it!
+			}
 			ScriptEngineManager factory = new ScriptEngineManager();
-	        ScriptEngine scriptEngine = factory.getEngineByName(scriptEngineName);	        
+	        ScriptEngine scriptEngine = factory.getEngineByName(langName);	        
 	        if (scriptEngine == null) {
 				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to find ScriptEngine " + 
 						scriptEngineName); 	        	
