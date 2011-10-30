@@ -1,5 +1,24 @@
 // JavaScript Examples
 
+// Using CalendarIntervalTrigger
+//   schedule a job that runs every 3 months
+// =========================================
+importPackage(Packages.org.quartz);
+importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
+
+job = JobBuilder
+	.newJob(LoggerJob)
+	.withIdentity("calendarIntervalJob")
+	.build();
+trigger = TriggerBuilder
+	.newTrigger()
+	.withSchedule(
+		CalendarIntervalScheduleBuilder
+		.calendarIntervalSchedule()
+		.withIntervalInMonths(3))
+	.build();
+scheduler.scheduleJob(job, trigger);
+
 // Using DailyTimeIntervalTrigger
 //   schedule a job that runs every 72 mins MON-FRI from 8:00AM to 5:00PM
 // ======================================================================
