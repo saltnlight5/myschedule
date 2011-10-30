@@ -96,6 +96,7 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	@Override
 	public void initialize(String name, Scheduler scheduler) throws SchedulerException {
 		this.name = name;
+		this.scheduler = scheduler;
 		
 		logger.debug("Initializing scripting plugin {} with ScriptEngine {}", name, scriptEngineName);
 		ScriptEngineManager factory = new ScriptEngineManager();
