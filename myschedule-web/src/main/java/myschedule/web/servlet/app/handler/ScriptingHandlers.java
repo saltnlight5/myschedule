@@ -52,8 +52,8 @@ public class ScriptingHandlers {
 			String scriptEngineName = sessionData.getScriptEngineName();
 			List<String> scriptEngineNames = getScriptingEngineNames();
 			viewData.addData("data", ViewData.mkMap(
-					"scriptEngineNames", scriptEngineNames)
-					, "selectedScriptEngineName", scriptEngineName);
+					"scriptEngineNames", scriptEngineNames, 
+					"selectedScriptEngineName", scriptEngineName));
 		}
 	};
 	
@@ -126,7 +126,13 @@ public class ScriptingHandlers {
 			String resName = "myschedule/script/examples/" + name + ext;
 			try {
 				Writer writer = viewData.getResponse().getWriter();
-				resourceLoader.copyResource(resName, writer);
+				try {
+					resourceLoader.copyResource(resName, writer);
+				} catch (IllegalArgumentException e) {
+					// Resource not found.
+					writer.write("// This particular example is not available.\n");
+					writer.flush();
+				}
 			} catch (IOException e) {
 				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to get resource " + name, e);
 			}
