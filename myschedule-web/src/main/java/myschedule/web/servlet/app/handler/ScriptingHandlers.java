@@ -94,7 +94,7 @@ public class ScriptingHandlers {
 	        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);			
 			engineScope.put("scheduler", new SchedulerTemplate(schedulerService.getScheduler()));
 			engineScope.put("logger", logger);
-			engineScope.put("webOut", webOut);
+			engineScope.put("output", webOut);
 			
 			Map<String, Object> map = ViewData.mkMap();
 			try {

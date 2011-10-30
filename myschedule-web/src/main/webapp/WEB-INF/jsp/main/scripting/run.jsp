@@ -37,9 +37,9 @@ $(document).ready(function() {
 <a id="variables-link" href="#">implicit variables </a> available. </p>
 <div id="variables">
 <pre>
-scheduler - An instance of myschedule.quartz.extra.SchedulerTemplate that wraps org.quartz.Scheuler API, and it
-            provides many additional convenient methods for scheduling jobs.
-webOut    - An instance of java.io.PrintWriter to allow script to display text output back to web page for debug purpose.
+scheduler - An instance of myschedule.quartz.extra.SchedulerTemplate that allow schedule and manage jobs.
+output    - An instance of java.io.PrintWriter that allow script to display text back to web page.
+logger    - An instance of org.slf4j.Logger that allow script to log messages in server log.
 </pre>
 </div><!-- div.variables -->
 
