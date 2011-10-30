@@ -103,7 +103,10 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 		
 		if (initializeScript != null) {
 	        logger.debug("Running initialize script {}", initializeScript);
-	        runScript(initializeScript);
+			String[] filenames = initializeScript.split("\\s*,\\s*");
+			for (String filename : filenames) {
+		        runScript(filename);
+			}
 		}
 	}
 	
@@ -111,7 +114,10 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	public void start() {
 		if (startScript != null) {
 	        logger.debug("Running start script {}", startScript);
-	        runScript(startScript);
+			String[] filenames = startScript.split("\\s*,\\s*");
+			for (String filename : filenames) {
+		        runScript(filename);
+			}
 		}
 	}
 
@@ -119,7 +125,10 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	public void shutdown() {
 		if (shutdownScript != null) {
 	        logger.debug("Running shutdown script {}", shutdownScript);
-	        runScript(shutdownScript);
+			String[] filenames = shutdownScript.split("\\s*,\\s*");
+			for (String filename : filenames) {
+		        runScript(filename);
+			}
 		}
 	}
 	
