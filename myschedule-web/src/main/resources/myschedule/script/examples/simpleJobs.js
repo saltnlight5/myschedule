@@ -26,8 +26,8 @@ scheduler.scheduleSimpleJob("onetimeJob", 1, 0, LoggerJob);
 dataMap = HashMap();
 dataMap.put('ScriptEngineName', 'JavaScript');
 dataMap.put('ScriptText', 
-		'logger.info("I take 3 secs to run...");\n' +
-		'sleep(3000);\n' +
+		'logger.info("I am a script job...");\n' +
+		'Packages.java.lang.Thread.sleep(700);\n' +
 		'logger.info("I am done.");\n');
 scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000, ScriptingJob, 
 		dataMap, 
