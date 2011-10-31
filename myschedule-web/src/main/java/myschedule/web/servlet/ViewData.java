@@ -112,12 +112,13 @@ public class ViewData {
 	 * @param key The key to search data with.
 	 * @return Found value.
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> T findData(String key) {
-		T result = findData(key, null);
+		Object result = findData(key, null);
 		if (result == null) {
 			throw new IllegalArgumentException("No data found using key: " + key);
 		}
-		return result;
+		return (T)result;
 	}
 	
 	public HttpServletRequest getRequest() {
