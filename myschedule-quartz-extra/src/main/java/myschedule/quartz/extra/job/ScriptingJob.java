@@ -2,10 +2,8 @@ package myschedule.quartz.extra.job;
 
 import java.io.FileReader;
 import javax.script.Bindings;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.SimpleScriptContext;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -77,6 +75,8 @@ public class ScriptingJob implements Job {
 			if (dataMap.containsKey(SCRIPT_ENGINE_NAME_KEY)) {
 				engineName = dataMap.getString(SCRIPT_ENGINE_NAME_KEY);
 			}
+			engineName = engineName.toLowerCase(); // it's more safe to use lowercase for lookup.
+			
 			String scriptText = null;
 			String filename = null;
 			String scriptType = null;
@@ -92,6 +92,11 @@ public class ScriptingJob implements Job {
 			}
 			logger.debug("Creating ScriptEngine {} to evaluate {}.", engineName, scriptType);
 			
+			// If JRuby script engine, we need to use transient variable bindings so we do not need to prefix '$'
+			if (engineName.equals("jruby")) {
+				System.setProperty("org.jruby.embed.localvariable.behavior", "transient");
+			}
+			
 			// Create a Java ScriptEngine
 			ScriptEngineManager factory = new ScriptEngineManager();
 	        ScriptEngine scriptEngine = factory.getEngineByName(engineName);	        
@@ -100,14 +105,13 @@ public class ScriptingJob implements Job {
 	        }
 
 			// Script engine binding variables.
-	        ScriptContext scriptContext = new SimpleScriptContext();
-	        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-	        engineScope.put("jobExecutionContext", jobExecutionContext);
-			engineScope.put("logger", logger);
+	        Bindings bindings = scriptEngine.createBindings();
+	        bindings.put("jobExecutionContext", jobExecutionContext);
+			bindings.put("logger", logger);
 			
 			Object result = null;
 			if (scriptType.equals(SCRIPT_TEXT_KEY)) {
-				engineScope.put("scriptText", scriptText);
+				bindings.put("scriptText", scriptText);
 				logger.debug("Binding variables added: jobExecutionContext, logger, scriptText");
 				
 				// Evaluate script text.
@@ -118,17 +122,17 @@ public class ScriptingJob implements Job {
 				} else {
 					logger.debug("Evaluating scriptText length {}.", scriptText.length());
 				}
-				result = scriptEngine.eval(scriptText, scriptContext);
+				result = scriptEngine.eval(scriptText, bindings);
 			} else {
 				// We only have two options, and this is the last case.
-				engineScope.put("scriptFile", filename);
+				bindings.put("scriptFile", filename);
 				logger.debug("Binding variables added: jobExecutionContext, logger, scriptFile");
 
 				// Evaluate script file.
 				logger.debug("Evaluating scriptFile {}.", filename);
 				FileReader reader = new FileReader(filename);
 				try {
-					result = scriptEngine.eval(reader, scriptContext);
+					result = scriptEngine.eval(reader, bindings);
 				} finally {
 					reader.close();
 				}

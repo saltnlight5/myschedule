@@ -9,11 +9,9 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.script.Bindings;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.spi.SchedulerPlugin;
@@ -98,7 +96,14 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 		this.name = name;
 		this.scheduler = scheduler;
 		
+		scriptEngineName = scriptEngineName.toLowerCase(); // it's more safe to use lowercase for lookup.
 		logger.debug("Initializing scripting plugin {} with ScriptEngine {}", name, scriptEngineName);
+		
+		// If JRuby script engine, we need to use transient variable bindings so we do not need to prefix '$'
+		if (scriptEngineName.equals("jruby")) {
+			System.setProperty("org.jruby.embed.localvariable.behavior", "transient");
+		}
+					
 		ScriptEngineManager factory = new ScriptEngineManager();
         scriptEngine = factory.getEngineByName(scriptEngineName);
 		
@@ -141,11 +146,10 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	protected void runScript(String filename) {
 		logger.debug("Run script {}", filename);
 
-        ScriptContext scriptContext = new SimpleScriptContext();
-        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
-        engineScope.put("schedulerPlugin", this);
-        engineScope.put("scheduler", new SchedulerTemplate(scheduler));
-		engineScope.put("logger", logger);
+        Bindings bindings = scriptEngine.createBindings();
+        bindings.put("schedulerPlugin", this);
+        bindings.put("scheduler", new SchedulerTemplate(scheduler));
+		bindings.put("logger", logger);
 		
 		URL url = null;
 		Reader reader = null;
@@ -163,7 +167,7 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 			logger.debug("Reading url {}", url);
 			InputStream inStream = url.openStream();
 			reader = new InputStreamReader(inStream);
-			scriptEngine.eval(reader, scriptContext);
+			scriptEngine.eval(reader, bindings);
 		} catch (FileNotFoundException e) {
 			throw new QuartzRuntimeException("Failed to find script " + filename, e);
 		} catch (ScriptException e) {
