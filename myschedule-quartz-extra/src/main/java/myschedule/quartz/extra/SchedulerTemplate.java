@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import org.quartz.Calendar;
 import org.quartz.CronTrigger;
@@ -54,7 +55,7 @@ public class SchedulerTemplate {
 		try {
 			scheduler = StdSchedulerFactory.getDefaultScheduler();
 		} catch (SchedulerException e) {
-			throw new QuartzRuntimeException("Failed to obtain default scheduler.", e);
+			throw new QuartzRuntimeException("Failed to create scheduler.", e);
 		}
 	}
 	
@@ -63,7 +64,16 @@ public class SchedulerTemplate {
 			StdSchedulerFactory factory = new StdSchedulerFactory(quartzConfigFilename);
 			scheduler = factory.getScheduler();
 		} catch (SchedulerException e) {
-			throw new QuartzRuntimeException("Failed to obtain default scheduler.", e);
+			throw new QuartzRuntimeException("Failed to create scheduler using config file: " + quartzConfigFilename, e);
+		}
+	}
+	
+	public SchedulerTemplate(Properties props) {
+		try {
+			StdSchedulerFactory factory = new StdSchedulerFactory(props);
+			scheduler = factory.getScheduler();
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException("Failed to create scheduler using custom properties.", e);
 		}
 	}
 	
@@ -793,13 +803,18 @@ public class SchedulerTemplate {
 		return scheduleJob(job, trigger);
 	}
 
+	/** This method is fail-safe (eg: good for toString and logging use.) that it should not throw any exception in 
+	 * getting the scheduler name. If name is not available (eg: a remote scheduler conn is broken), then simply 
+	 * return the underlying scheduler class name and identity hash code. */
 	public String getSchedulerNameAndId() {
-		return getSchedulerName() + "_$_" + getSchedulerInstanceId();
-	}
-	
-	@Override
-	public String toString() {
-		return "QuartzScheduler[" + getSchedulerNameAndId() + "]";
+		String result = null;
+		try {
+			result = getSchedulerName() + "_$_" + getSchedulerInstanceId();
+		} catch (RuntimeException e) {
+			// Ignore exception, and use default toString.
+			result = getScheduler().getClass().getSimpleName() + "@" + System.identityHashCode(getScheduler());
+		}
+		return result;
 	}
 	
 	//
@@ -891,5 +906,10 @@ public class SchedulerTemplate {
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	@Override
+	public String toString() {
+		return "QuartzScheduler[" + getSchedulerNameAndId() + "]";
 	}
 }
