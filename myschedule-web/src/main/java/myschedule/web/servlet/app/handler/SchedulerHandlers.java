@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -16,9 +17,10 @@ import myschedule.service.ServiceUtils;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.session.SessionData;
+
 import org.quartz.JobDetail;
 import org.quartz.ListenerManager;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
 import org.quartz.Trigger;
@@ -38,7 +40,8 @@ public class SchedulerHandlers {
 	protected ActionHandler listenersHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			Map<String, Object> map = ViewData.mkMap();
 			copySchedulerStatusData(schedulerService, map);
@@ -59,7 +62,8 @@ public class SchedulerHandlers {
 	protected ActionHandler modifyHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String configPropsText = schedulerContainer.getSchedulerConfig(configId);
 			SchedulerTemplate scheduler = schedulerService.getScheduler();
@@ -75,7 +79,8 @@ public class SchedulerHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configPropsText = viewData.findData("configPropsText");
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			schedulerContainer.modifyScheduler(configId, configPropsText);
 
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
@@ -95,7 +100,8 @@ public class SchedulerHandlers {
 	protected ActionHandler summaryHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			Map<String, Object> map = ViewData.mkMap();
 			copySchedulerStatusData(schedulerService, map);
@@ -113,7 +119,8 @@ public class SchedulerHandlers {
 	protected ActionHandler detailHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 			Map<String, Object> map = ViewData.mkMap();
@@ -131,7 +138,8 @@ public class SchedulerHandlers {
 	protected ActionHandler pauseAllTriggersHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 			List<Trigger> nonPausedTriggers = new ArrayList<Trigger>();
@@ -154,7 +162,8 @@ public class SchedulerHandlers {
 	protected ActionHandler resumeAllTriggersHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 			List<Trigger> pausedTriggers = schedulerTemplate.getPausedTriggers();
@@ -168,7 +177,8 @@ public class SchedulerHandlers {
 	protected ActionHandler startHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			try {
 				schedulerService.getScheduler().start();
@@ -183,7 +193,8 @@ public class SchedulerHandlers {
 	protected ActionHandler standbyHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			try {
 				schedulerService.getScheduler().standby();
@@ -215,7 +226,7 @@ public class SchedulerHandlers {
 	
 
 	protected void copySchedulerStatusData(SchedulerService schedulerService, Map<String, Object> dataMap) {
-		SchedulerTemplate schedulerTemplate = new SchedulerTemplate((Scheduler)schedulerService.getScheduler());
+		SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 		dataMap.put("schedulerName", schedulerTemplate.getSchedulerName());
 		dataMap.put("isStarted", schedulerTemplate.isStarted());
 		dataMap.put("isStandby", schedulerTemplate.isInStandbyMode());

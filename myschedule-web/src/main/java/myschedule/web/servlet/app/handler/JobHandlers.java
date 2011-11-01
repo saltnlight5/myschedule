@@ -25,6 +25,8 @@ import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.servlet.app.handler.pagedata.JobListPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobTriggerDetailPageData;
+import myschedule.web.session.SessionData;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.Calendar;
 import org.quartz.JobDetail;
@@ -49,7 +51,8 @@ public class JobHandlers {
 	protected ActionHandler listHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			viewData.addData("data", getJobListPageData(schedulerService));
 		}
@@ -59,7 +62,8 @@ public class JobHandlers {
 	protected ActionHandler listExecutingJobsHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 			List<JobExecutionContext> jobs = schedulerTemplate.getCurrentlyExecutingJobs();
@@ -71,7 +75,8 @@ public class JobHandlers {
 	protected ActionHandler listNoTriggerJobsHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			viewData.addData("data", getNoTriggerJobListPageData(schedulerService));
 		}
@@ -81,7 +86,8 @@ public class JobHandlers {
 	protected ActionHandler listCalendarsHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 			List<Object> calendars = new ArrayList<Object>();
@@ -98,7 +104,8 @@ public class JobHandlers {
 	protected ActionHandler unscheduleHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String triggerName = viewData.findData("triggerName");
 			String triggerGroup = viewData.findData("triggerGroup");
@@ -121,7 +128,8 @@ public class JobHandlers {
 	protected ActionHandler deleteHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String jobName = viewData.findData("jobName");
 			String jobGroup = viewData.findData("jobGroup");
@@ -137,7 +145,8 @@ public class JobHandlers {
 	protected ActionHandler runJobHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String jobName = viewData.findData("jobName");
 			String jobGroup = viewData.findData("jobGroup");

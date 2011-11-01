@@ -47,7 +47,8 @@ public class ScriptingHandlers {
 	protected ActionHandler runHandler = new ViewDataActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
-			String selectedScriptEngineName = viewData.findData("scriptEngineName", "javascript");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String selectedScriptEngineName = sessionData.getScriptEngineName();
 			List<String> scriptEngineNames = getScriptingEngineNames();
 			viewData.addData("data", ViewData.mkMap(
 					"scriptEngineNames", scriptEngineNames, 
@@ -60,7 +61,8 @@ public class ScriptingHandlers {
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
 			logger.debug("Running Scripting Text.");
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			String scriptEngineName = viewData.findData("scriptEngineName");
 			String scriptText = viewData.findData("scriptText");
 			
