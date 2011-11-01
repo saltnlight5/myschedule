@@ -3,9 +3,6 @@ package myschedule.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This container auto manage Initable or Service instance's lifecycle method calling together as part of Spring 
  * lifecycles. When Spring starts up, it calls all init(), then start(), and when Spring close, it calls all stop(), 
@@ -15,11 +12,15 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng
  */
 public class ServiceContainer extends AbstractService {
-	
-	private static final Logger logger = LoggerFactory.getLogger(ServiceContainer.class);
-	
+		
 	/** Service list that's registered in the application. */
 	protected List<Initable> services = new ArrayList<Initable>();
+	
+	private boolean ignoreInitException = false;
+	
+	public void setIgnoreInitException(boolean ignoreInitException) {
+		this.ignoreInitException = ignoreInitException;
+	}
 	
 	public void setServices(List<Initable> services) {
 		this.services = services;
@@ -33,7 +34,15 @@ public class ServiceContainer extends AbstractService {
 	protected void initService() {
 		for (Initable service : services) {
 			logger.debug("Initializing service {}.", service);
-			service.init();
+			try {
+				service.init();
+			} catch (RuntimeException e) {
+				if (!ignoreInitException) {
+					throw e;
+				} else {
+					logger.error("Failed to initialize service. But will continue!", e);
+				}
+			}
 			logger.info("Service {} initialized.", service);
 		}
 	}

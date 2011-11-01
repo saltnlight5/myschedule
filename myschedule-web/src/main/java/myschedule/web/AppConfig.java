@@ -6,18 +6,17 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import lombok.Getter;
-import myschedule.service.FileSchedulerConfigDao;
+import myschedule.service.ConfigStore;
+import myschedule.service.FileConfigStore;
 import myschedule.service.Initable;
 import myschedule.service.ResourceLoader;
-import myschedule.service.SchedulerConfigService;
-import myschedule.service.SchedulerServiceRepository;
+import myschedule.service.SchedulerContainer;
 import myschedule.service.ServiceContainer;
 import myschedule.web.servlet.app.filter.SessionDataFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
 import myschedule.web.servlet.app.handler.SchedulerHandlers;
 import myschedule.web.servlet.app.handler.ScriptingHandlers;
-import myschedule.web.session.SessionSchedulerServiceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +32,9 @@ public class AppConfig implements Initable {
 	
 	// This class singleton instance access
 	// ====================================
-	protected static AppConfig instance;
+	private static AppConfig instance;
 	
-	protected AppConfig() {
+	private AppConfig() {
 	}
 	
 	synchronized public static AppConfig getInstance() {
@@ -44,23 +43,7 @@ public class AppConfig implements Initable {
 		}
 		return instance;
 	}
-	
-	// Application services
-	// ================================
-	@Getter
-	protected SchedulerServiceRepository schedulerServiceRepo;
-	@Getter
-	protected FileSchedulerConfigDao schedulerConfigDao;
-	@Getter
-	protected SchedulerConfigService schedulerConfigService;
-	@Getter
-	protected SessionSchedulerServiceFinder schedulerServiceFinder;
-	@Getter
-	protected ResourceLoader resourceLoader;
-	
-	// Can leave out the getter
-	protected ServiceContainer serviceContainer;
-		
+			
 	// Web App Config
 	// ==============
 	public static final String DEFAULT_THEME_NAME = "smoothness";
@@ -102,68 +85,73 @@ public class AppConfig implements Initable {
 		String version = props.getProperty("version", "UNKNOWN");
 		return name + "-" + version;
 	}
+
+	// Application services
+	// ====================
+	// This field is not exposed out side
+	private ServiceContainer serviceContainer;
 	
 	@Getter
-	protected DashboardHandlers dashboardHandler;	
+	private ConfigStore configStore;
 	@Getter
-	protected JobHandlers jobHandlers;
+	private SchedulerContainer schedulerContainer;
 	@Getter
-	protected SchedulerHandlers schedulerHandlers;
+	private ResourceLoader resourceLoader;
+	
 	@Getter
-	protected ScriptingHandlers scriptingHandlers;
+	private DashboardHandlers dashboardHandler;	
 	@Getter
-	protected SessionDataFilter sessionDataFilter;
+	private JobHandlers jobHandlers;
+	@Getter
+	private SchedulerHandlers schedulerHandlers;
+	@Getter
+	private ScriptingHandlers scriptingHandlers;
+    @Getter
+    protected SessionDataFilter sessionDataFilter;
 	
 	@Override
 	public void init() {
+		serviceContainer = new ServiceContainer();
+		
 		resourceLoader = new ResourceLoader();
 		
-		schedulerServiceRepo = SchedulerServiceRepository.getInstance();
-
 		String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
-		schedulerConfigDao = new FileSchedulerConfigDao();
-		schedulerConfigDao.setStoreDir(new File(myScheduleDir));
+		FileConfigStore fileConfigStore = new FileConfigStore();
+		fileConfigStore.setStoreDir(new File(myScheduleDir));
+		serviceContainer.addService(fileConfigStore);
+		configStore = fileConfigStore;
 		
-		schedulerConfigService = new SchedulerConfigService();
-		schedulerConfigService.setSchedulerConfigDao(schedulerConfigDao);
-		schedulerConfigService.setSchedulerServiceRepo(schedulerServiceRepo);
-		
-		schedulerServiceFinder = new SessionSchedulerServiceFinder();
-		schedulerServiceFinder.setSchedulerServiceRepo(schedulerServiceRepo);
+		schedulerContainer = new SchedulerContainer();
+		schedulerContainer.setConfigStore(configStore);
+		serviceContainer.addService(schedulerContainer);
 		
 		dashboardHandler = new DashboardHandlers();
-		dashboardHandler.setSchedulerServiceFinder(schedulerServiceFinder);
-		dashboardHandler.setSchedulerConfigService(schedulerConfigService);
-		dashboardHandler.setSchedulerServiceRepo(schedulerServiceRepo);
+		dashboardHandler.setSchedulerContainer(schedulerContainer);
 		dashboardHandler.setResourceLoader(resourceLoader);
 
 		jobHandlers = new JobHandlers();
-		jobHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
+		jobHandlers.setSchedulerContainer(schedulerContainer);
 		
 		schedulerHandlers = new SchedulerHandlers();
-		schedulerHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
-		schedulerHandlers.setSchedulerConfigService(schedulerConfigService);
-		schedulerHandlers.setSchedulerServiceRepo(schedulerServiceRepo);
+		schedulerHandlers.setSchedulerContainer(schedulerContainer);
 		
 		scriptingHandlers = new ScriptingHandlers();
-		scriptingHandlers.setSchedulerServiceFinder(schedulerServiceFinder);
+		scriptingHandlers.setSchedulerContainer(schedulerContainer);
 		scriptingHandlers.setResourceLoader(resourceLoader);
 		
 		sessionDataFilter = new SessionDataFilter();
-		sessionDataFilter.setSchedulerServiceFinder(schedulerServiceFinder);
-
-		serviceContainer = new ServiceContainer();
-		serviceContainer.addService(schedulerConfigDao);
-		serviceContainer.addService(schedulerConfigService);
-
+        sessionDataFilter.setSchedulerContainer(schedulerContainer);
+		
+		// Ensure all services get init and started.
 		serviceContainer.init();
 		serviceContainer.start();
 	}
 	
 	@Override
 	public void destroy() {
-		serviceContainer.destroy();
+		// Ensure all services get stop and destroy
 		serviceContainer.stop();
+		serviceContainer.destroy();
 	}
 	
 	@Override

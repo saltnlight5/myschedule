@@ -2,60 +2,48 @@ package myschedule.web.servlet.app.handler;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
-import myschedule.service.ExceptionHolder;
-import myschedule.service.QuartzSchedulerService;
 import myschedule.service.ResourceLoader;
-import myschedule.service.SchedulerConfigService;
+import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
-import myschedule.service.SchedulerServiceRepository;
-import myschedule.service.ServiceUtils;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
-import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData;
-import myschedule.web.servlet.app.handler.pagedata.DashboardListPageData.SchedulerRow;
-import myschedule.web.session.SessionData;
-import myschedule.web.session.SessionSchedulerServiceFinder;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DashboardHandlers {
-		
+
+	private static final Logger logger = LoggerFactory.getLogger(DashboardHandlers.class);
+
 	@Setter
-	protected SchedulerServiceRepository schedulerServiceRepo;
+	private SchedulerContainer schedulerContainer;
 	@Setter
-	protected SchedulerConfigService schedulerConfigService;
-	@Setter
-	protected SessionSchedulerServiceFinder schedulerServiceFinder;
-	@Setter
-	protected ResourceLoader resourceLoader;
-	
+	private ResourceLoader resourceLoader;
+
 	@Getter
 	protected ActionHandler indexHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String redirectName = null;
-			List<String> names = schedulerServiceRepo.getSchedulerServiceConfigIds();
-			if (names.size() == 0) {
+			Set<String> configIds = schedulerContainer.getAllConfigIds();
+			if (configIds.size() == 0) {
 				redirectName = "/dashboard/create";
 			} else {
 				try {
-					// This find method will throw exception if no scheduler are available. 
-					// If returned success, then we have a good scheduler service ready to be list jobs.
-					HttpSession session = viewData.getRequest().getSession(true);
-					schedulerServiceFinder.findSchedulerService(session);			
-					redirectName = "/job/list";
+					SchedulerService scheduler = schedulerContainer.findFirstInitedScheduler();
+					redirectName = "/job/list?configId=" + scheduler.getConfigId();
 				} catch (RuntimeException e) {
 					// No scheduler service are initialized, so list them all
 					redirectName = "/dashboard/list";
@@ -64,7 +52,50 @@ public class DashboardHandlers {
 			viewData.setViewName("redirect:" + redirectName);
 		}
 	};
-	
+
+	@Getter
+	protected ActionHandler listHandler = new ViewDataActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			List<Map<String, Object>> schedulerList = new ArrayList<Map<String, Object>>();
+			for (String configId : schedulerContainer.getAllConfigIds()) {
+				SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+				Map<String, Object> schedulerData = new HashMap<String, Object>();
+				schedulerList.add(schedulerData);
+
+				if (schedulerService.getInitException() != null) {
+					schedulerData.put("initException", schedulerService.getInitException());
+				}
+				schedulerData.put("configId", configId);
+				if (schedulerService.isInited()) {
+					schedulerData.put("inited", "true");
+					try {
+						SchedulerTemplate scheduler = schedulerService.getScheduler();
+						schedulerData.put("name", scheduler.getSchedulerNameAndId());
+						schedulerData.put("started", scheduler.isStarted());
+						schedulerData.put("numOfJobs", scheduler.getAllJobDetails().size());
+						schedulerData.put("runningSince", scheduler.getSchedulerMetaData().getRunningSince());
+					} catch (QuartzRuntimeException e) {
+						logger.error("Failed to get scheduler information for configId " + configId, e);
+						schedulerData.put("name", configId);
+						schedulerData.put("started", "ERROR");
+						schedulerData.put("numOfJobs", "ERROR");
+						schedulerData.put("runningSince", "ERROR");
+						schedulerData.put("errorMsg", e.getMessage());
+						schedulerData.put("errorStackTrace", ExceptionUtils.getFullStackTrace(e));
+					}
+				} else {
+					schedulerData.put("inited", "false");
+					schedulerData.put("name", configId);
+					schedulerData.put("started", "N/A");
+					schedulerData.put("numOfJobs", "N/A");
+					schedulerData.put("runningSince", "N/A");
+				}
+			}
+			viewData.addData("data", ViewData.mkMap("schedulerList", schedulerList));
+		}
+	};
+
 	@Getter
 	protected ActionHandler configExampleHandler = new ViewDataActionHandler() {
 		@Override
@@ -89,59 +120,10 @@ public class DashboardHandlers {
 	protected ActionHandler createActionHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configPropsText = viewData.findData("configPropsText");	
-			ExceptionHolder eh = new ExceptionHolder();
-			SchedulerService<?> ss = schedulerConfigService.createSchedulerService(configPropsText, eh);
-			Map<String, Object> map = ViewData.mkMap();
-			if (eh.hasException()) {
-				map.put("schedulerService", ss);
-				map.put("initFailedExceptionString", ExceptionUtils.getFullStackTrace(eh.getException()));
-			} else {
-				QuartzSchedulerService schedulerService = (QuartzSchedulerService)ss;
-				SchedulerTemplate st = new SchedulerTemplate(schedulerService.getScheduler());
-				logger.info("New scheduler service configId {} has been saved. The scheduler name is {}", 
-						schedulerService.getSchedulerConfig().getConfigId(), st.getSchedulerName());
-				map.put("schedulerService", schedulerService);
-			}
-			viewData.addData("data", map);
-		}
-	};
-		
-	@Getter
-	protected ActionHandler listHandler = new ViewDataActionHandler() {
-		@Override
-		protected void handleViewData(ViewData viewData) {			
-			DashboardListPageData listPageData = new DashboardListPageData();
-			List<String> configIds = schedulerServiceRepo.getSchedulerServiceConfigIds();
-			for (String configId : configIds) {
-				SchedulerRow schedulerRow = new SchedulerRow();
-				listPageData.getSchedulerRows().add(schedulerRow);
-				
-				QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
-				schedulerRow.setConfigId(configId);
-				schedulerRow.setInitialized(ss.isInited());
-				if (ss.isInited()) {
-					try {
-						SchedulerTemplate st = new SchedulerTemplate(ss.getScheduler());
-						schedulerRow.setName(st.getSchedulerName());
-						schedulerRow.setStarted(ss.isStarted());
-						schedulerRow.setNumOfJobs(st.getAllJobDetails().size());
-						schedulerRow.setRunningSince(st.getSchedulerMetaData().getRunningSince());
-					} catch (QuartzRuntimeException e) {
-						logger.error("Failed to get scheduler information for configId " + configId + 
-								". Will save exception string", e);
-						String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
-						schedulerRow.setName(schedulerName);
-						schedulerRow.setConnExceptionExists(true);
-						String exeptionStr = ExceptionUtils.getFullStackTrace(e);
-						schedulerRow.setConnExceptionString(exeptionStr);
-					}
-				} else {
-					String schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
-					schedulerRow.setName(schedulerName);
-				}
-			}
-			viewData.addData("data", listPageData);
+			String configPropsText = viewData.findData("configPropsText");
+			String configId = schedulerContainer.createScheduler(configPropsText);
+			schedulerContainer.initScheduler(configId);
+			viewData.setViewName("redirect:/dashboard/list");
 		}
 	};
 
@@ -150,67 +132,39 @@ public class DashboardHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
-			String configPropsText = schedulerConfigService.getSchedulerConfigPropsText(configId);
+			String configPropsText = schedulerContainer.getSchedulerConfig(configId);
 			logger.debug("Modifying configId={}", configId);
 			viewData.addData("data", ViewData.mkMap(
 					"configPropsText", configPropsText,
 					"configId", configId));
 		}
 	};
-	
+
 	@Getter
 	protected ActionHandler modifyActionHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
 			String configPropsText = viewData.findData("configPropsText");
-			String schedulerName = null;
-			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
-			schedulerConfigService.modifySchedulerService(configId, configPropsText);
-			if (ss.isInited()) {
-				schedulerName = new SchedulerTemplate(ss.getScheduler()).getSchedulerName();
-			} else {
-				schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+			try {
+				schedulerContainer.modifyScheduler(configId, configPropsText);
+			} catch (QuartzRuntimeException e) {
+				logger.error("Failed to modify scheduler with configId " + configId, e);
 			}
-			viewData.addData("data", ViewData.mkMap( 
-					"schedulerName", schedulerName,
-					"configId", configId));
+			viewData.setViewName("redirect:/dashboard/list");
 		}
 	};
-		
+
 	@Getter
 	protected ActionHandler deleteActionHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			HttpSession session = viewData.getRequest().getSession(true);
 			String configId = viewData.findData("configId");
-			String schedulerName = null;
-			QuartzSchedulerService ss = schedulerServiceRepo.getQuartzSchedulerService(configId);
-			// We might be deleting a scheduler service that hasn't been initialized yet. so scheduler name 
-			// might not be available.
-			if (ss.isInited()) {
-				schedulerName = new SchedulerTemplate(ss.getScheduler()).getSchedulerName();
-			} else {
-				schedulerName = schedulerConfigService.getSchedulerNameFromConfigProps(configId);
+			try {
+				schedulerContainer.deleteScheduler(configId);
+			} catch (QuartzRuntimeException e) {
+				logger.error("Failed to delete scheduler with configId " + configId, e);
 			}
-			// Now remove scheduler service.
-			schedulerConfigService.removeSchedulerService(configId);
-			session.removeAttribute(SessionData.SESSION_DATA_KEY);
-			logger.info("Removed scheduler configId {} and from session data.", configId);
-
-			viewData.addData("data", ViewData.mkMap(
-					"schedulerName", schedulerName,
-					"configId", configId));
-		}
-	};
-	
-	@Getter
-	protected ActionHandler shutdownHandler = new ViewDataActionHandler() {
-		@Override
-		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
-			QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
-			schedulerService.destroy();
 			viewData.setViewName("redirect:/dashboard/list");
 		}
 	};
@@ -220,34 +174,38 @@ public class DashboardHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
-			QuartzSchedulerService schedulerService = schedulerServiceRepo.getQuartzSchedulerService(configId);
 			try {
-				schedulerService.init();
-				schedulerService.start(); // This is myschedule auto start if possible feature, not direct Quartz start. So safe to call.
-			} catch (ErrorCodeException e) {
+				schedulerContainer.initScheduler(configId);
+			} catch (QuartzRuntimeException e) {
 				logger.error("Failed to initialize scheduler with configId " + configId, e);
-				String execeptionStr = ExceptionUtils.getFullStackTrace(e);
-				Map<String, Object> map = ServiceUtils.createMap("msg", execeptionStr, "msgType", "error");
-				HttpSession session = viewData.getRequest().getSession(true);
-				session.setAttribute("flashMsg", map);
 			}
 			viewData.setViewName("redirect:/dashboard/list");
 		}
 	};
-	
+
+	@Getter
+	protected ActionHandler shutdownHandler = new ViewDataActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			String configId = viewData.findData("configId");
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			schedulerService.stop();
+			schedulerService.destroy();
+			viewData.setViewName("redirect:/dashboard/list");
+		}
+	};
+
 	@Getter
 	protected ActionHandler switchSchedulerHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			HttpSession session = viewData.getRequest().getSession(true);
 			String configId = viewData.findData("configId");
-			schedulerServiceFinder.switchSchedulerService(configId, session);
-			QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			if (schedulerService.isInited()) {
 				viewData.setViewName("redirect:/job/list");
 			} else {
 				viewData.setViewName("redirect:/scheduler/summary");
 			}
 		}
-	};	
+	};
 }

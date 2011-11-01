@@ -32,19 +32,15 @@ import org.slf4j.LoggerFactory;
  */
 abstract public class ViewDataServlet extends HttpServlet {
 
-	private static final String JSP_NAME_PREFIX = "/WEB-INF/jsp";
-
-	private static final String JSP_NAME_SUFFIX = ".jsp";
-
-	private static final String REDIRECT_PREFIX = "redirect:";
-
-	private static final long serialVersionUID = 1L;
+	public static final String JSP_NAME_PREFIX = "/WEB-INF/jsp";
+	public static final String JSP_NAME_SUFFIX = ".jsp";
+	public static final String REDIRECT_PREFIX = "redirect:";
 	
+	private static final long serialVersionUID = 1L;		
+
+	private String jspNamePrefix = JSP_NAME_PREFIX;	
+	private String jspNameSuffix = JSP_NAME_SUFFIX;
 	protected Logger logger = LoggerFactory.getLogger(getClass());
-	
-	protected String jspNamePrefix = JSP_NAME_PREFIX;
-	
-	protected String jspNameSuffix = JSP_NAME_SUFFIX;
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

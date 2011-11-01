@@ -3,9 +3,6 @@ package myschedule.web.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A simple ActionHandler implementation that will hide the Http request and response objects, and let subclass
  * handle the {@link ViewData} instead. Any data added into the ViewData will be available in the View rendering.
@@ -27,11 +24,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ViewDataActionHandler implements ActionHandler {
 	
+
 	public static final String DEFAULT_VIEW_NAME = "/index";
 	
-	protected String defaultViewName = DEFAULT_VIEW_NAME;
-	
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	private String defaultViewName = DEFAULT_VIEW_NAME;
 	
 	public ViewDataActionHandler() {
 	}

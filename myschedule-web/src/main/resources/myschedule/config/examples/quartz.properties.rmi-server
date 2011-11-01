@@ -21,5 +21,6 @@ org.quartz.scheduler.rmi.registryPort = 1099
 org.quartz.scheduler.rmi.serverPort = 1100
 
 # MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)
+myschedule.schedulerService.autoInit = true
 myschedule.schedulerService.autoStart = true
 myschedule.schedulerService.waitForJobsToComplete = true

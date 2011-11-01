@@ -38,7 +38,7 @@ public class ServiceUtils {
 		return sWriter.toString();
 	}
 	
-	public static Properties loadPropertiesFromText(String configPropsText) {
+	public static Properties textToProps(String configPropsText) {
 		try {
 			Properties config = new Properties();
 			// Read in form input.
@@ -50,15 +50,22 @@ public class ServiceUtils {
 		}					
 	}
 	
-	public static Map<String, Object> createMap(Object ... objects) {
-		if (objects.length % 2 != 0)
-			throw new RuntimeException("CreateMap parameters must be in even count. Got " + objects.length + " instead.");
-		Map<String, Object> result = new HashMap<String, Object>();	
-		int size = objects.length / 2;
-		for (int i = 0; i < size; i += 2) {
-			result.put(objects[i].toString(), objects[i+1]);
+	public static Map<String, Object> mkMap(Object ... dataArray) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (dataArray.length % 2 != 0) {
+			throw new IllegalArgumentException("Data must come in pair: key and value.");
 		}
-		return result;
+		
+		for (int i = 0; i < dataArray.length; i++) {
+			Object keyObj = dataArray[i];
+			if (!(keyObj instanceof String)) {
+				throw new IllegalArgumentException("Key must be a String type, but got: " + keyObj.getClass());
+			}
+			String key = (String)keyObj;
+			Object value = dataArray[++i];
+			map.put(key, value);
+		}
+		return map;
 	}
 	
 	/**

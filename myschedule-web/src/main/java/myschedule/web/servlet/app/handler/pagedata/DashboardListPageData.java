@@ -8,10 +8,10 @@ import lombok.Setter;
 
 public class DashboardListPageData extends PageData {
 	@Getter
-	protected List<SchedulerRow> schedulerRows = new ArrayList<SchedulerRow>();
+	protected List<SchedulerData> schedulerData = new ArrayList<SchedulerData>();
 	
 	@Getter @Setter
-	public static class SchedulerRow {
+	public static class SchedulerData {
 		protected String configId;
 		protected String name;
 		protected boolean initialized;

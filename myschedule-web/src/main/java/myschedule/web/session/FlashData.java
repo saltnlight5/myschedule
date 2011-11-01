@@ -14,8 +14,8 @@ public class FlashData {
 
 	public static final String FLASH_DATA_KEY = "flashData";
 
-	protected Map<String, Serializable> dataMap = null;
-	protected int dataMapGetCount;
+	private Map<String, Serializable> dataMap = null;
+	private int dataMapGetCount;
 	
 	public void addData(String key, Serializable value) {
 		if (dataMap ==  null || dataMapGetCount > 0) {

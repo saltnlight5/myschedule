@@ -14,10 +14,10 @@ import javax.servlet.http.HttpSession;
  *
  */
 public class ViewData {
-	protected String viewName;
-	protected Map<String, Object> dataMap = new HashMap<String, Object>();
-	protected HttpServletRequest request;
-	protected HttpServletResponse response;
+	private String viewName;
+	private Map<String, Object> dataMap = new HashMap<String, Object>();
+	private HttpServletRequest request;
+	private HttpServletResponse response;
 	
 	public ViewData(String viewName) {
 		this.viewName = viewName;

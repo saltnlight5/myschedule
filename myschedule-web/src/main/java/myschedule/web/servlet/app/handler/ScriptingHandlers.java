@@ -9,33 +9,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.script.Bindings;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
-import javax.script.SimpleScriptContext;
-import javax.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
-import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
-import myschedule.service.QuartzSchedulerService;
 import myschedule.service.ResourceLoader;
+import myschedule.service.SchedulerContainer;
+import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.session.SessionData;
-import myschedule.web.session.SessionSchedulerServiceFinder;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScriptingHandlers {
-		
-	@Setter
-	protected SessionSchedulerServiceFinder schedulerServiceFinder;
-	@Setter
-	protected ResourceLoader resourceLoader;
 	
+	@Setter
+	private SchedulerContainer schedulerContainer;
+	@Setter
+	private ResourceLoader resourceLoader;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ScriptingHandlers.class);
 	private static final Map<String, String> SCRIPT_EXT_MAPPINGS = new HashMap<String, String>();
 	
 	static {
@@ -48,12 +47,11 @@ public class ScriptingHandlers {
 	protected ActionHandler runHandler = new ViewDataActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
-			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
-			String scriptEngineName = sessionData.getScriptEngineName();
+			String selectedScriptEngineName = viewData.findData("scriptEngineName", "javascript");
 			List<String> scriptEngineNames = getScriptingEngineNames();
 			viewData.addData("data", ViewData.mkMap(
 					"scriptEngineNames", scriptEngineNames, 
-					"selectedScriptEngineName", scriptEngineName));
+					"selectedScriptEngineName", selectedScriptEngineName));
 		}
 	};
 	
@@ -62,24 +60,26 @@ public class ScriptingHandlers {
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
 			logger.debug("Running Scripting Text.");
-			HttpSession session = viewData.getRequest().getSession(true);
+			String configId = viewData.findData("configId");
 			String scriptEngineName = viewData.findData("scriptEngineName");
 			String scriptText = viewData.findData("scriptText");
 			
-			// Re-save the script engine name into session
-			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
-			if (!scriptEngineName.equals(sessionData.getScriptEngineName())) {
-				logger.debug("Changing session data scriptEngineName to {}", scriptEngineName);
-				sessionData.setScriptEngineName(scriptEngineName);
+			// Save selected scriptEngineName to session
+			SessionData session = viewData.findData(SessionData.SESSION_DATA_KEY);
+			if (!scriptEngineName.equals(session.getScriptEngineName())) {
+				session.setScriptEngineName(scriptEngineName);
 			}
-
+			
 			// Create a Java ScriptEngine
-			String langName = scriptEngineName;
-			if (langName.equals("JRuby")) {
-				langName = "ruby"; // JRuby's engine name is 'ruby' or else it won't find it!
+			String lcEngineName = scriptEngineName.toLowerCase();
+			
+			// If JRuby script engine, we need to use transient variable bindings so we do not need to prefix '$'
+			if (lcEngineName.equals("jruby")) {
+				System.setProperty("org.jruby.embed.localvariable.behavior", "transient");
 			}
+			
 			ScriptEngineManager factory = new ScriptEngineManager();
-	        ScriptEngine scriptEngine = factory.getEngineByName(langName);	        
+	        ScriptEngine scriptEngine = factory.getEngineByName(lcEngineName);	        
 	        if (scriptEngine == null) {
 				throw new ErrorCodeException(ErrorCode.WEB_UI_PROBLEM, "Failed to find ScriptEngine " + 
 						scriptEngineName); 	        	
@@ -87,18 +87,17 @@ public class ScriptingHandlers {
 	        
 			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			PrintWriter webOut = new PrintWriter(outStream);
-			QuartzSchedulerService schedulerService = schedulerServiceFinder.findSchedulerService(session);
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			
 			// Script engine binding variables.
-	        ScriptContext scriptContext = new SimpleScriptContext();
-	        Bindings engineScope = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);			
-			engineScope.put("scheduler", new SchedulerTemplate(schedulerService.getScheduler()));
-			engineScope.put("logger", logger);
-			engineScope.put("output", webOut);
+	        Bindings bindings = scriptEngine.createBindings();			
+			bindings.put("scheduler", schedulerService.getScheduler());
+			bindings.put("logger", logger);
+			bindings.put("output", webOut);
 			
 			Map<String, Object> map = ViewData.mkMap();
 			try {
-				Object scriptingOutput = scriptEngine.eval(scriptText, scriptContext);
+				Object scriptingOutput = scriptEngine.eval(scriptText, bindings);
 				map.put("scriptingOutput", scriptingOutput);
 			} catch (Exception e) {
 				logger.error("Failed to run script text.", e);

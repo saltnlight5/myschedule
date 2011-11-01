@@ -41,8 +41,8 @@ abstract public class ActionHandlerServlet extends ViewDataServlet {
 	
 	private static final long serialVersionUID = 1L;
 
-	protected Map<String, ActionHandler> actionHandlerMappings = new HashMap<String, ActionHandler>();
-	protected Map<String, ActionFilter> actionFilterMappings = new HashMap<String, ActionFilter>();
+	private Map<String, ActionHandler> actionHandlerMappings = new HashMap<String, ActionHandler>();
+	private Map<String, ActionFilter> actionFilterMappings = new HashMap<String, ActionFilter>();
 		
 	/** Allow subclass to add URL action path to a handler. This should be called in init() method of subclass. */
 	protected void addActionHandler(String actionPath, ActionHandler handler) {

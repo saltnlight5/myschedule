@@ -3,9 +3,9 @@ package myschedule.service;
 public class ErrorCodeException extends RuntimeException {
 
 	/** serialVersionUID - long */
-	protected static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
-	protected ErrorCode errorCode = ErrorCode.GENERAL_PROBLEM;
+	private ErrorCode errorCode = ErrorCode.GENERAL_PROBLEM;
 	
 	public void setErrorCode(ErrorCode errorCode) {
 		this.errorCode = errorCode;

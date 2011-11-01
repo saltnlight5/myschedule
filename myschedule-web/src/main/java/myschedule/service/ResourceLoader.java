@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 public class ResourceLoader {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);
-	protected ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	
 	public void copyResource(String resName, Writer writer) {
 		logger.debug("Loading resource: {}", resName);
