@@ -79,7 +79,7 @@ public class SchedulerHandlers {
 			schedulerContainer.modifyScheduler(configId, configPropsText);
 
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
-			if (schedulerService.isInited()) {
+			if (schedulerService.isSchedulerInitialized()) {
 				String schedulerName = schedulerService.getScheduler().getSchedulerNameAndId();
 				viewData.addData("data", ViewData.mkMap( 
 					"configId", configId,

@@ -3,10 +3,12 @@ package myschedule.web.servlet.app.handler;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -19,6 +21,7 @@ import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,17 +70,20 @@ public class DashboardHandlers {
 					schedulerData.put("initException", schedulerService.getInitException());
 				}
 				schedulerData.put("configId", configId);
-				if (schedulerService.isInited()) {
+				schedulerData.put("name", schedulerService.getSchedulerNameAndId());
+				if (schedulerService.isSchedulerInitialized()) {
 					schedulerData.put("inited", "true");
 					try {
 						SchedulerTemplate scheduler = schedulerService.getScheduler();
-						schedulerData.put("name", scheduler.getSchedulerNameAndId());
+						Date runningSince = scheduler.getSchedulerMetaData().getRunningSince();
+						if (runningSince == null) {
+							runningSince = new Date(); // This can happens if we come here right after a init call!
+						}
 						schedulerData.put("started", scheduler.isStarted());
 						schedulerData.put("numOfJobs", scheduler.getAllJobDetails().size());
-						schedulerData.put("runningSince", scheduler.getSchedulerMetaData().getRunningSince());
+						schedulerData.put("runningSince", runningSince);
 					} catch (QuartzRuntimeException e) {
 						logger.error("Failed to get scheduler information for configId " + configId, e);
-						schedulerData.put("name", configId);
 						schedulerData.put("started", "ERROR");
 						schedulerData.put("numOfJobs", "ERROR");
 						schedulerData.put("runningSince", "ERROR");
@@ -86,7 +92,6 @@ public class DashboardHandlers {
 					}
 				} else {
 					schedulerData.put("inited", "false");
-					schedulerData.put("name", configId);
 					schedulerData.put("started", "N/A");
 					schedulerData.put("numOfJobs", "N/A");
 					schedulerData.put("runningSince", "N/A");
@@ -121,8 +126,8 @@ public class DashboardHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configPropsText = viewData.findData("configPropsText");
-			String configId = schedulerContainer.createScheduler(configPropsText);
-			schedulerContainer.initScheduler(configId);
+			// The container will auto init and start if needs to.
+			schedulerContainer.createScheduler(configPropsText);
 			viewData.setViewName("redirect:/dashboard/list");
 		}
 	};
@@ -174,8 +179,12 @@ public class DashboardHandlers {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			try {
-				schedulerContainer.initScheduler(configId);
+				schedulerService.initScheduler();
+				if (schedulerService.isAutoStart()) {
+					schedulerService.startScheduler();					
+				}
 			} catch (QuartzRuntimeException e) {
 				logger.error("Failed to initialize scheduler with configId " + configId, e);
 			}
@@ -189,8 +198,7 @@ public class DashboardHandlers {
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
-			schedulerService.stop();
-			schedulerService.destroy();
+			schedulerService.shutdownScheduler();
 			viewData.setViewName("redirect:/dashboard/list");
 		}
 	};
@@ -201,7 +209,7 @@ public class DashboardHandlers {
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
-			if (schedulerService.isInited()) {
+			if (schedulerService.isSchedulerInitialized()) {
 				viewData.setViewName("redirect:/job/list");
 			} else {
 				viewData.setViewName("redirect:/scheduler/summary");

@@ -32,24 +32,45 @@ public class SchedulerService extends AbstractService {
 	private boolean waitForJobsToComplete; // default to false
 	private SchedulerTemplate scheduler;
 	private Exception initException;
+	private String schedulerNameAndId;
+	private boolean schedulerInitialized;
 	
 	public SchedulerService(String configId, ConfigStore configStore) {
 		this.configId = configId;
 		this.configStore = configStore;
 		loadConfig();
 	}
-		
-	private Properties loadConfig() {
+			
+	public Properties loadConfig() {
 		// Initialize these control fields regardless of settings.
 		String configPropsText = configStore.get(configId);
 		Properties props = ServiceUtils.textToProps(configPropsText);
 		
-		autoInit = Boolean.parseBoolean(props.getProperty(AUTO_START_KEY, "true"));
+		autoInit = Boolean.parseBoolean(props.getProperty(AUTO_INIT_KEY, "true"));
 		autoStart = Boolean.parseBoolean(props.getProperty(AUTO_START_KEY, "false"));		
 		preventAutoStartRemoteScheduler = Boolean.parseBoolean(props.getProperty(PREVENT_AUTO_START_REMOTE_SCHEDULER_KEY, "true"));
 		waitForJobsToComplete = Boolean.parseBoolean(props.getProperty(WAIT_FOR_JOBS_TO_COMPLETES_KEY, "false"));
 		
 		return props;
+	}
+	
+	public boolean isAutoStart() {
+		return autoStart;
+	}
+	
+	/**
+	 * This flag is represent the scheduler state has initialized or not. This is different to this.isInit() that 
+	 * indicate whether the this Service is initialized or not.
+	 */
+	public boolean isSchedulerInitialized() {
+		return schedulerInitialized;
+	}
+	
+	public String getSchedulerNameAndId() {
+		if (schedulerNameAndId == null) {
+			return "ConfigId=" + configId;
+		}
+		return schedulerNameAndId;
 	}
 	
 	public String getConfigId() {
@@ -63,46 +84,58 @@ public class SchedulerService extends AbstractService {
 	public Exception getInitException() {
 		return initException;
 	}
-	
+		
 	@Override
-	protected void initService() {
-		// Now check to see if we need to init scheduler.
+	protected void initService() {		
+		// Check to see if we need to init scheduler.
 		if (autoInit) {
-			try {
-				logger.debug("Initializing scheduler with configId {}", configId);
-				Properties props = loadConfig();
-				scheduler = new SchedulerTemplate(props);
-				logger.info("Scheduler with configId {} initialized. Scheduler name: {}", 
-						configId, scheduler.getSchedulerName());
-			} catch (QuartzRuntimeException e) {
-				initException = (Exception)e.getCause(); // save the exception for display use.
-				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
-						"Failed to initialize Quartz scheduler using configProps.", e.getCause());
-			}
+			initScheduler();
 		}
-	}	
+	}
+	
+	public void initScheduler() {
+		// Init scheduler.
+		try {
+			logger.debug("Initializing scheduler with configId {}", configId);
+			Properties props = loadConfig();
+			scheduler = new SchedulerTemplate(props);
+			logger.info("Scheduler with configId {} initialized. Scheduler name: {}", 
+					configId, scheduler.getSchedulerName());
+			schedulerNameAndId = scheduler.getSchedulerNameAndId();
+		} catch (QuartzRuntimeException e) {
+			initException = (Exception)e.getCause(); // save the exception for display use.
+			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
+					"Failed to initialize Quartz scheduler using configProps.", e.getCause());
+		}
+		schedulerInitialized = true;
+	}
 	
 	@Override
 	protected void startService() {
-		if (scheduler == null) {
+		if (schedulerInitialized && autoStart) {
+			startScheduler();
+		}
+	}
+
+	public void startScheduler() {
+		if (!schedulerInitialized) {
+			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
+					"Quartz scheduler with configId " + configId + " has not been initialized yet.");
+		}
+		
+		if (preventAutoStartRemoteScheduler && scheduler.getScheduler() instanceof RemoteScheduler) {
+			logger.warn("MyScheduler application will not auto start an RemoteScheduler " +
+					"because it will affect remote server. Please start it manually.");
 			return;
 		}
 		
-		if (autoStart) {
-			if (preventAutoStartRemoteScheduler && scheduler.getScheduler() instanceof RemoteScheduler) {
-				logger.warn("MyScheduler application will not auto start an RemoteScheduler " +
-						"because it will affect remote server. Please start it manually.");
-				return;
-			}
-			
-			logger.debug("Auto starting scheduler {}.", scheduler.getSchedulerName());
-			try {
-				scheduler.start();
-				logger.info("Quartz scheduler {} has auto started.", scheduler.getSchedulerName());
-			} catch (QuartzRuntimeException e) {
-				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
-						"Failed to start Quartz scheduler " + scheduler.getSchedulerName(), e);
-			}
+		logger.debug("Auto starting scheduler {}.", scheduler.getSchedulerName());
+		try {
+			scheduler.start();
+			logger.info("Quartz scheduler {} has auto started.", scheduler.getSchedulerName());
+		} catch (QuartzRuntimeException e) {
+			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
+					"Failed to start Quartz scheduler " + scheduler.getSchedulerName(), e);
 		}
 	}
 
@@ -113,29 +146,36 @@ public class SchedulerService extends AbstractService {
 	
 	@Override
 	protected void destroyService() {
+		shutdownScheduler();
+	}
+	
+	public void shutdownScheduler() {
 		if (scheduler == null) {
+			// scheduler has never been initialzed.
 			return;
 		}
-		
 		if (preventAutoStartRemoteScheduler && scheduler.getScheduler() instanceof RemoteScheduler) {
 			logger.warn("MyScheduler application will not auto shutdown an RemoteScheduler " +
 					"because it will affect remote server. Please shutdown manually.");
 			scheduler = null;
+			schedulerInitialized = false;
 			return;
 		}
 		
 		try {
+			String name = scheduler.getSchedulerNameAndId();
 			logger.debug("Shutting down quartz scheduler {} with waitForJobsToComplete={}", 
-					scheduler.getSchedulerName(), waitForJobsToComplete);
+					name, waitForJobsToComplete);
 			scheduler.shutdown(waitForJobsToComplete);
+			logger.info("Quartz scheduler config {} has been shutdown.", name);
 			scheduler = null;
-			logger.info("Quartz scheduler {} has been shutdown.", scheduler.getSchedulerName());
+			schedulerInitialized = false;
 		} catch (QuartzRuntimeException e) {
 			throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, 
 					"Failed to shutodwn quartz scheduler " + scheduler.getSchedulerName(), e);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		String schedulerName = (scheduler == null) ? null : scheduler.toString();

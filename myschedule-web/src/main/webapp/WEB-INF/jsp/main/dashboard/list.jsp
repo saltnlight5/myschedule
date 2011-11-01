@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
 	// Use dataTables plugin
-	$("#schedulerRow-list").dataTable({		
+	$("#scheduler-list").dataTable({		
 		"bPaginate": false,
 		"bLengthChange": false,
 		"bFilter": true,
@@ -13,9 +13,9 @@ $(document).ready(function() {
 		"bJQueryUI": true,
 	});
 	
-	// Confirm shutdown schedulerRow
+	// Confirm shutdown schedulerMap
 	$("#shutdown-confirm").hide();
-	$("#schedulerRow-list .shutdown-link").click(function() {
+	$("#scheduler-list .shutdown-link").click(function() {
 		var linkUrl = $(this).attr("href");
 		$("#shutdown-confirm").dialog({
 			resizable: false,
@@ -36,7 +36,7 @@ $(document).ready(function() {
 	
 	// Confirm Delete config
 	$("#delete-config-confirm").hide();
-	$("#schedulerRow-list .delete-config-link").click(function() {
+	$("#scheduler-list .delete-config-link").click(function() {
 		var linkUrl = $(this).attr("href");
 		$("#delete-config-confirm").dialog({
 			resizable: false,
@@ -59,13 +59,13 @@ $(document).ready(function() {
 
 <div id="shutdown-confirm">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Are you sure you want to shutdown the schedulerRow?
+	Are you sure you want to shutdown the schedulerMap?
 	</p>
 </div>
 
 <div id="delete-config-confirm">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Are you sure you want to delete this schedulerRow configuration?
+	Are you sure you want to delete this schedulerMap configuration?
 	</p>
 </div>
 <c:if test="not empty ${ sessionScope['flashMsg'] }">
@@ -75,7 +75,7 @@ $(document).ready(function() {
 </c:if>
 
 <h1>List of All Schedulers</h1>
-<table id="schedulerRow-list" class="display">
+<table id="scheduler-list" class="display">
 	<thead>
 		<tr>
 			<th>SCHEDULER NAME</th>
@@ -87,43 +87,36 @@ $(document).ready(function() {
 		</tr>
 	</thead>
 	<tbody>
-	<c:forEach items="${ data.schedulerRows }" var="schedulerRow" varStatus="loop">
+	<c:forEach items="${ data.schedulerList }" var="schedulerMap" varStatus="loop">
 	<tr>
-		<c:choose><c:when test="${ schedulerRow.initialized }">
-			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ schedulerRow.configId }">${ schedulerRow.name }</a></td>
-			<c:choose><c:when test="${ schedulerRow.connExceptionExists }">
-				<td>
-					<span id="error_${ schedulerRow.configId }" style="color: red;">ERROR</span>
-					<!-- <div id="errormsg_${ schedulerRow.configId }">
-					<pre>${ schedulerRow.connExceptionString }</pre>
-					</div> -->
-				</td> <!-- initialized -->
-				<td>N/A</td> <!-- started -->
-				<td>N/A</td> <!-- runningSince -->
-				<td>N/A</td> <!-- numOfJobs -->
-			</c:when><c:otherwise>
-				<td>true</td> <!-- initialize -->
-				<td>${ schedulerRow.started }</td>
-				<td><fmt:formatDate value="${ schedulerRow.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
-				<td>${ schedulerRow.numOfJobs }</td>
-			</c:otherwise></c:choose>
-		
+		<c:choose><c:when test="${ schedulerMap.inited }">
+			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ schedulerMap.configId }">${ schedulerMap.name }</a></td>
+			<td>true</td> <!-- initialize -->
+			<td>${ schedulerMap.started }</td>
+			<td><fmt:formatDate value="${ schedulerMap.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
+			<td>${ schedulerMap.numOfJobs }</td>
 			<td>
-				<a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerRow.configId }">Shutdown</a> |
-				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerRow.configId }">Modify</a> |
-				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerRow.configId }">Delete</a>
+				<a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerMap.configId }">Shutdown</a> |
+				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerMap.configId }">Modify</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerMap.configId }">Delete</a>
 			</td>
 			
 		</c:when><c:otherwise>
-			<td>${ schedulerRow.name }</td>
-			<td>false</td>  <!-- initialize -->
+			<td>${ schedulerMap.name }</td>
+			
+			<c:choose><c:when test="${ not empty schedulerMap.initException }">
+				<td><span id="error_${ schedulerMap.configId }" style="color: red;">ERROR</span></td> <!-- initialized -->
+			</c:when><c:otherwise>
+				<td>false</td> <!-- initialize -->
+			</c:otherwise></c:choose>
+			
 			<td>N/A</td> <!-- started -->
 			<td>N/A</td> <!-- runningSince -->
 			<td>N/A</td> <!-- numOfJobs -->
 			<td>
-				<a href="${ mainPath }/dashboard/init?configId=${ schedulerRow.configId }">Initialize</a> |
-				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerRow.configId }">Modify</a> |
-				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerRow.configId }">Delete</a>
+				<a href="${ mainPath }/dashboard/init?configId=${ schedulerMap.configId }">Initialize</a> |
+				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerMap.configId }">Modify</a> |
+				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerMap.configId }">Delete</a>
 			</td>
 		</c:otherwise></c:choose>
 	</tr>

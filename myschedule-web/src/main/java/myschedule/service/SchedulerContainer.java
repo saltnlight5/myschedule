@@ -40,33 +40,38 @@ public class SchedulerContainer extends ServiceContainer {
 	public String createScheduler(String configText) {
 		String configId = configStore.create(configText);
 		SchedulerService schedulerService = new SchedulerService(configId, configStore);
+		schedulerServices.put(configId, schedulerService);
 		addService(schedulerService);
-		logger.info("Scheduler {} added.", schedulerService.getScheduler());
+		logger.info("Scheduler service {} added.", schedulerService);
+		
+		schedulerService.init();
+		schedulerService.start();
+		logger.info("Scheduler service {} auto initialized and started.", schedulerService);
+		
 		return configId;
 	}
 	
 	public void modifyScheduler(String configId, String configText) {
-		configStore.update(configId, configText);
-	}
-	
-	public void initScheduler(String configId) {
 		SchedulerService schedulerService = schedulerServices.get(configId);
 		
-		// Init and start service
-		try {
-			schedulerService.init();
-			schedulerService.start();
-			logger.info("Scheduler {} started.", schedulerService.getScheduler());
-		} catch (RuntimeException e) {
-			logger.error("Failed to init and start scheduler service.", e);
-		}
+		schedulerService.stop();
+		schedulerService.destroy();
+		logger.info("scheduler service {} shutdown for configuration modification.", schedulerService);
+		
+		configStore.update(configId, configText);
+		logger.info("ConfigId {} modified", configId, schedulerService);
+		
+		schedulerService.loadConfig(); // Ensure to reload all the auto fields!
+		schedulerService.init();
+		schedulerService.start();
+		logger.info("Scheduler service {} started after configuration modification.", schedulerService);
 	}
 	
 	public void deleteScheduler(String configId) {
 		SchedulerService schedulerService = schedulerServices.get(configId);
 		
 		// Stopping scheduler
-		if (schedulerService.isInited()) {
+		if (schedulerService.isSchedulerInitialized()) {
 			schedulerService.stop();
 			schedulerService.destroy();
 			logger.info("Scheduler {} destroyed.", schedulerService.getScheduler());
@@ -80,7 +85,7 @@ public class SchedulerContainer extends ServiceContainer {
 		SchedulerService scheduler = null;
 		for (Map.Entry<String, SchedulerService> entry : schedulerServices.entrySet()) {
 			scheduler = entry.getValue();
-			if (scheduler.isInited()) {
+			if (scheduler.isSchedulerInitialized()) {
 				return scheduler;
 			}
 		}
@@ -95,6 +100,8 @@ public class SchedulerContainer extends ServiceContainer {
 		for (String configId : configIds) {
 			SchedulerService schedulerService = new SchedulerService(configId, configStore);
 			addService(schedulerService);
+			schedulerServices.put(configId, schedulerService);
+			logger.info("Scheduler service {} added.", schedulerService);
 		}
 		
 		// Ensure parent service is initialized.
