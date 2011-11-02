@@ -11,7 +11,17 @@ import org.quartz.impl.RemoteScheduler;
  * 
  * <p>
  * Unlike the direct Quartz Scheduler, this service will lazy load the scheduler, but yet still able to maintain the 
- * configuration.
+ * configuration after a shutdown.
+ * 
+ * <p>
+ * In addition to load Quartz config properties, this service will load and use these additional properties
+ * to control how to manage the scheduler. Below are it's default values if omitted.
+ * <pre>
+ * myschedule.schedulerService.autoInit = true
+ * myschedule.schedulerService.autoStart = false
+ * myschedule.schedulerService.preventAutoStartRemoteScheduler = false
+ * myschedule.schedulerService.waitForJobsToComplete = false
+ * </pre>
  *  
  * @author Zemian Deng
  */
@@ -28,7 +38,7 @@ public class SchedulerService extends AbstractService {
 	// Fields to control scheduler
 	private boolean autoInit; // default to true
 	private boolean autoStart; // default to false
-	private boolean preventAutoStartRemoteScheduler; // default to true
+	private boolean preventAutoStartRemoteScheduler; // default to false
 	private boolean waitForJobsToComplete; // default to false
 	private SchedulerTemplate scheduler;
 	private Exception initException;
@@ -48,7 +58,7 @@ public class SchedulerService extends AbstractService {
 		
 		autoInit = Boolean.parseBoolean(props.getProperty(AUTO_INIT_KEY, "true"));
 		autoStart = Boolean.parseBoolean(props.getProperty(AUTO_START_KEY, "false"));		
-		preventAutoStartRemoteScheduler = Boolean.parseBoolean(props.getProperty(PREVENT_AUTO_START_REMOTE_SCHEDULER_KEY, "true"));
+		preventAutoStartRemoteScheduler = Boolean.parseBoolean(props.getProperty(PREVENT_AUTO_START_REMOTE_SCHEDULER_KEY, "false"));
 		waitForJobsToComplete = Boolean.parseBoolean(props.getProperty(WAIT_FOR_JOBS_TO_COMPLETES_KEY, "false"));
 		
 		return props;
