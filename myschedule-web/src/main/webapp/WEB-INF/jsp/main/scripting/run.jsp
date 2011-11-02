@@ -58,8 +58,9 @@ $(document).ready(function() {
 });
 </script>
 <div class="error">
-<p>There is an error when evaluating your script: <pre>${ data.errorMessage }</pre></p>
-<a id="show-exception" href="#">Show exception stacktrace</a>
+<p>There is an error when evaluating your script: 
+<pre>${ data.errorMessage }</pre></p>
+<a id="show-exception" href="#">Show full stacktrace exception</a>
 <div id="exception"><pre>${ data.fullStackTrace }</pre></div>
 </div>
 </c:if>
