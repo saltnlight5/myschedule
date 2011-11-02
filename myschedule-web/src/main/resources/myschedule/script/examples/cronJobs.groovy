@@ -5,6 +5,7 @@
 
 // For more on CRON expression format, see http://www.quartz-scheduler.org/api/2.1.0/org/quartz/CronExpression.html
 import myschedule.quartz.extra.job.LoggerJob
+
 // Schedule hourly job on every MON-FRI
 scheduler.scheduleCronJob("hourlyCronJob", "0 0 * ? * MON-FRI", LoggerJob.class)
 

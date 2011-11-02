@@ -6,22 +6,22 @@ import myschedule.quartz.extra.job.LoggerJob
 import myschedule.quartz.extra.job.ScriptingJob
 
 // Schedule hourly job
-scheduler.scheduleSimpleJob("hourlyJob", -1, 60 * 60 * 1000L, LoggerJob.class)
+scheduler.scheduleSimpleJob("hourlyJob", -1, 60 * 60 * 1000, LoggerJob.class)
 
 // Schedule minutely job
-scheduler.scheduleSimpleJob("minutelyJob", -1, 60 * 1000L, LoggerJob.class)
+scheduler.scheduleSimpleJob("minutelyJob", -1, 60 * 1000, LoggerJob.class)
 
 // Schedule secondly job
-scheduler.scheduleSimpleJob("secondlyJob", -1, 1000L, LoggerJob.class)
+scheduler.scheduleSimpleJob("secondlyJob", -1, 1000, LoggerJob.class)
 
 // Schedule secondly job that repeat total of 3 times.
-scheduler.scheduleSimpleJob("secondlyJobRepeat3", 3, 1000L, LoggerJob.class)
+scheduler.scheduleSimpleJob("secondlyJobRepeat3", 3, 1000, LoggerJob.class)
 
 // Schedule onetime job that run immediately
-scheduler.scheduleSimpleJob("onetimeJob", 1, 0L, LoggerJob.class)
+scheduler.scheduleSimpleJob("onetimeJob", 1, 0, LoggerJob.class)
 
 // Schedule hourly job with job data and start time of 20s delay.
-scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000L, ScriptingJob.class, 
+scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000, ScriptingJob.class, 
 		scheduler.mkMap(
 			'ScriptEngineName', 'Groovy', 
 			'ScriptText', '''
