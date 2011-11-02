@@ -49,7 +49,7 @@ import org.quartz.spi.OperableTrigger;
  */
 public class SchedulerTemplate {
 
-	protected Scheduler scheduler;
+	private Scheduler scheduler;
 	
 	public SchedulerTemplate() {
 		try {

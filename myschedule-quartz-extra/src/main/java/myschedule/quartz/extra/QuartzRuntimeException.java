@@ -14,7 +14,7 @@ public class QuartzRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	protected SchedulerException schedulerException;
+	private SchedulerException schedulerException;
 	
 	public SchedulerException getSchedulerException() {
 		return schedulerException;

@@ -44,9 +44,9 @@ public class OsCommandJob implements Job, InterruptableJob {
 	public static final String TIMEOUT_KEY = "Timeout";
 	public static final String RUN_IN_BACKGROUND_KEY = "RunInBackground";
 
-	protected Logger logger = LoggerFactory.getLogger(getClass());
-	protected BackgroundProcess bgProcess;
-	protected JobKey jobKey;
+	private static final Logger logger = LoggerFactory.getLogger(OsCommandJob.class);
+	private BackgroundProcess bgProcess;
+	private JobKey jobKey;
 	
 	@Override
 	public void interrupt() throws UnableToInterruptJobException {

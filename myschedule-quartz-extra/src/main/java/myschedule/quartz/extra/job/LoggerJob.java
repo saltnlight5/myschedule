@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggerJob implements Job {
 	
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(LoggerJob.class);
 	
 	/**
 	 * Log information.

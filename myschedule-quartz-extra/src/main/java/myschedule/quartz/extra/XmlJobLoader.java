@@ -28,7 +28,7 @@ import org.quartz.xml.XMLSchedulingDataProcessor;
  */
 public class XmlJobLoader extends XMLSchedulingDataProcessor {
 		
-	public static String XML_SYSTEM_ID = XMLSchedulingDataProcessor.QUARTZ_SYSTEM_ID_JAR_PREFIX;
+	public static final String XML_SYSTEM_ID = XMLSchedulingDataProcessor.QUARTZ_SYSTEM_ID_JAR_PREFIX;
 	
 	/** A simple factory method that automatically initialize a new CascadingClassLoadHelper and
 	 * pass to XmlJobLoader. */

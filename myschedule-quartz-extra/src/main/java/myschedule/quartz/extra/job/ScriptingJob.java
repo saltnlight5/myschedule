@@ -44,18 +44,13 @@ public class ScriptingJob implements Job {
 	 * Will use default if not found.
 	 */
 	public static final String JOB_EXECUTION_EXCEPTION_PARAMS_KEY = "JobExecutionExceptionParams";
-	
+	public static final String SCRIPT_ENGINE_NAME_KEY = "ScriptEngineName";	
+	public static final String SCRIPT_TEXT_KEY = "ScriptText";	
+	public static final String SCRIPT_FILE_KEY = "ScriptFile";	
+	public static final String LOG_SCRIPT_TEXT_KEY = "LogScriptText";	
 	public static final String DEFAULT_SCRIPT_ENGINE_NAME = "JavaScript";
-
-	public static final String SCRIPT_ENGINE_NAME_KEY = "ScriptEngineName";
 	
-	public static final String SCRIPT_TEXT_KEY = "ScriptText";
-	
-	public static final String SCRIPT_FILE_KEY = "ScriptFile";
-	
-	public static final String LOG_SCRIPT_TEXT_KEY = "LogScriptText";
-	
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(ScriptingJob.class);
 	
 	/**
 	 * Run the job to evaluate the script text or file using an javax.script.ScriptEngine impl.

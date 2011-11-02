@@ -50,10 +50,10 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	private ScriptEngine scriptEngine;
 	private Scheduler scheduler;
 	
-	protected String scriptEngineName = "JavaScript";
-	protected String initializeScript;
-	protected String startScript;
-	protected String shutdownScript;
+	private String scriptEngineName = "JavaScript";
+	private String initializeScript;
+	private String startScript;
+	private String shutdownScript;
 	
 	public String getName() {
 		return name;
