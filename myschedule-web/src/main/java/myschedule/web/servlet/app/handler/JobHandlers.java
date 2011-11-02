@@ -164,7 +164,8 @@ public class JobHandlers {
 	protected ActionHandler loadXmlActionHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String xml = viewData.findData("xml");
 			logger.debug("Loading xml jobs.");
@@ -205,7 +206,8 @@ public class JobHandlers {
 	protected ActionHandler jobDetailHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String jobName = viewData.findData("jobName");
 			String jobGroup = viewData.findData("jobGroup");
@@ -231,7 +233,8 @@ public class JobHandlers {
 	protected ActionHandler triggerDetailHandler = new ViewDataActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String configId = viewData.findData("configId");
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String triggerName = viewData.findData("triggerName");
 			String triggerGroup = viewData.findData("triggerGroup");
