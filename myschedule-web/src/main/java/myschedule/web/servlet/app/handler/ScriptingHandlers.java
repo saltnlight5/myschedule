@@ -23,6 +23,7 @@ import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.session.SessionData;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +104,8 @@ public class ScriptingHandlers {
 				map.put("scriptingOutput", scriptingOutput);
 			} catch (Exception e) {
 				logger.error("Failed to run script text.", e);
-				map.put("errorMessage", ExceptionUtils.getMessage(e));
-				map.put("fullStackTrace", ExceptionUtils.getFullStackTrace(e));
+				map.put("errorMessage", StringEscapeUtils.escapeHtml(ExceptionUtils.getMessage(e)));
+				map.put("fullStackTrace", StringEscapeUtils.escapeHtml(ExceptionUtils.getFullStackTrace(e)));
 				map.put("scriptText", scriptText);
 				map.put("scriptEngineNames", getScriptingEngineNames());
 				map.put("selectedScriptEngineName", scriptEngineName);
