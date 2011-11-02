@@ -2,6 +2,7 @@ package myschedule.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -38,6 +39,8 @@ public class SchedulerContainer extends ServiceContainer {
 	}
 	
 	public String createScheduler(String configText) {
+		verifyScheudlerNameIsUnique(configText);
+		
 		String configId = configStore.create(configText);
 		SchedulerService schedulerService = new SchedulerService(configId, configStore);
 		schedulerServices.put(configId, schedulerService);
@@ -51,6 +54,28 @@ public class SchedulerContainer extends ServiceContainer {
 		return configId;
 	}
 	
+	private void verifyScheudlerNameIsUnique(String configText) {
+		Properties props = ServiceUtils.textToProps(configText);
+		String isClusteredStr = props.getProperty("org.quartz.jobStore.isClustered", "false");
+		boolean isClustered = Boolean.parseBoolean(isClusteredStr);
+		// We only worry non-clustered schedulers because their name must be unique in JVM.
+		if (isClustered) {
+			return;
+		}
+
+		String schedulerName = props.getProperty("org.quartz.scheduler.instanceName", "QuartzScheduler");
+		logger.debug("Verifying unique scheduler name {}", schedulerName);
+		for (String configId : configStore.getAllIds()) {
+			String text = configStore.get(configId);
+			Properties configProps = ServiceUtils.textToProps(text);
+			String existingName = configProps.getProperty("org.quartz.scheduler.instanceName", "QuartzScheduler");
+			if (schedulerName.equals(existingName)) {
+				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "A non-clustered scheduler name " + 
+						schedulerName + " already exists.");
+			}
+		}
+	}
+
 	public void modifyScheduler(String configId, String configText) {
 		SchedulerService schedulerService = schedulerServices.get(configId);
 		

@@ -93,14 +93,13 @@ $(document).ready(function() {
 			<td><a href="${ mainPath }/dashboard/switch-scheduler?configId=${ schedulerMap.configId }">${ schedulerMap.name }</a></td>
 			<td>true</td> <!-- initialize -->
 			<td>${ schedulerMap.started }</td>
-			<td><fmt:formatDate value="${ schedulerMap.runningSince }" pattern="MM/dd/yyyy HH:mm"/></td>
+			<td>${ schedulerMap.runningSince }</td>
 			<td>${ schedulerMap.numOfJobs }</td>
 			<td>
 				<a class="shutdown-link" href="${ mainPath }/dashboard/shutdown?configId=${ schedulerMap.configId }">Shutdown</a> |
 				<a href="${ mainPath }/dashboard/modify?configId=${ schedulerMap.configId }">Modify</a> |
 				<a class="delete-config-link" href="${ mainPath }/dashboard/delete-action?configId=${ schedulerMap.configId }">Delete</a>
-			</td>
-			
+			</td>			
 		</c:when><c:otherwise>
 			<td>${ schedulerMap.name }</td>
 			

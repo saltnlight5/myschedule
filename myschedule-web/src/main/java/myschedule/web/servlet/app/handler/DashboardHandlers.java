@@ -2,6 +2,7 @@ package myschedule.web.servlet.app.handler;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,8 +47,7 @@ public class DashboardHandlers {
 				redirectName = "/dashboard/create";
 			} else {
 				try {
-					SchedulerService scheduler = schedulerContainer.findFirstInitedScheduler();
-					redirectName = "/job/list?configId=" + scheduler.getConfigId();
+					redirectName = "/job/list";
 				} catch (RuntimeException e) {
 					// No scheduler service are initialized, so list them all
 					redirectName = "/dashboard/list";
@@ -76,13 +76,14 @@ public class DashboardHandlers {
 					schedulerData.put("inited", "true");
 					try {
 						SchedulerTemplate scheduler = schedulerService.getScheduler();
+						SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 						Date runningSince = scheduler.getSchedulerMetaData().getRunningSince();
 						if (runningSince == null) {
 							runningSince = new Date(); // This can happens if we come here right after a init call!
 						}
 						schedulerData.put("started", scheduler.isStarted());
 						schedulerData.put("numOfJobs", scheduler.getAllJobDetails().size());
-						schedulerData.put("runningSince", runningSince);
+						schedulerData.put("runningSince", df.format(runningSince));
 					} catch (QuartzRuntimeException e) {
 						logger.error("Failed to get scheduler information for configId " + configId, e);
 						schedulerData.put("started", "ERROR");

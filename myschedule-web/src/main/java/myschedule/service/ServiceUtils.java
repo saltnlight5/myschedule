@@ -38,11 +38,11 @@ public class ServiceUtils {
 		return sWriter.toString();
 	}
 	
-	public static Properties textToProps(String configPropsText) {
+	public static Properties textToProps(String propsText) {
 		try {
 			Properties config = new Properties();
 			// Read in form input.
-			StringReader reader = new StringReader(configPropsText);
+			StringReader reader = new StringReader(propsText);
 			config.load(reader);
 			return config;
 		} catch (Exception e) {
