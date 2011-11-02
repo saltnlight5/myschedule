@@ -22,6 +22,7 @@ import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,8 +88,8 @@ public class DashboardHandlers {
 						schedulerData.put("started", "ERROR");
 						schedulerData.put("numOfJobs", "ERROR");
 						schedulerData.put("runningSince", "ERROR");
-						schedulerData.put("errorMsg", e.getMessage());
-						schedulerData.put("errorStackTrace", ExceptionUtils.getFullStackTrace(e));
+						schedulerData.put("errorMsg", StringEscapeUtils.escapeHtml(e.getMessage()));
+						schedulerData.put("errorStackTrace", StringEscapeUtils.escapeHtml(ExceptionUtils.getFullStackTrace(e)));
 					}
 				} else {
 					schedulerData.put("inited", "false");
