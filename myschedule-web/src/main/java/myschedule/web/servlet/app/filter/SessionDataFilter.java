@@ -13,9 +13,11 @@ import myschedule.web.session.SessionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Ensure MySchedule application session would contain the sesionData, or else redirect to Dashboard.
+/**
+ * Ensure MySchedule application session would contain the sesionData, or else redirect to Dashboard.
  * 
- * @author Zemian Deng <saltnlight5@gmail.com> */
+ * @author Zemian Deng <saltnlight5@gmail.com> 
+ */
 public class SessionDataFilter implements ActionFilter {
 
 	private static final Logger logger = LoggerFactory.getLogger(SessionDataFilter.class);

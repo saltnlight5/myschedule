@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a singleton space to hold global application data.
+ * This is a singleton space/container to hold global application services and configuration.
  * 
  * @author Zemian Deng <saltnlight5@gmail.com>
  *

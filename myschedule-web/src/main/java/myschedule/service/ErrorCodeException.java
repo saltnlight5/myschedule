@@ -1,5 +1,11 @@
 package myschedule.service;
 
+/**
+ * A runtime exception that capture specific error code when problem occur during the application.
+ * 
+ * @author Zemian Deng <saltnlight5@gmail.com>
+ *
+ */
 public class ErrorCodeException extends RuntimeException {
 
 	/** serialVersionUID - long */

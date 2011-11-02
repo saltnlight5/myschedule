@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** 
- * WebAppContextListener
+ * A servlet context listener to initialize and destroy application upon the webapp lifecycles.
  *
  * @author Zemian Deng
  */

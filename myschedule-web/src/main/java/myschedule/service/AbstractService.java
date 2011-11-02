@@ -14,12 +14,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Zemian Deng
  */
-abstract public class AbstractService implements Service {
-	
-	protected Logger logger = LoggerFactory.getLogger(getClass());	
-	
+public abstract class AbstractService implements Service {
 	private AtomicBoolean started = new AtomicBoolean(false);
 	private AtomicBoolean inited = new AtomicBoolean(false);
+	
+	protected Logger logger = LoggerFactory.getLogger(getClass());	
 	
 	@Override
 	public void init() {

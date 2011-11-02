@@ -7,6 +7,12 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A class to help load resource content within a ClassLoader (or inside a packaged jar).
+ * 
+ * @author Zemian Deng <saltnlight5@gmail.com>
+ *
+ */
 public class ResourceLoader {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);

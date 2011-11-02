@@ -10,6 +10,10 @@ import javax.servlet.http.HttpSession;
 /**
  * A holder for a viewName and dataMap that are used to render view.
  * 
+ * <p>This class also will hold HTTP request and response object as it process by handlers. It provided a 
+ * convenient findData() that will search the dataMap, request parameters, attributes, and the session scope
+ * spaces.
+ * 
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */

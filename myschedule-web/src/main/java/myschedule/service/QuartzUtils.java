@@ -6,6 +6,12 @@ import org.quartz.DailyTimeIntervalTrigger;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
+/**
+ * Utilities specific to Quartz library.
+ * 
+ * @author Zemian Deng <saltnlight5@gmail.com>
+ *
+ */
 public class QuartzUtils {
 	
 	public static boolean isSimpleTrigger(Object trigger) {

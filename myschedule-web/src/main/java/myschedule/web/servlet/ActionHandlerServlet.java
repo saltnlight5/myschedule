@@ -37,10 +37,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-abstract public class ActionHandlerServlet extends ViewDataServlet {
-	
+public abstract class ActionHandlerServlet extends ViewDataServlet {
 	private static final long serialVersionUID = 1L;
-
 	private Map<String, ActionHandler> actionHandlerMappings = new HashMap<String, ActionHandler>();
 	private Map<String, ActionFilter> actionFilterMappings = new HashMap<String, ActionFilter>();
 		

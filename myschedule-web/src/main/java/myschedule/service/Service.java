@@ -8,10 +8,8 @@ package myschedule.service;
  * 
  * @author Zemian Deng
  */
-public interface Service extends Initable {
-	
+public interface Service extends Initable {	
 	void start();	
 	void stop();
-	boolean isStarted();
-	
+	boolean isStarted();	
 }

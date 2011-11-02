@@ -40,6 +40,7 @@ abstract public class ViewDataServlet extends HttpServlet {
 
 	private String jspNamePrefix = JSP_NAME_PREFIX;	
 	private String jspNameSuffix = JSP_NAME_SUFFIX;
+	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Override

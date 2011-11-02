@@ -8,14 +8,12 @@ import java.util.List;
  * lifecycles. When Spring starts up, it calls all init(), then start(), and when Spring close, it calls all stop(), 
  * then destroy() in reverse order.
  * 
- * 
  * @author Zemian Deng
  */
 public class ServiceContainer extends AbstractService {
-		
+
 	/** Service list that's registered in the application. */
-	protected List<Initable> services = new ArrayList<Initable>();
-	
+	private List<Initable> services = new ArrayList<Initable>();	
 	private boolean ignoreInitException = false;
 	
 	public void setIgnoreInitException(boolean ignoreInitException) {

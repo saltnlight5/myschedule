@@ -8,16 +8,11 @@ import java.util.Set;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public interface ConfigStore {
-	
+public interface ConfigStore {	
 	String create(String config);
-	
-	String get(String id);
-	
+	String get(String id);	
 	void delete(String id);
-
-	Set<String> getAllIds();
-	
+	Set<String> getAllIds();	
 	void update(String id, String config);
 }
 
