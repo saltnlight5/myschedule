@@ -3,7 +3,7 @@ package myschedule.web.servlet.app;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ActionHandlerServlet;
 import myschedule.web.servlet.ViewData;
-import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.servlet.UrlRequestActionHandler;
 
 
 
@@ -19,11 +19,11 @@ public class DebugServlet extends ActionHandlerServlet {
 
 	@Override
 	public void init() {
-		addActionHandler("", new ViewDataActionHandler());
+		addActionHandler("", new UrlRequestActionHandler());
 		addActionHandler("/test", testAction);
 	}
 	
-	protected ActionHandler testAction = new ViewDataActionHandler() {
+	protected ActionHandler testAction = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			viewData.addData("message", "ServerTime=" + new java.util.Date());

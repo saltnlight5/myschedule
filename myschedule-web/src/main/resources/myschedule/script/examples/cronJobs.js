@@ -8,19 +8,20 @@ importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
 importClass(Packages.java.lang.System);
 importClass(Packages.java.util.HashMap);
 
-// Schedule hourly job on every MON-FRI
-scheduler.scheduleCronJob("hourlyCronJob", "0 0 * ? * MON-FRI", Packages.myschedule.quartz.extra.job.LoggerJob);
 
-// Schedule minutely job on JUN and DEC only
-scheduler.scheduleCronJob("minutelyCronJob", "0 * * * JUN,DEC ?", Packages.myschedule.quartz.extra.job.LoggerJob);
+//Schedule hourly job on every MON-FRI
+scheduler.scheduleCronJob("hourlyCronJob", "0 0 * ? * MON-FRI", LoggerJob);
 
-// Schedule secondly job
-scheduler.scheduleCronJob("secondlyCronJob", "* * * * * ?", Packages.myschedule.quartz.extra.job.LoggerJob);
+//Schedule minutely job on JUN and DEC only
+scheduler.scheduleCronJob("minutelyCronJob", "0 * * * JUN,DEC ?", LoggerJob);
 
-// Schedule hourly job with job data and start time of 20s delay.
+//Schedule secondly job
+scheduler.scheduleCronJob("secondlyCronJob", "* * * * * ?", LoggerJob);
+
+//Schedule hourly job with job data and start time of 20s delay.
 dataMap = HashMap();
 dataMap.put('color', 'RED');
-scheduler.scheduleCronJob("hourlyCronJobWithStartTimeDelay", "0 0 * * * ?", Packages.myschedule.quartz.extra.job.LoggerJob, 
+scheduler.scheduleCronJob("hourlyCronJobWithStartTimeDelay", "0 0 * * * ?", LoggerJob,
 		dataMap, 
 		Packages.java.util.Date(System.currentTimeMillis() + 20 * 1000));
 

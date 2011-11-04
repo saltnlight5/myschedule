@@ -21,7 +21,7 @@ import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
-import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.session.SessionData;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -45,7 +45,7 @@ public class ScriptingHandlers {
 	}
 			
 	@Getter
-	protected ActionHandler runHandler = new ViewDataActionHandler(){
+	protected ActionHandler runHandler = new UrlRequestActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -58,7 +58,7 @@ public class ScriptingHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler runActionHandler = new ViewDataActionHandler() {
+	protected ActionHandler runActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
 			logger.debug("Running Scripting Text.");
@@ -120,7 +120,7 @@ public class ScriptingHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler scriptExampleHandler = new ViewDataActionHandler() {
+	protected ActionHandler scriptExampleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String scriptEngineName = viewData.findData("scriptEngineName");

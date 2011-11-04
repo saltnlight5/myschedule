@@ -16,22 +16,22 @@ import javax.servlet.http.HttpServletResponse;
  * it save the Http request and response so subclass may have access to it.
  * 
  * <p>
- * For simple handler that just need a view name returned without data map, then creating a instance of this class with
+ * For simple handler that just need a view name returned without data map, then creating an instance of this class with
  * the viewName parameter is sufficient.
  * 
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class ViewDataActionHandler implements ActionHandler {	
+public class UrlRequestActionHandler implements ActionHandler {	
 
 	public static final String DEFAULT_VIEW_NAME = "/index";
 	
 	private String defaultViewName = DEFAULT_VIEW_NAME;
 	
-	public ViewDataActionHandler() {
+	public UrlRequestActionHandler() {
 	}
 	
-	public ViewDataActionHandler(String defaultViewName) {
+	public UrlRequestActionHandler(String defaultViewName) {
 		this.defaultViewName = defaultViewName;
 	}
 	

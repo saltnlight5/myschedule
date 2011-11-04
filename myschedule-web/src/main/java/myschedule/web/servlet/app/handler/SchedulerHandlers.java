@@ -16,7 +16,7 @@ import myschedule.service.SchedulerService;
 import myschedule.service.ServiceUtils;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
-import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.session.SessionData;
 
 import org.quartz.JobDetail;
@@ -37,7 +37,7 @@ public class SchedulerHandlers {
 	protected SchedulerContainer schedulerContainer;
 		
 	@Getter
-	protected ActionHandler listenersHandler = new ViewDataActionHandler() {
+	protected ActionHandler listenersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -59,7 +59,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler modifyHandler = new ViewDataActionHandler() {
+	protected ActionHandler modifyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -75,7 +75,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler modifyActionHandler = new ViewDataActionHandler() {
+	protected ActionHandler modifyActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configPropsText = viewData.findData("configPropsText");
@@ -97,7 +97,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler summaryHandler = new ViewDataActionHandler() {
+	protected ActionHandler summaryHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -116,7 +116,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler detailHandler = new ViewDataActionHandler() {
+	protected ActionHandler detailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -135,7 +135,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler pauseAllTriggersHandler = new ViewDataActionHandler() {
+	protected ActionHandler pauseAllTriggersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -159,7 +159,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler resumeAllTriggersHandler = new ViewDataActionHandler() {
+	protected ActionHandler resumeAllTriggersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -174,7 +174,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler startHandler = new ViewDataActionHandler() {
+	protected ActionHandler startHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -190,7 +190,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler standbyHandler = new ViewDataActionHandler() {
+	protected ActionHandler standbyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
