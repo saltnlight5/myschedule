@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-abstract public class ViewDataServlet extends HttpServlet {
+abstract public class AbstractControllerServlet extends HttpServlet {
 
 	public static final String JSP_NAME_PREFIX = "/WEB-INF/jsp";
 	public static final String JSP_NAME_SUFFIX = ".jsp";

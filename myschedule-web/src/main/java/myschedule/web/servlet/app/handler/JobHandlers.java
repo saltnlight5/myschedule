@@ -21,7 +21,7 @@ import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
-import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.app.handler.pagedata.JobListPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobTriggerDetailPageData;
@@ -43,7 +43,7 @@ public class JobHandlers {
 	private SchedulerContainer schedulerContainer;
 	
 	@Getter
-	protected ActionHandler listHandler = new ViewDataActionHandler() {
+	protected ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -54,7 +54,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listExecutingJobsHandler = new ViewDataActionHandler() {
+	protected ActionHandler listExecutingJobsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -67,7 +67,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listNoTriggerJobsHandler = new ViewDataActionHandler() {
+	protected ActionHandler listNoTriggerJobsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -78,7 +78,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listCalendarsHandler = new ViewDataActionHandler() {
+	protected ActionHandler listCalendarsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -96,7 +96,7 @@ public class JobHandlers {
 	};
 
 	@Getter
-	protected ActionHandler unscheduleHandler = new ViewDataActionHandler() {
+	protected ActionHandler unscheduleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -119,7 +119,7 @@ public class JobHandlers {
 	};
 
 	@Getter
-	protected ActionHandler deleteHandler = new ViewDataActionHandler() {
+	protected ActionHandler deleteHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -136,7 +136,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler runJobHandler = new ViewDataActionHandler() {
+	protected ActionHandler runJobHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -152,10 +152,10 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler loadXmlHandler = new ViewDataActionHandler();
+	protected ActionHandler loadXmlHandler = new UrlRequestActionHandler();
 	
 	@Getter
-	protected ActionHandler loadXmlActionHandler = new ViewDataActionHandler() {
+	protected ActionHandler loadXmlActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -197,7 +197,7 @@ public class JobHandlers {
 	
 	/** Show a trigger and its job detail page. */	
 	@Getter
-	protected ActionHandler jobDetailHandler = new ViewDataActionHandler() {
+	protected ActionHandler jobDetailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -225,7 +225,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler triggerDetailHandler = new ViewDataActionHandler() {
+	protected ActionHandler triggerDetailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -270,7 +270,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler schedulerDownHandler = new ViewDataActionHandler();
+	protected ActionHandler schedulerDownHandler = new UrlRequestActionHandler();
 	
 
 	protected List<String> getTriggerFullNames(List<Trigger> triggers) {

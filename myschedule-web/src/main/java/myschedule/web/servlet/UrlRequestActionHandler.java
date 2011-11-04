@@ -22,16 +22,16 @@ import javax.servlet.http.HttpServletResponse;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class ViewDataActionHandler implements ActionHandler {	
+public class UrlRequestActionHandler implements ActionHandler {	
 
 	public static final String DEFAULT_VIEW_NAME = "/index";
 	
 	private String defaultViewName = DEFAULT_VIEW_NAME;
 	
-	public ViewDataActionHandler() {
+	public UrlRequestActionHandler() {
 	}
 	
-	public ViewDataActionHandler(String defaultViewName) {
+	public UrlRequestActionHandler(String defaultViewName) {
 		this.defaultViewName = defaultViewName;
 	}
 	

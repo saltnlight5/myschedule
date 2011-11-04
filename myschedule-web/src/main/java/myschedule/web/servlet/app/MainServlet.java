@@ -2,7 +2,7 @@ package myschedule.web.servlet.app;
 
 import myschedule.web.AppConfig;
 import myschedule.web.servlet.ActionHandlerServlet;
-import myschedule.web.servlet.ViewDataActionHandler;
+import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.app.filter.SessionDataFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
@@ -66,7 +66,7 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/scripting/run-action", scriptingHandlers.getRunActionHandler());
 		addActionHandler("/scripting/get-script-eg", scriptingHandlers.getScriptExampleHandler());
 		
-		addActionHandler("/about", new ViewDataActionHandler());
+		addActionHandler("/about", new UrlRequestActionHandler());
 
         SessionDataFilter sessionDataFilter = appConfig.getSessionDataFilter();
         addActionFilter("/job", sessionDataFilter);
