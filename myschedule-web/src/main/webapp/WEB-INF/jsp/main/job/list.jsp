@@ -59,13 +59,13 @@ $(document).ready(function() {
 	<tbody>
 	<c:forEach items="${ data.triggers }" var="trigger" varStatus="loop">
 	<tr>
-		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">${ trigger.jobKey }</a></td>
-		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.key }</a></td>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">${ trigger.jobName }.${ trigger.jobGroup }</a></td>
+		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.name }.${ trigger.group }</a></td>
 		<td>${ data.triggerSchedules[loop.index] }</td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
 		<td class="action">
-			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">Run It Now</a> |
-			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Unschedule</a>
+			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobName }&jobGroup=${ trigger.jobGroup }">Run It Now</a> |
+			<a href="${ mainPath }/job/unschedule?triggerName=${ trigger.name }&triggerGroup=${ trigger.group }">Unschedule</a>
 		</td>
 	</tr>
 	</c:forEach>

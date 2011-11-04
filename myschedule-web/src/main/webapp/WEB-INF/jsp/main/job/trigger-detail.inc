@@ -7,8 +7,8 @@
 	</tr>
 	</thead>
 	<tbody>
-	<tr><td>Key</td><td>${ trigger.key }</td></tr>
-	<tr><td>JobKey</td><td>${ trigger.jobKey }</td></tr>
+	<tr><td>Name.Group</td><td>${ trigger.name }.${ trigger.group }</td></tr>
+	<tr><td>Job Name.Group</td><td>${ trigger.jobName }.${ trigger.jobGroup }</td></tr>
 	<tr><td>Description</td><td>${ trigger.description }</td></tr>
 	<tr><td>Calendar Name</td><td>${ trigger.calendarName }</td></tr>
 	<tr><td>Fire Instance Id</td><td>${ trigger.fireInstanceId }</td></tr>

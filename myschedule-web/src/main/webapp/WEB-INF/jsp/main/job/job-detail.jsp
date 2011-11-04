@@ -46,11 +46,11 @@ $(document).ready(function() {
 <h1>Job Detail and Its Associated Triggers</h1>
 
 <div>
-<a id="delete" href="${ mainPath }/job/delete?jobName=${ data.jobDetail.key.name }&jobGroup=${ data.jobDetail.key.group }">
+<a id="delete" href="${ mainPath }/job/delete?jobName=${ data.jobDetail.name }&jobGroup=${ data.jobDetail.group }">
 DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </div>
 
-<h2>Job : ${ data.jobDetail.key }</h2>
+<h2>Job : ${ data.jobDetail.name }.${ data.jobDetail.group }</h2>
 <table id="jobs">
 	<thead>
 	<tr>
@@ -59,13 +59,13 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	</tr>
 	</thead>
 	<tbody>
-	<tr><td>Key</td><td>${ data.jobDetail.key }</td></tr>
+	<tr><td>Name.Group</td><td>${ data.jobDetail.name }.${ data.jobDetail.group }</td></tr>
 	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
 	<tr><td>Description</td><td>${ data.jobDetail.description }</td></tr>
 	<tr><td>Durable</td><td>${ data.jobDetail.durable }</td></tr>
-	<tr><td>PersistJobDataAfterExecution</td><td>${ data.jobDetail.persistJobDataAfterExecution }</td></tr>
-	<tr><td>ConcurrentExectionDisallowed</td><td>${ data.jobDetail.concurrentExectionDisallowed }</td></tr>
-	<tr><td>Request Recovery</td><td>${ data.jobDetailShouldRecover }</td></tr>
+	<tr><td>isVolatile</td><td>${ data.jobDetail.volatile }</td></tr>
+	<c:set var="jobDetailVar" value="${ data.jobDetail }" scope="request"/>
+	<tr><td>Request Recovery</td><td><%= ((org.quartz.JobDetail)request.getAttribute("jobDetailVar")).requestsRecovery() %></td></tr>
 	
 	<c:forEach items="${ data.jobDetail.jobDataMap }" var="item">
 	<tr><td>Job Data Map: ${ item.key }</td><td>${ item.value }</td></tr>
