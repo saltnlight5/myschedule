@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -18,14 +17,12 @@ import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.ViewDataActionHandler;
 import myschedule.web.session.SessionData;
-
 import org.quartz.JobDetail;
-import org.quartz.ListenerManager;
+import org.quartz.JobListener;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
 import org.quartz.Trigger;
-import org.quartz.Trigger.TriggerState;
-import org.quartz.TriggerKey;
+import org.quartz.TriggerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +44,22 @@ public class SchedulerHandlers {
 			copySchedulerStatusData(schedulerService, map);
 			SchedulerTemplate scheduler = schedulerService.getScheduler();
 			try {
-				ListenerManager listenerManager = scheduler.getListenerManager();
-				map.put("jobListeners", listenerManager.getJobListeners());
-				map.put("triggerListeners", listenerManager.getTriggerListeners());
-				map.put("schedulerListeners", listenerManager.getSchedulerListeners());
+				List<JobListener> jobListeners = new ArrayList<JobListener>();
+				List<TriggerListener> triggerListeners = new ArrayList<TriggerListener>();
+				
+				for (Object nameObj : scheduler.getJobListenerNames()) {
+					jobListeners.add(scheduler.getJobListener((String)nameObj));
+				}
+				
+				for (Object nameObj : scheduler.getTriggerListenerNames()) {
+					triggerListeners.add(scheduler.getTriggerListener((String)nameObj));
+				}
+				
+				map.put("jobListeners", jobListeners);
+				map.put("triggerListeners", triggerListeners);
+				map.put("schedulerListeners", scheduler.getSchedulerListeners());
+				map.put("globalJobListeners", scheduler.getGlobalJobListeners());
+				map.put("globalTriggerListeners", scheduler.getGlobalTriggerListeners());
 				viewData.addData("data", map);
 			} catch (QuartzRuntimeException e) {
 				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to retrieve scheduler listeners.", e);
@@ -144,10 +153,10 @@ public class SchedulerHandlers {
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 			List<Trigger> nonPausedTriggers = new ArrayList<Trigger>();
 			for (JobDetail jobDetail : schedulerTemplate.getAllJobDetails()) {
-				List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggersOfJob(jobDetail.getKey());
-				for (Trigger trigger : jobTriggers) {
-					TriggerKey tk = trigger.getKey();
-					if (schedulerTemplate.getTriggerState(tk) != TriggerState.PAUSED) {
+				Trigger[] triggers = schedulerTemplate.getTriggersOfJob(jobDetail.getName(), jobDetail.getGroup());
+				for (Trigger trigger : triggers) {
+					int state = schedulerTemplate.getTriggerState(trigger.getName(), trigger.getGroup());
+					if (state != Trigger.STATE_PAUSED) {
 						nonPausedTriggers.add(trigger);
 					}
 				}

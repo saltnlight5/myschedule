@@ -37,6 +37,27 @@ $(document).ready(function() {
 	</tbody>
 </table>
 
+<h1>Global Job Listeners</h1>
+<table class="listeners-table">
+	<thead>
+	<tr>
+		<th>INDEX</th>
+		<th>NAME</th>
+		<th>LISTENER CLASS</th>
+	</tr>
+	</thead>
+	<tbody>
+	<c:forEach items="${ data.globalJobListeners }" var="item" varStatus="loop">
+	<c:set var="item" value="${ item }" scope="request" />
+	<tr>
+		<td> ${ loop.index + 1 }</td>
+		<td> ${ item.name }</td>
+		<td> <%= request.getAttribute("item").getClass().getName() %> </td>
+	</tr>
+	</c:forEach>
+	</tbody>
+</table>
+
 <h1>Job Listeners</h1>
 <table class="listeners-table">
 	<thead>
@@ -53,6 +74,26 @@ $(document).ready(function() {
 		<td> ${ loop.index + 1 }</td>
 		<td> ${ item.name }</td>
 		<td> <%= request.getAttribute("item").getClass().getName() %> </td>
+	</tr>
+	</c:forEach>
+	</tbody>
+</table>
+
+<h1>Global Trigger Listeners</h1>
+<table class="listeners-table">
+	<thead>
+	<tr>
+		<th>INDEX</th>
+		<th>NAME</th>
+		<th>LISTENER CLASS</th>
+	</tr>
+	</thead>
+	<tbody>
+	<c:forEach items="${ data.globalTriggerListeners }" var="item" varStatus="loop">
+	<tr>
+		<td> ${ loop.index + 1 }</td>
+		<td> ${ item.name }</td>
+		<td> ${ item.class.name }</td>
 	</tr>
 	</c:forEach>
 	</tbody>

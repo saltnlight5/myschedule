@@ -32,18 +32,6 @@
 	<tr><td>Cron Expression</td><td>${ trigger.cronExpression }</td></tr>
 	<tr><td>Expression Summary</td><td><pre>${ trigger.expressionSummary }</pre></td></tr>
 	<tr><td>Time Zone</td><td>${ trigger.timeZone.displayName }</td></tr>
-	
-	<% } else if (myschedule.service.QuartzUtils.isCalendarIntervalTrigger(request.getAttribute("trigger"))) { %>
-	<tr><td>Repeat Interval</td><td>${ trigger.repeatInterval }</td></tr>
-	<tr><td>Repeat Interval Unit</td><td>${ trigger.repeatIntervalUnit }</td></tr>
-	
-	<% } else if (myschedule.service.QuartzUtils.isDailyTimeIntervalTrigger(request.getAttribute("trigger"))) { %>
-	<tr><td>Start Time of Day</td><td>${ trigger.startTimeOfDay }</td></tr>
-	<tr><td>End Time of Day</td><td>${ trigger.endTimeOfDay }</td></tr>
-	<tr><td>Days of Week</td><td>${ trigger.daysOfWeek }</td></tr>
-	<tr><td>Repeat Interval</td><td>${ trigger.repeatInterval }</td></tr>
-	<tr><td>Repeat Interval Unit</td><td>${ trigger.repeatIntervalUnit }</td></tr>
-	<tr><td>Repeat Count</td><td>${ trigger.repeatCount }</td></tr>
 	<% } %>
 	
 	<c:forEach items="${ trigger.jobDataMap }" var="item">
