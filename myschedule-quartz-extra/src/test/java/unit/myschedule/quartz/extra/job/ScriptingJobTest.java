@@ -21,7 +21,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJob() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
@@ -41,7 +41,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJobWithDefaultEngineName() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_TEXT_KEY, "2 + 99;");
@@ -60,7 +60,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJobLogText() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
@@ -81,7 +81,7 @@ public class ScriptingJobTest {
 	public void testScriptFileJob() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		File file = new File("src/test/resources/unit/myschedule/quartz/extra/job/ScriptingJobTest-1.js");
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
@@ -102,7 +102,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJobWithNullResultObject() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
@@ -122,7 +122,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJobWithException() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
@@ -148,7 +148,7 @@ public class ScriptingJobTest {
 	public void testScriptTextJobWithCustomJobExecutionException() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");

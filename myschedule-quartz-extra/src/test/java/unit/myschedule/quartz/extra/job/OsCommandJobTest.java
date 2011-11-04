@@ -28,7 +28,7 @@ public class OsCommandJobTest {
 		
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = SchedulerTemplate.createJobDetail("MyOsCommandJobTest", OsCommandJob.class);
 		JobDataMap dataMap = job.getJobDataMap();
@@ -52,7 +52,7 @@ public class OsCommandJobTest {
 		
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = SchedulerTemplate.createJobDetail("MyOsCommandJobTest", OsCommandJob.class);
 		JobDataMap dataMap = job.getJobDataMap();
@@ -78,7 +78,7 @@ public class OsCommandJobTest {
 		
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addJobListener(new ResultJobListener());
+		st.addGlobalJobListener(new ResultJobListener());
 		
 		JobDetail job = SchedulerTemplate.createJobDetail("MyOsCommandJobTest", OsCommandJob.class);
 		JobDataMap dataMap = job.getJobDataMap();
