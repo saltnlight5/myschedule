@@ -1,17 +1,14 @@
 package myschedule.quartz.extra.job;
 
 import java.util.Arrays;
-
 import myschedule.quartz.extra.util.ProcessUtils;
 import myschedule.quartz.extra.util.ProcessUtils.BackgroundProcess;
-
 import org.quartz.InterruptableJob;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
 import org.quartz.UnableToInterruptJobException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +43,14 @@ public class OsCommandJob implements Job, InterruptableJob {
 
 	private static final Logger logger = LoggerFactory.getLogger(OsCommandJob.class);
 	private BackgroundProcess bgProcess;
-	private JobKey jobKey;
+	private String jobName;
+	private String jobGroup;
 	
 	@Override
 	public void interrupt() throws UnableToInterruptJobException {
 		if (!bgProcess.isDone()) {
 			bgProcess.destroy();
-			logger.debug("Job {} was interrupted and process has destroyed.", jobKey);
+			logger.debug("Job {}.{} was interrupted and process has destroyed.", jobName, jobGroup);
 		}
 	}
 
@@ -126,8 +124,9 @@ public class OsCommandJob implements Job, InterruptableJob {
 		}
 		
 		// Job is done.
-		jobKey = jobDetail.getKey();
-		logger.info("Job {} has been excuted.", jobKey);		
+		jobName = jobDetail.getName();
+		jobGroup = jobDetail.getGroup();
+		logger.info("Job {}.{} has been executed.", jobName, jobGroup);		
 	}
 
 }

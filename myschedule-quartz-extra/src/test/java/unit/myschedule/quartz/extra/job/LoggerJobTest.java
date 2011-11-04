@@ -13,7 +13,7 @@ public class LoggerJobTest {
 	public void testJob() {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
-		st.addListener(new ResultJobListener());
+		st.addJobListener(new ResultJobListener());
 		
 		st.scheduleSimpleJob("test", 1, 0, LoggerJob.class);
 		st.startAndShutdown(99);

@@ -36,7 +36,6 @@ public class LoggerJob implements Job {
 		logger.debug("RefireCount: {}", jobExecutionContext.getRefireCount());
 		logger.debug("Recovering: {}", jobExecutionContext.isRecovering());
 		logger.debug("Calendar: {}", jobExecutionContext.getCalendar());
-		logger.debug("FireInstanceId: {}", jobExecutionContext.getFireInstanceId());
 		logger.debug("Scheduler: {}", jobExecutionContext.getScheduler());
 		logger.debug("MergedJobDataMap: {}", jobExecutionContext.getMergedJobDataMap().getWrappedMap());
 		logger.debug("JobDetail: {}", jobExecutionContext.getJobDetail());

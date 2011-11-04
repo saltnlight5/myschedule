@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import org.quartz.JobExecutionContext;
 import org.quartz.Trigger;
-import org.quartz.Trigger.CompletedExecutionInstruction;
 import org.quartz.TriggerListener;
 
 public class ResultTriggerListener implements TriggerListener {
@@ -39,8 +38,7 @@ public class ResultTriggerListener implements TriggerListener {
 		result.triggerMisfiredTimes.add(new Date());
 	}
 	@Override
-	public void triggerComplete(Trigger trigger, JobExecutionContext context,
-			CompletedExecutionInstruction triggerInstructionCode) {
+	public void triggerComplete(Trigger trigger, JobExecutionContext context, int triggerInstructionCode) {
 		result.triggerCompleteTimes.add(new Date());
 	}
 	

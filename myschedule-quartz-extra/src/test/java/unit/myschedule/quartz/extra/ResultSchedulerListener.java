@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerListener;
 import org.quartz.Trigger;
-import org.quartz.TriggerKey;
 
 public class ResultSchedulerListener implements SchedulerListener {
 	public static Result result = new Result();
@@ -23,97 +21,85 @@ public class ResultSchedulerListener implements SchedulerListener {
 
 	@Override
 	public void jobScheduled(Trigger trigger) {
-		
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
-	public void jobUnscheduled(TriggerKey triggerKey) {
-		
+	public void jobUnscheduled(String triggerName, String triggerGroup) {
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
 	public void triggerFinalized(Trigger trigger) {
-		
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
-	public void triggerPaused(TriggerKey triggerKey) {
-		
+	public void triggersPaused(String triggerName, String triggerGroup) {
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
-	public void triggersPaused(String triggerGroup) {
-		
-		
-	}
-	@Override
-	public void triggerResumed(TriggerKey triggerKey) {
-		
+	public void triggersResumed(String triggerName, String triggerGroup) {
+		// TODO Auto-generated method stub
 		
 	}
-	@Override
-	public void triggersResumed(String triggerGroup) {
-		
-		
-	}
+
 	@Override
 	public void jobAdded(JobDetail jobDetail) {
-		
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
-	public void jobDeleted(JobKey jobKey) {
-		
+	public void jobDeleted(String jobName, String groupName) {
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
-	public void jobPaused(JobKey jobKey) {
-		
+	public void jobsPaused(String jobName, String jobGroup) {
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
-	public void jobsPaused(String jobGroup) {
-		
-		
-	}
-	@Override
-	public void jobResumed(JobKey jobKey) {
-		
+	public void jobsResumed(String jobName, String jobGroup) {
+		// TODO Auto-generated method stub
 		
 	}
-	@Override
-	public void jobsResumed(String jobGroup) {
-		
-		
-	}
+
 	@Override
 	public void schedulerError(String msg, SchedulerException cause) {
 		result.scheduleErrorTimes.add(new Object[]{ new Date(), msg, cause });
 	}
+
 	@Override
 	public void schedulerInStandbyMode() {
-		
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
 	public void schedulerStarted() {
-		
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
 	public void schedulerShutdown() {
-		
+		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
 	public void schedulerShuttingdown() {
-		
-		
-	}
-	@Override
-	public void schedulingDataCleared() {
-		
+		// TODO Auto-generated method stub
 		
 	}
-	
+
 }
