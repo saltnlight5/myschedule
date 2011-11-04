@@ -63,8 +63,8 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	<tr><td>Job Class</td><td>${ data.jobDetail.jobClass }</td></tr>
 	<tr><td>Description</td><td>${ data.jobDetail.description }</td></tr>
 	<tr><td>Durable</td><td>${ data.jobDetail.durable }</td></tr>
-	<tr><td>isVolatile</td><td>${ data.jobDetail.volatile }</td></tr>
 	<c:set var="jobDetailVar" value="${ data.jobDetail }" scope="request"/>
+	<tr><td>Volatile</td><td><%= ((org.quartz.JobDetail)request.getAttribute("jobDetailVar")).isVolatile() %></td></tr>
 	<tr><td>Request Recovery</td><td><%= ((org.quartz.JobDetail)request.getAttribute("jobDetailVar")).requestsRecovery() %></td></tr>
 	
 	<c:forEach items="${ data.jobDetail.jobDataMap }" var="item">
