@@ -127,7 +127,7 @@ public class OsCommandJob implements Job, InterruptableJob {
 		
 		// Job is done.
 		jobKey = jobDetail.getKey();
-		logger.info("Job {} has been excuted.", jobKey);		
+		logger.info("Job {} has been executed.", jobKey);		
 	}
 
 }

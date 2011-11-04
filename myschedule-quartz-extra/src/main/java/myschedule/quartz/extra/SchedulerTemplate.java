@@ -64,7 +64,8 @@ public class SchedulerTemplate {
 			StdSchedulerFactory factory = new StdSchedulerFactory(quartzConfigFilename);
 			scheduler = factory.getScheduler();
 		} catch (SchedulerException e) {
-			throw new QuartzRuntimeException("Failed to create scheduler using config file: " + quartzConfigFilename, e);
+			throw new QuartzRuntimeException("Failed to create scheduler using config file: " + 
+					quartzConfigFilename, e);
 		}
 	}
 	
@@ -544,7 +545,7 @@ public class SchedulerTemplate {
 	// ======================================
 	
 	@SuppressWarnings("unchecked")
-	public void addListener(JobListener listener) {
+	public void addJobListener(JobListener listener) {
 		try {
 			scheduler.getListenerManager().addJobListener(listener);
 		} catch (SchedulerException e) {
@@ -553,7 +554,7 @@ public class SchedulerTemplate {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void addListener(TriggerListener listener) {
+	public void addTriggerListener(TriggerListener listener) {
 		try {
 			scheduler.getListenerManager().addTriggerListener(listener);
 		} catch (SchedulerException e) {
@@ -561,7 +562,7 @@ public class SchedulerTemplate {
 		}
 	}
 	
-	public void addListener(SchedulerListener listener) {
+	public void addSchedulerListener(SchedulerListener listener) {
 		try {
 			scheduler.getListenerManager().addSchedulerListener(listener);
 		} catch (SchedulerException e) {
@@ -599,7 +600,8 @@ public class SchedulerTemplate {
 	}
 	
 	/** 
-	 * Start the scheduler with a delay time, and put this template instance into wait state until notified or interrupted.
+	 * Start the scheduler with a delay time, and put this template instance into wait state until notified or 
+	 * interrupted.
 	 * 
 	 * <p>Note this method will block main thread execution!
 	 * 
@@ -760,7 +762,8 @@ public class SchedulerTemplate {
 	}
 
 	
-	public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Map<String, Object> dataMap, Date startTime) {
+	public Date scheduleCronJob(
+			String name, String cron, Class<? extends Job> jobClass, Map<String, Object> dataMap, Date startTime) {
 		return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, dataMap, startTime, null);
 	}	
 	
@@ -791,7 +794,8 @@ public class SchedulerTemplate {
 			String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass, 
 			Map<String, Object> dataMap, Date startTime) {
 		return 
-			scheduleSimpleJob(JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, dataMap, startTime, null);
+			scheduleSimpleJob(
+					JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, dataMap, startTime, null);
 	}
 	
 	public Date scheduleSimpleJob(

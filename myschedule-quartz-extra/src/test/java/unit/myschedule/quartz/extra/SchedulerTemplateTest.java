@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import myschedule.quartz.extra.SchedulerTemplate;
+import org.junit.Assert;
 import org.junit.Test;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -68,18 +69,22 @@ public class SchedulerTemplateTest {
 		Scheduler mockedScheduler = mock(Scheduler.class);
 		SchedulerTemplate st = new SchedulerTemplate(mockedScheduler);
 		
+		JobDetail jobDetail = null;
+		JobKey jobKey = null;
+		Trigger trigger = null;
+		TriggerKey triggerKey = null;
 		// Just selectively pick some methods to check it's been delegated properly.
 		// TODO: Can we automatically verify all methods in org.quartz.Scheduler?
-		st.addJob((JobDetail)null, false);
-		verify(mockedScheduler).addJob((JobDetail)null, false);
-		st.deleteJob((JobKey)null);
-		verify(mockedScheduler).deleteJob((JobKey)null);
-		st.scheduleJob((Trigger)null);
-		verify(mockedScheduler).scheduleJob((Trigger)null);
-		st.scheduleJob((JobDetail)null, (Trigger)null);
-		verify(mockedScheduler).scheduleJob((JobDetail)null, (Trigger)null);
-		st.unscheduleJob((TriggerKey)null);
-		verify(mockedScheduler).unscheduleJob((TriggerKey)null);
+		st.addJob(jobDetail, false);
+		verify(mockedScheduler).addJob(jobDetail, false);
+		st.deleteJob(jobKey);
+		verify(mockedScheduler).deleteJob(jobKey);
+		st.scheduleJob(trigger);
+		verify(mockedScheduler).scheduleJob(trigger);
+		st.scheduleJob(jobDetail, trigger);
+		verify(mockedScheduler).scheduleJob(jobDetail, trigger);
+		st.unscheduleJob(triggerKey);
+		verify(mockedScheduler).unscheduleJob(triggerKey);
 		st.start();
 		verify(mockedScheduler).start();
 		st.shutdown();
@@ -101,6 +106,9 @@ public class SchedulerTemplateTest {
 		for (Method expectedMethod : schedulerClass.getMethods()) {
 			String expectedMethodSig = createSignatureKey(expectedMethod);
 			Method actualMethod = schedulerTemplateMethods.get(expectedMethodSig);
+			if (actualMethod == null) {
+				Assert.fail("Method '" + expectedMethodSig + "' is missing in SchedulerTemplate class.");
+			}
 			String actualMethodSig = createSignatureKey(actualMethod);
 			assertThat(actualMethodSig, is(expectedMethodSig));
 		}
