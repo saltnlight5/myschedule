@@ -36,13 +36,13 @@ scheduler.scheduleSimpleJob("hourlyJobWithStartTimeDelay", -1, 60 * 60 * 1000, S
 // Schedule one job with multiple triggers
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
 importPackage(Packages.org.quartz);
-job = scheduler.createJobDetail(JobKey.jobKey("jobWithMutltipleTriggers"), LoggerJob, true, null);
+job = scheduler.createJobDetail("jobWithMutltipleTriggers", "DEFAULT", LoggerJob, true, null);
 scheduler.addJob(job, false);
 trigger1 = scheduler.createSimpleTrigger("trigger1", -1, 60 * 60 * 1000); // hourly trigger
-trigger1.setJobKey(job.getKey());
+trigger1.setJobName(job.getName());
 scheduler.scheduleJob(trigger1);
 trigger2 = scheduler.createSimpleTrigger("trigger2", -1, 60 * 1000); // minutely trigger
-trigger2.setJobKey(job.getKey());
+trigger2.setJobName(job.getName());
 scheduler.scheduleJob(trigger2);
 
 // Using Java org.scheduler.Scheduler API
@@ -50,13 +50,6 @@ scheduler.scheduleJob(trigger2);
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
 importPackage(Packages.org.quartz);
 quartzScheduler = scheduler.getScheduler();
-job = JobBuilder
-	.newJob(LoggerJob)
-	.withIdentity("hourlyJob2")
-	.build();
-trigger = TriggerBuilder
-	.newTrigger()
-	.withSchedule(
-		SimpleScheduleBuilder.repeatHourlyForever())
-	.build();
+job = JobDetail("hourlyJob2", "DEFAULT", LoggerJob);
+trigger = SimpleTrigger("hourlyJob2", "DEFAULT", -1, 60 * 60 * 1000);
 quartzScheduler.scheduleJob(job, trigger);
