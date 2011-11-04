@@ -115,7 +115,7 @@ public class AppConfig implements Initable {
 		
 		resourceLoader = new ResourceLoader();
 		
-		String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
+		String myScheduleDir = System.getProperty("user.home") + "/myschedule1/configs";
 		FileConfigStore fileConfigStore = new FileConfigStore();
 		fileConfigStore.setStoreDir(new File(myScheduleDir));
 		serviceContainer.addService(fileConfigStore);
