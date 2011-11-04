@@ -1,5 +1,6 @@
 package myschedule.service;
 
+import myschedule.quartz.extra.SchedulerTemplate;
 import org.quartz.CronTrigger;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
@@ -48,5 +49,11 @@ public class QuartzUtils {
 		}
 		
 		return "MISFIRE_INSTRUCTION_?(" + code + ")";
+	}
+
+	
+	public static boolean isTriggerPaused(Trigger trigger, SchedulerTemplate scheduler) {
+		int state = scheduler.getTriggerState(trigger.getName(), trigger.getGroup());
+		return state == Trigger.STATE_PAUSED;
 	}
 }

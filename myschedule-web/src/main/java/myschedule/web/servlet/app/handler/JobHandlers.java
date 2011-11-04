@@ -20,8 +20,8 @@ import myschedule.service.ErrorCodeException;
 import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
-import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.UrlRequestActionHandler;
+import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.app.handler.pagedata.JobListPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobTriggerDetailPageData;
@@ -41,6 +41,40 @@ public class JobHandlers {
 	
 	@Setter
 	private SchedulerContainer schedulerContainer;
+
+	@Getter
+	protected ActionHandler pauseTriggerHandler = new UrlRequestActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
+			String triggerName = viewData.findData("triggerName");
+			String triggerGroup = viewData.findData("triggerGroup");
+
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			SchedulerTemplate scheduler = schedulerService.getScheduler();
+			scheduler.pauseTrigger(triggerName, triggerGroup);
+			
+			viewData.setViewName("redirect:/job/list");
+		}
+	};
+	
+	@Getter
+	protected ActionHandler resumeTriggerHandler = new UrlRequestActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
+			String triggerName = viewData.findData("triggerName");
+			String triggerGroup = viewData.findData("triggerGroup");
+
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			SchedulerTemplate scheduler = schedulerService.getScheduler();
+			scheduler.resumeTrigger(triggerName, triggerGroup);
+			
+			viewData.setViewName("redirect:/job/list");
+		}
+	};
 	
 	@Getter
 	protected ActionHandler listHandler = new UrlRequestActionHandler() {

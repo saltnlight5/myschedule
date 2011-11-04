@@ -51,6 +51,8 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/job/unschedule", jobHandlers.getUnscheduleHandler());
 		addActionHandler("/job/scheduler-down", jobHandlers.getSchedulerDownHandler());
 		addActionHandler("/job/trigger-detail", jobHandlers.getTriggerDetailHandler());
+		addActionHandler("/job/pauseTrigger", jobHandlers.getPauseTriggerHandler());
+		addActionHandler("/job/resumeTrigger", jobHandlers.getResumeTriggerHandler());
 		
 		addActionHandler("/scheduler/detail", schedulerHandlers.getDetailHandler());
 		addActionHandler("/scheduler/listeners", schedulerHandlers.getListenersHandler());
