@@ -1,10 +1,12 @@
 package myschedule.service;
 
+import myschedule.quartz.extra.SchedulerTemplate;
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
 import org.quartz.DailyTimeIntervalTrigger;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
 
 /**
  * Utilities specific to Quartz library.
@@ -72,5 +74,10 @@ public class QuartzUtils {
 		}
 
 		return "MISFIRE_INSTRUCTION_?(" + code + ")";
+	}
+	
+	public static boolean isTriggerPaused(Trigger trigger, SchedulerTemplate scheduler) {
+		TriggerState state = scheduler.getTriggerState(trigger.getKey());
+		return state == TriggerState.PAUSED;
 	}
 }

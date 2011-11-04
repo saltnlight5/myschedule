@@ -48,6 +48,40 @@ public class JobHandlers {
 	private SchedulerContainer schedulerContainer;
 	
 	@Getter
+	protected ActionHandler pauseTriggerHandler = new UrlRequestActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
+			String triggerName = viewData.findData("triggerName");
+			String triggerGroup = viewData.findData("triggerGroup");
+
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			SchedulerTemplate scheduler = schedulerService.getScheduler();
+			scheduler.pauseTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
+			
+			viewData.setViewName("redirect:/job/list");
+		}
+	};
+	
+	@Getter
+	protected ActionHandler resumeTriggerHandler = new UrlRequestActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
+			String triggerName = viewData.findData("triggerName");
+			String triggerGroup = viewData.findData("triggerGroup");
+
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			SchedulerTemplate scheduler = schedulerService.getScheduler();
+			scheduler.resumeTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
+			
+			viewData.setViewName("redirect:/job/list");
+		}
+	};
+	
+	@Getter
 	protected ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
