@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -17,23 +16,21 @@ import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.XmlJobLoader;
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
+import myschedule.service.QuartzUtils;
 import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
+import myschedule.service.Tuple2;
 import myschedule.web.servlet.ActionHandler;
-import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.UrlRequestActionHandler;
+import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.app.handler.pagedata.JobListPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
-import myschedule.web.servlet.app.handler.pagedata.JobTriggerDetailPageData;
 import myschedule.web.session.SessionData;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.quartz.Calendar;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.spi.MutableTrigger;
@@ -48,7 +45,7 @@ public class JobHandlers {
 	private SchedulerContainer schedulerContainer;
 	
 	@Getter
-	protected ActionHandler pauseTriggerHandler = new UrlRequestActionHandler() {
+	private ActionHandler pauseTriggerHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -65,7 +62,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler resumeTriggerHandler = new UrlRequestActionHandler() {
+	private ActionHandler resumeTriggerHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -82,7 +79,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listHandler = new UrlRequestActionHandler() {
+	private ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -93,7 +90,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listExecutingJobsHandler = new UrlRequestActionHandler() {
+	private ActionHandler listExecutingJobsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -106,7 +103,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listNoTriggerJobsHandler = new UrlRequestActionHandler() {
+	private ActionHandler listNoTriggerJobsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -117,7 +114,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler listCalendarsHandler = new UrlRequestActionHandler() {
+	private ActionHandler listCalendarsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -135,7 +132,7 @@ public class JobHandlers {
 	};
 
 	@Getter
-	protected ActionHandler unscheduleHandler = new UrlRequestActionHandler() {
+	private ActionHandler unscheduleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -159,7 +156,7 @@ public class JobHandlers {
 	};
 
 	@Getter
-	protected ActionHandler deleteHandler = new UrlRequestActionHandler() {
+	private ActionHandler deleteHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -176,7 +173,7 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler runJobHandler = new UrlRequestActionHandler() {
+	private ActionHandler runJobHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -192,10 +189,10 @@ public class JobHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler loadXmlHandler = new UrlRequestActionHandler();
+	private ActionHandler loadXmlHandler = new UrlRequestActionHandler();
 	
 	@Getter
-	protected ActionHandler loadXmlActionHandler = new UrlRequestActionHandler() {
+	private ActionHandler loadXmlActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -237,7 +234,7 @@ public class JobHandlers {
 	
 	/** Show a trigger and its job detail page. */	
 	@Getter
-	protected ActionHandler jobDetailHandler = new UrlRequestActionHandler() {
+	private ActionHandler jobDetailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -245,26 +242,31 @@ public class JobHandlers {
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String jobName = viewData.findData("jobName");
 			String jobGroup = viewData.findData("jobGroup");
-			logger.debug("Viewing detail of jobName=" + jobName + ", jobGroup=" + jobGroup);
-			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
-			JobDetail jobDetail = schedulerTemplate.getJobDetail(JobKey.jobKey(jobName, jobGroup));
-			JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-			data.setTriggers(schedulerTemplate.getTriggersOfJob(jobDetail.getKey()));
-			data.setJobDetail(jobDetail);
-			data.setJobDetailShouldRecover(jobDetail.requestsRecovery());
-
-			List<String> triggerStatusList = new ArrayList<String>();
-			for (Trigger trigger : data.getTriggers()) {
-				TriggerKey tk = trigger.getKey();
-				triggerStatusList.add(schedulerTemplate.getTriggerState(tk).toString());
+			SchedulerTemplate st = schedulerService.getScheduler();
+			JobDetail jobDetail = st.getJobDetail(JobKey.jobKey(jobName, jobGroup));
+			
+			List<JobData.TriggerDetail> triggerWrappersList = new ArrayList<JobData.TriggerDetail>();
+			List<? extends Trigger> triggers = st.getTriggersOfJob(jobDetail.getKey());
+			int index = 0;
+			for (Trigger trigger : triggers) {
+				String misfireInstructionName = QuartzUtils.getMisfireInstructionName(trigger);
+				String triggerStatusName = st.getTriggerState(trigger.getKey()).toString();
+				String jobClassName = jobDetail.getJobClass().getName();
+				
+				JobData.TriggerDetail triggerWrapper = new JobData.TriggerDetail(trigger);
+				triggerWrapper.setListIndex(index++);
+				triggerWrapper.setTriggerStatusName(triggerStatusName);
+				triggerWrapper.setMisfireInstructionName(misfireInstructionName);
+				triggerWrapper.setJobClassName(jobClassName);
+				triggerWrappersList.add(triggerWrapper);
 			}
-			data.setTriggerStatusList(triggerStatusList);
-			viewData.addData("data", data);
+			viewData.addData("data", 
+					ViewData.mkMap("jobDetail", jobDetail, "triggerWrappersList", triggerWrappersList));
 		}
 	};
 	
 	@Getter
-	protected ActionHandler triggerDetailHandler = new UrlRequestActionHandler() {
+	private ActionHandler triggerDetailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -275,52 +277,37 @@ public class JobHandlers {
 			int fireTimesCount = Integer.parseInt(viewData.findData("fireTimesCount", "20"));
 			SchedulerTemplate st = schedulerService.getScheduler();
 			Trigger trigger = st.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
-			List<Date> nextFireTimes = st.getNextFireTimes(trigger, new Date(), fireTimesCount);
-			JobTriggerDetailPageData data = new JobTriggerDetailPageData();
-			JobKey jobKey = trigger.getJobKey();
-			TriggerKey triggerKey = trigger.getKey();
-			data.setJobDetail(st.getJobDetail(jobKey));
-			data.setFireTimesCount(fireTimesCount);
-			data.setTriggers(Arrays.asList(new Trigger[]{ trigger }));
-			String statusStr = st.getTriggerState(triggerKey).toString();
-			data.setTriggerStatusList(Arrays.asList(new String[]{ statusStr }));
-			data.setNextFireTimes(nextFireTimes);
+
+			List<Tuple2<Date, String>> nextFireTimes = 
+					QuartzUtils.getNextFireTimesWithExclusionDesc(st, trigger, fireTimesCount);
+			String misfireInstructionName = QuartzUtils.getMisfireInstructionName(trigger);
+			String triggerStatusName = st.getTriggerState(trigger.getKey()).toString();
+			String jobClassName = st.getJobDetail(trigger.getJobKey()).getJobClass().getName();
 			
-			// Calculate excludeByCalendar
-			List<String> excludeByCalendar = new ArrayList<String>(nextFireTimes.size());
-			String calName = trigger.getCalendarName();
-			if (calName != null) {
-				try {
-					Scheduler scheduler = st.getScheduler();
-					Calendar cal = scheduler.getCalendar(calName);
-					for (Date dt : nextFireTimes) {
-						if (!cal.isTimeIncluded(dt.getTime())) {
-							excludeByCalendar.add("Yes. " + calName + ": " + cal.toString());
-						} else {
-							excludeByCalendar.add("No");
-						}
-					}
-				} catch (SchedulerException e) {
-					throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Failed to calculate next fire times with Calendar " + calName, e);
-				}
-			} 
-			data.setExcludeByCalendar(excludeByCalendar);
-			viewData.addData("data", data);
+			JobData.TriggerDetail triggerWrapper = new JobData.TriggerDetail(trigger);
+			triggerWrapper.setListIndex(0);
+			triggerWrapper.setTriggerStatusName(triggerStatusName);
+			triggerWrapper.setNextFireTimes(nextFireTimes);
+			triggerWrapper.setMisfireInstructionName(misfireInstructionName);
+			triggerWrapper.setJobClassName(jobClassName);
+			
+			viewData.addData("data", 
+					ViewData.mkMap("triggerWrapper", triggerWrapper, "fireTimesCount", fireTimesCount));
 		}
 	};
 	
 	@Getter
-	protected ActionHandler schedulerDownHandler = new UrlRequestActionHandler();
+	private ActionHandler schedulerDownHandler = new UrlRequestActionHandler();
 	
 
-	protected List<String> getTriggerFullNames(List<MutableTrigger> triggers) {
+	private List<String> getTriggerFullNames(List<MutableTrigger> triggers) {
 		List<String> list = new ArrayList<String>();
 		for (Trigger trigger : triggers)
 			list.add(trigger.getKey().toString());
 		return list;
 	}
 
-	protected List<String> getJobDetailFullNames(List<JobDetail> jobDetails) {
+	private List<String> getJobDetailFullNames(List<JobDetail> jobDetails) {
 		List<String> list = new ArrayList<String>();
 		for (JobDetail jobDetail : jobDetails)
 			list.add(jobDetail.getKey().toString());
@@ -328,7 +315,7 @@ public class JobHandlers {
 	}
 	
 	/** Return only jobs with trigger associated. */
-	protected JobListPageData getJobListPageData(SchedulerService schedulerService) {
+	private JobListPageData getJobListPageData(SchedulerService schedulerService) {
 		SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 		List<Trigger> triggers = new ArrayList<Trigger>();		
 		List<JobDetail> allJobDetails = schedulerTemplate.getAllJobDetails();
@@ -349,7 +336,7 @@ public class JobHandlers {
 	}
 
 	/** Return only jobs without trigger associated. */
-	protected Object getNoTriggerJobListPageData(SchedulerService schedulerService) {
+	private Object getNoTriggerJobListPageData(SchedulerService schedulerService) {
 		SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
 		List<JobDetail> allJobDetails = schedulerTemplate.getAllJobDetails();
@@ -371,31 +358,14 @@ public class JobHandlers {
 	/**
 	 * Sort by Trigger's default comparator provided by Quartz.
 	 */
-	protected void sortJobListTriggers(List<Trigger> triggers) {
+	private void sortJobListTriggers(List<Trigger> triggers) {
 		Collections.sort(triggers);
 	}
 	
 	/**
-	 * Sort by JobDetail full name, then Trigger full name.
-	 */
-	protected void sortJobListTriggersByFullName(List<Trigger> triggers) {
-		Collections.sort(triggers, new Comparator<Trigger>() {
-			@Override
-			public int compare(Trigger o1, Trigger o2) {
-				int ret = o1.getJobKey().compareTo(o2.getJobKey());
-				if (ret == 0) {
-					ret = o1.getKey().compareTo(o2.getKey());
-				}
-				return ret;
-			}
-			
-		});
-	}
-
-	/**
 	 * Sort JobDetail by full name.
 	 */
-	protected void sortJobListNoTriggerJobDetails(List<JobDetail> noTriggerJobDetails) {
+	private void sortJobListNoTriggerJobDetails(List<JobDetail> noTriggerJobDetails) {
 		Collections.sort(noTriggerJobDetails, new Comparator<JobDetail>() {
 			@Override
 			public int compare(JobDetail o1, JobDetail o2) {

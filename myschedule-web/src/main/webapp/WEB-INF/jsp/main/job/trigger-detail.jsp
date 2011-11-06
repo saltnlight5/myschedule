@@ -3,8 +3,7 @@
 <%@ include file="/WEB-INF/jsp/main/job/submenu.inc" %>
 <script>
 $(document).ready(function() {
-	// Use dataTables plugin
-	$("#triggers-0").dataTable({		
+	$(".trigger-table").dataTable({		
 		"bPaginate": false,
 		"bLengthChange": false,
 		"bFilter": false,
@@ -56,19 +55,19 @@ $(document).ready(function() {
 <div id="page-container">
 <h1>Trigger Detail </h1>
 
+<c:set var="triggerWrapper" value="${ data.triggerWrapper }"/>
+
 <div>
-<a id="unschedule" href="${ mainPath }/job/unschedule?triggerName=${ data.triggers[0].name }&triggerGroup=${ data.triggers[0].group }">
+<a id="unschedule" href="${ mainPath }/job/unschedule?triggerName=${ triggerWrapper.trigger.key.name }&triggerGroup=${ triggerWrapper.trigger.key.group }">
 UNSCHEDULE THIS TRIGGER JOB</a>
 </div>
 
 <div>
-The job class for this trigger is : ${ data.jobDetail.jobClass.name }. 
-You may view full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetail.name }&jobGroup=${ data.jobDetail.group }">JOB DETAIL</a> here.
+The job class for this trigger is : ${ triggerWrapper.jobClassName }. 
+You may view full <a href="${ mainPath }/job/job-detail?jobName=${ triggerWrapper.trigger.jobKey.name }&jobGroup=${ triggerWrapper.trigger.jobKey.group }">JOB DETAIL</a> here.
 </div>
 
-<c:set var="loopIndex" value="0" scope="request"/>	
-<c:set var="trigger" value="${ data.triggers[0] }" scope="request"/>	
-<c:set var="triggerStatus" value="${ data.triggerStatusList[0] }" scope="request"/>	
+<%-- We need triggerWrapper variable set at request level before include. --%>
 <%@ include file="/WEB-INF/jsp/main/job/trigger-detail.inc" %>
 
 <h2>Trigger's Next ${ data.fireTimesCount } FireTimes</h2>
@@ -78,21 +77,21 @@ You may view full <a href="${ mainPath }/job/job-detail?jobName=${ data.jobDetai
 	<tr>
 		<th> INDEX </th>
 		<th> NEXT FIRE TIME </th>
-		<c:if test="${ not empty data.excludeByCalendar }">
+		<c:if test="${ not empty triggerWrapper.trigger.calendarName }">
 			<th> EXCLUDE BY CALENDAR </th>
 		</c:if>
 	</tr>
 	</thead>
 	<tbody>
-	<c:forEach items="${ data.nextFireTimes }" var="time" varStatus="loop">
+	<c:forEach items="${ triggerWrapper.nextFireTimes }" var="nextFireTimePair" varStatus="loop">
 	<tr>
 		<td>${ loop.index + 1 }</td>
-		<td>${ time }</td>
-		<c:if test="${ not empty data.excludeByCalendar }">
-		<c:choose><c:when test="${ data.excludeByCalendar[loop.index] != 'No' }">
-			<td class="excluded-date">${ data.excludeByCalendar[loop.index] }</td>
+		<td>${ nextFireTimePair.item1 }</td>
+		<c:if test="${ not empty triggerWrapper.trigger.calendarName }">
+		<c:choose><c:when test="${ nextFireTimePair.item2 != 'No' }">
+			<td class="excluded-date">${ nextFireTimePair.item2 }</td>
 		</c:when><c:otherwise>
-			<td>${ data.excludeByCalendar[loop.index] }</td>
+			<td>${ nextFireTimePair.item2 }</td>
 		</c:otherwise></c:choose>
 		</c:if>
 	</tr>

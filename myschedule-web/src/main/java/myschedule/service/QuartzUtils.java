@@ -1,9 +1,15 @@
 package myschedule.service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import myschedule.quartz.extra.SchedulerTemplate;
+import org.quartz.Calendar;
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
 import org.quartz.DailyTimeIntervalTrigger;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
@@ -79,5 +85,36 @@ public class QuartzUtils {
 	public static boolean isTriggerPaused(Trigger trigger, SchedulerTemplate scheduler) {
 		TriggerState state = scheduler.getTriggerState(trigger.getKey());
 		return state == TriggerState.PAUSED;
+	}
+	
+	/** Get a list of next fire time and a desc of whether it will be excluded by calendar or not. */
+	public static List<Tuple2<Date, String>> getNextFireTimesWithExclusionDesc(
+			SchedulerTemplate st, Trigger trigger, int fireTimesCount) {
+		List<Tuple2<Date, String>> result = new ArrayList<Tuple2<Date, String>>();		
+		List<Date> nextFireTimes = st.getNextFireTimes(trigger, new Date(), fireTimesCount);		
+		// Calculate excludeByCalendar
+		String calName = trigger.getCalendarName();
+		if (calName != null) {
+			try {
+				Scheduler scheduler = st.getScheduler();
+				Calendar cal = scheduler.getCalendar(calName);
+				for (Date dt : nextFireTimes) {
+					String desc = "No";
+					if (!cal.isTimeIncluded(dt.getTime())) {
+						desc = "Yes. " + calName + ": " + cal.toString();
+					}
+					result.add(new Tuple2<Date, String>(dt, desc));
+				}
+			} catch (SchedulerException e) {
+				throw new ErrorCodeException(
+						ErrorCode.SCHEDULER_PROBLEM, "Failed to calculate next fire times with Calendar " + calName, e);
+			}
+		} else {
+			for (Date dt : nextFireTimes) {
+				String desc = null;
+				result.add(new Tuple2<Date, String>(dt, desc));
+			}
+		}
+		return result;
 	}
 }

@@ -3,8 +3,16 @@
 <%@ include file="/WEB-INF/jsp/main/job/submenu.inc" %>
 <script>
 $(document).ready(function() {
-	// Use dataTables plugin
-	$("#jobs").dataTable({		
+	$(".job-table").dataTable({		
+		"bPaginate": false,
+		"bLengthChange": false,
+		"bFilter": false,
+		"bSort": false,
+		"bInfo": false,
+		"bAutoWidth": false
+	});
+	
+	$(".trigger-table").dataTable({		
 		"bPaginate": false,
 		"bLengthChange": false,
 		"bFilter": false,
@@ -51,7 +59,7 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </div>
 
 <h2>Job : ${ data.jobDetail.key }</h2>
-<table id="jobs">
+<table class="job-table">
 	<thead>
 	<tr>
 		<th></th>
@@ -73,23 +81,7 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 	</tbody>
 </table>
 
-<c:forEach items="${ data.triggers }" var="trigger" varStatus="status">
-	<c:set var="trigger" value="${ trigger }" scope="request"/>
-	<c:set var="triggerStatus" value="${ data.triggerStatusList[status.index] }" scope="request"/>
-	<c:set var="loopIndex" value="${ status.index }" scope="request"/>
-	<script>
-	$(document).ready(function() {
-		// use dataTables plugin
-		$("#triggers-${ loopIndex }").dataTable({		
-			"bPaginate": false,
-			"bLengthChange": false,
-			"bFilter": false,
-			"bSort": false,
-			"bInfo": false,
-			"bAutoWidth": false
-		});
-	});
-	</script>
+<c:forEach items="${ data.triggerWrappersList }" var="triggerWrapper" varStatus="status">
 	<%@ include file="/WEB-INF/jsp/main/job/trigger-detail.inc" %>
 </c:forEach>
 

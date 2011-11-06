@@ -1,5 +1,5 @@
-<h2>Trigger : <%= request.getAttribute("trigger").getClass().getName() %> (Status: ${triggerStatus})</h2>
-<table id="triggers-${loopIndex}">
+<h2>Trigger : ${ triggerWrapper.className } (Status: ${ triggerWrapper.triggerStatusName })</h2>
+<table class="trigger-table" id="trigger-index-${ triggerWrapper.listIndex }">
 	<thead>
 	<tr>
 		<th></th>
@@ -7,47 +7,54 @@
 	</tr>
 	</thead>
 	<tbody>
-	<tr><td>Key</td><td>${ trigger.key }</td></tr>
-	<tr><td>JobKey</td><td>${ trigger.jobKey }</td></tr>
-	<tr><td>Description</td><td>${ trigger.description }</td></tr>
-	<tr><td>Calendar Name</td><td>${ trigger.calendarName }</td></tr>
-	<tr><td>Fire Instance Id</td><td>${ trigger.fireInstanceId }</td></tr>
-	<tr><td>Misfire Instruction</td><td><%= myschedule.service.QuartzUtils.getMisfireInstructionName((org.quartz.Trigger)request.getAttribute("trigger")) %></td></tr>
-	<tr><td>Priority</td><td>${ trigger.priority }</td></tr>
-	<tr><td>Trigger Listeners</td><td>${ triggerListenerNames }</td></tr>
+	<tr><td>Key</td><td>${ triggerWrapper.trigger.key }</td></tr>
+	<tr><td>JobKey</td><td>${ triggerWrapper.trigger.jobKey }</td></tr>
+	<tr><td>Description</td><td>${ triggerWrapper.trigger.description }</td></tr>
+	<tr><td>Calendar Name</td><td>${ triggerWrapper.trigger.calendarName }</td></tr>
+	<tr><td>Fire Instance Id</td><td>${ triggerWrapper.trigger.fireInstanceId }</td></tr>
+	<tr><td>Misfire Instruction</td><td>${ triggerWrapper.misfireInstructionName }</td></tr>
+	<tr><td>Priority</td><td>${ triggerWrapper.trigger.priority }</td></tr>
 	
-	<tr><td>Trigger Class</td><td><%= request.getAttribute("trigger").getClass().getName() %></td></tr>
-	<tr><td>Next Fire Time</td><td>${ trigger.nextFireTime }</td></tr>
-	<tr><td>Previous Fire Time</td><td>${ trigger.previousFireTime }</td></tr>
-	<tr><td>Start Time</td><td>${ trigger.startTime }</td></tr>
-	<tr><td>End Time</td><td>${ trigger.endTime }</td></tr>
+	<tr><td>Trigger Class</td><td>${ triggerWrapper.className }</td></tr>
+	<tr><td>Next Fire Time</td><td>${ triggerWrapper.trigger.nextFireTime }</td></tr>
+	<tr><td>Previous Fire Time</td><td>${ triggerWrapper.trigger.previousFireTime }</td></tr>
+	<tr><td>Start Time</td><td>${ triggerWrapper.trigger.startTime }</td></tr>
+	<tr><td>End Time</td><td>${ triggerWrapper.trigger.endTime }</td></tr>
 	
-	<% if (myschedule.service.QuartzUtils.isSimpleTrigger(request.getAttribute("trigger"))) { %>
-	<tr><td>Final Fire Time</td><td>${ trigger.finalFireTime }</td></tr>
-	<tr><td>Repeat Count</td><td>${ trigger.repeatCount }</td></tr>
-	<tr><td>Repeat Interval</td><td>${ trigger.repeatInterval }</td></tr>
-	<tr><td>Times Triggered</td><td>${ trigger.timesTriggered }</td></tr>
+	<c:choose>
 	
-	<% } else if (myschedule.service.QuartzUtils.isCronTrigger(request.getAttribute("trigger"))) { %>
-	<tr><td>Cron Expression</td><td>${ trigger.cronExpression }</td></tr>
-	<tr><td>Expression Summary</td><td><pre>${ trigger.expressionSummary }</pre></td></tr>
-	<tr><td>Time Zone</td><td>${ trigger.timeZone.displayName }</td></tr>
+	<c:when test="${ triggerWrapper.simpleTrigger }">
+	<tr><td>Final Fire Time</td><td>${ triggerWrapper.trigger.finalFireTime }</td></tr>
+	<tr><td>Repeat Count</td><td>${ triggerWrapper.trigger.repeatCount }</td></tr>
+	<tr><td>Repeat Interval</td><td>${ triggerWrapper.trigger.repeatInterval }</td></tr>
+	<tr><td>Times Triggered</td><td>${ triggerWrapper.trigger.timesTriggered }</td></tr>
+	</c:when>
 	
-	<% } else if (myschedule.service.QuartzUtils.isCalendarIntervalTrigger(request.getAttribute("trigger"))) { %>
-	<tr><td>Repeat Interval</td><td>${ trigger.repeatInterval }</td></tr>
-	<tr><td>Repeat Interval Unit</td><td>${ trigger.repeatIntervalUnit }</td></tr>
+	<c:when test="${ triggerWrapper.cronTrigger }">
+	<tr><td>Cron Expression</td><td>${ triggerWrapper.trigger.cronExpression }</td></tr>
+	<tr><td>Expression Summary</td><td><pre>${ triggerWrapper.trigger.expressionSummary }</pre></td></tr>
+	<tr><td>Time Zone</td><td>${ triggerWrapper.trigger.timeZone.displayName }</td></tr>
+	</c:when>
 	
-	<% } else if (myschedule.service.QuartzUtils.isDailyTimeIntervalTrigger(request.getAttribute("trigger"))) { %>
-	<tr><td>Start Time of Day</td><td>${ trigger.startTimeOfDay }</td></tr>
-	<tr><td>End Time of Day</td><td>${ trigger.endTimeOfDay }</td></tr>
-	<tr><td>Days of Week</td><td>${ trigger.daysOfWeek }</td></tr>
-	<tr><td>Repeat Interval</td><td>${ trigger.repeatInterval }</td></tr>
-	<tr><td>Repeat Interval Unit</td><td>${ trigger.repeatIntervalUnit }</td></tr>
-	<tr><td>Repeat Count</td><td>${ trigger.repeatCount }</td></tr>
-	<% } %>
+	<c:when test="${ triggerWrapper.calendarIntervalTrigger }">
+	<tr><td>Repeat Interval</td><td>${ triggerWrapper.trigger.repeatInterval }</td></tr>
+	<tr><td>Repeat Interval Unit</td><td>${ triggerWrapper.trigger.repeatIntervalUnit }</td></tr>tr>
+	</c:when>
 	
-	<c:forEach items="${ trigger.jobDataMap }" var="item">
+	<c:when test="${ triggerWrapper.dailyTimeIntervalTrigger }">
+	<tr><td>Start Time of Day</td><td>${ triggerWrapper.trigger.startTimeOfDay }</td></tr>
+	<tr><td>End Time of Day</td><td>${ triggerWrapper.trigger.endTimeOfDay }</td></tr>
+	<tr><td>Days of Week</td><td>${ triggerWrapper.trigger.daysOfWeek }</td></tr>
+	<tr><td>Repeat Interval</td><td>${ triggerWrapper.trigger.repeatInterval }</td></tr>
+	<tr><td>Repeat Interval Unit</td><td>${ triggerWrapper.trigger.repeatIntervalUnit }</td></tr>
+	<tr><td>Repeat Count</td><td>${ triggerWrapper.trigger.repeatCount }</td></tr>
+	</c:when>
+	
+	</c:choose>
+	
+	<c:forEach items="${ triggerWrapper.trigger.jobDataMap }" var="item">
 	<tr><td>Job Data Map: ${ item.key }</td><td>${ item.value }</td></tr>
 	</c:forEach>
+	
 	</tbody>
 </table>
