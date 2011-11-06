@@ -45,7 +45,7 @@ public class ScriptingHandlers {
 	}
 			
 	@Getter
-	protected ActionHandler runHandler = new UrlRequestActionHandler(){
+	private ActionHandler runHandler = new UrlRequestActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -58,7 +58,7 @@ public class ScriptingHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler runActionHandler = new UrlRequestActionHandler() {
+	private ActionHandler runActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
 			logger.debug("Running Scripting Text.");
@@ -120,7 +120,7 @@ public class ScriptingHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler scriptExampleHandler = new UrlRequestActionHandler() {
+	private ActionHandler scriptExampleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String scriptEngineName = viewData.findData("scriptEngineName");
@@ -147,7 +147,7 @@ public class ScriptingHandlers {
 		}
 	};
 	
-	protected List<String> getScriptingEngineNames() {
+	private List<String> getScriptingEngineNames() {
 		List<String> scriptEngineNames = new ArrayList<String>();
 		ScriptEngineManager factory = new ScriptEngineManager();
 		for (ScriptEngineFactory fac : factory.getEngineFactories()) {

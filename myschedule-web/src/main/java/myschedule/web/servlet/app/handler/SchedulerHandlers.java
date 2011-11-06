@@ -34,10 +34,10 @@ public class SchedulerHandlers {
 	private static final Logger logger = LoggerFactory.getLogger(SchedulerHandlers.class);
 
 	@Setter
-	protected SchedulerContainer schedulerContainer;
+	private SchedulerContainer schedulerContainer;
 		
 	@Getter
-	protected ActionHandler listenersHandler = new UrlRequestActionHandler() {
+	private ActionHandler listenersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -59,7 +59,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler modifyHandler = new UrlRequestActionHandler() {
+	private ActionHandler modifyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -75,7 +75,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler modifyActionHandler = new UrlRequestActionHandler() {
+	private ActionHandler modifyActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configPropsText = viewData.findData("configPropsText");
@@ -97,7 +97,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler summaryHandler = new UrlRequestActionHandler() {
+	private ActionHandler summaryHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -116,7 +116,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler detailHandler = new UrlRequestActionHandler() {
+	private ActionHandler detailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -135,7 +135,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler pauseAllTriggersHandler = new UrlRequestActionHandler() {
+	private ActionHandler pauseAllTriggersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -159,7 +159,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler resumeAllTriggersHandler = new UrlRequestActionHandler() {
+	private ActionHandler resumeAllTriggersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -174,7 +174,7 @@ public class SchedulerHandlers {
 	};
 	
 	@Getter
-	protected ActionHandler startHandler = new UrlRequestActionHandler() {
+	private ActionHandler startHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -190,7 +190,7 @@ public class SchedulerHandlers {
 	};
 
 	@Getter
-	protected ActionHandler standbyHandler = new UrlRequestActionHandler() {
+	private ActionHandler standbyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -205,7 +205,7 @@ public class SchedulerHandlers {
 		}
 	};
 	
-	protected TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
+	private TreeMap<String, String> getSchedulerDetail(SchedulerMetaData schedulerMetaData) {
 		TreeMap<String, String> schedulerInfo = new TreeMap<String, String>();
 		List<ServiceUtils.Getter> getters = ServiceUtils.getGetters(schedulerMetaData);
 		for (ServiceUtils.Getter getter : getters) {
@@ -225,7 +225,7 @@ public class SchedulerHandlers {
 	}
 	
 
-	protected void copySchedulerStatusData(SchedulerService schedulerService, Map<String, Object> dataMap) {
+	private void copySchedulerStatusData(SchedulerService schedulerService, Map<String, Object> dataMap) {
 		SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
 		dataMap.put("schedulerName", schedulerTemplate.getSchedulerName());
 		dataMap.put("isStarted", schedulerTemplate.isStarted());

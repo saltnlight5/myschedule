@@ -38,7 +38,7 @@ public class DashboardHandlers {
 	private ResourceLoader resourceLoader;
 
 	@Getter
-	protected ActionHandler indexHandler = new UrlRequestActionHandler() {
+	private ActionHandler indexHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String redirectName = null;
@@ -58,7 +58,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler listHandler = new UrlRequestActionHandler() {
+	private ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			List<Map<String, Object>> schedulerList = new ArrayList<Map<String, Object>>();
@@ -104,7 +104,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler configExampleHandler = new UrlRequestActionHandler() {
+	private ActionHandler configExampleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String name = viewData.findData("name");
@@ -121,10 +121,10 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler createHandler = new UrlRequestActionHandler();
+	private ActionHandler createHandler = new UrlRequestActionHandler();
 
 	@Getter
-	protected ActionHandler createActionHandler = new UrlRequestActionHandler() {
+	private ActionHandler createActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configPropsText = viewData.findData("configPropsText");
@@ -135,7 +135,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler modifyHandler = new UrlRequestActionHandler() {
+	private ActionHandler modifyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
@@ -148,7 +148,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler modifyActionHandler = new UrlRequestActionHandler() {
+	private ActionHandler modifyActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
@@ -163,7 +163,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler deleteActionHandler = new UrlRequestActionHandler() {
+	private ActionHandler deleteActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
@@ -177,7 +177,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler initHandler = new UrlRequestActionHandler() {
+	private ActionHandler initHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
@@ -195,7 +195,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler shutdownHandler = new UrlRequestActionHandler() {
+	private ActionHandler shutdownHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
@@ -206,7 +206,7 @@ public class DashboardHandlers {
 	};
 
 	@Getter
-	protected ActionHandler switchSchedulerHandler = new UrlRequestActionHandler() {
+	private ActionHandler switchSchedulerHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
