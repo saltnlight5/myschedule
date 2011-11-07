@@ -5,11 +5,8 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -20,10 +17,8 @@ import myschedule.service.ResourceLoader;
 import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
-import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.UrlRequestActionHandler;
-
-import org.apache.commons.lang.StringEscapeUtils;
+import myschedule.web.servlet.ViewData;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,42 +56,53 @@ public class DashboardHandlers {
 	private ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			List<Map<String, Object>> schedulerList = new ArrayList<Map<String, Object>>();
+			List<DashboardData.SchedulerDetail> schedulerList = new ArrayList<DashboardData.SchedulerDetail>();
 			for (String configId : schedulerContainer.getAllConfigIds()) {
 				SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
-				Map<String, Object> schedulerData = new HashMap<String, Object>();
-				schedulerList.add(schedulerData);
+				DashboardData.SchedulerDetail schedulerDetail = new DashboardData.SchedulerDetail();
+				schedulerList.add(schedulerDetail);
 
+				schedulerDetail.setConfigId(configId);
+				schedulerDetail.setName(schedulerService.getSchedulerNameAndId());
 				if (schedulerService.getInitException() != null) {
-					schedulerData.put("initException", schedulerService.getInitException());
-				}
-				schedulerData.put("configId", configId);
-				schedulerData.put("name", schedulerService.getSchedulerNameAndId());
-				if (schedulerService.isSchedulerInitialized()) {
-					schedulerData.put("inited", "true");
-					try {
-						SchedulerTemplate scheduler = schedulerService.getScheduler();
-						SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-						Date runningSince = scheduler.getSchedulerMetaData().getRunningSince();
-						if (runningSince == null) {
-							runningSince = new Date(); // This can happens if we come here right after a init call!
+					String msg = ExceptionUtils.getRootCauseMessage(schedulerService.getInitException());
+					schedulerDetail.setInitExceptionMessage(msg);
+					schedulerDetail.setInitialized("N/A");
+					schedulerDetail.setStarted("N/A");
+					schedulerDetail.setNumOfJobs("N/A");
+					schedulerDetail.setRunningSince("N/A");
+				} else {				
+					boolean init = schedulerService.isSchedulerInitialized();
+					schedulerDetail.setInitialized("" + init);
+					if (init) {					
+						try {
+							SchedulerTemplate scheduler = schedulerService.getScheduler();
+							SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+							Date runningSince = scheduler.getSchedulerMetaData().getRunningSince();
+							if (runningSince == null) {
+								runningSince = new Date(); // This can happens if we come here right after a init call!
+							}
+							schedulerDetail.setStarted("" + scheduler.isStarted());
+							schedulerDetail.setNumOfJobs("" + scheduler.getAllJobDetails().size());
+							schedulerDetail.setRunningSince(df.format(runningSince));
+						} catch (QuartzRuntimeException e) {
+							logger.error("Failed to get scheduler information for configId " + configId, e);
+							schedulerDetail.setSchedulerProblem(true);
+							if (schedulerDetail.getStarted() == null) {
+								schedulerDetail.setStarted("Scheduler Error");
+							}
+							if (schedulerDetail.getNumOfJobs() == null) {
+								schedulerDetail.setNumOfJobs("Scheduler Error");
+							}
+							if (schedulerDetail.getRunningSince() == null) {
+								schedulerDetail.setRunningSince("Scheduler Error");
+							}
 						}
-						schedulerData.put("started", scheduler.isStarted());
-						schedulerData.put("numOfJobs", scheduler.getAllJobDetails().size());
-						schedulerData.put("runningSince", df.format(runningSince));
-					} catch (QuartzRuntimeException e) {
-						logger.error("Failed to get scheduler information for configId " + configId, e);
-						schedulerData.put("started", "ERROR");
-						schedulerData.put("numOfJobs", "ERROR");
-						schedulerData.put("runningSince", "ERROR");
-						schedulerData.put("errorMsg", StringEscapeUtils.escapeHtml(e.getMessage()));
-						schedulerData.put("errorStackTrace", StringEscapeUtils.escapeHtml(ExceptionUtils.getFullStackTrace(e)));
+					} else {
+						schedulerDetail.setStarted("N/A");
+						schedulerDetail.setNumOfJobs("N/A");
+						schedulerDetail.setRunningSince("N/A");
 					}
-				} else {
-					schedulerData.put("inited", "false");
-					schedulerData.put("started", "N/A");
-					schedulerData.put("numOfJobs", "N/A");
-					schedulerData.put("runningSince", "N/A");
 				}
 			}
 			viewData.addData("data", ViewData.mkMap("schedulerList", schedulerList));
