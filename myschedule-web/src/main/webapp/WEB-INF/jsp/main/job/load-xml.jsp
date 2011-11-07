@@ -34,8 +34,7 @@ $(document).ready(function() {
     <span style='color:#666616; '>xmlns</span><span style='color:#800080; '>:</span><span style='color:#074726; '>xsi</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#666616; '>http</span><span style='color:#800080; '>:</span><span style='color:#800000; font-weight:bold; '>//</span><span style='color:#5555dd; '>www.w3.org</span><span style='color:#40015a; '>/2001/XMLSchema-instance</span><span style='color:#0000e6; '>"</span>
     <span style='color:#666616; '>xsi</span><span style='color:#800080; '>:</span><span style='color:#074726; '>schemaLocation</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#666616; '>http</span><span style='color:#800080; '>:</span><span style='color:#800000; font-weight:bold; '>//</span><span style='color:#5555dd; '>www.quartz-scheduler.org</span><span style='color:#40015a; '>/xml/JobSchedulingData</span><span style='color:#0000e6; '> </span>
     <span style='color:#666616; '>http</span><span style='color:#800080; '>:</span><span style='color:#800000; font-weight:bold; '>//</span><span style='color:#5555dd; '>www.quartz-scheduler.org</span><span style='color:#40015a; '>/xml/job_scheduling_data_2_0.xsd</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
-
-    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>schedule</span><span style='color:#a65700; '>></span>    
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>schedule</span><span style='color:#a65700; '>></span>
         <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>job</span><span style='color:#a65700; '>></span>
             <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>name</span><span style='color:#a65700; '>></span>minute_job<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>name</span><span style='color:#a65700; '>></span>
             <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>group</span><span style='color:#a65700; '>></span>DEFAULT<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>group</span><span style='color:#a65700; '>></span>
@@ -52,7 +51,6 @@ $(document).ready(function() {
             <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>simple</span><span style='color:#a65700; '>></span>
         <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>trigger</span><span style='color:#a65700; '>></span>        
     <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>schedule</span><span style='color:#a65700; '>></span>
-    
 <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>job-scheduling-data</span><span style='color:#a65700; '>></span>
 </pre>
 </div> <!-- div.help -->
