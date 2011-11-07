@@ -27,10 +27,12 @@ import myschedule.web.servlet.app.handler.pagedata.JobListPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
 import myschedule.web.session.SessionData;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.spi.MutableTrigger;
@@ -85,7 +87,41 @@ public class JobHandlers {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
 			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
-			viewData.addData("data", getJobListPageData(schedulerService));
+			SchedulerTemplate st = schedulerService.getScheduler();
+			List<JobData.JobWithTrigger> jobWithTriggerList = new ArrayList<JobData.JobWithTrigger>();
+			List<JobDetail> allJobDetails = st.getAllJobDetails();
+			for (JobDetail jobDetail : allJobDetails) {
+				List<? extends Trigger> triggers = st.getTriggersOfJob(jobDetail.getKey());
+				for (Trigger trigger : triggers) {
+					String triggerScheduleDesc = trigger.getClass().getName();
+					if (trigger instanceof SimpleTrigger) {
+						SimpleTrigger t = (SimpleTrigger)trigger;
+						if (t.getRepeatCount() == SimpleTrigger.REPEAT_INDEFINITELY)
+							triggerScheduleDesc = "Repeat=FOREVER";
+						else
+							triggerScheduleDesc = "Repeat=" + t.getRepeatCount();
+						triggerScheduleDesc += ", Interval=" + t.getRepeatInterval();
+					} else if (trigger instanceof CronTrigger) {
+						CronTrigger t = (CronTrigger)trigger;
+						triggerScheduleDesc = "Cron=" + t.getCronExpression();				
+					}
+					
+					boolean paused = QuartzUtils.isTriggerPaused(trigger, st);
+					
+					JobData.JobWithTrigger jobWithTrigger = new JobData.JobWithTrigger();
+					jobWithTrigger.setTrigger(trigger);
+					jobWithTrigger.setTriggerScheduleDesc(triggerScheduleDesc);
+					jobWithTrigger.setPaused(paused);
+					
+					jobWithTriggerList.add(jobWithTrigger);
+				}
+			}
+
+			// Let's sort them.
+			Collections.sort(jobWithTriggerList);
+			
+			viewData.addData("data", 
+					ViewData.mkMap("jobWithTriggerList", jobWithTriggerList, "scheduler", st));
 		}
 	};
 	
@@ -314,27 +350,6 @@ public class JobHandlers {
 		return list;
 	}
 	
-	/** Return only jobs with trigger associated. */
-	private JobListPageData getJobListPageData(SchedulerService schedulerService) {
-		SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
-		List<Trigger> triggers = new ArrayList<Trigger>();		
-		List<JobDetail> allJobDetails = schedulerTemplate.getAllJobDetails();
-		for (JobDetail jobDetail : allJobDetails) {
-			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggersOfJob(jobDetail.getKey());
-			if (jobTriggers.size() > 0) {
-				triggers.addAll(jobTriggers);
-			}
-		}
-		logger.debug("Found " + triggers.size() + " triggers.");
-
-		// Let's sort them.
-		sortJobListTriggers(triggers);
-		JobListPageData data = new JobListPageData();
-		data.setTriggers(triggers);
-		data.setSchedulerService(schedulerService);
-		return data;
-	}
-
 	/** Return only jobs without trigger associated. */
 	private Object getNoTriggerJobListPageData(SchedulerService schedulerService) {
 		SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
@@ -354,14 +369,7 @@ public class JobHandlers {
 		data.setNoTriggerJobDetails(noTriggerJobDetails);
 		return data;
 	}
-	
-	/**
-	 * Sort by Trigger's default comparator provided by Quartz.
-	 */
-	private void sortJobListTriggers(List<Trigger> triggers) {
-		Collections.sort(triggers);
-	}
-	
+		
 	/**
 	 * Sort JobDetail by full name.
 	 */

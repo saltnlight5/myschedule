@@ -93,7 +93,7 @@ $(document).ready(function() {
 </div>
 
 <h1>Jobs with assigned trigger</h1>
-<c:choose><c:when test="${ data.schedulerService.scheduler.inStandbyMode }">
+<c:choose><c:when test="${ data.scheduler.inStandbyMode }">
 	<div class="warning">The current scheduler is in standby mode! No jobs will be running yet.</div>
 </c:when></c:choose>
 
@@ -109,22 +109,22 @@ $(document).ready(function() {
 	</thead>
 	
 	<tbody>
-	<c:set var="scheduler" value="${ data.schedulerService.scheduler }" scope="request"/>
-	<c:forEach items="${ data.triggers }" var="trigger" varStatus="loop">
-	<c:set var="trigger" value="${ trigger }" scope="request"/>
+	<c:forEach items="${ data.jobWithTriggerList }" var="jobWithTrigger" varStatus="loop">
 	<tr>
-		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">${ trigger.jobKey }</a></td>
-		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }&fireTimesCount=${ data.showMaxFireTimesCount }">${ trigger.key }</a></td>
-		<td>${ data.triggerSchedules[loop.index] }</td>
-		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="${ data.datePattern }"/></td>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobWithTrigger.trigger.jobKey.name }&jobGroup=${ jobWithTrigger.trigger.jobKey.group }">${ jobWithTrigger.trigger.jobKey }</a></td>
+		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ jobWithTrigger.trigger.key.name }&triggerGroup=${ jobWithTrigger.trigger.key.group }&fireTimesCount=20">${ jobWithTrigger.trigger.key }</a></td>
+		<td>${ jobWithTrigger.triggerScheduleDesc }</td>
+		<td><fmt:formatDate value="${ jobWithTrigger.trigger.nextFireTime }" pattern="MM/dd/yy HH:mm:ss"/></td>
 		<td class="action">
-			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">Run It Now</a> |
+			<a href="${ mainPath }/job/run-job?jobName=${ jobWithTrigger.trigger.jobKey.name }&jobGroup=${ jobWithTrigger.trigger.jobKey.group }">Run It Now</a> |
 			
-			<% if (myschedule.service.QuartzUtils.isTriggerPaused((org.quartz.Trigger)request.getAttribute("trigger"), (myschedule.quartz.extra.SchedulerTemplate)request.getAttribute("scheduler"))) { %>	
+			<c:choose><c:when test="${ jobWithTrigger.paused }">
 				<a class="resume-trigger" style="color: red;" href="${ mainPath }/job/resumeTrigger?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Resume</a>
-			<% } else { %>
+			</c:when>
+			<c:otherwise>
 				<a class="pause-trigger" href="${ mainPath }/job/pauseTrigger?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Pause</a>
-			<% } %> |
+			</c:otherwise>
+			</c:choose>
 			
 			<a class="unschedule-trigger" href="${ mainPath }/job/unschedule?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Unschedule</a>
 		</td>

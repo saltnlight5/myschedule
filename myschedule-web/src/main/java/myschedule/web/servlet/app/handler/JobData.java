@@ -35,4 +35,16 @@ public class JobData {
 		public boolean isCalendarIntervalTrigger() { return (this instanceof CalendarIntervalTrigger); }
 		public boolean isDailyTimeIntervalTrigger() { return (this instanceof DailyTimeIntervalTrigger); }
 	}
+	
+	@Data
+	public static class JobWithTrigger implements Comparable<JobWithTrigger> {
+		private Trigger trigger;
+		private String triggerScheduleDesc;
+		private boolean paused;
+		
+		@Override
+		public int compareTo(JobWithTrigger other) {
+			return trigger.compareTo(other.getTrigger());
+		}
+	}
 }
