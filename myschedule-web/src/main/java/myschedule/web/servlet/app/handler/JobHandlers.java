@@ -23,7 +23,6 @@ import myschedule.service.Tuple2;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
-import myschedule.web.servlet.app.handler.pagedata.JobListPageData;
 import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
 import myschedule.web.session.SessionData;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -88,6 +87,7 @@ public class JobHandlers {
 			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			SchedulerTemplate st = schedulerService.getScheduler();
+			
 			List<JobData.JobWithTrigger> jobWithTriggerList = new ArrayList<JobData.JobWithTrigger>();
 			List<JobDetail> allJobDetails = st.getAllJobDetails();
 			for (JobDetail jobDetail : allJobDetails) {
@@ -145,7 +145,27 @@ public class JobHandlers {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
 			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
-			viewData.addData("data", getNoTriggerJobListPageData(schedulerService));
+			SchedulerTemplate st = schedulerService.getScheduler();
+			
+			List<JobDetail> jobWithoutTriggerList = new ArrayList<JobDetail>();
+			List<JobDetail> allJobDetails = st.getAllJobDetails();
+			for (JobDetail jobDetail : allJobDetails) {
+				List<? extends Trigger> triggers = st.getTriggersOfJob(jobDetail.getKey());
+				if (triggers.size() == 0) {
+					jobWithoutTriggerList.add(jobDetail);
+				}
+			}
+
+			// Let's sort them.
+			Collections.sort(jobWithoutTriggerList, new Comparator<JobDetail>() {
+				@Override
+				public int compare(JobDetail o1, JobDetail o2) {
+					return o1.getKey().compareTo(o2.getKey());
+				}			
+			});
+			
+			viewData.addData("data", 
+					ViewData.mkMap("jobWithoutTriggerList", jobWithoutTriggerList));
 		}
 	};
 	
@@ -348,37 +368,5 @@ public class JobHandlers {
 		for (JobDetail jobDetail : jobDetails)
 			list.add(jobDetail.getKey().toString());
 		return list;
-	}
-	
-	/** Return only jobs without trigger associated. */
-	private Object getNoTriggerJobListPageData(SchedulerService schedulerService) {
-		SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
-		List<JobDetail> noTriggerJobDetails = new ArrayList<JobDetail>();
-		List<JobDetail> allJobDetails = schedulerTemplate.getAllJobDetails();
-		for (JobDetail jobDetail : allJobDetails) {
-			List<? extends Trigger> jobTriggers = schedulerTemplate.getTriggersOfJob(jobDetail.getKey());
-			if (jobTriggers.size() == 0) {
-				noTriggerJobDetails.add(jobDetail);
-			}
-		}
-		// Let's sort them.
-		sortJobListNoTriggerJobDetails(noTriggerJobDetails);
-		
-		JobListPageData data = new JobListPageData();
-		data.setSchedulerService(schedulerService);
-		data.setNoTriggerJobDetails(noTriggerJobDetails);
-		return data;
-	}
-		
-	/**
-	 * Sort JobDetail by full name.
-	 */
-	private void sortJobListNoTriggerJobDetails(List<JobDetail> noTriggerJobDetails) {
-		Collections.sort(noTriggerJobDetails, new Comparator<JobDetail>() {
-			@Override
-			public int compare(JobDetail o1, JobDetail o2) {
-				return o1.getKey().compareTo(o2.getKey());
-			}			
-		});
 	}
 }

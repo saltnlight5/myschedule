@@ -51,7 +51,7 @@ $(document).ready(function() {
 	</thead>
 	
 	<tbody>
-	<c:forEach items="${ data.noTriggerJobDetails }" var="jobDetail">
+	<c:forEach items="${ data.jobWithoutTriggerList }" var="jobDetail">
 	<tr>
 		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">${ jobDetail.key }</a></td>
 		<td>${ jobDetail.jobClass.name }</td>
