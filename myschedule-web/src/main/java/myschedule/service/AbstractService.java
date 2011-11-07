@@ -19,7 +19,7 @@ public abstract class AbstractService implements Service {
 	private AtomicBoolean inited = new AtomicBoolean(false);
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());	
-	
+		
 	@Override
 	public void init() {
 		if (!inited.get()) {

@@ -19,7 +19,7 @@ public class SchedulerContainer extends ServiceContainer {
 	
 	public SchedulerContainer() {
 		// Always allow all schedulers to continue initializing even if one failed.
-		setIgnoreInitException(true);
+		setIgnoreInitAndStartException(true);
 	}
 
 	public void setConfigStore(ConfigStore configStore) {

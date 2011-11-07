@@ -14,10 +14,10 @@ public class ServiceContainer extends AbstractService {
 
 	/** Service list that's registered in the application. */
 	private List<Initable> services = new ArrayList<Initable>();	
-	private boolean ignoreInitException = false;
+	private boolean ignoreInitAndStartException = false;
 	
-	public void setIgnoreInitException(boolean ignoreInitException) {
-		this.ignoreInitException = ignoreInitException;
+	public void setIgnoreInitAndStartException(boolean ignoreInitAndStartException) {
+		this.ignoreInitAndStartException = ignoreInitAndStartException;
 	}
 	
 	public void setServices(List<Initable> services) {
@@ -35,10 +35,10 @@ public class ServiceContainer extends AbstractService {
 			try {
 				service.init();
 			} catch (RuntimeException e) {
-				if (!ignoreInitException) {
-					throw e;
-				} else {
+				if (ignoreInitAndStartException) {
 					logger.error("Failed to initialize service. But will continue!", e);
+				} else {
+					throw e;
 				}
 			}
 			logger.info("Service {} initialized.", service);
@@ -50,7 +50,15 @@ public class ServiceContainer extends AbstractService {
 		for (Initable service : services) {
 			if (service instanceof Service) {
 				logger.debug("Starting service {}.", service);
-				((Service)service).start();
+				try {
+					((Service)service).start();
+				} catch (RuntimeException e) {
+					if (ignoreInitAndStartException) {
+						logger.error("Failed to stsart service. But will continue!", e);
+					} else {
+						throw e;
+					}
+				}
 				logger.info("Service {} started.", service);
 			}
 		}
