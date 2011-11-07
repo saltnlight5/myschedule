@@ -30,17 +30,17 @@ public class JobData {
 		// JSTL/JSP will not allow 'trigger.class' to be used?, so we have this wrapper.
 		public String getClassName() { return trigger.getClass().getName(); }
 		
-		public boolean isSimpleTrigger() { return (this instanceof SimpleTrigger); }
-		public boolean isCronTrigger() { return (this instanceof CronTrigger); }
-		public boolean isCalendarIntervalTrigger() { return (this instanceof CalendarIntervalTrigger); }
-		public boolean isDailyTimeIntervalTrigger() { return (this instanceof DailyTimeIntervalTrigger); }
+		public Boolean isSimpleTrigger() { return (this instanceof SimpleTrigger); }
+		public Boolean isCronTrigger() { return (this instanceof CronTrigger); }
+		public Boolean isCalendarIntervalTrigger() { return (this instanceof CalendarIntervalTrigger); }
+		public Boolean isDailyTimeIntervalTrigger() { return (this instanceof DailyTimeIntervalTrigger); }
 	}
 	
 	@Data
 	public static class JobWithTrigger implements Comparable<JobWithTrigger> {
 		private Trigger trigger;
 		private String triggerScheduleDesc;
-		private boolean paused;
+		private Boolean paused;
 		
 		@Override
 		public int compareTo(JobWithTrigger other) {
@@ -54,7 +54,7 @@ public class JobData {
 		private List<String> triggerGroupsToNeverDelete;
 		private List<String> loadedJobs; // full name.
 		private List<String> loadedTriggers; // full name.
-		private boolean ignoreDuplicates;
-		private boolean overWriteExistingData;
+		private Boolean ignoreDuplicates;
+		private Boolean overWriteExistingData;
 	}
 }
