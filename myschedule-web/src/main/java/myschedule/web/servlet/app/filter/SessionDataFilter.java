@@ -34,7 +34,9 @@ public class SessionDataFilter implements ActionFilter {
 				SessionData sessionData = createSessionData();
 				session.setAttribute(SessionData.SESSION_DATA_KEY, sessionData);
 			} catch (ErrorCodeException e) {
-				viewData = new ViewData("redirect:/dashboard/list", req, resp);
+				viewData = new ViewData("redirect:/dashboard/list");
+				viewData.setRequest(req);
+				viewData.setResponse(resp);
 			}
 		}
 		return viewData;
