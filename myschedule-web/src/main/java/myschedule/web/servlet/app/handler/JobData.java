@@ -47,4 +47,14 @@ public class JobData {
 			return trigger.compareTo(other.getTrigger());
 		}
 	}
+	
+	@Data
+	public static class XmlLoadedJobList {
+		private List<String> jobGroupsToNeverDelete;
+		private List<String> triggerGroupsToNeverDelete;
+		private List<String> loadedJobs; // full name.
+		private List<String> loadedTriggers; // full name.
+		private boolean ignoreDuplicates;
+		private boolean overWriteExistingData;
+	}
 }

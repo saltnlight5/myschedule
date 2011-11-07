@@ -23,7 +23,6 @@ import myschedule.service.Tuple2;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
-import myschedule.web.servlet.app.handler.pagedata.JobLoadPageData;
 import myschedule.web.session.SessionData;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.CronTrigger;
@@ -261,15 +260,14 @@ public class JobHandlers {
 				inStream = new ByteArrayInputStream(xml.getBytes());
 				Scheduler quartzScheduler = schedulerService.getScheduler().getScheduler();
 				XmlJobLoader loader = QuartzExtraUtils.scheduleXmlSchedulingData(inStream, quartzScheduler);
-				JobLoadPageData data = new JobLoadPageData();
-				data.setIgnoreDuplicates(loader.isIgnoreDuplicates());
-				data.setOverWriteExistingData(loader.isOverWriteExistingData());
-				data.setJobGroupsToNeverDelete(loader.getJobGroupsToNeverDelete());
-				data.setTriggerGroupsToNeverDelete(loader.getTriggerGroupsToNeverDelete());
-				data.setLoadedJobs(getJobDetailFullNames(loader.getLoadedJobs()));
-				data.setLoadedTriggers(getTriggerFullNames(loader.getLoadedTriggers()));
-				viewData.setViewName("/job/load-xml-action");
-				viewData.addData("data", data);
+				JobData.XmlLoadedJobList xmlLoadedJobList = new JobData.XmlLoadedJobList();
+				xmlLoadedJobList.setIgnoreDuplicates(loader.isIgnoreDuplicates());
+				xmlLoadedJobList.setOverWriteExistingData(loader.isOverWriteExistingData());
+				xmlLoadedJobList.setJobGroupsToNeverDelete(loader.getJobGroupsToNeverDelete());
+				xmlLoadedJobList.setTriggerGroupsToNeverDelete(loader.getTriggerGroupsToNeverDelete());
+				xmlLoadedJobList.setLoadedJobs(getJobDetailFullNames(loader.getLoadedJobs()));
+				xmlLoadedJobList.setLoadedTriggers(getTriggerFullNames(loader.getLoadedTriggers()));
+				viewData.addData("data", ViewData.mkMap("xmlLoadedJobList", xmlLoadedJobList));
 			} catch (Exception e) {
 				viewData.setViewName("/job/load-xml");
 				viewData.addData("data", ViewData.mkMap( 
@@ -355,7 +353,6 @@ public class JobHandlers {
 	@Getter
 	private ActionHandler schedulerDownHandler = new UrlRequestActionHandler();
 	
-
 	private List<String> getTriggerFullNames(List<MutableTrigger> triggers) {
 		List<String> list = new ArrayList<String>();
 		for (Trigger trigger : triggers)

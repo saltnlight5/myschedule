@@ -9,16 +9,23 @@
 <table class="outlined datalist">
 	<tr>
 		<td> LOADED JOBS </td>
-		<td><c:forEach items="${ data.loadedJobs }" var="item" varStatus="status">${ item }
-</c:forEach>
-		</td>
 	</tr>
+	<c:forEach items="${ data.xmlLoadedJobList.loadedJobs }" var="item">
+	<tr>
+		<td> ${ item } </td>
+	</tr>
+	</c:forEach>
+</table>
+
+<table class="outlined datalist">
 	<tr>
 		<td> LOADED TRIGGERS </td>
-		<td><c:forEach items="${ data.loadedTriggers }" var="item" varStatus="status">${ item }
-</c:forEach>
-		</td>
 	</tr>
+	<c:forEach items="${ data.xmlLoadedJobList.loadedTriggers }" var="item">
+	<tr>
+		<td> ${ item } </td>
+	</tr>
+	</c:forEach>
 </table>
 
 </div> <!-- page-container -->
