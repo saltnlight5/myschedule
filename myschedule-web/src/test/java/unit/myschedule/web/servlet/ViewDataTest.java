@@ -1,14 +1,12 @@
 package unit.myschedule.web.servlet;
 
+import static myschedule.web.servlet.ViewData.mkMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import myschedule.web.servlet.ViewData;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,11 +18,11 @@ public class ViewDataTest {
 		vd =new ViewData("test");
 		assertThat(vd.getViewName(), is("test"));
 		
-		vd = new ViewData("test2", "foo", "bar");
+		vd = new ViewData("test2", mkMap("foo", "bar"));
 		assertThat(vd.getViewName(), is("test2"));
 		assertThat((String)vd.getDataMap().get("foo"), is("bar"));
 
-		vd = new ViewData("test2", "foo", "bar", "foo2", 123);
+		vd = new ViewData("test2", mkMap("foo", "bar", "foo2", 123));
 		assertThat(vd.getViewName(), is("test2"));
 		assertThat((String)vd.getDataMap().get("foo"), is("bar"));
 		assertThat((Integer)vd.getDataMap().get("foo2"), is(123));

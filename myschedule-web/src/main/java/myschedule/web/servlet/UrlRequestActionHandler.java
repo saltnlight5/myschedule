@@ -51,12 +51,7 @@ public class UrlRequestActionHandler implements ActionHandler {
 	}
 	
 	protected ViewData createViewData(String viewName, HttpServletRequest req, HttpServletResponse resp) {
-		ViewData viewData = ViewData.view(viewName);
-				
-		// Auto save and expose these to subclass.
-		viewData.setRequest(req);
-		viewData.setResponse(resp);
-		
+		ViewData viewData = new ViewData(viewName, req, resp);		
 		return viewData;
 	}
 

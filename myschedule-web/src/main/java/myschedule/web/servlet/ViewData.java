@@ -27,9 +27,10 @@ public class ViewData {
 		this.viewName = viewName;
 	}
 	
-	public ViewData(String viewName, Object ... dataArray) {
+	public ViewData(String viewName, HttpServletRequest request, HttpServletResponse response) {
 		this.viewName = viewName;
-		addData(dataArray);
+		this.request = request;
+		this.response = response;
 	}
 	
 	public ViewData(String viewName, Map<String, Object> dataMap) {
@@ -129,16 +130,8 @@ public class ViewData {
 		return request;
 	}
 
-	public void setRequest(HttpServletRequest request) {
-		this.request = request;
-	}
-
 	public HttpServletResponse getResponse() {
 		return response;
-	}
-
-	public void setResponse(HttpServletResponse response) {
-		this.response = response;
 	}
 
 	@Override
@@ -150,7 +143,7 @@ public class ViewData {
 		return new ViewData(viewName);
 	}
 	public static ViewData viewData(String viewName, Object ... dataArray) {
-		return new ViewData(viewName, dataArray);
+		return new ViewData(viewName, mkMap(dataArray));
 	}
 	public static ViewData viewData(String viewName, Map<String, Object> dataMap) {
 		return new ViewData(viewName, dataMap);
