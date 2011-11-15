@@ -30,10 +30,10 @@ public class JobData {
 		// JSTL/JSP will not allow 'trigger.class' to be used?, so we have this wrapper.
 		public String getClassName() { return trigger.getClass().getName(); }
 		
-		public Boolean isSimpleTrigger() { return (this instanceof SimpleTrigger); }
-		public Boolean isCronTrigger() { return (this instanceof CronTrigger); }
-		public Boolean isCalendarIntervalTrigger() { return (this instanceof CalendarIntervalTrigger); }
-		public Boolean isDailyTimeIntervalTrigger() { return (this instanceof DailyTimeIntervalTrigger); }
+		public Boolean getIsSimpleTrigger() { return (this instanceof SimpleTrigger); }
+		public Boolean getIsCronTrigger() { return (this instanceof CronTrigger); }
+		public Boolean getIsCalendarIntervalTrigger() { return (this instanceof CalendarIntervalTrigger); }
+		public Boolean getIsDailyTimeIntervalTrigger() { return (this instanceof DailyTimeIntervalTrigger); }
 	}
 	
 	@Data

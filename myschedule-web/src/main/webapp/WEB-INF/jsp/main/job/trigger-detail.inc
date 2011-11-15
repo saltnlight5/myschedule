@@ -23,25 +23,23 @@
 	
 	<c:choose>
 	
-	<c:when test="${ triggerWrapper.simpleTrigger }">
-	<tr><td>Final Fire Time</td><td>${ triggerWrapper.trigger.finalFireTime }</td></tr>
+	<c:when test="${ triggerWrapper.isSimpleTrigger }">
 	<tr><td>Repeat Count</td><td>${ triggerWrapper.trigger.repeatCount }</td></tr>
 	<tr><td>Repeat Interval</td><td>${ triggerWrapper.trigger.repeatInterval }</td></tr>
-	<tr><td>Times Triggered</td><td>${ triggerWrapper.trigger.timesTriggered }</td></tr>
 	</c:when>
 	
-	<c:when test="${ triggerWrapper.cronTrigger }">
+	<c:when test="${ triggerWrapper.isCronTrigger }">
 	<tr><td>Cron Expression</td><td>${ triggerWrapper.trigger.cronExpression }</td></tr>
 	<tr><td>Expression Summary</td><td><pre>${ triggerWrapper.trigger.expressionSummary }</pre></td></tr>
 	<tr><td>Time Zone</td><td>${ triggerWrapper.trigger.timeZone.displayName }</td></tr>
 	</c:when>
 	
-	<c:when test="${ triggerWrapper.calendarIntervalTrigger }">
+	<c:when test="${ triggerWrapper.isCalendarIntervalTrigger }">
 	<tr><td>Repeat Interval</td><td>${ triggerWrapper.trigger.repeatInterval }</td></tr>
 	<tr><td>Repeat Interval Unit</td><td>${ triggerWrapper.trigger.repeatIntervalUnit }</td></tr>tr>
 	</c:when>
 	
-	<c:when test="${ triggerWrapper.dailyTimeIntervalTrigger }">
+	<c:when test="${ triggerWrapper.isDailyTimeIntervalTrigger }">
 	<tr><td>Start Time of Day</td><td>${ triggerWrapper.trigger.startTimeOfDay }</td></tr>
 	<tr><td>End Time of Day</td><td>${ triggerWrapper.trigger.endTimeOfDay }</td></tr>
 	<tr><td>Days of Week</td><td>${ triggerWrapper.trigger.daysOfWeek }</td></tr>
