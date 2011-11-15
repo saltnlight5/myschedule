@@ -27,7 +27,7 @@ public class MainServlet extends ActionHandlerServlet {
 		SchedulerHandlers schedulerHandlers = appConfig.getSchedulerHandlers();
 		ScriptingHandlers scriptingHandlers = appConfig.getScriptingHandlers();
 		
-		addActionHandler("", dashboardHandlers.getIndexHandler()); // Default landing page.
+		addActionHandler("/", dashboardHandlers.getIndexHandler()); // Default landing page.
 		addActionHandler("/dashboard/get-config-eg", dashboardHandlers.getConfigExampleHandler());
 		addActionHandler("/dashboard/create", dashboardHandlers.getCreateHandler());
 		addActionHandler("/dashboard/create-action", dashboardHandlers.getCreateActionHandler());

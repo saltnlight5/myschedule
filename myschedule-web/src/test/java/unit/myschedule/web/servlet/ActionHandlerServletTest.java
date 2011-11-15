@@ -61,7 +61,7 @@ public class ActionHandlerServletTest {
 		private static final long serialVersionUID = 1L;
 		@Override
 		public void init() {			
-			addActionHandler("", new UrlRequestActionHandler());
+			addActionHandler("/", new UrlRequestActionHandler());
 			addActionHandler("/test/hello", new UrlRequestActionHandler());
 		}
 	}

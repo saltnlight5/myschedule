@@ -46,7 +46,8 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	protected void addActionHandler(String actionPath, ActionHandler handler) {
 		// Ensure action path is consistent.
 		if (actionPath.endsWith("/")) { 
-			throw new IllegalArgumentException("Action path should not ends with '/'.");
+			// Auto remove any trailing '/' character so it won't mess up mapping lookup.
+			actionPath = actionPath.substring(0, actionPath.length() -1 );
 		}
 		
 		// We will try our best to print most useful mapping path, but it will depend where subclass
