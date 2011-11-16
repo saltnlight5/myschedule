@@ -3,6 +3,7 @@ package unit.myschedule.web.servlet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
@@ -11,11 +12,13 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import myschedule.web.servlet.ActionFilter;
 import myschedule.web.servlet.ActionHandlerServlet;
 import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class ActionHandlerServletTest {
 	
@@ -61,6 +64,12 @@ public class ActionHandlerServletTest {
 		main.destroy();
 
 		verify(dispatcher).forward(req, resp);
+		
+		// Non matched filters
+		assertThat(main.testFilter.beforeActionList.size(), is(0));
+		assertThat(main.testFilter.afterActionList.size(), is(0));
+		assertThat(main.testFilter2.beforeActionList.size(), is(0));
+		assertThat(main.testFilter2.afterActionList.size(), is(0));
 	}
 	
 	
@@ -158,7 +167,7 @@ public class ActionHandlerServletTest {
 	}
 	
 	@Test
-	public void testActionFilter() throws Exception {
+	public void testActionFilterPass() throws Exception {
 		HttpServletResponse resp = mock(HttpServletResponse.class);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getMethod()).thenReturn("GET");
@@ -176,15 +185,44 @@ public class ActionHandlerServletTest {
 		main.init(config);
 		main.service(req, resp);
 		main.destroy();
-
+		
 		verify(dispatcher).forward(req, resp);
-		assertThat(MyMainServlet.testFilter.beforeActionList.size(), is(1));
-		assertThat(MyMainServlet.testFilter.afterActionList.size(), is(1));
+		assertThat(main.testFilter.beforeActionList.size(), is(1));
+		assertThat(main.testFilter.afterActionList.size(), is(1));
+	}
+	
+	@Test
+	public void testActionFilterRedirect() throws Exception {
+		HttpServletResponse resp = mock(HttpServletResponse.class);
+		HttpServletRequest req = mock(HttpServletRequest.class);
+		when(req.getMethod()).thenReturn("GET");
+		when(req.getRequestURI()).thenReturn("/main/protected/stuff");
+		when(req.getContextPath()).thenReturn("");
+		when(req.getServletPath()).thenReturn("/main");
+		when(req.getQueryString()).thenReturn("");
+		
+		RequestDispatcher dispatcher = mock(RequestDispatcher.class);		
+		when(req.getRequestDispatcher("/WEB-INF/jsp/protected/stuff.jsp")).thenReturn(dispatcher);
+
+		ServletConfig config = mock(ServletConfig.class);
+		
+		MyMainServlet main = new MyMainServlet();
+		main.init(config);
+		main.service(req, resp);
+		main.destroy();
+
+		verify(dispatcher, times(0)).forward(req, resp);
+		verify(resp).sendRedirect("/main/login");
+		assertThat(main.testFilter.beforeActionList.size(), is(0));
+		assertThat(main.testFilter.afterActionList.size(), is(0));
+		assertThat(main.testFilter2.beforeActionList.size(), is(1));
+		assertThat(main.testFilter2.afterActionList.size(), is(0));
 	}
 	
 	public static class MyMainServlet extends ActionHandlerServlet {
 		private static final long serialVersionUID = 1L;
-		public static MyFilter testFilter = new MyFilter();
+		private MyFilter testFilter = new MyFilter(null);
+		private MyFilter testFilter2 = new MyFilter("redirect:/login");
 		@Override
 		public void init() {			
 			addActionHandler("/", new UrlRequestActionHandler());
@@ -192,20 +230,31 @@ public class ActionHandlerServletTest {
 			addActionHandler("/test/hello", new UrlRequestActionHandler());
 			addActionHandler("/test/hello2", new UrlRequestActionHandler());
 			addActionHandler("/test2/", new UrlRequestActionHandler());
+			addActionHandler("/protected/stuff", new UrlRequestActionHandler());
 			
 			addActionFilter("/test", testFilter);
+			addActionFilter("/protected/stuff", testFilter2);
 		}
 	}
 	
 	public static class MyFilter implements ActionFilter {
-		public List<String> beforeActionList = new ArrayList<String>();
-		public List<String> afterActionList = new ArrayList<String>();
+		private List<String> beforeActionList = new ArrayList<String>();
+		private List<String> afterActionList = new ArrayList<String>();
+		private String viewName;
+		
+		public MyFilter(String viewName) {
+			this.viewName = viewName;
+		}
 		
 		@Override
 		public ViewData beforeAction(String actionPath, HttpServletRequest req, HttpServletResponse resp)
 				throws Exception {
 			beforeActionList.add(actionPath);
-			return null;
+			if (viewName == null) {
+				return null;
+			} else {
+				return new ViewData(viewName);
+			}
 		}
 
 		@Override
