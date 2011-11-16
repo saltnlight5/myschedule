@@ -6,32 +6,46 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Process all Http requests using a map of action paths to some callback handlers. Subclass may setup this handler 
+ * Process Http requests using a map of action paths to some callback handlers. Subclass may setup this handler 
  * mappings, and concentrate on each action into smaller piece of code, instead of worry about the inner working of 
  * Http request processing.
  * 
  * <p>
  * The default action path will be parse from the Http request's URI after the 'servletPath' section. This action path
- * is use to lookup pre-registered handler instance to handle the request. A typical usage is that a subclass is a 
- * Servlet, and it wil be map to a URL in web.xml (eg: '/demo-servlet' -> DemoServlet). Then this subclass may setup 
- * handler mappings in the init() method with action name as in '/mywebapp/demo-servlet/<action>' pattern. 
- * For example:
+ * is use to lookup pre-registered handler instance to handle the request. A typical usage is that an application will
+ * create one 'MainServlet' that subclass this Servlet, and declare it in the web.xml like this:
  * <pre>
- * public DemoServlet extends ActionHandlerServlet {
- *   @Override
- *   public void init() {
- *	   addActionHandler("", new ViewDataActionHandler()); // Eg: maps to http://localhost/mywebapp/demo-servlet
- *	   addActionHandler("/test", testAction);             // Eg: maps to http://localhost/mywebapp/demo-servlet/test
- *   }
- *   protected ActionHandler testAction = new ViewDataActionHandler() {
- *	   @Override
- *	   protected void handleViewData(ViewData viewData) {
- *	     viewData.addData("message", "ServerTime=" + new java.util.Date());
- *	   }			
- *	 };
+ * {@code
+ * <servlet>
+ *     <servlet-name>MainServlet</servlet-name>
+ *     <servlet-class>myschedule.web.servlet.app.MainServlet</servlet-class>
+ *     <load-on-startup>1</load-on-startup>
+ * </servlet>
+ * <servlet-mapping>
+ *     <servlet-name>MainServlet</servlet-name>
+ *     <url-pattern>/main/*</url-pattern>
+ * </servlet-mapping>
  * }
  * </pre>
  * 
+ * Then this 'MainServlet' may setup handler mappings in the init() method. These action mappings are correspond to http 
+ * URL on browser such as: <code>http://localhost/mywebapp/main-servlet/myaction</code>.
+ *  
+ * <p>An MainServlet example:
+ * <pre>
+ * public MyMainServlet extends ActionHandlerServlet {
+ *   public void init() {
+ *       addActionHandler("/", new ViewDataActionHandler()); // Eg: maps to http://localhost/mywebapp/main-servlet
+ *       addActionHandler("/myaction", testAction);          // Eg: maps to http://localhost/mywebapp/main-servlet/myaction
+ *   }
+ *   protected ActionHandler testAction = new ViewDataActionHandler() {
+ *       protected void handleViewData(ViewData viewData) {
+ *         viewData.addData("message", "ServerTime=" + new java.util.Date());
+ *       }            
+ *   };
+ * }
+ * </pre>
+ *  
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */

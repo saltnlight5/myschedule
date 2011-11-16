@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>
  * The default impl is to use JSP as view, and it will automatically resolve JSP file in this format:
- * <code>JPS_FILE = JSP_NAME_PREFIX + <servletPath> + <ViewData.viewName> + JSP_NAME_SUFFIX</code>.
+ * <code>JPS_FILE = JSP_NAME_PREFIX + <servletPath> + {@code <ViewData.viewName>} + JSP_NAME_SUFFIX</code>.
  * Eg: <code>/WEB-INF/jsp/demo/test.jsp</code>
  * 
  * <p>
