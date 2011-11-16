@@ -12,13 +12,11 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import myschedule.web.servlet.ActionFilter;
 import myschedule.web.servlet.ActionHandlerServlet;
 import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class ActionHandlerServletTest {
 	
