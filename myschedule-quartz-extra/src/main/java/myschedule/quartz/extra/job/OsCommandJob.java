@@ -27,11 +27,11 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>You need to customize this job using Quartz's data map with following keys:
  * <ul>
- *   <li>CommandArguments - Required. An OS external command program. This needs to be String[] array type with 
+ *   <li><code>CommandArguments</code> - Required. An OS external command program. This needs to be String[] array type with 
  *                          executable and all of its options and arguments set in each array elements.</li>
- *   <li>RunInBackground - Optional. If set to "true", the command will run in background and job will not block 
+ *   <li><code>RunInBackground</code> - Optional. If set to "true", the command will run in background and job will not block 
  *                         the worker thread. Default to "false" (job will wait for command to complete.)</li>
- *   <li>Timeout - Optional. If RunInBackground="false", and Timeout > 0, this job will wait for the command no longer
+ *   <li><code>Timeout</code> - Optional. If RunInBackground="false", and Timeout > 0, this job will wait for the command no longer
  *                 than the timeout period specified. Unit is in millis. Default is -1, meaning not to use it.</li>
  * </ul>
  * 

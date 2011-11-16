@@ -20,20 +20,20 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>You need to customize this job using Quartz's data map with following keys:
  * <ul>
- *   <li>ScriptEgnineName - Required. The name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
- *   <li>ScriptText or ScriptFile - Required. Specify where to find the script to run. Only one is needed. No default.</li>
- *   <li>LogScriptText - Optional. A boolean flag to log ScriptText value or not as INFO level. Default to 'false'.</li>
- *   <li>JobExecutionExceptionParams - Optional. Three booleans (refire, unscheduleAllTrigger, unscheduleTrigg) used to 
+ *   <li><code>ScriptEgnineName</code> - Required. The name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
+ *   <li><code>ScriptText</code> or ScriptFile</code> - Required. Specify where to find the script to run. Only one is needed. No default.</li>
+ *   <li><code>LogScriptText</code> - Optional. A boolean flag to log ScriptText value or not as INFO level. Default to 'false'.</li>
+ *   <li><code>JobExecutionExceptionParams</code> - Optional. Three booleans (refire, unscheduleAllTrigger, unscheduleTrigg) used to 
  *   populate JobExecutionException object if the script were to throw an exception that this job will wrap in. 
  *   Default to 'false, false, false'.</li>
  * </ul>
  *  
  * <p>Before evaluating the script, the following implicit variables will be binded and available to the script: 
  * <ul>
- *   <li>jobExecutionContext - instance of org.quartz.JobExecutionContext when this job is run.</li>
- *   <li>logger - instance of org.slf4j.Logger from this class.</li>
- *   <li>scriptText - the script source if "scriptText" key is used.</li>
- *   <li>scriptFile - the file location if "scriptFile" key is used.</li>
+ *   <li><code>jobExecutionContext</code> - instance of org.quartz.JobExecutionContext when this job is run.</li>
+ *   <li><code>logger</code> - instance of org.slf4j.Logger from this class.</li>
+ *   <li><code>scriptText</code> - the script source if "scriptText" key is used.</li>
+ *   <li><code>scriptFile</code> - the file location if "scriptFile" key is used.</li>
  * </ul>
  * 
  * @author Zemian Deng

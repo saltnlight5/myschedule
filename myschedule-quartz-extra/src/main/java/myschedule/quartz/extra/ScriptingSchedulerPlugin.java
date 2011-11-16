@@ -23,14 +23,21 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>In your quartz.properties, you may configure this plugin like this:
  * <pre>
- * 
+ * # Scripting plugin
+ * org.quartz.plugin.MyScriptingPlugin.class = myschedule.quartz.extra.ScriptingSchedulerPlugin
+ * org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript
+ * org.quartz.plugin.MyScriptingPlugin.initializeScript = my-initialize.js
+ * org.quartz.plugin.MyScriptingPlugin.startScript = my-start.js
+ * org.quartz.plugin.MyScriptingPlugin.shutdownScript = my-shutdown.js
  * </pre>
  * 
- * <p>Any of the scripts will have:
+ * <p>Any of the scripts will have these implicit variables:
  * <ul>
- *   <li>"scheduler" a SchedulerTemplate instance that wraps the Quartz scheduler.</li>
- *   <li>"logger" a SLF4J logger object from this class.</li>
- *   <li>"schedulerPlugin" the plugin instance that loaded the script.</li>
+ *   <li><code>scheduler</code> - a SchedulerTemplate instance that wraps the Quartz scheduler.</li>
+ *   <li><code>logger</code> - a SLF4J logger object from this class.</li>
+ *   <li><code>schedulerPlugin</code> - the plugin instance that loaded the script.</li>
+ * </ul>
+ * 
  * <p>The default script engine is the JDK built-in "JavaScript". You may easily add other engine such as Groovy or JRuby as long as
  * you add their jars in classpath.
  * 
