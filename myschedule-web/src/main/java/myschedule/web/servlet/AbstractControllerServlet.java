@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
  * forward to render the view. 
  * 
  * <p>
- * If {@link ViewData} is 'null' value it assume it has handled it's own response output, and this class will not do 
- * further processing.
+ * If {@link ViewData} is 'null' or its viewName is null or empty string, then this class will not process further
+ * for rendering view. It assume subclass has handled it's own response output and it simply return prematurely.
  * 
  * <p>
  * The default impl is to use JSP as view, and it will automatically resolve JSP file in this format:
@@ -38,10 +38,18 @@ abstract public class AbstractControllerServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;		
 
-	private String jspNamePrefix = JSP_NAME_PREFIX;	
-	private String jspNameSuffix = JSP_NAME_SUFFIX;
+	private String viewFileNamePrefix = JSP_NAME_PREFIX;	
+	private String viewFileNameSuffix = JSP_NAME_SUFFIX;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
+	public void setViewFileNamePrefix(String viewFileNamePrefix) {
+		this.viewFileNamePrefix = viewFileNamePrefix;
+	}
+	
+	public void setViewFileNameSuffix(String viewFileNameSuffix) {
+		this.viewFileNameSuffix = viewFileNameSuffix;
+	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -84,10 +92,10 @@ abstract public class AbstractControllerServlet extends HttpServlet {
 			return;
 		}
 		String servletPath = req.getServletPath();
-		String jspName = jspNamePrefix + servletPath + viewName + jspNameSuffix;
-		logger.debug("Forward: {}", jspName);
+		String viewFilename = viewFileNamePrefix + servletPath + viewName + viewFileNameSuffix;
+		logger.debug("Forward: {}", viewFilename);
 		transferViewDataToRequestAttr(viewData, req);
-		req.getRequestDispatcher(jspName).forward(req, resp);
+		req.getRequestDispatcher(viewFilename).forward(req, resp);
 	}
 
 	protected void transferViewDataToRequestAttr(ViewData viewData, HttpServletRequest req) {
