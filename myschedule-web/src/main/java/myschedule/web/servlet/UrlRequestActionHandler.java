@@ -42,7 +42,7 @@ public class UrlRequestActionHandler implements ActionHandler {
 	@Override
 	public ViewData handleAction(String actionPath, HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String viewName = actionPath;
-		if (viewName.equals("")) {
+		if (viewName.equals("") || viewName.equals("/")) {
 			viewName = getDefaultViewName();
 		}
 		ViewData viewData = createViewData(viewName, req, resp);
