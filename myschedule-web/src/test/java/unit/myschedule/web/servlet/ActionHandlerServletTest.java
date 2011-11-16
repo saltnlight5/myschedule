@@ -15,53 +15,52 @@ public class ActionHandlerServletTest {
 	
 	@Test
 	public void testDefaultHandler() throws Exception {
-		ServletConfig config = mock(ServletConfig.class);
-		HttpServletResponse res = mock(HttpServletResponse.class);
+		HttpServletResponse resp = mock(HttpServletResponse.class);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getMethod()).thenReturn("GET");
 		when(req.getRequestURI()).thenReturn("/main");
 		when(req.getContextPath()).thenReturn("");
 		when(req.getServletPath()).thenReturn("/main");
-		when(req.getQueryString()).thenReturn("");
-		
+		when(req.getQueryString()).thenReturn("");		
 		RequestDispatcher dispatcher = mock(RequestDispatcher.class);		
 		when(req.getRequestDispatcher("/WEB-INF/jsp/main/index.jsp")).thenReturn(dispatcher);
 		
+		ServletConfig config = mock(ServletConfig.class);
+		
 		MyMainServlet main = new MyMainServlet();
 		main.init(config);
-		main.service(req, res);
+		main.service(req, resp);
 		main.destroy();
 
-		verify(dispatcher).forward(req, res);
+		verify(dispatcher).forward(req, resp);
 	}
 	
 	@Test
 	public void testHelpHandler() throws Exception {
-		ServletConfig config = mock(ServletConfig.class);
-		HttpServletResponse res = mock(HttpServletResponse.class);
+		HttpServletResponse resp = mock(HttpServletResponse.class);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getMethod()).thenReturn("GET");
 		when(req.getRequestURI()).thenReturn("/main/help");
 		when(req.getContextPath()).thenReturn("");
 		when(req.getServletPath()).thenReturn("/main");
-		when(req.getQueryString()).thenReturn("");
-		
+		when(req.getQueryString()).thenReturn("");		
 		RequestDispatcher dispatcher = mock(RequestDispatcher.class);		
 		when(req.getRequestDispatcher("/WEB-INF/jsp/main/help.jsp")).thenReturn(dispatcher);
 		
+		ServletConfig config = mock(ServletConfig.class);
+		
 		MyMainServlet main = new MyMainServlet();
 		main.init(config);
-		main.service(req, res);
+		main.service(req, resp);
 		main.destroy();
 
-		verify(dispatcher).forward(req, res);
+		verify(dispatcher).forward(req, resp);
 	}
 	
 	
 	@Test
 	public void testHelloHandler() throws Exception {
-		ServletConfig config = mock(ServletConfig.class);
-		HttpServletResponse res = mock(HttpServletResponse.class);
+		HttpServletResponse resp = mock(HttpServletResponse.class);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getMethod()).thenReturn("GET");
 		when(req.getRequestURI()).thenReturn("/main/test/hello");
@@ -72,18 +71,19 @@ public class ActionHandlerServletTest {
 		RequestDispatcher dispatcher = mock(RequestDispatcher.class);		
 		when(req.getRequestDispatcher("/WEB-INF/jsp/main/test/hello.jsp")).thenReturn(dispatcher);
 		
+		ServletConfig config = mock(ServletConfig.class);
+		
 		MyMainServlet main = new MyMainServlet();
 		main.init(config);
-		main.service(req, res);
+		main.service(req, resp);
 		main.destroy();
 
-		verify(dispatcher).forward(req, res);
+		verify(dispatcher).forward(req, resp);
 	}
 	
 	@Test
 	public void testHello2Handler() throws Exception {
-		ServletConfig config = mock(ServletConfig.class);
-		HttpServletResponse res = mock(HttpServletResponse.class);
+		HttpServletResponse resp = mock(HttpServletResponse.class);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getMethod()).thenReturn("GET");
 		when(req.getRequestURI()).thenReturn("/main/test/hello2");
@@ -93,20 +93,21 @@ public class ActionHandlerServletTest {
 		
 		RequestDispatcher dispatcher = mock(RequestDispatcher.class);		
 		when(req.getRequestDispatcher("/WEB-INF/jsp/main/test/hello2.jsp")).thenReturn(dispatcher);
+
+		ServletConfig config = mock(ServletConfig.class);
 		
 		MyMainServlet main = new MyMainServlet();
 		main.init(config);
-		main.service(req, res);
+		main.service(req, resp);
 		main.destroy();
 
-		verify(dispatcher).forward(req, res);
+		verify(dispatcher).forward(req, resp);
 	}
 
 	
 	@Test
 	public void testTest2Handler() throws Exception {
-		ServletConfig config = mock(ServletConfig.class);
-		HttpServletResponse res = mock(HttpServletResponse.class);
+		HttpServletResponse resp = mock(HttpServletResponse.class);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getMethod()).thenReturn("GET");
 		when(req.getRequestURI()).thenReturn("/main/test2");
@@ -116,19 +117,20 @@ public class ActionHandlerServletTest {
 		
 		RequestDispatcher dispatcher = mock(RequestDispatcher.class);		
 		when(req.getRequestDispatcher("/WEB-INF/jsp/main/test2.jsp")).thenReturn(dispatcher);
+
+		ServletConfig config = mock(ServletConfig.class);
 		
 		MyMainServlet main = new MyMainServlet();
 		main.init(config);
-		main.service(req, res);
+		main.service(req, resp);
 		main.destroy();
 
-		verify(dispatcher).forward(req, res);
+		verify(dispatcher).forward(req, resp);
 	}
 	
 	@Test
 	public void testTest2HandlerWithSlash() throws Exception {
-		ServletConfig config = mock(ServletConfig.class);
-		HttpServletResponse res = mock(HttpServletResponse.class);
+		HttpServletResponse resp = mock(HttpServletResponse.class);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getMethod()).thenReturn("GET");
 		when(req.getRequestURI()).thenReturn("/main/test2/");
@@ -138,13 +140,15 @@ public class ActionHandlerServletTest {
 		
 		RequestDispatcher dispatcher = mock(RequestDispatcher.class);		
 		when(req.getRequestDispatcher("/WEB-INF/jsp/main/test2.jsp")).thenReturn(dispatcher);
+
+		ServletConfig config = mock(ServletConfig.class);
 		
 		MyMainServlet main = new MyMainServlet();
 		main.init(config);
-		main.service(req, res);
+		main.service(req, resp);
 		main.destroy();
 
-		verify(dispatcher).forward(req, res);
+		verify(dispatcher).forward(req, resp);
 	}
 	
 	public static class MyMainServlet extends ActionHandlerServlet {
