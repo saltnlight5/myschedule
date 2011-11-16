@@ -119,10 +119,10 @@ $(document).ready(function() {
 			<a href="${ mainPath }/job/run-job?jobName=${ jobWithTrigger.trigger.jobKey.name }&jobGroup=${ jobWithTrigger.trigger.jobKey.group }">Run It Now</a> |
 			
 			<c:choose><c:when test="${ jobWithTrigger.paused }">
-				<a class="resume-trigger" style="color: red;" href="${ mainPath }/job/resumeTrigger?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Resume</a>
+				<a class="resume-trigger" style="color: red;" href="${ mainPath }/job/resumeTrigger?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Resume</a> |
 			</c:when>
 			<c:otherwise>
-				<a class="pause-trigger" href="${ mainPath }/job/pauseTrigger?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Pause</a>
+				<a class="pause-trigger" href="${ mainPath }/job/pauseTrigger?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Pause</a> |
 			</c:otherwise>
 			</c:choose>
 			
