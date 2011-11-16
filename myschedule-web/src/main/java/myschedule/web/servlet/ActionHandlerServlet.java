@@ -2,8 +2,6 @@ package myschedule.web.servlet;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,11 +42,7 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 		
 	/** Allow subclass to add URL action path to a handler. This should be called in init() method of subclass. */
 	protected void addActionHandler(String actionPath, ActionHandler handler) {
-		// Ensure action path is consistent.
-		if (actionPath.endsWith("/")) { 
-			// Auto remove any trailing '/' character so it won't mess up mapping lookup.
-			actionPath = actionPath.substring(0, actionPath.length() -1 );
-		}
+		actionPath = trimActionPath(actionPath);
 		
 		// We will try our best to print most useful mapping path, but it will depend where subclass
 		// is adding the handler. For example, if they add it in init(), then all these are good, but 
@@ -73,17 +67,23 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	}
 	
 	protected void addActionFilter(String actionPath, ActionFilter filter) {
+		actionPath = trimActionPath(actionPath);
 		logger.info("Adding filter on action path starting with: {}", actionPath);
 		actionFilterMappings.put(actionPath, filter);
 	}
-		
+	
+	/** Ensure action path does not end with '/', else remove it. */
+	private String trimActionPath(String actionPath) {
+		while (actionPath.endsWith("/")) {
+			actionPath = actionPath.substring(0, actionPath.length() -1 );
+		}
+		return actionPath;
+	}
+	
 	@Override
 	protected ViewData process(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String actionPath = getActionPath(req);
-		// Ensure action path is consistent.
-		if (actionPath.endsWith("/")) {
-			actionPath = actionPath.substring(0, actionPath.length() -1);
-		}
+		actionPath = trimActionPath(actionPath);
 		logger.debug("Action path: {}", actionPath);
 		
 		ActionHandler handler = findActionHandler(actionPath, req);
@@ -111,31 +111,6 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 		return viewData;
 	}
 	
-	/** 
-	 * We assume all filter actionPath are added and match by the front of the actionPath (String.startsWith). It's not
-	 * the same as the action handler where it match by exact name!
-	 * 
-	 * @param actionPath
-	 * @param req
-	 * @return
-	 */
-	protected ActionFilter findActionFilter(String actionPath, HttpServletRequest req) {
-		Set<String> filterNames = actionFilterMappings.keySet();
-		String matchedName = null;
-		for (String name : filterNames) {
-			if (actionPath.startsWith(name)) {
-				matchedName = name;
-				break;
-			}
-		}
-		
-		ActionFilter result = null;
-		if (matchedName != null) {
-			result = actionFilterMappings.get(matchedName);
-		}
-		return result;
-	}
-
 	/** Extract action Path from request URI after the servletPath portion. */
 	protected String getActionPath(HttpServletRequest req) {
 		String contextPath = req.getContextPath();
@@ -144,7 +119,40 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 		return reqUri.substring(contextPath.length() + servletPath.length());
 	}
 
+	/** 
+	 * Find action handler by first exact match to actionPath, else if not found then any path that match from
+	 * the beginning.
+	 */
 	protected ActionHandler findActionHandler(String actionPath, HttpServletRequest req) {
-		return actionHandlerMappings.get(actionPath);
+		ActionHandler handler = actionHandlerMappings.get(actionPath);
+		if (handler == null) {
+			// Try to find by matching beginning of actionPath
+			for (String name : actionHandlerMappings.keySet()) {
+				if (actionPath.startsWith(name)) {
+					handler = actionHandlerMappings.get(name);
+					break;
+				}
+			}
+		}
+		return handler;
 	}
+	
+	/** 
+	 * Find action filter by first exact match to actionPath, else if not found then any path that match from
+	 * the beginning.
+	 */
+	protected ActionFilter findActionFilter(String actionPath, HttpServletRequest req) {
+		ActionFilter filter = actionFilterMappings.get(actionPath);
+		if (filter == null) {
+			// Try to find by matching beginning of actionPath
+			for (String name : actionFilterMappings.keySet()) {
+				if (actionPath.startsWith(name)) {
+					filter = actionFilterMappings.get(name);
+					break;
+				}
+			}
+		}
+		return filter;
+	}
+
 }
