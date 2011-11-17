@@ -172,7 +172,7 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 				}
 			}
 			if (url == null) {
-				throw new FileNotFoundException("Filename " + filename + "not found.");
+				throw new FileNotFoundException("Filename " + filename + " not found.");
 			}
 			logger.debug("Reading url {}", url);
 			InputStream inStream = url.openStream();
