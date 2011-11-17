@@ -1,10 +1,10 @@
-// JavaScript Examples
-
-// Using CalendarIntervalTrigger
-//   schedule a job that runs every 3 months
-// =========================================
-importPackage(Packages.org.quartz);
+//Using CalendarIntervalTrigger
+//schedule a job that runs every 3 months
+//=========================================
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
+importClass(Packages.org.quartz.JobBuilder);
+importClass(Packages.org.quartz.TriggerBuilder);
+importClass(Packages.org.quartz.CalendarIntervalScheduleBuilder);
 
 job = JobBuilder
 	.newJob(LoggerJob)
@@ -12,6 +12,7 @@ job = JobBuilder
 	.build();
 trigger = TriggerBuilder
 	.newTrigger()
+	.withIdentity("calendarIntervalJob")
 	.withSchedule(
 		CalendarIntervalScheduleBuilder
 		.calendarIntervalSchedule()
@@ -19,11 +20,14 @@ trigger = TriggerBuilder
 	.build();
 scheduler.scheduleJob(job, trigger);
 
-// Using DailyTimeIntervalTrigger
-//   schedule a job that runs every 72 mins MON-FRI from 8:00AM to 5:00PM
-// ======================================================================
-importPackage(Packages.org.quartz);
+//Using DailyTimeIntervalTrigger
+//schedule a job that runs every 72 mins MON-FRI from 8:00AM to 5:00PM
+//======================================================================
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
+importClass(Packages.org.quartz.JobBuilder);
+importClass(Packages.org.quartz.TriggerBuilder);
+importClass(Packages.org.quartz.DailyTimeIntervalScheduleBuilder);
+importClass(Packages.org.quartz.TimeOfDay);
 
 job = JobBuilder
 	.newJob(LoggerJob)
@@ -31,6 +35,7 @@ job = JobBuilder
 	.build();
 trigger = TriggerBuilder
 	.newTrigger()
+	.withIdentity("dailyTimeIntervalJob")
 	.withSchedule(
 		DailyTimeIntervalScheduleBuilder
 		.dailyTimeIntervalSchedule()

@@ -27,9 +27,9 @@ $(document).ready(function() {
 		var scriptEngineName =  $("#scriptEngineName option:selected").val();
 		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=advanceJobs&scriptEngineName=" + scriptEngineName);
 	});
-	$("#script-calendars").click(function() {
+	$("#script-calendarJobs").click(function() {
 		var scriptEngineName =  $("#scriptEngineName option:selected").val();
-		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=calendars&scriptEngineName=" + scriptEngineName);
+		$("#scriptText").load("${ mainPath }/scripting/get-script-eg?name=calendarJobs&scriptEngineName=" + scriptEngineName);
 	});
 });
 </script>
@@ -73,7 +73,7 @@ Script Examples:
 	<a name="script-simpleJobs" id="script-simpleJobs">Fixed Interval Jobs</a>
 	, <a name="script-cronJobs" id="script-cronJobs">Cron Jobs</a>
 	, <a name="script-advanceJobs" id="script-advanceJobs">Advance Jobs</a>
-	, <a name="script-calendars" id="script-calendars">Quartz Calendars</a>
+	, <a name="script-calendarJobs" id="script-calendarJobs">Quartz Calendar Jobs</a>
 	, <a href="http://code.google.com/p/myschedule/wiki/ScriptingScheduler">More ...</a>
 </span>
 </label>

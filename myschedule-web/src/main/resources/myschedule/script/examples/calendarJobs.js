@@ -1,7 +1,5 @@
-// JavaScript Examples
-
 //Create Quartz Calendar objects
-importPackage(Packages.org.quartz.impl.calendar);
+importClass(Packages.org.quartz.impl.calendar.CronCalendar);
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
 
 cal = CronCalendar('* * * * JAN ?');
