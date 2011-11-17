@@ -122,8 +122,8 @@ public class AppConfig implements Initable {
 	public static final String MAIN_PATH = "/main";
 	public static final String VIEWS_PATH = "/WEB-INF/jsp/main";
 	
-	private static final String MYSQCHEDULE_VERSION_RES_NAME = "myschedule/version.properties";
-	private static final String QUARTZ_VERSION_RES_NAME = "org/quartz/core/quartz-build.properties";
+	private static final String MY_SCHEDULE_VERSION_RES_NAME = "META-INF/maven/myschedule/myschedule-quartz-extra/pom.properties";
+	private static final String QUARTZ_VERSION_RES_NAME = "META-INF/maven/org.quartz-scheduler/quartz/pom.properties";
 	
 	public void contextInitialized(ServletContextEvent sce) {
 		ServletContext ctx = sce.getServletContext();
@@ -149,17 +149,26 @@ public class AppConfig implements Initable {
 		ctx.setAttribute("themeName", DEFAULT_THEME_NAME);
 		logger.info("Set attribute themeName=" + ctx.getAttribute("themeName"));
 	}
+	
 	private String getMyScheduleVersion() {
-		Properties props = resourceLoader.loadProperties(MYSQCHEDULE_VERSION_RES_NAME);
-		String name = props.getProperty("name", "myschedule");
-		String version = props.getProperty("version", "UNKNOWN");
-		return name + "-" + version;
+		try {
+			Properties props = resourceLoader.loadProperties(MY_SCHEDULE_VERSION_RES_NAME);
+			String version = props.getProperty("version");
+			return "myschedule-" + version;
+		} catch (RuntimeException e) {
+			logger.warn("Failed to get myschedule version properties. Use LATEST.SNAPSHOT label instead.", e);
+			return "myschedule-LATEST.SNAPSHOT";
+		}
 	}
 
 	private String getQuartzVersion() {
-		Properties props = resourceLoader.loadProperties(QUARTZ_VERSION_RES_NAME);
-		String name = props.getProperty("name", "quartz");
-		String version = props.getProperty("version", "UNKNOWN");
-		return name + "-" + version;
+		try {
+			Properties props = resourceLoader.loadProperties(QUARTZ_VERSION_RES_NAME);
+			String version = props.getProperty("version");
+			return "quartz-" + version;
+		} catch (RuntimeException e) {
+			logger.warn("Failed to get quartz version properties. Use UNKNOWN label instead.", e);
+			return "quartz-UNKNOWN";
+		}
 	}
 }
