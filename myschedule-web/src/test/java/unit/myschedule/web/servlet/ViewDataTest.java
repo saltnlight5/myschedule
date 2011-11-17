@@ -96,7 +96,7 @@ public class ViewDataTest {
 		when(req.getSession(false)).thenReturn(session);
 		
 		ViewData viewData = new ViewData("test", req, resp);
-		int num = viewData.findData("num");
+		Integer num = viewData.findData("num");
 		assertThat(num, is(123));
 		String[] letters = viewData.findData("letters");
 		assertThat(letters, arrayContaining(new String[]{ "A", "B", "C" }));
@@ -116,7 +116,7 @@ public class ViewDataTest {
 		when(req.getAttribute("letters")).thenReturn(new String[]{ "D", "E", "F" });
 		
 		ViewData viewData = new ViewData("test", req, resp);
-		int num = viewData.findData("num");
+		Integer num = viewData.findData("num");
 		assertThat(num, is(456));
 		String[] letters = viewData.findData("letters");
 		assertThat(letters, arrayContaining(new String[]{ "D", "E", "F" }));
@@ -166,7 +166,7 @@ public class ViewDataTest {
 		// Setup dataMap
 		viewData.addData("num", 987, "letters", new String[]{ "J", "K", "L" });
 		
-		int num = viewData.findData("num");
+		Integer num = viewData.findData("num");
 		assertThat(num, is(987));
 		String[] letters = viewData.findData("letters");
 		assertThat(letters, arrayContaining(new String[]{ "J", "K", "L" }));
