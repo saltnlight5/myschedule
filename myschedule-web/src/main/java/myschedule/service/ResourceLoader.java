@@ -20,6 +20,7 @@ public class ResourceLoader {
 	private ClassLoader classLoader;
 	
 	public ResourceLoader() {
+		// Default to use current thread ClassLoader
 		this.classLoader = Thread.currentThread().getContextClassLoader();
 	}
 	
@@ -30,14 +31,19 @@ public class ResourceLoader {
 	public ClassLoader getClassLoader() {
 		return classLoader;
 	}
-		
-	public void copyResource(String resourceName, Writer writer) {
-		logger.debug("Copying resource: {}", resourceName);
+	
+	public InputStream getResourceInputStream(String resourceName) {
+		logger.debug("Loading resource: {}", resourceName);
 		ClassLoader classLoader = getClassLoader();
 		InputStream inStream = classLoader.getResourceAsStream(resourceName);
 		if (inStream == null) {
 			throw new IllegalArgumentException("Resource " + resourceName + " not found.");
 		}
+		return inStream;
+	}
+	
+	public void copyResource(String resourceName, Writer writer) {
+		InputStream inStream = getResourceInputStream(resourceName);
 		try {
 			IOUtils.copy(inStream, writer);
 			inStream.close();
@@ -48,10 +54,8 @@ public class ResourceLoader {
 	}
 	
 	public Properties loadProperties(String resourceName) {
-		logger.debug("Loading resource: {}", resourceName);
-		ClassLoader classLoader = getClassLoader();
 		Properties props = new Properties();
-		InputStream inStream = classLoader.getResourceAsStream(resourceName);
+		InputStream inStream = getResourceInputStream(resourceName);
 		try {
 			props.load(inStream);
 		} catch (IOException e) {
