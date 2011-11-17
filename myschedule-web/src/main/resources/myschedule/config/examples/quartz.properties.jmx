@@ -7,6 +7,7 @@
 # Main Quartz configuration
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = JmxScheduler
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
 org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
 org.quartz.threadPool.threadCount = 5
 

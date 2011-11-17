@@ -16,6 +16,7 @@
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = DatabaseClusteredScheduler
 org.quartz.scheduler.instanceId = AUTO
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
 org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTX
 org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 org.quartz.jobStore.dataSource = quartzDataSource

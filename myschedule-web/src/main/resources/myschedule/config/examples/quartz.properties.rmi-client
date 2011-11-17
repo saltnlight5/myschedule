@@ -16,6 +16,7 @@
 org.quartz.scheduler.skipUpdateCheck = true
 org.quartz.scheduler.instanceName = RmiQuartzScheduler
 org.quartz.scheduler.instanceId = NON_CLUSTERED
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
 org.quartz.scheduler.rmi.proxy = true
 org.quartz.scheduler.rmi.registryHost = localhost
 org.quartz.scheduler.rmi.registryPort = 1099
