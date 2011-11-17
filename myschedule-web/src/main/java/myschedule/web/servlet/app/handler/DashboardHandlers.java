@@ -19,6 +19,7 @@ import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
+import myschedule.web.session.SessionData;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,6 +218,13 @@ public class DashboardHandlers {
 		protected void handleViewData(ViewData viewData) {
 			String configId = viewData.findData("configId");
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			
+			// Update session data
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			sessionData.setCurrentSchedulerConfigId(configId);
+			sessionData.setCurrentSchedulerName(schedulerService.getSchedulerNameAndId());
+			
+			// Redirect to next view page.
 			if (schedulerService.isSchedulerInitialized()) {
 				viewData.setViewName("redirect:/job/list");
 			} else {

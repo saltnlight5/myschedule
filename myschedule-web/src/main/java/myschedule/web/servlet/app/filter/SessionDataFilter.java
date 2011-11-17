@@ -31,7 +31,7 @@ public class SessionDataFilter implements ActionFilter {
 		HttpSession session = req.getSession(true);
 		if (session.getAttribute(SessionData.SESSION_DATA_KEY) == null) {
 			try {
-				SessionData sessionData = createSessionData();
+				SessionData sessionData = createSessionData(req);
 				session.setAttribute(SessionData.SESSION_DATA_KEY, sessionData);
 			} catch (ErrorCodeException e) {
 				viewData = new ViewData("redirect:/dashboard/list", req, resp);
@@ -46,8 +46,14 @@ public class SessionDataFilter implements ActionFilter {
 		// Do nothing.
 	}
 
-	private SessionData createSessionData() {
-		SchedulerService scheduler = schedulerContainer.findFirstInitedScheduler();
+	private SessionData createSessionData(HttpServletRequest req) {
+		String configId = req.getParameter("configId");
+		SchedulerService scheduler = null;
+		if (configId == null) {
+			scheduler = schedulerContainer.findFirstInitedScheduler();
+		} else {
+			scheduler = schedulerContainer.getSchedulerService(configId);
+		}
 		SessionData result = new SessionData();
 		result.setScriptEngineName("JavaScript");
 		result.setCurrentSchedulerName(scheduler.getScheduler().getSchedulerNameAndId());

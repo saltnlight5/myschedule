@@ -74,5 +74,6 @@ public class MainServlet extends ActionHandlerServlet {
         addActionFilter("/job", sessionDataFilter);
         addActionFilter("/scheduler", sessionDataFilter);
         addActionFilter("/scripting", sessionDataFilter);
+        addActionFilter("/dashboard/switch-scheduler", sessionDataFilter);
 	}	
 }
