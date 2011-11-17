@@ -171,6 +171,9 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 					url = new File(filename).toURI().toURL();
 				}
 			}
+			if (url == null) {
+				throw new FileNotFoundException("Filename " + filename + "not found.");
+			}
 			logger.debug("Reading url {}", url);
 			InputStream inStream = url.openStream();
 			reader = new InputStreamReader(inStream);
