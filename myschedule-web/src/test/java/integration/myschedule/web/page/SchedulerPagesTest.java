@@ -12,24 +12,6 @@ public class SchedulerPagesTest {
 	@Test
 	public void testSchedulerPages() throws Exception {
 		verifyListOfSchedulers();
-		String configId = createScheduler();
-		listJobs(configId);
-	}
-
-	private void listJobs(String configId) throws Exception {
-		
-	}
-
-	private String createScheduler() throws Exception {
-		String configId = null;
-		WebClient webClient = new WebClient();
-		try {
-		    HtmlPage page = webClient.getPage(testConfig.getWebappUrl());
-		} finally {
-			webClient.closeAllWindows();
-		}
-		
-		return configId;
 	}
 
 	private void verifyListOfSchedulers() throws Exception {
