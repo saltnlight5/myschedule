@@ -6,18 +6,18 @@ importClass(Packages.org.quartz.JobBuilder);
 importClass(Packages.org.quartz.TriggerBuilder);
 importClass(Packages.org.quartz.CalendarIntervalScheduleBuilder);
 
-job = JobBuilder
-	.newJob(LoggerJob)
-	.withIdentity("calendarIntervalJob")
-	.build();
-trigger = TriggerBuilder
-	.newTrigger()
-	.withIdentity("calendarIntervalJob")
-	.withSchedule(
-		CalendarIntervalScheduleBuilder
-		.calendarIntervalSchedule()
-		.withIntervalInMonths(3))
-	.build();
+var job = JobBuilder
+    .newJob(LoggerJob)
+    .withIdentity("calendarIntervalJob")
+    .build();
+var trigger = TriggerBuilder
+    .newTrigger()
+    .withIdentity("calendarIntervalJob")
+    .withSchedule(
+        CalendarIntervalScheduleBuilder
+        .calendarIntervalSchedule()
+        .withIntervalInMonths(3))
+    .build();
 scheduler.scheduleJob(job, trigger);
 
 //Using DailyTimeIntervalTrigger
@@ -29,19 +29,19 @@ importClass(Packages.org.quartz.TriggerBuilder);
 importClass(Packages.org.quartz.DailyTimeIntervalScheduleBuilder);
 importClass(Packages.org.quartz.TimeOfDay);
 
-job = JobBuilder
-	.newJob(LoggerJob)
-	.withIdentity("dailyTimeIntervalJob")
-	.build();
-trigger = TriggerBuilder
-	.newTrigger()
-	.withIdentity("dailyTimeIntervalJob")
-	.withSchedule(
-		DailyTimeIntervalScheduleBuilder
-		.dailyTimeIntervalSchedule()
-		.withIntervalInMinutes(72)
-		.startingDailyAt(TimeOfDay.hourMinuteAndSecondOfDay(8, 0, 0))
-		.endingDailyAt(TimeOfDay.hourMinuteAndSecondOfDay(17, 0, 0))
-		.onMondayThroughFriday())
-	.build();
+var job = JobBuilder
+    .newJob(LoggerJob)
+    .withIdentity("dailyTimeIntervalJob")
+    .build();
+var trigger = TriggerBuilder
+    .newTrigger()
+    .withIdentity("dailyTimeIntervalJob")
+    .withSchedule(
+        DailyTimeIntervalScheduleBuilder
+        .dailyTimeIntervalSchedule()
+        .withIntervalInMinutes(72)
+        .startingDailyAt(TimeOfDay.hourMinuteAndSecondOfDay(8, 0, 0))
+        .endingDailyAt(TimeOfDay.hourMinuteAndSecondOfDay(17, 0, 0))
+        .onMondayThroughFriday())
+    .build();
 scheduler.scheduleJob(job, trigger);
