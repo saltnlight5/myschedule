@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/" />
+<title>selenium - scheduler -test</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">selenium - scheduler -test</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/myschedule/main/dashboard/list</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Scheduler List</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Create Scheduler</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=configPropsText</td>
+	<td># Main Quartz configuration<br />org.quartz.scheduler.skipUpdateCheck = true<br />org.quartz.scheduler.instanceName = IntegrationTestScheduler<br />org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool<br />org.quartz.threadPool.threadCount = 5<br /><br /># Quartz Extra - ScriptingSchedulerPlugin<br />org.quartz.plugin.MyScriptingPlugin.class = myschedule.quartz.extra.ScriptingSchedulerPlugin<br />org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript<br />org.quartz.plugin.MyScriptingPlugin.initializeScript = \<br />classpath:myschedule/script/examples/simpleJobs.js,\<br />classpath:myschedule/script/examples/cronJobs.js,\<br />classpath:myschedule/script/examples/advanceJobs.js,\<br />classpath:myschedule/script/examples/calendarJobs.js<br />#classpath:myschedule/script/examples/jobSamples.js,\<br />#org.quartz.plugin.MyScriptingPlugin.startScript = my-start.js<br />#org.quartz.plugin.MyScriptingPlugin.shutdownScript = my-shutdown.js<br /><br /># MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)<br />myschedule.schedulerService.autoInit = true<br />myschedule.schedulerService.autoStart = true<br />myschedule.schedulerService.waitForJobsToComplete = false<br /></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Shutdown</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Initialize</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Modify</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=configPropsText</td>
+	<td># Main Quartz configuration<br />org.quartz.scheduler.skipUpdateCheck = true<br />org.quartz.scheduler.instanceName = IntegrationTestScheduler<br />org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool<br />org.quartz.threadPool.threadCount = 5<br /><br /># Quartz Extra - ScriptingSchedulerPlugin<br />org.quartz.plugin.MyScriptingPlugin.class = myschedule.quartz.extra.ScriptingSchedulerPlugin<br />org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript<br />org.quartz.plugin.MyScriptingPlugin.initializeScript = \<br />classpath:myschedule/script/examples/simpleJobs.js,\<br />classpath:myschedule/script/examples/cronJobs.js,\<br />classpath:myschedule/script/examples/advanceJobs.js,\<br />classpath:myschedule/script/examples/calendarJobs.js<br />#classpath:myschedule/script/examples/jobSamples.js,\<br />#org.quartz.plugin.MyScriptingPlugin.startScript = my-start.js<br />#org.quartz.plugin.MyScriptingPlugin.shutdownScript = my-shutdown.js<br /><br /># MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)<br />myschedule.schedulerService.autoInit = true<br />myschedule.schedulerService.autoStart = true<br />myschedule.schedulerService.waitForJobsToComplete = true<br /></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=IntegrationTestScheduler_$_NON_CLUSTERED</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//table[@id='jobs']/tbody/tr/td[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=JOB DETAIL</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs without trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Calendars</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Currently Executing Jobs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Load Jobs (Xml)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=show-help</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=show-help</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=xml</td>
+	<td>&lt;?xml version='1.0' encoding='utf-8'?&gt;<br />&lt;job-scheduling-data version=&quot;2.0&quot; <br />&nbsp;&nbsp;&nbsp;&nbsp;xmlns=&quot;http://www.quartz-scheduler.org/xml/JobSchedulingData&quot; <br />&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;<br />&nbsp;&nbsp;&nbsp;&nbsp;xsi:schemaLocation=&quot;http://www.quartz-scheduler.org/xml/JobSchedulingData <br />&nbsp;&nbsp;&nbsp;&nbsp;http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd&quot;&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;schedule&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;job&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;minute_job&lt;/name&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;group&gt;DEFAULT&lt;/group&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;job-class&gt;myschedule.quartz.extra.job.LoggerJob&lt;/job-class&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/job&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;trigger&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;simple&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;minute_job&lt;/name&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;group&gt;DEFAULT&lt;/group&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;job-name&gt;minute_job&lt;/job-name&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;job-group&gt;DEFAULT&lt;/job-group&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;repeat-count&gt;-1&lt;/repeat-count&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;repeat-interval&gt;60000&lt;/repeat-interval&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/simple&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/trigger&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;/schedule&gt;<br />&lt;/job-scheduling-data&gt;</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs with trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//table[@id='jobs']/tbody/tr/td[2]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=unschedule</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs with trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//table[@id='jobs']/tbody/tr[5]/td[5]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs with trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//table[@id='jobs']/tbody/tr[5]/td[5]/a[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//table[@id='jobs']/tbody/tr[4]/td[5]/a[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs with trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Settings</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Detail</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Listeners</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Config Properties</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=configPropsText</td>
+	<td># Main Quartz configuration<br />org.quartz.scheduler.skipUpdateCheck = true<br />org.quartz.scheduler.instanceName = IntegrationTestScheduler<br />org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool<br />org.quartz.threadPool.threadCount = 5<br /><br /># Quartz Extra - ScriptingSchedulerPlugin<br />org.quartz.plugin.MyScriptingPlugin.class = myschedule.quartz.extra.ScriptingSchedulerPlugin<br />org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript<br />org.quartz.plugin.MyScriptingPlugin.initializeScript = \<br />classpath:myschedule/script/examples/simpleJobs.js,\<br />classpath:myschedule/script/examples/cronJobs.js,\<br />classpath:myschedule/script/examples/advanceJobs.js,\<br />classpath:myschedule/script/examples/calendarJobs.js<br />#classpath:myschedule/script/examples/jobSamples.js,\<br />#org.quartz.plugin.MyScriptingPlugin.startScript = my-start.js<br />#org.quartz.plugin.MyScriptingPlugin.shutdownScript = my-shutdown.js<br /><br /># MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)<br />myschedule.schedulerService.autoInit = true<br />myschedule.schedulerService.autoStart = true<br />myschedule.schedulerService.waitForJobsToComplete = false<br /></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=IntegrationTestScheduler_$_NON_CLUSTERED</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Settings</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Standby Scheduler</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Start Scheduler</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Pause All Triggers</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Settings</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Resume All Triggers</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Scripting</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=variables-link</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=variables-link</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Scripting</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=scriptText</td>
+	<td>var jobs = scheduler.getAllJobDetails();<br />for (var i = 0; i &lt; jobs.size(); i++) {<br />&nbsp;&nbsp;var job = jobs.get(i);<br />&nbsp;&nbsp;scheduler.deleteJob(job.key);<br />&nbsp;&nbsp;output.println(&quot;Job &quot; + job.key + &quot; deleted.&quot;);<br />}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Jobs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Dashboard</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Delete</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Scheduler List</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
