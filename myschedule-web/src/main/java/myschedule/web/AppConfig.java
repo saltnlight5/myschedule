@@ -1,7 +1,6 @@
 package myschedule.web;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -42,48 +41,6 @@ public class AppConfig implements Initable {
 			instance = new AppConfig();
 		}
 		return instance;
-	}
-			
-	// Web App Config
-	// ==============
-	public static final String DEFAULT_THEME_NAME = "smoothness";
-	public static final String MAIN_PATH = "/main";
-	public static final String VIEWS_PATH = "/WEB-INF/jsp/main";
-	public static final String VERSION_RES_NAME = "myschedule/version.properties";
-	
-	public void contextInitialized(ServletContextEvent sce) {
-		ServletContext ctx = sce.getServletContext();
-		String myscheduleVersion = getMyScheduleVersion();
-		String contextPath = ctx.getContextPath();
-		
-		ctx.setAttribute("myscheduleVersion", myscheduleVersion);
-		logger.info("Set attribute myscheduleVersion=" + ctx.getAttribute("myscheduleVersion"));
-
-		ctx.setAttribute("contextPath", contextPath);
-		logger.info("Set attribute contextPath=" + ctx.getAttribute("contextPath"));
-		
-		ctx.setAttribute("mainPath", contextPath + MAIN_PATH);
-		logger.info("Set attribute actionPath=" + ctx.getAttribute("actionPath"));
-		
-		ctx.setAttribute("viewsPath", contextPath + VIEWS_PATH);
-		logger.info("Set attribute viewsPath=" + ctx.getAttribute("viewsPath"));
-		
-		ctx.setAttribute("themeName", DEFAULT_THEME_NAME);
-		logger.info("Set attribute themeName=" + ctx.getAttribute("themeName"));
-	}
-
-	protected String getMyScheduleVersion() {
-		Properties props = new Properties();
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		InputStream inStream = cl.getResourceAsStream(VERSION_RES_NAME);
-		try {
-			props.load(inStream);
-		} catch (Exception e) {
-			logger.error("Failed to load resource: " + VERSION_RES_NAME, e);
-		}
-		String name = props.getProperty("name", "myschedule");
-		String version = props.getProperty("version", "UNKNOWN");
-		return name + "-" + version;
 	}
 
 	// Application services
@@ -157,5 +114,52 @@ public class AppConfig implements Initable {
 	@Override
 	public boolean isInited() {
 		throw new RuntimeException("Not supported.");
+	}
+	
+	// Web App Config
+	// ==============
+	public static final String DEFAULT_THEME_NAME = "smoothness";
+	public static final String MAIN_PATH = "/main";
+	public static final String VIEWS_PATH = "/WEB-INF/jsp/main";
+	
+	private static final String MYSQCHEDULE_VERSION_RES_NAME = "myschedule/version.properties";
+	private static final String QUARTZ_VERSION_RES_NAME = "org/quartz/core/quartz-build.properties";
+	
+	public void contextInitialized(ServletContextEvent sce) {
+		ServletContext ctx = sce.getServletContext();
+		String myscheduleVersion = getMyScheduleVersion();
+		String contextPath = ctx.getContextPath();
+		String quartzVersion = getQuartzVersion();
+		
+		ctx.setAttribute("myscheduleVersion", myscheduleVersion);
+		logger.info("Set attribute myscheduleVersion=" + ctx.getAttribute("myscheduleVersion"));
+		
+		ctx.setAttribute("quartzVersion", quartzVersion);
+		logger.info("Set attribute quartzVersion=" + ctx.getAttribute("quartzVersion"));
+
+		ctx.setAttribute("contextPath", contextPath);
+		logger.info("Set attribute contextPath=" + ctx.getAttribute("contextPath"));
+		
+		ctx.setAttribute("mainPath", contextPath + MAIN_PATH);
+		logger.info("Set attribute actionPath=" + ctx.getAttribute("actionPath"));
+		
+		ctx.setAttribute("viewsPath", contextPath + VIEWS_PATH);
+		logger.info("Set attribute viewsPath=" + ctx.getAttribute("viewsPath"));
+		
+		ctx.setAttribute("themeName", DEFAULT_THEME_NAME);
+		logger.info("Set attribute themeName=" + ctx.getAttribute("themeName"));
+	}
+	private String getMyScheduleVersion() {
+		Properties props = resourceLoader.loadProperties(MYSQCHEDULE_VERSION_RES_NAME);
+		String name = props.getProperty("name", "myschedule");
+		String version = props.getProperty("version", "UNKNOWN");
+		return name + "-" + version;
+	}
+
+	private String getQuartzVersion() {
+		Properties props = resourceLoader.loadProperties(QUARTZ_VERSION_RES_NAME);
+		String name = props.getProperty("name", "quartz");
+		String version = props.getProperty("version", "UNKNOWN");
+		return name + "-" + version;
 	}
 }

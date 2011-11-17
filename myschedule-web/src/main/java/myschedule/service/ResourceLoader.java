@@ -3,6 +3,7 @@ package myschedule.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,24 +17,50 @@ import org.slf4j.LoggerFactory;
 public class ResourceLoader {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ResourceLoader.class);
+	private ClassLoader classLoader;
 	
-	public void copyResource(String resName, Writer writer) {
-		logger.debug("Loading resource: {}", resName);
+	public ResourceLoader() {
+		this.classLoader = Thread.currentThread().getContextClassLoader();
+	}
+	
+	public void setClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+	
+	public ClassLoader getClassLoader() {
+		return classLoader;
+	}
+		
+	public void copyResource(String resourceName, Writer writer) {
+		logger.debug("Copying resource: {}", resourceName);
 		ClassLoader classLoader = getClassLoader();
-		InputStream inStream = classLoader.getResourceAsStream(resName);
+		InputStream inStream = classLoader.getResourceAsStream(resourceName);
 		if (inStream == null) {
-			throw new IllegalArgumentException("Resource " + resName + " not found.");
+			throw new IllegalArgumentException("Resource " + resourceName + " not found.");
 		}
 		try {
 			IOUtils.copy(inStream, writer);
 			inStream.close();
 			writer.flush();
 		} catch (IOException e) {
-			throw new RuntimeException("Failed copy resource " + resName + " into a writer object.", e);
+			throw new RuntimeException("Failed to copy resource " + resourceName + " into a writer object.", e);
 		}
 	}
 	
-	protected ClassLoader getClassLoader() {
-		return Thread.currentThread().getContextClassLoader();
+	public Properties loadProperties(String resourceName) {
+		logger.debug("Loading resource: {}", resourceName);
+		ClassLoader classLoader = getClassLoader();
+		Properties props = new Properties();
+		InputStream inStream = classLoader.getResourceAsStream(resourceName);
+		try {
+			props.load(inStream);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to load Properties resource " + resourceName, e);
+		} finally {
+			if (inStream != null) {
+				IOUtils.closeQuietly(inStream);
+			}
+		}
+		return props;
 	}
 }
