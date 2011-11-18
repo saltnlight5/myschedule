@@ -197,8 +197,16 @@ public class JobHandlers {
 			String triggerGroup = viewData.findData("triggerGroup");
 			logger.debug("Unscheduling trigger name=" + triggerName + ", group=" + triggerGroup);
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
-			Trigger trigger = schedulerTemplate.uncheduleJob(TriggerKey.triggerKey(triggerName, triggerGroup));
+			TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, triggerGroup);
+			Trigger trigger = schedulerTemplate.getTrigger(triggerKey);
+			if (trigger == null) {
+				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Trigger " + triggerKey + " not found.");
+			}
+			schedulerTemplate.uncheduleJob(TriggerKey.triggerKey(triggerName, triggerGroup));
 			Map<String, Object> map = ViewData.mkMap("trigger", trigger);
+			
+			// After we unscheduled the trigger, we want to see if there is more job that associated to the trigger.
+			// The view is using the 'jobDetail' to check as empty or not to display a message.
 			try {
 				JobKey key = trigger.getJobKey();
 				JobDetail jobDetail = schedulerTemplate.getJobDetail(key);
@@ -221,7 +229,11 @@ public class JobHandlers {
 			String jobGroup = viewData.findData("jobGroup");
 			logger.debug("Deleting jobName=" + jobName + ", jobGroup=" + jobGroup + " and its associated triggers.");
 			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
-			JobDetail jobDetail = schedulerTemplate.getJobDetail(JobKey.jobKey(jobName, jobGroup));
+			JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
+			JobDetail jobDetail = schedulerTemplate.getJobDetail(jobKey);
+			if (jobDetail == null) {
+				throw new ErrorCodeException(ErrorCode.SCHEDULER_PROBLEM, "Job " + jobKey + " not found.");
+			}
 			List<? extends Trigger> triggers = schedulerTemplate.deleteJobAndGetTriggers(JobKey.jobKey(jobName, jobGroup));
 			viewData.addData("data", ViewData.mkMap("jobDetail", jobDetail, "triggers", triggers));
 		}
