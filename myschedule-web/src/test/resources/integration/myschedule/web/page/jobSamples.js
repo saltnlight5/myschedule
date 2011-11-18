@@ -73,7 +73,6 @@ importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
 importClass(Packages.java.lang.System);
 importClass(Packages.java.util.HashMap);
 
-
 //Schedule hourly job on every MON-FRI
 scheduler.scheduleCronJob("hourlyCronJob", "0 0 * ? * MON-FRI", LoggerJob);
 
@@ -136,6 +135,9 @@ scheduler.addJob(job, false);
 // Long Running Jobs
 // =================
 //Create a job that takes 15 secs to run.
+importClass(Packages.myschedule.quartz.extra.job.ScriptingJob);
+importClass(Packages.java.lang.System);
+importClass(Packages.java.util.HashMap);
 dataMap = HashMap();
 dataMap.put('ScriptEngineName', 'JavaScript');
 dataMap.put('ScriptText', 
