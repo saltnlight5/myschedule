@@ -46,10 +46,13 @@ public class ResourceLoader {
 		InputStream inStream = getResourceInputStream(resourceName);
 		try {
 			IOUtils.copy(inStream, writer);
-			inStream.close();
 			writer.flush();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to copy resource " + resourceName + " into a writer object.", e);
+		} finally {
+			if (inStream != null) {
+				IOUtils.closeQuietly(inStream);
+			}			
 		}
 	}
 	
