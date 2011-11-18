@@ -5,10 +5,10 @@
 $(document).ready(function() {
 	// Use dataTables plugin
 	$("#scheduler-list").dataTable({		
+		"aaSorting": [[0, "asc"]],
 		"bPaginate": false,
 		"bLengthChange": false,
 		"bFilter": true,
-		"bSort": false,
 		"bInfo": true,
 		"bJQueryUI": true,
 	});
