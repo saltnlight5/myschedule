@@ -63,7 +63,7 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 		// if it's added in other methods, then servlet context will not be available.
 		if (logger.isInfoEnabled()) {
 			String ctxName = getServletContext().getContextPath();
-			String fullActionPath = ctxName + "/" + getServletPathName();
+			String fullActionPath = ctxName + getServletPathName();
 			fullActionPath += actionPath;
 			logger.info("Path '{}' is mapped to action handler: {}", fullActionPath, handler);
 		}

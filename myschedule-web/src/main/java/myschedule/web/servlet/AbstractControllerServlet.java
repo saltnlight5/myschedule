@@ -12,7 +12,10 @@ import org.slf4j.LoggerFactory;
 /**
  * A base Servlet class that processes general Http request and responses. This class will allow subclass to process 
  * the request and return a {@link ViewData} object. Then this class will take the ViewData.viewName and do a either 
- * forward to render the view. 
+ * forward to render the view.
+ * 
+ * <p>
+ * The {@link #servletPathName} value should be matching to what's mapped in web.xml file for this Servlet.
  * 
  * <p>
  * If {@link ViewData} is 'null' or its viewName is null or empty string, then this class will not process further

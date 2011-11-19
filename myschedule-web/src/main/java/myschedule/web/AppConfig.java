@@ -80,15 +80,15 @@ public class AppConfig extends PropsConfig implements Initable {
 		ConfigStore configStore = newInstance(configStoreCls);
 		if (configStore instanceof FileConfigStore) {
 			String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
-			myScheduleDir = getConfig("myschedule.configs.directory", myScheduleDir);
+			myScheduleDir = getConfig("myschedule.configStore.FileConfigStore.directory", myScheduleDir);
 			File configDir = new File(myScheduleDir);
 			logger.info("FileConfigStore directory set to: {}", configDir);
 			
 			FileConfigStore fileConfigStore = (FileConfigStore)configStore;
 			fileConfigStore.setStoreDir(configDir);
-			serviceContainer.addService(fileConfigStore);
 		}
 		logger.info("ConfigStore set to: {}", configStore);
+		serviceContainer.addService(configStore);
 		
 		schedulerContainer = new SchedulerContainer();
 		schedulerContainer.setConfigStore(configStore);
@@ -169,11 +169,11 @@ public class AppConfig extends PropsConfig implements Initable {
 		ctx.setAttribute("contextPath", contextPath);
 		logger.info("Set webapp attribute contextPath=" + ctx.getAttribute("contextPath"));
 
-		String mainServletPathName = getConfig("myschedule.web.mainServletPathName", DEFAULT_MAIN_SERVLET_NAME);
+		String mainServletPathName = getMainServletPathName();
 		ctx.setAttribute("mainPath", contextPath + mainServletPathName);
 		logger.info("Set webapp attribute mainPath=" + ctx.getAttribute("mainPath"));
 
-		String viewsDirectory = getConfig("myschedule.web.viewsDirectory", DEFAULT_VIEW_DIRECTORY);
+		String viewsDirectory = getViewsDirectory();
 		ctx.setAttribute("viewsPath", contextPath + viewsDirectory);
 		logger.info("Set webapp attribute viewsPath=" + ctx.getAttribute("viewsPath"));
 		
@@ -182,6 +182,14 @@ public class AppConfig extends PropsConfig implements Initable {
 		logger.info("Set webapp attribute themeName=" + ctx.getAttribute("themeName"));
 	}
 	
+	public String getMainServletPathName() {
+		return getConfig("myschedule.web.mainServletPathName", DEFAULT_MAIN_SERVLET_NAME);
+	}
+	
+	public String getViewsDirectory() {
+		return getConfig("myschedule.web.viewsDirectory", DEFAULT_VIEW_DIRECTORY);
+	}
+		
 	private String getMyScheduleVersion() {
 		try {
 			Properties props = resourceLoader.loadProperties(MY_SCHEDULE_VERSION_RES_NAME);

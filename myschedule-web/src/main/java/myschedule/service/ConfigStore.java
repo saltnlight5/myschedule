@@ -8,7 +8,7 @@ import java.util.Set;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public interface ConfigStore {	
+public interface ConfigStore extends Service {	
 	String create(String config);
 	String get(String id);	
 	void delete(String id);
