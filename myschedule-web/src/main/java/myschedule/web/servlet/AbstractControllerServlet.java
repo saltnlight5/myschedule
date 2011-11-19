@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>
  * The default impl is to use JSP as view, and it will automatically resolve JSP file in this format:
- * <code>JPS_FILE = JSP_NAME_PREFIX + <servletPath> + {@code <ViewData.viewName>} + JSP_NAME_SUFFIX</code>.
- * Eg: <code>/WEB-INF/jsp/demo/test.jsp</code>
+ * <code>JPS_FILE = JSP_NAME_PREFIX + {@code <ViewData.viewName>} + JSP_NAME_SUFFIX</code>.
+ * Eg: <code>/WEB-INF/jsp/main/test.jsp</code>
  * 
  * <p>
  * If subclass return ViewData.viewName with 'redirect:' prefix, then it will be send as redirect without 
@@ -32,16 +32,25 @@ import org.slf4j.LoggerFactory;
  */
 abstract public class AbstractControllerServlet extends HttpServlet {
 
-	public static final String JSP_NAME_PREFIX = "/WEB-INF/jsp";
+	public static final String DEFAULT_SERVLET_PATH_NAME = "/main";
+	public static final String JSP_NAME_PREFIX = "/WEB-INF/jsp/main";
 	public static final String JSP_NAME_SUFFIX = ".jsp";
 	public static final String REDIRECT_PREFIX = "redirect:";
 	
 	private static final long serialVersionUID = 1L;		
 
-	private String viewFileNamePrefix = JSP_NAME_PREFIX;	
+	private String viewFileNamePrefix = JSP_NAME_PREFIX;
 	private String viewFileNameSuffix = JSP_NAME_SUFFIX;
+	private String servletPathName = DEFAULT_SERVLET_PATH_NAME;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
+	public void setServletPathName(String servletPathName) {
+		this.servletPathName = servletPathName;
+	}
+	public String getServletPathName() {
+		return servletPathName;
+	}
 	
 	public void setViewFileNamePrefix(String viewFileNamePrefix) {
 		this.viewFileNamePrefix = viewFileNamePrefix;
@@ -91,8 +100,7 @@ abstract public class AbstractControllerServlet extends HttpServlet {
 			resp.sendRedirect(redirectName);
 			return;
 		}
-		String servletPath = req.getServletPath();
-		String viewFilename = viewFileNamePrefix + servletPath + viewName + viewFileNameSuffix;
+		String viewFilename = viewFileNamePrefix + viewName + viewFileNameSuffix;
 		logger.debug("Forward: {}", viewFilename);
 		transferViewDataToRequestAttr(viewData, req);
 		req.getRequestDispatcher(viewFilename).forward(req, resp);

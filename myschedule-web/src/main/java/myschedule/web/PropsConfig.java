@@ -18,13 +18,13 @@ import org.slf4j.LoggerFactory;
  * <p>User must call {@link #initConfig()} before using the config properties!
  * 
  * <p>Example on command line usage:
- * {@code
+ * <pre><code>
  * $ java -Dconfig=classpath:myapplication/config.properties myapp.Main
  * 
  * Or
  * 
  * $ java -Dconfig=file:///myapplication/config.properties myapp.Main
- * }
+ * </code></pre>
  * 
  * <p>Or you can subclass and use it like this:
  * <pre><code>

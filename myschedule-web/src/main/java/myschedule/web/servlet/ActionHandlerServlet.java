@@ -62,18 +62,8 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 		// is adding the handler. For example, if they add it in init(), then all these are good, but 
 		// if it's added in other methods, then servlet context will not be available.
 		if (logger.isInfoEnabled()) {
-			String fullActionPath = "";
-			if (getServletContext() != null) {
-				String ctxName = getServletContext().getContextPath();
-				// Note: The Servlet API doesn't allow use to get the 'servletPath' at this stage, only in request.
-				//       because multiple 'servletPath' could be mapped to <ServletName>. So the best we can do is
-				//       the <ServletName> here.
-				String servletName = getServletConfig().getServletName();
-				fullActionPath += ctxName + "/<" + servletName + ">";
-			} else {
-				// If not context is available, then at least let user know the general form.
-				fullActionPath += "/<YourWebappContext>/<YourServletNameMapping>";
-			}
+			String ctxName = getServletContext().getContextPath();
+			String fullActionPath = ctxName + "/" + getServletPathName();
 			fullActionPath += actionPath;
 			logger.info("Path '{}' is mapped to action handler: {}", fullActionPath, handler);
 		}

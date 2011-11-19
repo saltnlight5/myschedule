@@ -21,6 +21,13 @@ public class MainServlet extends ActionHandlerServlet {
 	@Override
 	public void init() {
 		AppConfig appConfig = AppConfig.getInstance();
+		
+		String servletPathName = appConfig.getConfig("myschedule.web.mainServletPathName", AppConfig.DEFAULT_MAIN_SERVLET_NAME);
+		setServletPathName(servletPathName);
+		
+		String viewsDirectory = appConfig.getConfig("myschedule.web.viewsDirectory", AppConfig.DEFAULT_VIEW_DIRECTORY);
+		setViewFileNamePrefix(viewsDirectory);
+		
 		DashboardHandlers dashboardHandlers = appConfig.getDashboardHandler();
 		JobHandlers jobHandlers = appConfig.getJobHandlers();
 		SchedulerHandlers schedulerHandlers = appConfig.getSchedulerHandlers();

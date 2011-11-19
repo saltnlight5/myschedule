@@ -133,9 +133,11 @@ public class AppConfig extends PropsConfig implements Initable {
 	
 	@Override
 	public void destroy() {
-		// Ensure all services get stop and destroy
-		serviceContainer.stop();
-		serviceContainer.destroy();
+		if (serviceContainer != null) {
+			// Ensure all services get stop and destroy
+			serviceContainer.stop();
+			serviceContainer.destroy();
+		}
 	}
 	
 	@Override
@@ -167,8 +169,8 @@ public class AppConfig extends PropsConfig implements Initable {
 		ctx.setAttribute("contextPath", contextPath);
 		logger.info("Set webapp attribute contextPath=" + ctx.getAttribute("contextPath"));
 
-		String mainServletName = getConfig("myschedule.web.mainServletName", DEFAULT_MAIN_SERVLET_NAME);
-		ctx.setAttribute("mainPath", contextPath + mainServletName);
+		String mainServletPathName = getConfig("myschedule.web.mainServletPathName", DEFAULT_MAIN_SERVLET_NAME);
+		ctx.setAttribute("mainPath", contextPath + mainServletPathName);
 		logger.info("Set webapp attribute mainPath=" + ctx.getAttribute("mainPath"));
 
 		String viewsDirectory = getConfig("myschedule.web.viewsDirectory", DEFAULT_VIEW_DIRECTORY);
