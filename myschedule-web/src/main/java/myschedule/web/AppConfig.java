@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class AppConfig implements Initable {
+public class AppConfig extends PropsConfig implements Initable {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 	
@@ -34,6 +34,8 @@ public class AppConfig implements Initable {
 	private static AppConfig instance;
 	
 	private AppConfig() {
+		setConfigFileKey("myschedule.config");
+		setConfigFileDefaultName("classpath:myschedule/myschedule-config.properties");
 	}
 	
 	synchronized public static AppConfig getInstance() {
@@ -68,15 +70,25 @@ public class AppConfig implements Initable {
 	
 	@Override
 	public void init() {
-		serviceContainer = new ServiceContainer();
-		
+		// Initialize properties config
+		initConfig();
+
+		serviceContainer = new ServiceContainer();		
 		resourceLoader = new ResourceLoader();
 		
-		String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
-		FileConfigStore fileConfigStore = new FileConfigStore();
-		fileConfigStore.setStoreDir(new File(myScheduleDir));
-		serviceContainer.addService(fileConfigStore);
-		configStore = fileConfigStore;
+		Class<?> configStoreCls = getConfigClass("myschedule.configStore.class", "myschedule.service.FileConfigStore");
+		ConfigStore configStore = newInstance(configStoreCls);
+		if (configStore instanceof FileConfigStore) {
+			String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
+			myScheduleDir = getConfig("myschedule.configs.directory", myScheduleDir);
+			File configDir = new File(myScheduleDir);
+			logger.info("FileConfigStore directory set to: {}", configDir);
+			
+			FileConfigStore fileConfigStore = (FileConfigStore)configStore;
+			fileConfigStore.setStoreDir(configDir);
+			serviceContainer.addService(fileConfigStore);
+		}
+		logger.info("ConfigStore set to: {}", configStore);
 		
 		schedulerContainer = new SchedulerContainer();
 		schedulerContainer.setConfigStore(configStore);
@@ -104,6 +116,21 @@ public class AppConfig implements Initable {
 		serviceContainer.start();
 	}
 	
+	private <T> T newInstance(Class<?> cls) {
+		Object obj;
+		try {
+			obj = cls.newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+		
+		@SuppressWarnings("unchecked")
+		T result = (T)obj;
+		return result;
+	}
+	
 	@Override
 	public void destroy() {
 		// Ensure all services get stop and destroy
@@ -119,8 +146,8 @@ public class AppConfig implements Initable {
 	// Web App Config
 	// ==============
 	public static final String DEFAULT_THEME_NAME = "smoothness";
-	public static final String MAIN_PATH = "/main";
-	public static final String VIEWS_PATH = "/WEB-INF/jsp/main";
+	public static final String DEFAULT_MAIN_SERVLET_NAME = "/main";
+	public static final String DEFAULT_VIEW_DIRECTORY = "/WEB-INF/jsp/main";
 	
 	private static final String MY_SCHEDULE_VERSION_RES_NAME = "META-INF/maven/myschedule/myschedule-quartz-extra/pom.properties";
 	private static final String QUARTZ_VERSION_RES_NAME = "META-INF/maven/org.quartz-scheduler/quartz/pom.properties";
@@ -132,22 +159,25 @@ public class AppConfig implements Initable {
 		String quartzVersion = getQuartzVersion();
 		
 		ctx.setAttribute("myscheduleVersion", myscheduleVersion);
-		logger.info("Set attribute myscheduleVersion=" + ctx.getAttribute("myscheduleVersion"));
+		logger.info("Set webapp attribute myscheduleVersion=" + ctx.getAttribute("myscheduleVersion"));
 		
 		ctx.setAttribute("quartzVersion", quartzVersion);
-		logger.info("Set attribute quartzVersion=" + ctx.getAttribute("quartzVersion"));
+		logger.info("Set webapp attribute quartzVersion=" + ctx.getAttribute("quartzVersion"));
 
 		ctx.setAttribute("contextPath", contextPath);
-		logger.info("Set attribute contextPath=" + ctx.getAttribute("contextPath"));
+		logger.info("Set webapp attribute contextPath=" + ctx.getAttribute("contextPath"));
+
+		String mainServletName = getConfig("myschedule.web.mainServletName", DEFAULT_MAIN_SERVLET_NAME);
+		ctx.setAttribute("mainPath", contextPath + mainServletName);
+		logger.info("Set webapp attribute mainPath=" + ctx.getAttribute("mainPath"));
+
+		String viewsDirectory = getConfig("myschedule.web.viewsDirectory", DEFAULT_VIEW_DIRECTORY);
+		ctx.setAttribute("viewsPath", contextPath + viewsDirectory);
+		logger.info("Set webapp attribute viewsPath=" + ctx.getAttribute("viewsPath"));
 		
-		ctx.setAttribute("mainPath", contextPath + MAIN_PATH);
-		logger.info("Set attribute actionPath=" + ctx.getAttribute("actionPath"));
-		
-		ctx.setAttribute("viewsPath", contextPath + VIEWS_PATH);
-		logger.info("Set attribute viewsPath=" + ctx.getAttribute("viewsPath"));
-		
-		ctx.setAttribute("themeName", DEFAULT_THEME_NAME);
-		logger.info("Set attribute themeName=" + ctx.getAttribute("themeName"));
+		String themeName = getConfig("myschedule.web.themeName", DEFAULT_THEME_NAME);
+		ctx.setAttribute("themeName", themeName);
+		logger.info("Set webapp attribute themeName=" + ctx.getAttribute("themeName"));
 	}
 	
 	private String getMyScheduleVersion() {
