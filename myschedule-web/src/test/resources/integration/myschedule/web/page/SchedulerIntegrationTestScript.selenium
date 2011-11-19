@@ -13,7 +13,7 @@
 </thead><tbody>
 <tr>
 	<td>open</td>
-	<td>/myschedule/main/dashboard/list</td>
+	<td>/myschedule-web/main/dashboard/list</td>
 	<td></td>
 </tr>
 <tr>
