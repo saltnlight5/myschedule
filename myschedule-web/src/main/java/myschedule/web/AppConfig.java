@@ -98,7 +98,9 @@ public class AppConfig extends PropsConfig implements Initable {
 		dashboardHandler.setSchedulerContainer(schedulerContainer);
 		dashboardHandler.setResourceLoader(resourceLoader);
 
+		int defaultFireTimesCount = getConfigInt("myschedule.handlers.JobHandler.defaultFireTimesCount", 20);
 		jobHandlers = new JobHandlers();
+		jobHandlers.setDefaultFireTimesCount(defaultFireTimesCount);
 		jobHandlers.setSchedulerContainer(schedulerContainer);
 		
 		schedulerHandlers = new SchedulerHandlers();

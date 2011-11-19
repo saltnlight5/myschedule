@@ -113,7 +113,7 @@ $(document).ready(function() {
 	<c:set var="trigger" value="${ jobWithTrigger.trigger }" />
 	<tr>
 		<td><a href="${ mainPath }/job/job-detail?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">${ trigger.jobKey }</a></td>
-		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }&fireTimesCount=20">${ trigger.key }</a></td>
+		<td><a href="${ mainPath }/job/trigger-detail?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }&fireTimesCount=${ data.fireTimesCount }">${ trigger.key }</a></td>
 		<td>${ triggerScheduleDesc }</td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="MM/dd/yy HH:mm:ss"/></td>
 		<td class="action">

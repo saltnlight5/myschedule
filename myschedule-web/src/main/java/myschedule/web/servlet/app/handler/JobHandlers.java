@@ -43,6 +43,8 @@ public class JobHandlers {
 	
 	@Setter
 	private SchedulerContainer schedulerContainer;
+	@Setter
+	private int defaultFireTimesCount;
 	
 	@Getter
 	private ActionHandler pauseTriggerHandler = new UrlRequestActionHandler() {
@@ -120,7 +122,9 @@ public class JobHandlers {
 			Collections.sort(jobWithTriggerList);
 			
 			viewData.addData("data", 
-					ViewData.mkMap("jobWithTriggerList", jobWithTriggerList, "scheduler", st));
+					ViewData.mkMap("jobWithTriggerList", jobWithTriggerList, 
+							"scheduler", st, 
+							"fireTimesCount", defaultFireTimesCount));
 		}
 	};
 	
@@ -340,7 +344,7 @@ public class JobHandlers {
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			String triggerName = viewData.findData("triggerName");
 			String triggerGroup = viewData.findData("triggerGroup");
-			int fireTimesCount = Integer.parseInt(viewData.findData("fireTimesCount", "20"));
+			int fireTimesCount = Integer.parseInt(viewData.findData("fireTimesCount", "" + defaultFireTimesCount));
 			SchedulerTemplate st = schedulerService.getScheduler();
 			Trigger trigger = st.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
 
