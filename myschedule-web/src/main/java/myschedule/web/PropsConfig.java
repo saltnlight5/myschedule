@@ -12,30 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** 
- * A base class to load configuration set. This class will load a Properties file. The file can be specify either
- * through a constructor, or through Java System Properties key {@link #configFileKey}.
- * 
- * <p>User must call {@link #initConfig()} before using the config properties!
- * 
- * <p>Example on command line usage:
- * <pre><code>
- * $ java -Dconfig=classpath:myapplication/config.properties myapp.Main
- * 
- * Or
- * 
- * $ java -Dconfig=file:///myapplication/config.properties myapp.Main
- * </code></pre>
- * 
- * <p>Or you can subclass and use it like this:
- * <pre><code>
- * public class MyDbConfig extends PropsConfig {
- *   protected void initConfig() {
- *     config = new Properties();
- *     loadConfigPropertiesFromDb(config); // You have to implements this method.
- *     expandVariables(); // Auto expand any ${variable}.
- *   }
- * }
- * </code></pre>
+ * A configuration class that backed by Java Properties. You may use multiple ways to add configuration values into
+ * this class, and each time you add properties, it will auto check to expand any <code>${variable}</code> using 
+ * existing System Properties and what's already loaded as lookup values.
  * 
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
@@ -43,74 +22,82 @@ import org.slf4j.LoggerFactory;
 public class PropsConfig {
 	private static final Logger logger = LoggerFactory.getLogger(PropsConfig.class);
 	private static final String CLASSPATH_PREFIX = "classpath:";
-	private String configFileKey = "config";
-	private String configFileDefaultName = "config.properties";
-	private String configFile;
 	private Properties config;
 	
 	public PropsConfig() {
+		config = new Properties();
 	}
 	
 	public PropsConfig(String configFile) {
-		this.configFile = configFile;
+		config = new Properties();
+		addConfig(configFile);
 	}
 	
-	public void setConfig(Properties config) {
-		this.config = config;
-	}
-	public void setConfigFile(String configFile) {
-		this.configFile = configFile;
-	}
-	public void setConfigFileKey(String configFileKey) {
-		this.configFileKey = configFileKey;
-	}
-	public void setConfigFileDefaultName(String configFileDefaultName) {
-		this.configFileDefaultName = configFileDefaultName;
-	}
-
 	// ====================
 	// Config value getters
 	// ====================
 	public String getConfig(String key) {
+		ensureKeyExists(key);
 		return config.getProperty(key);
 	}
 	public String getConfig(String key, String def) {
 		return config.getProperty(key, def);
+	}
+	
+	public int getConfigInt(String key) {
+		ensureKeyExists(key);
+		String val = getConfig(key);
+		int ret = Integer.parseInt(val);
+		return ret;
 	}
 	public int getConfigInt(String key, int def) {
 		String val = getConfig(key, "" + def);
 		int ret = Integer.parseInt(val);
 		return ret;
 	}
+
+	public double getConfigDouble(String key) {
+		ensureKeyExists(key);
+		String val = getConfig(key);
+		double ret = Double.parseDouble(val);
+		return ret;
+	}	
 	public double getConfigDouble(String key, double def) {
 		String val = getConfig(key, "" + def);
 		double ret = Double.parseDouble(val);
 		return ret;
 	}
-	
+	public Class<?> getConfigClass(String key) {
+		ensureKeyExists(key);
+		String val = getConfig(key);
+		return toClass(val);
+	}
 	public Class<?> getConfigClass(String key, String def) {
 		String val = getConfig(key, def);
-		try {
-			return Class.forName(val);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+		return toClass(val);
 	}
-		
-	protected void initConfig() {
-		// Do nothing if config is already loaded.
-		if (config != null) {
-			return;
-		}
-		
-		// If user didn't set configFile, then use Java System Properties key=value to file configFile name.
-		if (configFile == null) {
-			configFile = System.getProperty(configFileKey, configFileDefaultName);
-		}
-		logger.debug("Initializing configuration from {}.", configFile);
 
-		InputStream inStream = null;
-		
+	// ========================
+	// Add Configuration Values
+	// ========================
+	/**
+	 * Add a direct Properties as configuration values.
+	 * @param newConfig
+	 */
+	public void addConfig(Properties newConfig) {
+		logger.debug("Adding configuration from direct properties: {}.", newConfig);
+		Properties props = expandVariables(newConfig, config);
+		config.putAll(props);
+	}
+	
+	/**
+	 * Add any file configuration. It will support any URL and 'classpath:' protocol as well.
+	 * 
+	 * @param configFile - a file or resource name to load Properties as configuration values.
+	 */
+	public void addConfig(String configFile) {
+		logger.debug("Adding configuration from URL: {}.", configFile);
+		InputStream inStream = null;		
 		if (configFile.startsWith(CLASSPATH_PREFIX)) {
 			// If configFile is prefix with 'classpath:' then load it as jar resource
 			String resName = configFile.substring(CLASSPATH_PREFIX.length());
@@ -132,9 +119,10 @@ public class PropsConfig {
 		}
 		
 		// Load config from inStream.
+		Properties props = null;
 		try {
-			config = new Properties();
-			config.load(inStream);
+			props = new Properties();
+			props.load(inStream);
 			logger.info("Configuration loaded successfully from {}.", configFile);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
@@ -146,21 +134,62 @@ public class PropsConfig {
 			}
 		}
 		
-		expandVariables();
+		// Expand variables and then add to config store.
+		props = expandVariables(props, config);
+		config.putAll(props);
 	}
 	
-	/** Auto expand any ${variable}. */
-	protected void expandVariables() {
-		Properties configCopy = new Properties(config);
-		configCopy.putAll(System.getProperties());
-		StrSubstitutor substitutor = new StrSubstitutor(configCopy);
-		for (String name : config.stringPropertyNames()) {
-			String val = config.getProperty(name);
+	/**
+	 * Check to see if Java System Properties exists with a key, and then load it as URL or 'classpath:' protocol
+	 * configuration values.
+	 * 
+	 * @param configFileKey
+	 */
+	public void addConfigBySysProps(String configFileKey) {
+		String configFile = System.getProperty(configFileKey);
+		if (configFile != null) {
+			addConfig(configFile);
+		}
+	}
+	
+	/** 
+	 * Auto expand any ${variable} in expandProps using a lookupProps for existing variable definitions. This method
+	 * will automatically search the System Properties space for lookup as well. 
+	 */
+	protected Properties expandVariables(Properties props, Properties lookupProps) {
+		Properties expandedProps = new Properties();
+		expandedProps.putAll(props);
+		
+		Properties lookupPropsCopy = new Properties();
+		lookupPropsCopy.putAll(lookupProps);
+		lookupPropsCopy.putAll(System.getProperties());
+		
+		StrSubstitutor substitutor = new StrSubstitutor(lookupPropsCopy);
+		for (String name : expandedProps.stringPropertyNames()) {
+			String val = expandedProps.getProperty(name);
 			String newVal = substitutor.replace(val);
 			if (!newVal.equals(val)) {
-				config.put(name,  newVal);
-				logger.trace("Config {} has new value: {}", name, newVal);
+				expandedProps.put(name,  newVal);
+				logger.debug("Props {} has variable substituted with new value: {}", name, newVal);
 			}
+		}
+		return expandedProps;
+	}
+
+	// ====================
+	// Supporting functions
+	// ====================
+	private void ensureKeyExists(String key) {
+		if (!config.containsKey(key)) {
+			throw new IllegalArgumentException("Config key not found: " + key);
+		}		
+	}
+	
+	private Class<?> toClass(String className) {
+		try {
+			return Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	

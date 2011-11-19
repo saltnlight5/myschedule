@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AppConfig extends PropsConfig implements Initable {
-	
+	private static final String CONFIG_FILE_KEY = "myschedule.config";
 	private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 	
 	// This class singleton instance access
@@ -34,8 +34,7 @@ public class AppConfig extends PropsConfig implements Initable {
 	private static AppConfig instance;
 	
 	private AppConfig() {
-		setConfigFileKey("myschedule.config");
-		setConfigFileDefaultName("classpath:myschedule/myschedule-config.properties");
+		super("classpath:myschedule/myschedule-config.default.properties");
 	}
 	
 	synchronized public static AppConfig getInstance() {
@@ -70,18 +69,17 @@ public class AppConfig extends PropsConfig implements Initable {
 	
 	@Override
 	public void init() {
-		// Initialize properties config
-		initConfig();
+		// Let user add more config if needed to.
+		addConfigBySysProps(CONFIG_FILE_KEY);
 
 		serviceContainer = new ServiceContainer();		
 		resourceLoader = new ResourceLoader();
 		
-		Class<?> configStoreCls = getConfigClass("myschedule.configStore.class", "myschedule.service.FileConfigStore");
+		Class<?> configStoreCls = getConfigClass("myschedule.configStore.class");
 		ConfigStore configStore = newInstance(configStoreCls);
 		if (configStore instanceof FileConfigStore) {
-			String myScheduleDir = System.getProperty("user.home") + "/myschedule2/configs";
-			myScheduleDir = getConfig("myschedule.configStore.FileConfigStore.directory", myScheduleDir);
-			File configDir = new File(myScheduleDir);
+			String dir = getConfig("myschedule.configStore.FileConfigStore.directory");
+			File configDir = new File(dir);
 			logger.info("FileConfigStore directory set to: {}", configDir);
 			
 			FileConfigStore fileConfigStore = (FileConfigStore)configStore;
@@ -98,7 +96,7 @@ public class AppConfig extends PropsConfig implements Initable {
 		dashboardHandler.setSchedulerContainer(schedulerContainer);
 		dashboardHandler.setResourceLoader(resourceLoader);
 
-		int defaultFireTimesCount = getConfigInt("myschedule.handlers.JobHandler.defaultFireTimesCount", 20);
+		int defaultFireTimesCount = getConfigInt("myschedule.handlers.JobHandler.defaultFireTimesCount");
 		jobHandlers = new JobHandlers();
 		jobHandlers.setDefaultFireTimesCount(defaultFireTimesCount);
 		jobHandlers.setSchedulerContainer(schedulerContainer);
@@ -148,11 +146,7 @@ public class AppConfig extends PropsConfig implements Initable {
 	}
 	
 	// Web App Config
-	// ==============
-	public static final String DEFAULT_THEME_NAME = "smoothness";
-	public static final String DEFAULT_MAIN_SERVLET_NAME = "/main";
-	public static final String DEFAULT_VIEW_DIRECTORY = "/WEB-INF/jsp/main";
-	
+	// ==============	
 	private static final String MY_SCHEDULE_VERSION_RES_NAME = "META-INF/maven/myschedule/myschedule-quartz-extra/pom.properties";
 	private static final String QUARTZ_VERSION_RES_NAME = "META-INF/maven/org.quartz-scheduler/quartz/pom.properties";
 	
@@ -179,17 +173,17 @@ public class AppConfig extends PropsConfig implements Initable {
 		ctx.setAttribute("viewsPath", contextPath + viewsDirectory);
 		logger.info("Set webapp attribute viewsPath=" + ctx.getAttribute("viewsPath"));
 		
-		String themeName = getConfig("myschedule.web.themeName", DEFAULT_THEME_NAME);
+		String themeName = getConfig("myschedule.web.themeName");
 		ctx.setAttribute("themeName", themeName);
 		logger.info("Set webapp attribute themeName=" + ctx.getAttribute("themeName"));
 	}
 	
 	public String getMainServletPathName() {
-		return getConfig("myschedule.web.mainServletPathName", DEFAULT_MAIN_SERVLET_NAME);
+		return getConfig("myschedule.web.mainServletPathName");
 	}
 	
 	public String getViewsDirectory() {
-		return getConfig("myschedule.web.viewsDirectory", DEFAULT_VIEW_DIRECTORY);
+		return getConfig("myschedule.web.viewsDirectory");
 	}
 		
 	private String getMyScheduleVersion() {
