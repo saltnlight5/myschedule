@@ -25,7 +25,7 @@
 			<groupId>myschedule</groupId>
 			<artifactId>myschedule-quartz-extra</artifactId>
 		</dependency>
-		
+
 		<!-- Apache Commons -->
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -65,7 +65,7 @@
 			<version>1.1.2</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<!-- HtmlUnit test lib -->
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
@@ -128,4 +128,17 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>apache.snapshots</id>
+			<name>Apache Snapshots</name>
+			<url>http://repository.apache.org/content/groups/snapshots-group/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
