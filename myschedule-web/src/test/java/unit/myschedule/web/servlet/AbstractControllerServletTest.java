@@ -98,7 +98,6 @@ public class AbstractControllerServletTest {
 		main.destroy();
 		verify(dispatcher).forward(req, resp);
 	}
-
 	
 	@Test
 	public void testCustomViewFilename() throws Exception {
@@ -115,7 +114,7 @@ public class AbstractControllerServletTest {
 		ServletConfig config = mock(ServletConfig.class);
 		
 		MyServlet main = new MyServlet("/myhandler/myaction");
-		main.setViewFileNamePrefix("/WEB-INF/jsp2");
+		main.setViewFileNamePrefix("/WEB-INF/jsp2/main");
 		main.setViewFileNameSuffix(".jspx");
 		main.init(config);
 		main.service(req, resp);
@@ -185,6 +184,7 @@ public class AbstractControllerServletTest {
 		private String viewName;
 		public MyServlet(String viewName) {
 			this.viewName = viewName;
+			setServletPathName("/main");
 		}
 		
 		@Override

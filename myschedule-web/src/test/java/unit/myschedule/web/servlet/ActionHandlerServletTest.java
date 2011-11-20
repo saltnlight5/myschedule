@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import myschedule.web.servlet.ActionFilter;
@@ -232,6 +233,13 @@ public class ActionHandlerServletTest {
 			
 			addActionFilter("/test", testFilter);
 			addActionFilter("/protected/stuff", testFilter2);
+		}
+		
+		@Override
+		public ServletContext getServletContext() {
+			ServletContext ctx = mock(ServletContext.class);
+			when(ctx.getContextPath()).thenReturn("/");
+			return ctx;
 		}
 	}
 	
