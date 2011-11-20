@@ -9,5 +9,6 @@ myschedule-web/.settings/*
 myschedule-web/.project
 myschedule-web/.classpath
 
-# We want to ignore this so when packaged, user should not get a default config file.
-myschedule-web\src\main\resources\log4j.properties
+# Ignore GIT repository files (use for Heroku deployment.)
+.git
+.gitignore
