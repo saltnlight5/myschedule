@@ -231,9 +231,11 @@
 		<profile>
 			<id>heroku</id>
 			<activation>
-				<property>
-					<name>DATABASE_URL</name>
-				</property>
+				<os>
+					<name>Linux</name>
+					<arch>amd64</arch>
+					<version>2.6.32-316-ec2</version>
+				</os>
 			</activation>
 			<dependencies>
 				<!-- SLF4j impl -->
