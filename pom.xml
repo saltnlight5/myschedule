@@ -231,8 +231,39 @@
 		<profile>
 			<id>heroku</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>DATABASE_URL</name>
+				</property>
 			</activation>
+			<dependencies>
+				<!-- SLF4j impl -->
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+					<version>${slf4j.version}</version>
+				</dependency>
+				
+				<!-- Groovy Scripting Engine -->
+				<dependency>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy</artifactId>
+					<version>1.8.4</version>
+				</dependency>				
+
+				<!-- JRuby Scripting Engine -->
+				<dependency>
+				    <groupId>org.jruby</groupId>
+				    <artifactId>jruby</artifactId>
+				    <version>1.6.5</version>
+				</dependency>
+				
+				<!-- PostGres Database Driver -->
+				<dependency>
+					<groupId>postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<version>9.0-801.jdbc4</version>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
