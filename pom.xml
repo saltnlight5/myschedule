@@ -233,6 +233,7 @@
 			<activation>
 				<property>
 					<name>DATABASE_URL</name>
+					<name>PORT</name>
 				</property>
 			</activation>
 			<dependencies>
