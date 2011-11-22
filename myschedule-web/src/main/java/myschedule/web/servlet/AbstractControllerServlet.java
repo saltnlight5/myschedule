@@ -58,9 +58,15 @@ abstract public class AbstractControllerServlet extends HttpServlet {
 	public void setViewFileNamePrefix(String viewFileNamePrefix) {
 		this.viewFileNamePrefix = viewFileNamePrefix;
 	}
+	public String getViewFileNamePrefix() {
+		return viewFileNamePrefix;
+	}
 	
 	public void setViewFileNameSuffix(String viewFileNameSuffix) {
 		this.viewFileNameSuffix = viewFileNameSuffix;
+	}
+	public String getViewFileNameSuffix() {
+		return viewFileNameSuffix;
 	}
 	
 	@Override
