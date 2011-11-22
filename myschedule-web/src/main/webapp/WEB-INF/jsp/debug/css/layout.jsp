@@ -1,9 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-	<script src="${ contextPath }/js/jquery-1.6.1.js"></script>
-	<link rel="stylesheet" type="text/css" href="${ debugServletPath }/debug-css" />
-	<title>MySchedule - Debug</title>
+	<script src="${ contextPath }/js/jquery-1.7.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="${ debugServletPath }/debug-css"/>
+	<title>Debug</title>
 </head>
 <body>
 <div>
