@@ -5,12 +5,12 @@
 	<title>Debug</title>
 </head>
 <body>
-<div>
-	<ul id="menu">
+<div id="menu">
+	<ul>
 		<li><a href="${ debugServletPath }">Debug Home</a></li>
 	</ul>
 </div>
-<div>
+<div class="dir-listing">
 	<code>${ actionDir }/index</code>
 	<ul>
 	<c:forEach items="${ dirNames }" var="name">
