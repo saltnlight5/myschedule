@@ -42,7 +42,7 @@ public class DebugServlet extends ActionHandlerServlet {
 			String viewName = viewData.getViewName();
 			if (viewName.endsWith("/index")) {
 				// Get a list of dir content of where the viewName path is.
-				String actionDir = viewName.substring(0, viewName.length() - 5);
+				String actionDir = viewName.substring(0, viewName.length() - 6);
 				String dirPrefix = getViewFileNamePrefix();
 				File dir = new File(getServletContext().getRealPath(dirPrefix + actionDir));
 				File[] files = dir.listFiles();
