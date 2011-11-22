@@ -23,11 +23,11 @@ import myschedule.web.servlet.ViewData;
 public class DebugServlet extends ActionHandlerServlet {
 	
 	private static final long serialVersionUID = 1L;
-	private static final String ACTION_PATH_PREFIX = "/debug-cfb5d8df-fc73-4a23-b8a4-080b29d5f022";
+	private static final String SERVLET_PATH_NAME = "/debug-cfb5d8df-fc73-4a23-b8a4-080b29d5f022";
 	
 	@Override
 	public void init() {
-		setServletPathName(ACTION_PATH_PREFIX);
+		setServletPathName(SERVLET_PATH_NAME);
 		setViewFileNamePrefix("/WEB-INF/jsp/debug");
 		
 		addActionHandler("/", debugHandler);
@@ -37,15 +37,21 @@ public class DebugServlet extends ActionHandlerServlet {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String contextPath = viewData.getRequest().getContextPath();
-			viewData.addData("debugActionPath", contextPath + ACTION_PATH_PREFIX);
+			viewData.addData("debugServletPath", contextPath + SERVLET_PATH_NAME);
 			
-			String viewName = viewData.getViewName();
-			if (viewName.endsWith("/index")) {
+			String actionPathName = viewData.getViewName();
+			String debugActionPath = contextPath + SERVLET_PATH_NAME + actionPathName;	
+			viewData.addData("debugActionPath", debugActionPath);
+			
+			if (actionPathName.endsWith("/index")) {
 				// Get a list of dir content of where the viewName path is.
-				String actionDir = viewName.substring(0, viewName.length() - 6);
-				String dirPrefix = getViewFileNamePrefix();
-				File dir = new File(getServletContext().getRealPath(dirPrefix + actionDir));
+				String actionDirPrefix = getViewFileNamePrefix();
+				String actionDir = actionPathName.substring(0, actionPathName.length() - 6); // Remove '/index' part.
+				logger.debug("List actionDir: {}", actionDir);
+				File dir = new File(getServletContext().getRealPath(actionDirPrefix + actionDir));
+				logger.debug("List dir: {}", dir);
 				File[] files = dir.listFiles();
+				logger.debug("List files count: {}", files.length);
 				Arrays.sort(files);
 				List<String> fileNames = new ArrayList<String>();
 				List<String> dirNames = new ArrayList<String>();
@@ -64,14 +70,14 @@ public class DebugServlet extends ActionHandlerServlet {
 				viewData.addData("actionDir", actionDir);
 				viewData.addData("fileNames", fileNames);
 				viewData.addData("dirNames", dirNames);
-			} else if ("/show-sysprops".equals(viewName)) {
+			} else if ("/show-sysprops".equals(actionPathName)) {
 				// Get Java sys props
 				Map<String, String> sysProps = new TreeMap<String, String>();
 				for (String name : System.getProperties().stringPropertyNames()) {
 					sysProps.put(name, System.getProperty(name));
 				}
 				viewData.addData("sysProps", sysProps);
-			} else if ("/show-env".equals(viewName)) {
+			} else if ("/show-env".equals(actionPathName)) {
 				// Get sys env vars
 				Map<String, String> sysProps = new TreeMap<String, String>();
 				for (String name : System.getenv().keySet()) {
