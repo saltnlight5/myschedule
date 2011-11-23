@@ -7,10 +7,7 @@
 	
 	<script>
 $(document).ready(function() {
-	$("#click-me").button();
-	$("#click-me").click(function(){
-		$("#content h1").toggle();
-	});
+	$("#jquery-menu").menu();
 });
 	</script>
 	<style>
@@ -28,8 +25,15 @@ $(document).ready(function() {
 	</ul>
 </div>
 <div id="content">
-	<h1>A Test for JQueryUI</h1>
-	<a id="click-me" href="#">Click Me</a>
+
+	<!--  JQueryUI Menu -->
+	<ul id="jquery-menu">
+		<li><a href="${ debugServletPath }/jquery-ui/list?p=a">TestA</a></li>
+		<li><a href="${ debugServletPath }/jquery-ui/list?p=b">TestB</a></li>
+		<li><a href="${ debugServletPath }/jquery-ui/list?p=c">TestC</a></li>
+		<li><a href="${ debugServletPath }/jquery-ui/list?p=d">TestD</a></li>
+	</ul>
+	
 </div>
 <div id="footer">
 	<a href="http://jqueryui.com/docs/Theming/API">JQueryUI doc</a>

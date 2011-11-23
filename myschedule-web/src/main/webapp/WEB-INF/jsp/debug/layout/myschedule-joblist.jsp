@@ -8,7 +8,7 @@
 	<script>
 $(document).ready(function() {
 	// Styling menu link as button
-	$("#topmenu li a").button();
+	$("#topmenu").buttonset();
 	$("#submenu").tabs({
 		ajaxOptions: {
 			error: function( xhr, status, index, anchor ) {
@@ -42,12 +42,10 @@ $(document).ready(function() {
 	<span style="color: red;">MY</span><span style="color: black;">SCHEDULE</span>
 </div>
 <div id="topmenu" class="menu">
-	<ul>
-		<li><a href="${ debugServletPath }/layout/myschedule-joblist?m=1">Jobs</a></li>
-		<li><a href="${ debugServletPath }/layout/myschedule-joblist?m=2">Settings</a></li>
-		<li><a href="${ debugServletPath }/layout/myschedule-joblist?m=3">Scripting</a></li>
-		<li><a href="${ debugServletPath }/layout/myschedule-joblist?m=4">Dashboard</a></li>
-	</ul>
+	<a href="${ debugServletPath }/layout/myschedule-joblist?m=1">Jobs</a>
+	<a href="${ debugServletPath }/layout/myschedule-joblist?m=2">Settings</a>
+	<a href="${ debugServletPath }/layout/myschedule-joblist?m=3">Scripting</a>
+	<a href="${ debugServletPath }/layout/myschedule-joblist?m=4">Dashboard</a>
 </div>
 
 <div id="submenu" class="menu">
