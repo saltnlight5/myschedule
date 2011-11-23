@@ -18,6 +18,9 @@ $(document).ready(function() {
 });
 	</script>
 	<style>
+#menu {
+	padding: 10px, 10px, 10px, 10px;
+}
 #menu li {
 	display: inline;
 	list-style-type: none;
@@ -30,8 +33,8 @@ $(document).ready(function() {
 	<title>Debug</title>
 </head>
 <body>
-<div>
-	<ul id="menu">
+<div id="menu">
+	<ul>
 		<li><a href="${ debugServletPath }">Debug Home</a></li>
 		<li><a href="${ debugServletPath }/jquery-ui/index">JQueryUI</a></li>
 	</ul>
