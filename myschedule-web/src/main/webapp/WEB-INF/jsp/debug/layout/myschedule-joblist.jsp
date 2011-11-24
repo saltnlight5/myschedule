@@ -8,6 +8,7 @@
 	<link rel="stylesheet" type="text/css" href="${ contextPath }/themes/${ themeName }/jquery-breadcrumbs-r5.css" />
 	<script>
 $(document).ready(function() {
+	$("#breadcrumbs").breadcrumbs();
 	$("#menu").buttonset();
 	$("#tabs").tabs({
 		ajaxOptions: {
@@ -16,7 +17,6 @@ $(document).ready(function() {
 			}
 		}
 	});
-	$("#breadcrumbs").breadcrumbs();
 });
 	</script>
 	<style>	
@@ -30,7 +30,8 @@ $(document).ready(function() {
 #breadcrums-container a, #breadcrums-container a:link, #breadcrums-container a:visited { color: #555555; text-decoration: none; }
 #menu {	margin: 10px 0px 10px 0px; }
 #menu li { display: inline; list-style-type: none; }
-#footer { text-align: center}
+#footer { text-align: center; color: #555555; }
+#footer a, #footer a:link, #footer a:visited { color: #555555; text-decoration: none; }
 	</style>
 	<title>Debug</title>
 </head>
@@ -64,8 +65,9 @@ $(document).ready(function() {
 </div>
 </div> <!--  #pagewrap -->
 <div id="footer">
-	<a href="http://code.google.com/p/myschedule">myschedule-2.4.0-SNAPSHOT</a> with 
-	<a href="http://quartz-scheduler.org">quartz-2.1.0</a>
+	You are running <code><a href="http://code.google.com/p/myschedule">myschedule-2.4.0-SNAPSHOT</a></code> with  
+	<code><a href="http://quartz-scheduler.org">quartz-2.1.0</a></code> | by 
+	<a href="http://code.google.com/p/zemiandeng">Zemian Deng</a>
 </div>
 
 </body>
