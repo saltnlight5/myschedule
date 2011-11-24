@@ -2,6 +2,7 @@ package myschedule.web.servlet.app;
 
 import myschedule.web.AppConfig;
 import myschedule.web.servlet.ActionHandlerServlet;
+import myschedule.web.servlet.app.filter.BreadCrumbsFilter;
 import myschedule.web.servlet.app.filter.SessionDataFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
@@ -75,9 +76,11 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/scripting/get-script-eg", scriptingHandlers.getScriptExampleHandler());
 
         SessionDataFilter sessionDataFilter = appConfig.getSessionDataFilter();
-        addActionFilter("/job", sessionDataFilter);
-        addActionFilter("/scheduler", sessionDataFilter);
-        addActionFilter("/scripting", sessionDataFilter);
+        BreadCrumbsFilter breadCrumbsFilter = appConfig.getBreadCrumbsFilter();
+        
+        addActionFilter("/job", sessionDataFilter, breadCrumbsFilter);
+        addActionFilter("/scheduler", sessionDataFilter, breadCrumbsFilter);
+        addActionFilter("/scripting", sessionDataFilter, breadCrumbsFilter);
         addActionFilter("/dashboard/switch-scheduler", sessionDataFilter);
 	}	
 }

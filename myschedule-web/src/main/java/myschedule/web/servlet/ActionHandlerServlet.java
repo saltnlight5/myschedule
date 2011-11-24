@@ -1,6 +1,8 @@
 package myschedule.web.servlet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,7 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	private static final long serialVersionUID = 1L;
 	private Map<String, ActionHandler> actionHandlerMappings = new HashMap<String, ActionHandler>();
-	private Map<String, ActionFilter> actionFilterMappings = new HashMap<String, ActionFilter>();
+	private Map<String, List<ActionFilter>> actionFilterMappings = new HashMap<String, List<ActionFilter>>();
 		
 	/** Allow subclass to add URL action path to a handler. This should be called in init() method of subclass. */
 	protected void addActionHandler(String actionPath, ActionHandler handler) {
@@ -70,12 +72,24 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 		actionHandlerMappings.put(actionPath, handler);
 	}
 	
-	protected void addActionFilter(String actionPath, ActionFilter filter) {
+	protected void addActionFilter(String actionPath, ActionFilter ... filters) {
 		actionPath = trimActionPath(actionPath);
-		logger.info("Adding filter on action path starting with: {}", actionPath);
-		actionFilterMappings.put(actionPath, filter);
+		for (ActionFilter filter : filters) {
+			logger.info("Adding filter {} on action path starting with: {}", filter, actionPath);
+			addActionFilterToMap(actionPath, filter);
+		}
 	}
 	
+	private void addActionFilterToMap(String actionPath, ActionFilter filter) {
+		if (actionFilterMappings.containsKey(actionPath)) {
+			actionFilterMappings.get(actionPath).add(filter);
+			return;
+		}
+		List<ActionFilter> list = new ArrayList<ActionFilter>();
+		list.add(filter);
+		actionFilterMappings.put(actionPath, list);
+	}
+
 	/** Ensure action path does not end with '/', else remove it. */
 	private String trimActionPath(String actionPath) {
 		while (actionPath.endsWith("/")) {
@@ -97,20 +111,26 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 			throw new RuntimeException("Unable to find action handler for path: " + actionServletPath);
 		}
 		
-		ActionFilter filter = findActionFilter(actionPath, req);
-		if (filter != null) {
-			ViewData viewData = filter.beforeAction(actionPath, req, resp);
-			if (viewData != null) {
-				logger.debug("Filter has stopped the before action path: {}.", actionPath);
-				return viewData;
+		List<ActionFilter> filters = findActionFilters(actionPath, req);
+		if (filters != null) {
+			for (ActionFilter filter : filters) {
+				ViewData viewData = filter.beforeAction(actionPath, req, resp);
+				if (viewData != null) {
+					logger.debug("Filter has stopped the before action path: {}.", actionPath);
+					return viewData;
+				}
 			}
 		}
 		
 		ViewData viewData = handler.handleAction(actionPath, req, resp);
 		logger.trace("Handler result: {}", viewData);
 		
-		if (filter != null) {
-			filter.afterAction(viewData, actionPath, req, resp);
+		if (filters != null) {
+			// Run filter in reverse order in the list for post processing.
+			for (int i = filters.size() - 1; i >= 0; i--) {
+				ActionFilter filter = filters.get(i);
+				filter.afterAction(viewData, actionPath, req, resp);
+			}
 		}
 		return viewData;
 	}
@@ -145,18 +165,18 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	 * Find action filter by first exact match to actionPath, else if not found then any path that match from
 	 * the beginning.
 	 */
-	protected ActionFilter findActionFilter(String actionPath, HttpServletRequest req) {
-		ActionFilter filter = actionFilterMappings.get(actionPath);
-		if (filter == null) {
+	protected List<ActionFilter> findActionFilters(String actionPath, HttpServletRequest req) {
+		List<ActionFilter> filters = actionFilterMappings.get(actionPath);
+		if (filters == null) {
 			// Try to find by matching beginning of actionPath
 			for (String name : actionFilterMappings.keySet()) {
 				if (actionPath.startsWith(name)) {
-					filter = actionFilterMappings.get(name);
+					filters = actionFilterMappings.get(name);
 					break;
 				}
 			}
 		}
-		return filter;
+		return filters;
 	}
 
 }

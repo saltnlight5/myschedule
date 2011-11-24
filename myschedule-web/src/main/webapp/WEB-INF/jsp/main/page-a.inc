@@ -35,11 +35,9 @@
 	<ul id="breadcrumbs">
 	<li><a class="breadcrumb_e breadcrumb_icon_home" href="${ mainPath }"></a></li>
 	<li><a href="${ mainPath }/dashboard/list">Dashboard</a></li>
-	<%--
-	<c:if test="">
+	<c:if test="${ breadCrumbsScheduler }">
 	<li><a href="${ mainPath }/job/list">${ sessionData.currentSchedulerName }</a></li>
 	</c:if>
-	--%>
 	</ul>
 	</div>
 </div>

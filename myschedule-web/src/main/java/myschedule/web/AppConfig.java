@@ -11,6 +11,7 @@ import myschedule.service.Initable;
 import myschedule.service.ResourceLoader;
 import myschedule.service.SchedulerContainer;
 import myschedule.service.ServiceContainer;
+import myschedule.web.servlet.app.filter.BreadCrumbsFilter;
 import myschedule.web.servlet.app.filter.SessionDataFilter;
 import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
@@ -65,7 +66,9 @@ public class AppConfig extends PropsConfig implements Initable {
 	@Getter
 	private ScriptingHandlers scriptingHandlers;
     @Getter
-    protected SessionDataFilter sessionDataFilter;
+    private SessionDataFilter sessionDataFilter;
+    @Getter
+    private BreadCrumbsFilter breadCrumbsFilter;
 	
 	@Override
 	public void init() {
@@ -110,6 +113,8 @@ public class AppConfig extends PropsConfig implements Initable {
 		
 		sessionDataFilter = new SessionDataFilter();
         sessionDataFilter.setSchedulerContainer(schedulerContainer);
+        
+        breadCrumbsFilter = new BreadCrumbsFilter();
 		
 		// Ensure all services get init and started.
 		serviceContainer.init();
