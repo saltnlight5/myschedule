@@ -48,7 +48,7 @@ $(document).ready(function() {
 	</div>
 </div>
 <div id="menu">
-	<a href="${ debugServletPath }/layout/myschedule-joblist?m=1">Jobs</a>
+	<a class="ui-state-highlight" href="${ debugServletPath }/layout/myschedule-joblist?m=1">Jobs</a>
 	<a href="${ debugServletPath }/layout/myschedule-joblist?m=2">Settings</a>
 	<a href="${ debugServletPath }/layout/myschedule-joblist?m=3">Scripting</a>
 </div>
