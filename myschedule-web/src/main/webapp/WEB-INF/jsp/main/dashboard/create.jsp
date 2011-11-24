@@ -1,6 +1,4 @@
 <%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
-<%@ include file="/WEB-INF/jsp/main/dashboard/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/dashboard/submenu.inc" %>
 <style>
 #create-scheduler-service {
 	width: 100%;

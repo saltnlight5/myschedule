@@ -12,4 +12,5 @@
 </c:if>
 
 </div><!-- page-container -->
-<%@ include file="/WEB-INF/jsp/main/footer.inc" %>
+
+<%@ include file="/WEB-INF/jsp/main/page-b.inc" %>

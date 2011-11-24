@@ -1,6 +1,4 @@
 <%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
-<%@ include file="/WEB-INF/jsp/main/dashboard/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/dashboard/submenu.inc" %>
 <script>
 $(document).ready(function() {
 	// Use dataTables plugin
@@ -54,6 +52,9 @@ $(document).ready(function() {
 		});
 		return false;
 	});
+	
+	// UI button
+	$("#menu").buttonset();
 });
 </script>
 
@@ -69,7 +70,11 @@ $(document).ready(function() {
 	</p>
 </div>
 
-<h1>List of All Schedulers</h1>
+<div id="menu">
+	<a href="${ mainPath }/dashboard/create">New Scheduler</a>
+</div>
+
+<h1 class="datatable-title">Managing Quartz Schedulers</h1>
 <table id="scheduler-list" class="display">
 	<thead>
 		<tr>

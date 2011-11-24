@@ -29,13 +29,12 @@ $(document).ready(function() {
 #breadcrums-container { position:absolute; left: 220px; bottom: 5px; }
 #breadcrums-container a, #breadcrums-container a:link, #breadcrums-container a:visited { color: #555555; text-decoration: none; }
 #menu {	margin: 10px 0px 10px 0px; }
-#menu li { display: inline; list-style-type: none; }
 #footer { text-align: center; color: #555555; }
 #footer a, #footer a:link, #footer a:visited { color: #555555; text-decoration: none; }
 	</style>
 	<title>Debug</title>
 </head>
-<body class=".ui-helper-reset" style="margin: 0px; padding: 0px;">
+<body class="ui-helper-reset" style="margin: 0px; padding: 0px;">
 <div id="topline"></div>
 <div id="pagewrap">
 <div id="header">

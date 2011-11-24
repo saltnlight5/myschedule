@@ -1,6 +1,4 @@
 <%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
-<%@ include file="/WEB-INF/jsp/main/dashboard/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/dashboard/submenu.inc" %>
 <h1>Modify Scheduler Config</h1>
 <div class="success">
 The scheduler service 
