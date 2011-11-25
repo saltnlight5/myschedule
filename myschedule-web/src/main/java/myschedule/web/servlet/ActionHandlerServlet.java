@@ -60,14 +60,11 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	protected void addActionHandler(String actionPath, ActionHandler handler) {
 		actionPath = trimActionPath(actionPath);
 		
-		// We will try our best to print most useful mapping path, but it will depend where subclass
-		// is adding the handler. For example, if they add it in init(), then all these are good, but 
-		// if it's added in other methods, then servlet context will not be available.
 		if (logger.isInfoEnabled()) {
 			String ctxName = getServletContext().getContextPath();
 			String fullActionPath = ctxName + getServletPathName();
 			fullActionPath += actionPath;
-			logger.info("Path '{}' is mapped to action handler: {}", fullActionPath, handler);
+			logger.info("Adding handler {} on action path: {}", handler, fullActionPath);
 		}
 		actionHandlerMappings.put(actionPath, handler);
 	}
@@ -75,7 +72,7 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	protected void addActionFilter(String actionPath, ActionFilter ... filters) {
 		actionPath = trimActionPath(actionPath);
 		for (ActionFilter filter : filters) {
-			logger.info("Adding filter {} on action path starting with: {}", filter, actionPath);
+			logger.info("Adding filter {} on action path: {}", filter, actionPath);
 			addActionFilterToMap(actionPath, filter);
 		}
 	}
