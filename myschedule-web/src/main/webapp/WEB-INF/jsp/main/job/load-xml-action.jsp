@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
 <%@ include file="/WEB-INF/jsp/main/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/job/submenu.inc" %>
+<%@ include file="/WEB-INF/jsp/main/job/tabs.inc" %>
 
 <div id="page-container">
 <h1>Load Job Scheduling Data</h1>

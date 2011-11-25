@@ -79,9 +79,9 @@ public class JobHandlers {
 			viewData.setViewName("redirect:/job/list");
 		}
 	};
-	
+		
 	@Getter
-	private ActionHandler listHandler = new UrlRequestActionHandler() {
+	private ActionHandler listTriggerJobsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
@@ -365,9 +365,6 @@ public class JobHandlers {
 					ViewData.mkMap("triggerWrapper", triggerWrapper, "fireTimesCount", fireTimesCount));
 		}
 	};
-	
-	@Getter
-	private ActionHandler schedulerDownHandler = new UrlRequestActionHandler();
 	
 	private List<String> getTriggerFullNames(List<MutableTrigger> triggers) {
 		List<String> list = new ArrayList<String>();

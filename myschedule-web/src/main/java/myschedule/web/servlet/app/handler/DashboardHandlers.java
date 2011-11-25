@@ -32,26 +32,26 @@ public class DashboardHandlers {
 	private SchedulerContainer schedulerContainer;
 	@Setter
 	private ResourceLoader resourceLoader;
-
+	
 	@Getter
-	private ActionHandler indexHandler = new UrlRequestActionHandler() {
-		@Override
-		protected void handleViewData(ViewData viewData) {
-			String redirectName = null;
-			Set<String> configIds = schedulerContainer.getAllConfigIds();
-			if (configIds.size() == 0) {
-				redirectName = "/dashboard/create";
-			} else {
-				try {
-					redirectName = "/job/list";
-				} catch (RuntimeException e) {
-					// No scheduler service are initialized, so list them all
-					redirectName = "/dashboard/list";
-				}
-			}
-			viewData.setViewName("redirect:" + redirectName);
-		}
-	};
+    private ActionHandler landingHandler = new UrlRequestActionHandler() {
+            @Override
+            protected void handleViewData(ViewData viewData) {
+                    String redirectName = null;
+                    Set<String> configIds = schedulerContainer.getAllConfigIds();
+                    if (configIds.size() == 0) {
+                            redirectName = "/dashboard/index?selectedTab=create";
+                    } else {
+                            try {
+                                    redirectName = "/job/index";
+                            } catch (RuntimeException e) {
+                                    // No scheduler service are initialized, so list them all
+                                    redirectName = "/dashboard/index";
+                            }
+                    }
+                    viewData.setViewName("redirect:" + redirectName);
+            }
+    };
 
 	@Getter
 	private ActionHandler listHandler = new UrlRequestActionHandler() {
@@ -137,7 +137,7 @@ public class DashboardHandlers {
 			String configPropsText = viewData.findData("configPropsText");
 			// The container will auto init and start if needs to.
 			schedulerContainer.createScheduler(configPropsText);
-			viewData.setViewName("redirect:/dashboard/list");
+			viewData.setViewName("redirect:/dashboard/index");
 		}
 	};
 
@@ -165,7 +165,7 @@ public class DashboardHandlers {
 			} catch (QuartzRuntimeException e) {
 				logger.error("Failed to modify scheduler with configId " + configId, e);
 			}
-			viewData.setViewName("redirect:/dashboard/list");
+			viewData.setViewName("redirect:/dashboard/index");
 		}
 	};
 
@@ -179,7 +179,7 @@ public class DashboardHandlers {
 			} catch (QuartzRuntimeException e) {
 				logger.error("Failed to delete scheduler with configId " + configId, e);
 			}
-			viewData.setViewName("redirect:/dashboard/list");
+			viewData.setViewName("redirect:/dashboard/index");
 		}
 	};
 
@@ -197,7 +197,7 @@ public class DashboardHandlers {
 			} catch (QuartzRuntimeException e) {
 				logger.error("Failed to initialize scheduler with configId " + configId, e);
 			}
-			viewData.setViewName("redirect:/dashboard/list");
+			viewData.setViewName("redirect:/dashboard/index");
 		}
 	};
 
@@ -208,7 +208,7 @@ public class DashboardHandlers {
 			String configId = viewData.findData("configId");
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
 			schedulerService.shutdownScheduler();
-			viewData.setViewName("redirect:/dashboard/list");
+			viewData.setViewName("redirect:/dashboard/index");
 		}
 	};
 
@@ -226,9 +226,9 @@ public class DashboardHandlers {
 			
 			// Redirect to next view page.
 			if (schedulerService.isSchedulerInitialized()) {
-				viewData.setViewName("redirect:/job/list");
+				viewData.setViewName("redirect:/job/index");
 			} else {
-				viewData.setViewName("redirect:/scheduler/summary");
+				viewData.setViewName("redirect:/scheduler/index");
 			}
 		}
 	};

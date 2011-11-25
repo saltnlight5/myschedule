@@ -1,6 +1,5 @@
 <%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
 <%@ include file="/WEB-INF/jsp/main/menu.inc" %>
-
 <div class="page-container">
 <h1>Scheduler Scripting</h1>
 <div class="success">Your script has been run successfully.</div>

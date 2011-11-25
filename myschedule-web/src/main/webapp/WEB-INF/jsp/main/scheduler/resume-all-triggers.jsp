@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
 <%@ include file="/WEB-INF/jsp/main/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/scheduler/submenu.inc" %>
+<%@ include file="/WEB-INF/jsp/main/scheduler/tabs.inc" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <h1>Resumed All Triggers</h1>
 <div class="success">
 ${ fn:length(data.triggers) } triggers were resumed in this scheduler. 

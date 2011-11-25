@@ -1,6 +1,5 @@
 <%@page contentType="text/html" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -31,13 +30,5 @@
 
 <div id="header">
 	<div id="myschedule-logo"><span>MY</span><span>SCHEDULE</span></div>
-	<div id="breadcrums-container">
-	<ul id="breadcrumbs">
-	<li><a class="breadcrumb_e breadcrumb_icon_home" href="${ mainPath }"></a></li>
-	<li><a href="${ mainPath }/dashboard/list">Dashboard</a></li>
-	<c:if test="${ breadCrumbsScheduler }">
-	<li><a href="${ mainPath }/job/list">${ sessionData.currentSchedulerName }</a></li>
-	</c:if>
-	</ul>
-	</div>
+	<div id="breadcrums-container"><%@ include file="/WEB-INF/jsp/main/breadcrumbs.inc" %></div>
 </div>

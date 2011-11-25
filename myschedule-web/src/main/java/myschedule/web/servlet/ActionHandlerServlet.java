@@ -101,22 +101,22 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	@Override
 	protected ViewData process(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String actionPath = getActionPath(req);
-		actionPath = trimActionPath(actionPath);
-		logger.debug("Action path: {}", actionPath);
-		
+		actionPath = trimActionPath(actionPath);		
 		ActionHandler handler = findActionHandler(actionPath, req);
-		logger.debug("Action handler: {}", handler);
+		logger.debug("Processing path {} with handler: {}", actionPath, handler);
 		if (handler == null) {
 			String actionServletPath = req.getServletPath()  + actionPath;
 			throw new RuntimeException("Unable to find action handler for path: " + actionServletPath);
 		}
 		
 		List<ActionFilter> filters = findActionFilters(actionPath, req);
-		if (filters != null) {
+		if (filters.size() > 0) {
 			for (ActionFilter filter : filters) {
+				logger.debug("Processing path {} with filter {}.", actionPath, filter);
 				ViewData viewData = filter.beforeAction(actionPath, req, resp);
 				if (viewData != null) {
-					logger.debug("Filter has stopped the before action path: {}.", actionPath);
+					logger.debug("Filter has stopped the path {} processing with new viewName: .", 
+							actionPath, viewData.getViewName());
 					return viewData;
 				}
 			}
@@ -125,7 +125,7 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 		ViewData viewData = handler.handleAction(actionPath, req, resp);
 		logger.trace("Handler result: {}", viewData);
 		
-		if (filters != null) {
+		if (filters.size() > 0) {
 			// Run filter in reverse order in the list for post processing.
 			for (int i = filters.size() - 1; i >= 0; i--) {
 				ActionFilter filter = filters.get(i);
@@ -162,20 +162,23 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	}
 	
 	/** 
-	 * Find action filter by first exact match to actionPath, else if not found then any path that match from
-	 * the beginning.
+	 * Find all action filters by exact match to actionPath or any filter that has starts with actionPath.
 	 */
 	protected List<ActionFilter> findActionFilters(String actionPath, HttpServletRequest req) {
-		List<ActionFilter> filters = actionFilterMappings.get(actionPath);
-		if (filters == null) {
-			// Try to find by matching beginning of actionPath
-			for (String name : actionFilterMappings.keySet()) {
-				if (actionPath.startsWith(name)) {
-					filters = actionFilterMappings.get(name);
-					break;
-				}
+		List<ActionFilter> filters = new ArrayList<ActionFilter>();
+		
+		// Get exact match filters with actionPath
+		if (actionFilterMappings.containsKey(actionPath)) {
+			filters.addAll(actionFilterMappings.get(actionPath));
+		}
+		
+		// Get all filters that match starts with actionPath
+		for (String name : actionFilterMappings.keySet()) {
+			if (actionPath.startsWith(name)) {
+				filters.addAll(actionFilterMappings.get(name));
 			}
 		}
+		
 		return filters;
 	}
 

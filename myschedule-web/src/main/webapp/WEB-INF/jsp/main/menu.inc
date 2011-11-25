@@ -1,5 +1,11 @@
 <div id="menu">
-	<a class="ui-state-highlight" href="${ mainPath }/job/list">Jobs</a>
-	<a href="${ mainPath }/settings/summary">Settings</a>
-	<a href="${ mainPath }/scripting/run">Scripting</a>
+	<a href="${ mainPath }/job/list">Scheduler Jobs</a>
+	<a href="${ mainPath }/job/load-xml">Add Jobs</a>
+	<a href="${ mainPath }/scheduler/index">Settings</a>
+	<a href="${ mainPath }/scripting/run">Tools</a>
 </div>
+<script>
+$(document).ready(function() {
+	$("#menu").buttonset();
+});
+</script>

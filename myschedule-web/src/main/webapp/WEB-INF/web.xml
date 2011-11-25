@@ -30,7 +30,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DebugServlet</servlet-name>
-		<url-pattern>/debug-cfb5d8df-fc73-4a23-b8a4-080b29d5f022/*</url-pattern>
+		<url-pattern>/debug/*</url-pattern>
 	</servlet-mapping>
 		
 	<!-- Session timeout in minutes. 1440 mins = 24 hours. -->

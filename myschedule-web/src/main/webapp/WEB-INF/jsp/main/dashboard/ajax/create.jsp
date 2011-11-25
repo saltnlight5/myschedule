@@ -1,4 +1,5 @@
-<%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
+<%@page contentType="text/html" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <style>
 #create-scheduler-service {
 	width: 100%;
@@ -76,5 +77,3 @@ Quartz Scheduler Config Properties
 
 </form>
 </div><!-- create-scheduler-service -->
-
-<%@ include file="/WEB-INF/jsp/main/page-b.inc" %>

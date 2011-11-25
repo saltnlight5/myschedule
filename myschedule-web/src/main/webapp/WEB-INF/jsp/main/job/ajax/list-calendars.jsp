@@ -1,6 +1,5 @@
-<%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
-<%@ include file="/WEB-INF/jsp/main/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/job/submenu.inc" %>
+<%@page contentType="text/html" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <script>
 $(document).ready(function() {
 	// Use dataTables plugin
@@ -40,4 +39,3 @@ $(document).ready(function() {
 	</c:forEach>
 	</tbody>
 </table> <!-- jobs-with-triggers -->
-<%@ include file="/WEB-INF/jsp/main/page-b.inc" %>

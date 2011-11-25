@@ -1,6 +1,5 @@
-<%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
-<%@ include file="/WEB-INF/jsp/main/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/job/submenu.inc" %>
+<%@page contentType="text/html" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <script>
 $(document).ready(function() {
 	$(".trigger-table").dataTable({		
@@ -68,7 +67,7 @@ You may view full <a href="${ mainPath }/job/job-detail?jobName=${ triggerWrappe
 </div>
 
 <%-- We need triggerWrapper variable set at request level before include. --%>
-<%@ include file="/WEB-INF/jsp/main/job/trigger-detail.inc" %>
+<%@ include file="/WEB-INF/jsp/main/job/ajax/trigger-detail.inc" %>
 
 <h2>Trigger's Next ${ data.fireTimesCount } FireTimes</h2>
 
@@ -100,4 +99,3 @@ You may view full <a href="${ mainPath }/job/job-detail?jobName=${ triggerWrappe
 </table>
 
 </div> <!-- page-container -->
-<%@ include file="/WEB-INF/jsp/main/page-b.inc" %>

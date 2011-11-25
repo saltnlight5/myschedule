@@ -1,4 +1,6 @@
-<%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
+<%@page contentType="text/html" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <script>
 $(document).ready(function() {
 	// Use dataTables plugin
@@ -52,9 +54,6 @@ $(document).ready(function() {
 		});
 		return false;
 	});
-	
-	// UI button
-	$("#menu").buttonset();
 });
 </script>
 
@@ -70,11 +69,7 @@ $(document).ready(function() {
 	</p>
 </div>
 
-<div id="menu">
-	<a href="${ mainPath }/dashboard/create">New Scheduler</a>
-</div>
-
-<h1 class="datatable-title">Managing Quartz Schedulers</h1>
+<h1 class="datatable-title">Quartz Schedulers</h1>
 <table id="scheduler-list" class="display">
 	<thead>
 		<tr>
@@ -117,4 +112,3 @@ $(document).ready(function() {
 	</c:forEach>
 	</tbody>
 </table>
-<%@ include file="/WEB-INF/jsp/main/page-b.inc" %>

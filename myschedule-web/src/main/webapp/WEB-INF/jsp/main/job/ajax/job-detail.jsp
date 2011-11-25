@@ -1,6 +1,5 @@
-<%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
-<%@ include file="/WEB-INF/jsp/main/menu.inc" %>
-<%@ include file="/WEB-INF/jsp/main/job/submenu.inc" %>
+<%@page contentType="text/html" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <script>
 $(document).ready(function() {
 	$(".job-table").dataTable({		
@@ -82,7 +81,7 @@ DELETE THIS JOB AND ALL OF ITS TRIGGERS</a>
 </table>
 
 <c:forEach items="${ data.triggerWrappersList }" var="triggerWrapper" varStatus="status">
-	<%@ include file="/WEB-INF/jsp/main/job/trigger-detail.inc" %>
+	<%@ include file="/WEB-INF/jsp/main/job/ajax/trigger-detail.inc" %>
 </c:forEach>
 
 </div> <!-- page-container -->
