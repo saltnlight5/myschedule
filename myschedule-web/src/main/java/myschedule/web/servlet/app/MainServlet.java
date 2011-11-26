@@ -39,12 +39,10 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/", viewNameHanler);      // Default fall-back handler if none matched.
 		addActionHandler("/index", viewNameHanler); // Home page.
 		
-		addActionHandler("/dashboard/index", viewNameHanler);
-		addActionHandler("/dashboard/landing", dashboardHandlers.getLandingHandler());
-		addActionHandler("/dashboard/ajax/list", dashboardHandlers.getListHandler());
-		addActionHandler("/dashboard/ajax/create", dashboardHandlers.getCreateHandler());
-		addActionHandler("/dashboard/ajax/create-config-sample", dashboardHandlers.getConfigExampleHandler());
-		addActionHandler("/dashboard/ajax/modify", dashboardHandlers.getModifyHandler());
+		addActionHandler("/dashboard/index", dashboardHandlers.getListHandler());
+		addActionHandler("/dashboard/create", dashboardHandlers.getCreateHandler());
+		addActionHandler("/dashboard/create-config-sample", dashboardHandlers.getConfigExampleHandler());
+		addActionHandler("/dashboard/modify", dashboardHandlers.getModifyHandler());
 		addActionHandler("/dashboard/create-action", dashboardHandlers.getCreateActionHandler());
 		addActionHandler("/dashboard/modify-action", dashboardHandlers.getModifyActionHandler());
 		addActionHandler("/dashboard/delete-action", dashboardHandlers.getDeleteActionHandler());

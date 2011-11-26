@@ -7,13 +7,17 @@
 	
 	<script>
 $(document).ready(function() {
-	$("#jquery-menu").menu();
+	$("#test-nav4").buttonset();
 });
 	</script>
 	<style>
 #menu { padding: 10px, 10px, 10px, 10px; }
 #menu li { display: inline; list-style-type: none; }
 #footer { margin-top: 30px;	border-top: 1px solid black; }
+
+.breadcrumbs { height: 35px; font-size: 20px; display:table-cell; vertical-align:middle; margin: 0px; padding: 0px 10px 0px 10px; }
+.breadcrumbs li { display: inline; list-style-type: none; float:left; padding-right: 5px; }
+
 	</style>
 	<title>Debug</title>
 </head>
@@ -26,13 +30,13 @@ $(document).ready(function() {
 </div>
 <div id="content">
 
-	<!--  JQueryUI Menu -->
-	<ul id="jquery-menu">
-		<li><a href="${ debugServletPath }/jquery-ui/list?p=a">TestA</a></li>
-		<li><a href="${ debugServletPath }/jquery-ui/list?p=b">TestB</a></li>
-		<li><a href="${ debugServletPath }/jquery-ui/list?p=c">TestC</a></li>
-		<li><a href="${ debugServletPath }/jquery-ui/list?p=d">TestD</a></li>
+	<div class="ui-state-default ui-corner-all">
+	<ul id="breadcrumbs" class="breadcrumbs">
+		<li><a href="${ debugServletPath }/jquery-ui/list?p=a">Home</a> &#187</li>
+		<li><a href="${ debugServletPath }/jquery-ui/list?p=b">Dashboard</a> &#187</li>
+		<li><a href="${ debugServletPath }/jquery-ui/list?p=c">InMemoryQuartzScheduler_$_NON_CLUSTER</a></li>
 	</ul>
+	</div>
 	
 </div>
 <div id="footer">

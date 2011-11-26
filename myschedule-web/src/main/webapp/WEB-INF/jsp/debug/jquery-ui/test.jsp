@@ -23,8 +23,8 @@ $(document).ready(function() {
 <body class=".ui-helper-reset">
 <div id="menu">
 	<ul>
-		<li><a href="${ debugServletPath }">Debug Home</a></li>
-		<li><a href="${ debugServletPath }/jquery-ui/index">JQueryUI</a></li>
+		<li><a href="${ debugPath }">Debug Home</a></li>
+		<li><a href="index">JQueryUI</a></li>
 	</ul>
 </div>
 <div id="content">

@@ -16,8 +16,8 @@
 <body>
 <div>
 	<ul id="menu">
-		<li><a href="${ debugServletPath }">Debug Home</a></li>
-		<li><a href="${ debugServletPath }/css/index">CSS</a></li>
+		<li><a href="${ debugPath }">Debug Home</a></li>
+		<li><a href="index">CSS Demo</a></li>
 	</ul>
 </div>
 <div id="content">

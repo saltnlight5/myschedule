@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
@@ -33,26 +32,7 @@ public class DashboardHandlers {
 	@Setter
 	private ResourceLoader resourceLoader;
 	
-	@Getter
-    private ActionHandler landingHandler = new UrlRequestActionHandler() {
-            @Override
-            protected void handleViewData(ViewData viewData) {
-                    String redirectName = null;
-                    Set<String> configIds = schedulerContainer.getAllConfigIds();
-                    if (configIds.size() == 0) {
-                            redirectName = "/dashboard/index?selectedTab=create";
-                    } else {
-                            try {
-                                    redirectName = "/job/index";
-                            } catch (RuntimeException e) {
-                                    // No scheduler service are initialized, so list them all
-                                    redirectName = "/dashboard/index";
-                            }
-                    }
-                    viewData.setViewName("redirect:" + redirectName);
-            }
-    };
-
+    /** List of all schedulers */
 	@Getter
 	private ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override

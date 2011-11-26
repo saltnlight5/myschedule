@@ -16,7 +16,7 @@ public class BreadCrumbsFilter implements ActionFilter {
 	@Override
 	public ViewData beforeAction(String actionPath, HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		ViewData result = null; // Pass to next filter or action handler.
-		if ( "/index".equals(actionPath)) {
+		if ( "/index".equals(actionPath) || actionPath.startsWith("/dashboard")) {
 			// Do nothing.
 		} else {
 			req.setAttribute("breadCrumbsScheduler", true);
