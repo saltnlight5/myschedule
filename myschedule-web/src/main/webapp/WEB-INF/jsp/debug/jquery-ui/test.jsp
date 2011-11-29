@@ -7,24 +7,33 @@
 	
 	<script>
 $(document).ready(function() {
+	// UI styling
+	$("body").css(".ui-helper-reset");
 	$("#click-me").button();
+});
+$(document).ready(function() {
 	$("#click-me").click(function(){
 		$("#content h1").toggle();
 	});
 });
 	</script>
 	<style>
-#menu { padding: 10px, 10px, 10px, 10px; }
-#menu li { display: inline; list-style-type: none; }
-#footer { margin-top: 30px;	border-top: 1px solid black; }
+#menu li {
+	display: inline;
+	list-style-type: none;
+}
+#footer {
+	margin-top: 30px;
+	border-top: 1px solid black;
+}
 	</style>
 	<title>Debug</title>
 </head>
-<body class=".ui-helper-reset">
-<div id="menu">
-	<ul>
-		<li><a href="${ debugPath }">Debug Home</a></li>
-		<li><a href="index">JQueryUI</a></li>
+<body>
+<div>
+	<ul id="menu">
+		<li><a href="${ debugServletPath }">Debug Home</a></li>
+		<li><a href="${ debugServletPath }/jquery-ui/index">JQueryUI</a></li>
 	</ul>
 </div>
 <div id="content">

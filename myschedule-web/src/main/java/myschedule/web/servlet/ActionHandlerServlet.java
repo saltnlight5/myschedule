@@ -1,8 +1,6 @@
 package myschedule.web.servlet;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,39 +52,30 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	private static final long serialVersionUID = 1L;
 	private Map<String, ActionHandler> actionHandlerMappings = new HashMap<String, ActionHandler>();
-	private Map<String, List<ActionFilter>> actionFilterMappings = new HashMap<String, List<ActionFilter>>();
+	private Map<String, ActionFilter> actionFilterMappings = new HashMap<String, ActionFilter>();
 		
 	/** Allow subclass to add URL action path to a handler. This should be called in init() method of subclass. */
 	protected void addActionHandler(String actionPath, ActionHandler handler) {
 		actionPath = trimActionPath(actionPath);
 		
+		// We will try our best to print most useful mapping path, but it will depend where subclass
+		// is adding the handler. For example, if they add it in init(), then all these are good, but 
+		// if it's added in other methods, then servlet context will not be available.
 		if (logger.isInfoEnabled()) {
 			String ctxName = getServletContext().getContextPath();
 			String fullActionPath = ctxName + getServletPathName();
 			fullActionPath += actionPath;
-			logger.info("Adding handler {} on action path: {}", handler, fullActionPath);
+			logger.info("Path '{}' is mapped to action handler: {}", fullActionPath, handler);
 		}
 		actionHandlerMappings.put(actionPath, handler);
 	}
 	
-	protected void addActionFilter(String actionPath, ActionFilter ... filters) {
+	protected void addActionFilter(String actionPath, ActionFilter filter) {
 		actionPath = trimActionPath(actionPath);
-		for (ActionFilter filter : filters) {
-			logger.info("Adding filter {} on action path: {}", filter, actionPath);
-			addActionFilterToMap(actionPath, filter);
-		}
+		logger.info("Adding filter on action path starting with: {}", actionPath);
+		actionFilterMappings.put(actionPath, filter);
 	}
 	
-	private void addActionFilterToMap(String actionPath, ActionFilter filter) {
-		if (actionFilterMappings.containsKey(actionPath)) {
-			actionFilterMappings.get(actionPath).add(filter);
-			return;
-		}
-		List<ActionFilter> list = new ArrayList<ActionFilter>();
-		list.add(filter);
-		actionFilterMappings.put(actionPath, list);
-	}
-
 	/** Ensure action path does not end with '/', else remove it. */
 	private String trimActionPath(String actionPath) {
 		while (actionPath.endsWith("/")) {
@@ -98,36 +87,30 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	@Override
 	protected ViewData process(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String actionPath = getActionPath(req);
-		actionPath = trimActionPath(actionPath);		
+		actionPath = trimActionPath(actionPath);
+		logger.debug("Action path: {}", actionPath);
+		
 		ActionHandler handler = findActionHandler(actionPath, req);
-		logger.debug("Processing path {} with handler: {}", actionPath, handler);
+		logger.debug("Action handler: {}", handler);
 		if (handler == null) {
 			String actionServletPath = req.getServletPath()  + actionPath;
 			throw new RuntimeException("Unable to find action handler for path: " + actionServletPath);
 		}
 		
-		List<ActionFilter> filters = findActionFilters(actionPath, req);
-		if (filters.size() > 0) {
-			for (ActionFilter filter : filters) {
-				logger.debug("Processing path {} with filter {}.", actionPath, filter);
-				ViewData viewData = filter.beforeAction(actionPath, req, resp);
-				if (viewData != null) {
-					logger.debug("Filter has stopped the path {} processing with new viewName: .", 
-							actionPath, viewData.getViewName());
-					return viewData;
-				}
+		ActionFilter filter = findActionFilter(actionPath, req);
+		if (filter != null) {
+			ViewData viewData = filter.beforeAction(actionPath, req, resp);
+			if (viewData != null) {
+				logger.debug("Filter has stopped the before action path: {}.", actionPath);
+				return viewData;
 			}
 		}
 		
 		ViewData viewData = handler.handleAction(actionPath, req, resp);
 		logger.trace("Handler result: {}", viewData);
 		
-		if (filters.size() > 0) {
-			// Run filter in reverse order in the list for post processing.
-			for (int i = filters.size() - 1; i >= 0; i--) {
-				ActionFilter filter = filters.get(i);
-				filter.afterAction(viewData, actionPath, req, resp);
-			}
+		if (filter != null) {
+			filter.afterAction(viewData, actionPath, req, resp);
 		}
 		return viewData;
 	}
@@ -159,24 +142,21 @@ public abstract class ActionHandlerServlet extends AbstractControllerServlet {
 	}
 	
 	/** 
-	 * Find all action filters by exact match to actionPath or any filter that has starts with actionPath.
+	 * Find action filter by first exact match to actionPath, else if not found then any path that match from
+	 * the beginning.
 	 */
-	protected List<ActionFilter> findActionFilters(String actionPath, HttpServletRequest req) {
-		List<ActionFilter> filters = new ArrayList<ActionFilter>();
-		
-		// Get exact match filters with actionPath
-		if (actionFilterMappings.containsKey(actionPath)) {
-			filters.addAll(actionFilterMappings.get(actionPath));
-		}
-		
-		// Get all filters that match starts with actionPath
-		for (String name : actionFilterMappings.keySet()) {
-			if (actionPath.startsWith(name)) {
-				filters.addAll(actionFilterMappings.get(name));
+	protected ActionFilter findActionFilter(String actionPath, HttpServletRequest req) {
+		ActionFilter filter = actionFilterMappings.get(actionPath);
+		if (filter == null) {
+			// Try to find by matching beginning of actionPath
+			for (String name : actionFilterMappings.keySet()) {
+				if (actionPath.startsWith(name)) {
+					filter = actionFilterMappings.get(name);
+					break;
+				}
 			}
 		}
-		
-		return filters;
+		return filter;
 	}
 
 }

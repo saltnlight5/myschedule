@@ -23,7 +23,7 @@ import myschedule.web.servlet.ViewData;
 public class DebugServlet extends ActionHandlerServlet {
 	
 	private static final long serialVersionUID = 1L;
-	private static final String SERVLET_PATH_NAME = "/debug";
+	private static final String SERVLET_PATH_NAME = "/debug-cfb5d8df-fc73-4a23-b8a4-080b29d5f022";
 	
 	@Override
 	public void init() {
@@ -37,7 +37,7 @@ public class DebugServlet extends ActionHandlerServlet {
 		@Override
 		protected void handleViewData(ViewData viewData) {
 			String contextPath = viewData.getRequest().getContextPath();
-			viewData.addData("debugPath", contextPath + SERVLET_PATH_NAME);
+			viewData.addData("debugServletPath", contextPath + SERVLET_PATH_NAME);
 			
 			String actionPathName = viewData.getViewName();
 			String debugActionPath = contextPath + SERVLET_PATH_NAME + actionPathName;	

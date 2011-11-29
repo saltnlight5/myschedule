@@ -1,17 +1,8 @@
 <%@ include file="/WEB-INF/jsp/main/page-a.inc" %>
+<%@ include file="/WEB-INF/jsp/main/menu.inc" %>
+<%@ include file="/WEB-INF/jsp/main/job/submenu.inc" %>
 <script>
 $(document).ready(function() {
-	$('#tabs').tabs({
-	    select: function(event, ui) {
-	        var url = $.data(ui.tab, 'load.tabs');
-	        if( url ) {
-	            location.href = url;
-	            return false;
-	        }
-	        return true;
-	    }
-	});
-
 	// Use dataTables plugin
 	$("#jobs").dataTable({
 		"aaSorting": [[0, "asc"]],
@@ -49,38 +40,27 @@ $(document).ready(function() {
 	</p>
 </div>
 
-<div id="tabs">
-	<ul>
-	<li><a href="#">Jobs with trigger</a></li>
-	<li><a href="${ mainPath }/job/ajax/list-no-trigger-jobs">Jobs without trigger</a></li>
-	<li><a href="${ mainPath }/job/ajax/list-executing-jobs">Currently Executing Jobs</a></li>
-	</ul>
+<h1>Jobs without assigned trigger</h1>
+<table id="jobs" class="display">
+	<thead>
+	<tr>
+		<th> JOB </th>
+		<th> JOB CLASS </th>
+		<th> ACTIONS </th>
+	</tr>
+	</thead>
 	
-	<div id="tabs-1">
-
-		<h1>Jobs without assigned trigger</h1>
-		<table id="jobs" class="display">
-			<thead>
-			<tr>
-				<th> JOB </th>
-				<th> JOB CLASS </th>
-				<th> ACTIONS </th>
-			</tr>
-			</thead>
-			
-			<tbody>
-			<c:forEach items="${ data.jobWithoutTriggerList }" var="jobDetail">
-			<tr>
-				<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">${ jobDetail.key }</a></td>
-				<td>${ jobDetail.jobClass.name }</td>
-				<td class="action">
-					<a href="${ mainPath }/job/run-job?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">Run It Now</a> |
-					<a href="${ mainPath }/job/delete?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">Delete</a>
-				</td>
-			</tr>
-			</c:forEach>
-			</tbody>
-		</table> <!-- jobs-without-triggers -->
-	</div>
-</div>
+	<tbody>
+	<c:forEach items="${ data.jobWithoutTriggerList }" var="jobDetail">
+	<tr>
+		<td><a href="${ mainPath }/job/job-detail?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">${ jobDetail.key }</a></td>
+		<td>${ jobDetail.jobClass.name }</td>
+		<td class="action">
+			<a href="${ mainPath }/job/run-job?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">Run It Now</a> |
+			<a href="${ mainPath }/job/delete?jobName=${ jobDetail.key.name }&jobGroup=${ jobDetail.key.group }">Delete</a>
+		</td>
+	</tr>
+	</c:forEach>
+	</tbody>
+</table> <!-- jobs-without-triggers -->
 <%@ include file="/WEB-INF/jsp/main/page-b.inc" %>

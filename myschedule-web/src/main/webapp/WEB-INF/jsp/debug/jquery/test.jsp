@@ -24,8 +24,8 @@ $(document).ready(function() {
 <body>
 <div>
 	<ul id="menu">
-		<li><a href="${ debugPath }">Debug Home</a></li>
-		<li><a href="index">JQuery</a></li>
+		<li><a href="${ debugServletPath }">Debug Home</a></li>
+		<li><a href="${ debugServletPath }/jquery/index">JQuery</a></li>
 	</ul>
 </div>
 <div id="content">
