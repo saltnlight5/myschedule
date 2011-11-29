@@ -22,16 +22,6 @@
 		<servlet-name>MainServlet</servlet-name>
 		<url-pattern>/main/*</url-pattern>
 	</servlet-mapping>
-	
-	<!-- A debug servlet -->
-	<servlet>
-		<servlet-name>DebugServlet</servlet-name>
-		<servlet-class>myschedule.web.servlet.app.DebugServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DebugServlet</servlet-name>
-		<url-pattern>/debug-cfb5d8df-fc73-4a23-b8a4-080b29d5f022/*</url-pattern>
-	</servlet-mapping>
 		
 	<!-- Session timeout in minutes. 1440 mins = 24 hours. -->
 	<session-config>
