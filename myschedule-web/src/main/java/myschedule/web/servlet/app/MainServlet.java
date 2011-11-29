@@ -51,33 +51,32 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/dashboard/switch-scheduler", dashboardHandlers.getSwitchSchedulerHandler());
 
 		addActionHandler("/job/index", viewNameHanler);
-		addActionHandler("/job/ajax/list-trigger-jobs", jobHandlers.getListTriggerJobsHandler());
-		addActionHandler("/job/ajax/list-calendars", jobHandlers.getListCalendarsHandler());
-		addActionHandler("/job/ajax/list-executing-jobs", jobHandlers.getListExecutingJobsHandler());
-		addActionHandler("/job/ajax/list-no-trigger-jobs", jobHandlers.getListNoTriggerJobsHandler());
-		addActionHandler("/job/ajax/job-detail", jobHandlers.getJobDetailHandler());
-		addActionHandler("/job/ajax/load-xml", jobHandlers.getLoadXmlHandler());
-		addActionHandler("/job/ajax/trigger-detail", jobHandlers.getTriggerDetailHandler());
-		addActionHandler("/job/ajax/load-xml-action", jobHandlers.getLoadXmlActionHandler());
+		addActionHandler("/job/list-trigger-jobs", jobHandlers.getListTriggerJobsHandler());
+		addActionHandler("/job/list-calendars", jobHandlers.getListCalendarsHandler());
+		addActionHandler("/job/list-executing-jobs", jobHandlers.getListExecutingJobsHandler());
+		addActionHandler("/job/list-no-trigger-jobs", jobHandlers.getListNoTriggerJobsHandler());
+		addActionHandler("/job/job-detail", jobHandlers.getJobDetailHandler());
+		addActionHandler("/job/load-xml", jobHandlers.getLoadXmlHandler());
+		addActionHandler("/job/trigger-detail", jobHandlers.getTriggerDetailHandler());
+		addActionHandler("/job/load-xml-action", jobHandlers.getLoadXmlActionHandler());
 		addActionHandler("/job/run-it-now", jobHandlers.getRunJobHandler());
 		addActionHandler("/job/delete", jobHandlers.getDeleteHandler());
 		addActionHandler("/job/unschedule", jobHandlers.getUnscheduleHandler());
 		addActionHandler("/job/pauseTrigger", jobHandlers.getPauseTriggerHandler());
 		addActionHandler("/job/resumeTrigger", jobHandlers.getResumeTriggerHandler());
 
-		addActionHandler("/scheduler/index", viewNameHanler);
-		addActionHandler("/scheduler/ajax/summary", schedulerHandlers.getSummaryHandler());
-		addActionHandler("/scheduler/ajax/detail", schedulerHandlers.getDetailHandler());
-		addActionHandler("/scheduler/ajax/listeners", schedulerHandlers.getListenersHandler());
-		addActionHandler("/scheduler/ajax/modify", schedulerHandlers.getModifyHandler());
+		addActionHandler("/scheduler/index", schedulerHandlers.getSummaryHandler());
+		addActionHandler("/scheduler/detail", schedulerHandlers.getDetailHandler());
+		addActionHandler("/scheduler/listeners", schedulerHandlers.getListenersHandler());
+		addActionHandler("/scheduler/modify", schedulerHandlers.getModifyHandler());
 		addActionHandler("/scheduler/modify-action", schedulerHandlers.getModifyActionHandler());
 		addActionHandler("/scheduler/pause-all-triggers", schedulerHandlers.getPauseAllTriggersHandler());
 		addActionHandler("/scheduler/resume-all-triggers", schedulerHandlers.getResumeAllTriggersHandler());
 		addActionHandler("/scheduler/standby", schedulerHandlers.getStandbyHandler());
 		addActionHandler("/scheduler/start", schedulerHandlers.getStartHandler());
 		
-		addActionHandler("/scripting/ajax/run", scriptingHandlers.getRunHandler());
-		addActionHandler("/scripting/ajax/run-script-sample", scriptingHandlers.getScriptExampleHandler());
+		addActionHandler("/scripting/run", scriptingHandlers.getRunHandler());
+		addActionHandler("/scripting/run-script-sample", scriptingHandlers.getScriptExampleHandler());
 		addActionHandler("/scripting/run-action", scriptingHandlers.getRunActionHandler());
 
         SessionDataFilter sessionDataFilter = appConfig.getSessionDataFilter();

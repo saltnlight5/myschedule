@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * <p>You need to customize this job using Quartz's data map with following keys:
  * <ul>
  *   <li><code>ScriptEgnineName</code> - Required. The name of ScriptEngine implementation to use. Default to 'JavaScript'.</li>
- *   <li><code>ScriptText</code> or ScriptFile</code> - Required. Specify where to find the script to run. Only one is needed. No default.</li>
+ *   <li><code>ScriptText</code> or <code>ScriptFile</code> - Required. Specify where to find the script to run. Only one is needed. No default.</li>
  *   <li><code>LogScriptText</code> - Optional. A boolean flag to log ScriptText value or not as INFO level. Default to 'false'.</li>
  *   <li><code>JobExecutionExceptionParams</code> - Optional. Three booleans (refire, unscheduleAllTrigger, unscheduleTrigg) used to 
  *   populate JobExecutionException object if the script were to throw an exception that this job will wrap in. 
