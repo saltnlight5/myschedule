@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
  * The database table must setup with the following fields, and {@link #insertSql} must be populated
  * correctly with binding parameters.
  * 
+ * <p>You must also set the {@link #dataSourceName} name in the quartz.properties. It can be the same data source you
+ * setup for the JdbcJobStore configuration (see Quartz doc.) If you use this, then ensure you increase the conn pool
+ * size to one more.
+ * 
  * Here is example of how to create the history table on MySQL.
  * <pre>
  * CREATE TABLE qrtz_scheduler_history (
@@ -42,17 +46,8 @@ import org.slf4j.LoggerFactory;
  *   INDEX(host_ip, host_name, event_type,event_name,event_time)
  * )
  * </pre>
- *  * 
- * <p>If event_type is SchedulerPlugin, then info1 has the plugin name.
  * 
- * <p>If event_type is TriggerListener then info1 = trigger key, info2 = job key, info3 = [FireInstanceId],
- * info4 = [fireTime], info5 = [CompletedExecutionInstruction].
- * 
- * <p>You must also set the {@link #dataSourceName} name in the quartz.properties. It can be the same data source you
- * setup for the JdbcJobStore configuration (see Quartz doc.) If you use this, then ensure you increase the conn pool
- * size to one more.
- * 
- * <p>Here is a example of what you need to set in <code>quartz.properties</code> file.
+ * <p>Here is an example of how you configure this plugin in <code>quartz.properties</code> file.
  * <pre>
  * # Jdbc Scheduler History Plugin
  * org.quartz.plugin.MyJobHistoryPlugin.class = myschedule.quartz.extra.JdbcSchedulerHistoryPlugin
@@ -67,7 +62,22 @@ import org.slf4j.LoggerFactory;
  * # Recommend threadPool size + 3 + 1
  * org.quartz.dataSource.quartzDataSource.maxConnections = 9
  * </pre>
+ *  
+ * <p>The <code>event_type</code> can be either <code>SchedulerListener</code> or <code>TriggerListener</code>, and 
+ * <code>event_name</code> will contain the method
+ * name that it was invoked. Note that not all methods are recorded! We only recorded some that we think they are
+ * important to track on general purpose.
  * 
+ * <p>For <code>SchedulerListener</code>, we are recording these methods: jobScheduled, jobUnscheduled, triggerPaused,
+ * triggersPaused, triggerResumed, triggersResumed, schedulerError, schedulerInStandbyMode, schedulerStarted,
+ * and schedulerShutdown.
+ * 
+ * <p>For <code>TriggerListener</code>, we are recording these methods: triggerFired, triggerComplete and 
+ * triggerMisfired.
+ * 
+ * <p>If <code>event_type</code> is <code>TriggerListener</code> then info1 = trigger key, info2 = job key, 
+ * info3 = [FireInstanceId], info4 = [fireTime], info5 = [CompletedExecutionInstruction].
+ *  
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
