@@ -4,7 +4,6 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -856,7 +855,8 @@ public class SchedulerTemplate {
 					.withSchedule(cronSchedule(cron))
 					.build();
 			return (MutableTrigger)trigger;
-		} catch (ParseException e) {
+		} catch (RuntimeException e) {
+			// The Quartz-2.1.1 doesn't throw ParseException but RuntimeException instead.
 			throw new QuartzRuntimeException(e);
 		}
 	}
