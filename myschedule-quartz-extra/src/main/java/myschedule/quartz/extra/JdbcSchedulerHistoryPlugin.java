@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *   info3 VARCHAR(256) NULL,
  *   info4 VARCHAR(256) NULL,
  *   info5 VARCHAR(256) NULL,
- *   PRIMARY KEY (host_ip, event_type,event_name,event_time)
+ *   INDEX(host_ip, host_name, event_type,event_name,event_time)
  * )
  * </pre>
  *  * 
@@ -81,7 +81,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 			conn = DBConnectionManager.getInstance().getConnection(dataSourceName);
 			PreparedStatement stmt = conn.prepareStatement(insertSql);
 			for (int i = 1; i <= params.length; i++) {
-				stmt.setObject(i, params[i]);
+				stmt.setObject(i, params[i - 1]);
 			}
 			int result = stmt.executeUpdate();
 			logger.info("History record inserted: {}", result);
@@ -117,6 +117,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(String name, Scheduler scheduler) throws SchedulerException {
 		this.name = name;
@@ -138,6 +139,9 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 		
 		insertHistory(insertSql, params);		
 		logger.info(name + " intialized on {}/{}", localIp, localHost);
+		
+		// Now add this plugin as trigger listener
+		scheduler.getListenerManager().addTriggerListener(this);
 	}
 	
 	@Override
@@ -185,10 +189,6 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 
 	@Override
 	public void triggerFired(Trigger trigger, JobExecutionContext context) {
-		if (insertSql == null) {
-			return;
-		}
-		
 		Object[] params = new Object[] {
 			localIp,
 			localHost,
@@ -207,33 +207,12 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 	
 	@Override
 	public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
-		if (insertSql == null) {
-			return false;
-		}
-		
-		Object[] params = new Object[] {
-			localIp,
-			localHost,
-			"TriggerListener",
-			"vetoJobExecution",
-			new Date(),
-			trigger.getKey().toString(),
-			trigger.getJobKey().toString(),
-			context.getFireInstanceId(),
-			context.getFireTime(),
-			null
-		};
-		
-		insertHistory(insertSql, params);
+		// Do nothing.
 		return false;
 	}
 
 	@Override
-	public void triggerMisfired(Trigger trigger) {
-		if (insertSql == null) {
-			return;
-		}
-		
+	public void triggerMisfired(Trigger trigger) {		
 		Object[] params = new Object[] {
 			localIp,
 			localHost,
@@ -253,10 +232,6 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 	@Override
 	public void triggerComplete(Trigger trigger, JobExecutionContext context,
 			CompletedExecutionInstruction triggerInstructionCode) {
-		if (insertSql == null) {
-			return;
-		}
-		
 		Object[] params = new Object[] {
 			localIp,
 			localHost,
