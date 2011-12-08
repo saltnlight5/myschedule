@@ -48,10 +48,10 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>Here is a example of what you need to set in <code>quartz.properties</code> file.
  * <pre>
- * # Scripting plugin
+ * # Jdbc Scheduler History Plugin
  * org.quartz.plugin.MyJobHistoryPlugin.class = myschedule.quartz.extra.JdbcSchedulerHistoryPlugin
  * org.quartz.plugin.MyJobHistoryPlugin.insertSql = INSERT INTO qrtz_scheduler_history VALUES(?,?,?,?,?,?,?,?,?,?)
- * org.quartz.plugin.MyJobHistoryPlugin.dataSourceName = myQuartzDataSource
+ * org.quartz.plugin.MyJobHistoryPlugin.dataSourceName = quartzDataSource
  * </pre>
  * 
  * @author Zemian Deng <saltnlight5@gmail.com>
