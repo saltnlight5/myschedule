@@ -6,11 +6,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SchedulerListener;
 import org.quartz.Trigger;
 import org.quartz.Trigger.CompletedExecutionInstruction;
+import org.quartz.TriggerKey;
 import org.quartz.TriggerListener;
 import org.quartz.spi.SchedulerPlugin;
 import org.quartz.utils.DBConnectionManager;
@@ -19,12 +23,14 @@ import org.slf4j.LoggerFactory;
 /**
  * This plugin will record a row in a database table for each event (methods) in SchedulerPlugin and TriggerListener. 
  * The database table must setup with the following fields, and {@link #insertSql} must be populated
- * correctly with 10 binding parameters.
+ * correctly with binding parameters.
  * 
+ * Here is example of how to create the history table on MySQL.
  * <pre>
  * CREATE TABLE qrtz_scheduler_history (
  *   host_ip VARCHAR(15) NOT NULL,
  *   host_name VARCHAR(256) NOT NULL,
+ *   scheduler_name VARCHAR(256) NOT NULL,
  *   event_type VARCHAR(128) NOT NULL,
  *   event_name VARCHAR(128) NOT NULL,
  *   event_time TIMESTAMP NOT NULL,
@@ -50,19 +56,29 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * # Jdbc Scheduler History Plugin
  * org.quartz.plugin.MyJobHistoryPlugin.class = myschedule.quartz.extra.JdbcSchedulerHistoryPlugin
- * org.quartz.plugin.MyJobHistoryPlugin.insertSql = INSERT INTO qrtz_scheduler_history VALUES(?,?,?,?,?,?,?,?,?,?)
+ * org.quartz.plugin.MyJobHistoryPlugin.insertSql = INSERT INTO qrtz_scheduler_history VALUES(?,?,?,?,?,?,?,?,?,?,?)
  * org.quartz.plugin.MyJobHistoryPlugin.dataSourceName = quartzDataSource
+ * 
+ * # JobStore: JDBC jobStoreTX
+ * org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
+ * org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz2
+ * org.quartz.dataSource.quartzDataSource.user = quartz2
+ * org.quartz.dataSource.quartzDataSource.password = quartz2123
+ * # Recommend threadPool size + 3 + 1
+ * org.quartz.dataSource.quartzDataSource.maxConnections = 9
  * </pre>
  * 
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListener {
+public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 		
 	private static final Logger logger = LoggerFactory.getLogger(JdbcSchedulerHistoryPlugin.class);
 	private String name;
+	private Scheduler scheduler;
 	private String localIp;
 	private String localHost;
+	private String schedulerNameAndId;
 	
 	private String dataSourceName;
 	private String insertSql;
@@ -92,6 +108,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 			if (conn != null) {
 				try {
 					conn.close();
+					conn = null;
 				} catch (SQLException e) {
 					throw new QuartzRuntimeException("Failed to close DB connection.", e);
 				}
@@ -99,7 +116,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 		}
 	}
 
-	private String getLocalHost() {
+	private String retrieveLocalHost() {
 		try {
 			InetAddress localHost = InetAddress.getLocalHost();
 			return localHost.getHostName();
@@ -108,7 +125,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 		}
 	}
 
-	private String getLocalIp() {
+	private String retrieveLocalIp() {
 		try {
 			InetAddress localHost = InetAddress.getLocalHost();
 			return localHost.getHostAddress();
@@ -116,136 +133,332 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin, TriggerListe
 			throw new RuntimeException(e);
 		}
 	}
+	
+	private String retrieveSchedulerNameAndId() {
+		try {
+			return scheduler.getSchedulerName() + "_$_" + scheduler.getSchedulerInstanceId();
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(String name, Scheduler scheduler) throws SchedulerException {
 		this.name = name;
-		this.localIp = getLocalIp();
-		this.localHost = getLocalHost();
+		this.scheduler = scheduler;
+		this.localIp = retrieveLocalIp();
+		this.localHost = retrieveLocalHost();
+		this.schedulerNameAndId = retrieveSchedulerNameAndId();
 		
-		Object[] params = new Object[] {
-			localIp,
-			localHost,
-			"SchedulerPlugin",
-			"initialize",
-			new Date(),
-			name, /* info1 */
-			null, /* info2 */
-			null, /* info3 */
-			null, /* info4 */
-			null  /* info5 */
-		};
-		
-		insertHistory(insertSql, params);		
-		logger.info(name + " intialized on {}/{}", localIp, localHost);
-		
-		// Now add this plugin as trigger listener
-		scheduler.getListenerManager().addTriggerListener(this);
+		//register listeners
+		scheduler.getListenerManager().addTriggerListener(new HistoryTriggerListener());
+		scheduler.getListenerManager().addSchedulerListener(new HistorySchedulerListener());
 	}
 	
 	@Override
 	public void start() {
-		Object[] params = new Object[] {
-			localIp,
-			localHost,
-			"SchedulerPlugin",
-			"start",
-			new Date(),
-			name,
-			null,
-			null,
-			null,
-			null
-		};
-		
-		insertHistory(insertSql, params);
 		logger.info(name + " has started.");
 	}
 
 	@Override
 	public void shutdown() {
-		Object[] params = new Object[] {
-			localIp,
-			localHost,
-			"SchedulerPlugin",
-			"shutdown",
-			new Date(),
-			name,
-			null,
-			null,
-			null,
-			null
-		};
-		
-		insertHistory(insertSql, params);
 		logger.info(name + " has shutdown.");
 	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Listeners
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private class HistorySchedulerListener implements SchedulerListener {
 
-	@Override
-	public String getName() {
-		return name;
-	}
+		@Override
+		public void jobScheduled(Trigger trigger) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"jobScheduled",
+				new Date(),
+				trigger.getKey().toString(),
+				trigger.getJobKey().toString(),
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
 
-	@Override
-	public void triggerFired(Trigger trigger, JobExecutionContext context) {
-		Object[] params = new Object[] {
-			localIp,
-			localHost,
-			"TriggerListener",
-			"triggerFired",
-			new Date(),
-			trigger.getKey().toString(),
-			trigger.getJobKey().toString(),
-			context.getFireInstanceId(),
-			context.getFireTime(),
-			null
-		};
+		@Override
+		public void jobUnscheduled(TriggerKey triggerKey) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"jobUnscheduled",
+				new Date(),
+				triggerKey.toString(),
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void triggerPaused(TriggerKey triggerKey) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"triggerPaused",
+				new Date(),
+				triggerKey.toString(),
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void triggersPaused(String triggerGroup) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"triggersPaused",
+				new Date(),
+				triggerGroup,
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void triggerResumed(TriggerKey triggerKey) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"triggerResumed",
+				new Date(),
+				triggerKey.toString(),
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void triggersResumed(String triggerGroup) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"triggersResumed",
+				new Date(),
+				triggerGroup,
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void schedulerError(String msg, SchedulerException cause) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"schedulerError",
+				new Date(),
+				msg,
+				cause.getClass().getName(),
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void schedulerInStandbyMode() {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"schedulerInStandbyMode",
+				new Date(),
+				null,
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void schedulerStarted() {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"schedulerStarted",
+				new Date(),
+				null,
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void schedulerShutdown() {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"SchedulerListener",
+				"schedulerShutdown",
+				new Date(),
+				null,
+				null,
+				null,
+				null,
+				null
+			};
+			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void schedulerShuttingdown() {
+		}
+
+		@Override
+		public void schedulingDataCleared() {
+		}
+
+		@Override
+		public void jobAdded(JobDetail jobDetail) {
+		}
+
+		@Override
+		public void jobDeleted(JobKey jobKey) {
+		}
+
+		@Override
+		public void jobPaused(JobKey jobKey) {
+		}
+
+		@Override
+		public void jobsPaused(String jobGroup) {
+		}
+
+		@Override
+		public void jobResumed(JobKey jobKey) {
+		}
+
+		@Override
+		public void jobsResumed(String jobGroup) {
+		}
 		
-		insertHistory(insertSql, params);
+		@Override
+		public void triggerFinalized(Trigger trigger) {
+		}
 	}
 	
-	@Override
-	public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
-		// Do nothing.
-		return false;
-	}
-
-	@Override
-	public void triggerMisfired(Trigger trigger) {		
-		Object[] params = new Object[] {
-			localIp,
-			localHost,
-			"TriggerListener",
-			"triggerMisfired",
-			new Date(),
-			trigger.getKey().toString(),
-			trigger.getJobKey().toString(),
-			null,
-			null,
-			null
-		};
+	private class HistoryTriggerListener implements TriggerListener {
+		@Override
+		public String getName() {
+			return name;
+		}
+	
+		@Override
+		public void triggerFired(Trigger trigger, JobExecutionContext context) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"TriggerListener",
+				"triggerFired",
+				new Date(),
+				trigger.getKey().toString(),
+				trigger.getJobKey().toString(),
+				context.getFireInstanceId(),
+				context.getFireTime(),
+				null
+			};
+			
+			insertHistory(insertSql, params);
+		}
 		
-		insertHistory(insertSql, params);
+		@Override
+		public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
+			// Do nothing.
+			return false;
+		}
+	
+		@Override
+		public void triggerMisfired(Trigger trigger) {		
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"TriggerListener",
+				"triggerMisfired",
+				new Date(),
+				trigger.getKey().toString(),
+				trigger.getJobKey().toString(),
+				null,
+				null,
+				null
+			};
+			
+			insertHistory(insertSql, params);
+		}
+	
+		@Override
+		public void triggerComplete(Trigger trigger, JobExecutionContext context,
+				CompletedExecutionInstruction triggerInstructionCode) {
+			Object[] params = new Object[] {
+				localIp,
+				localHost,
+				schedulerNameAndId,
+				"TriggerListener",
+				"triggerComplete",
+				new Date(),
+				trigger.getKey().toString(),
+				trigger.getJobKey().toString(),
+				context.getFireInstanceId(),
+				context.getFireTime(),
+				triggerInstructionCode.toString()
+			};
+			
+			insertHistory(insertSql, params);
+		}
 	}
-
-	@Override
-	public void triggerComplete(Trigger trigger, JobExecutionContext context,
-			CompletedExecutionInstruction triggerInstructionCode) {
-		Object[] params = new Object[] {
-			localIp,
-			localHost,
-			"TriggerListener",
-			"triggerComplete",
-			new Date(),
-			trigger.getKey().toString(),
-			trigger.getJobKey().toString(),
-			context.getFireInstanceId(),
-			context.getFireTime(),
-			triggerInstructionCode.toString()
-		};
-		
-		insertHistory(insertSql, params);
-	}
-
 }
