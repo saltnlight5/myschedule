@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
  * correctly with binding parameters.
  * 
  * <p>You must also set the {@link #dataSourceName} name in the quartz.properties. It can be the same data source you
- * setup for the JdbcJobStore configuration (see Quartz doc.) If you use this, then ensure you increase the conn pool
- * size to one more.
+ * setup for the JdbcJobStore configuration (see Quartz doc.)
  * 
  * Here is example of how to create the history table on MySQL.
  * <pre>
@@ -59,7 +58,6 @@ import org.slf4j.LoggerFactory;
  * org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz2
  * org.quartz.dataSource.quartzDataSource.user = quartz2
  * org.quartz.dataSource.quartzDataSource.password = quartz2123
- * # Recommend threadPool size + 3 + 1
  * org.quartz.dataSource.quartzDataSource.maxConnections = 9
  * </pre>
  *  
