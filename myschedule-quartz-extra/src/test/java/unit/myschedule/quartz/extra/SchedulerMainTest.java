@@ -68,18 +68,18 @@ public class SchedulerMainTest {
 		
 		@Override
 		public void initialize(String name, Scheduler scheduler) throws SchedulerException {
-			RESULT_FILE.writeLine("name: " + name);
-			RESULT_FILE.writeLine("initialize: " + new Date());
+			RESULT_FILE.appendLine("name: " + name);
+			RESULT_FILE.appendLine("initialize: " + new Date());
 		}
 
 		@Override
 		public void start() {
-			RESULT_FILE.writeLine("start: " + new Date());
+			RESULT_FILE.appendLine("start: " + new Date());
 		}
 
 		@Override
 		public void shutdown() {
-			RESULT_FILE.writeLine("shutdown: " + new Date());
+			RESULT_FILE.appendLine("shutdown: " + new Date());
 		}
 	}
 }

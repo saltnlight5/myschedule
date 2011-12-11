@@ -60,20 +60,25 @@ public class ResultFile {
 		}
 	}
 	
-	public void writeLine(String text) {
-		write(text + "\n");
+	public void appendLine(String text) {
+		append(text + "\n");
 	}
 	
-	public void write(String text) {
+	public void append(String text) {
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(file, true);
-			IOUtils.write(text, writer);
+			writer.write(text);
 			writer.flush();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
 			IOUtils.closeQuietly(writer);
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "ResultFile[" + file == null ? "null" : file.toString() + "]";
 	}
 }

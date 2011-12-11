@@ -84,5 +84,6 @@ public class ScriptingSchedulerPluginTest {
 		names.add(jobs.get(0).getKey().getName());
 		names.add(jobs.get(1).getKey().getName());
 		assertThat(names, hasItems("hourlyJob1", "hourlyJob2"));
+		st.shutdown(true);
 	}
 }
