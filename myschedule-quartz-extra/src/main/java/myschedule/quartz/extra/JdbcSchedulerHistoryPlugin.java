@@ -346,12 +346,33 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 
 		@Override
 		public void schedulerShutdown() {
+			// TODO: We can not insert SQL data here yet. See QTZ-257.
+			//       For now, the workaround is use schedulerShuttingdown(), which called before all pending jobs are
+			//       completed.
+//			Object[] params = new Object[] {
+//				localIp,
+//				localHost,
+//				schedulerNameAndId,
+//				"SchedulerListener",
+//				"schedulerShutdown",
+//				new Date(),
+//				null,
+//				null,
+//				null,
+//				null,
+//				null
+//			};
+//			insertHistory(insertSql, params);
+		}
+
+		@Override
+		public void schedulerShuttingdown() {
 			Object[] params = new Object[] {
 				localIp,
 				localHost,
 				schedulerNameAndId,
 				"SchedulerListener",
-				"schedulerShutdown",
+				"schedulerShuttingdown",
 				new Date(),
 				null,
 				null,
@@ -360,10 +381,6 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 				null
 			};
 			insertHistory(insertSql, params);
-		}
-
-		@Override
-		public void schedulerShuttingdown() {
 		}
 
 		@Override
