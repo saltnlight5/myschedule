@@ -438,7 +438,6 @@ public class JobHandlers {
 					afterTime = cronExp.getTimeAfter(afterTime);
 					fireTimes.add(afterTime);
 				}
-				dataMap.put("cronExp", cronExp);
 				dataMap.put("fireTimes", fireTimes);
 			} catch (ParseException e) {
 				dataMap.put("invalidCron", true);

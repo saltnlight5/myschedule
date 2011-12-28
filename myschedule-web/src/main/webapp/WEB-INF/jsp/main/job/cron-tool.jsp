@@ -25,7 +25,7 @@
 </form>
 
 <c:if test="${ not empty data.fireTimes }">
-	<h2>Cron Expression Future Fire Time</h2>
+	<h2>Cron Expression is VALID! Here are some calculated future fire times</h2>
 	<table>
 		<tr>
 			<td>INDEX</td>
