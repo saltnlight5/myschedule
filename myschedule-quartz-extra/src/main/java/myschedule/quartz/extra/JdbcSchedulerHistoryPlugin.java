@@ -10,14 +10,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.quartz.Job;
+import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerListener;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.Trigger.CompletedExecutionInstruction;
+import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.TriggerListener;
 import org.quartz.spi.SchedulerPlugin;
@@ -56,6 +61,8 @@ import org.slf4j.LoggerFactory;
  * org.quartz.plugin.MyJobHistoryPlugin.class = myschedule.quartz.extra.JdbcSchedulerHistoryPlugin
  * org.quartz.plugin.MyJobHistoryPlugin.insertSql = INSERT INTO qrtz_scheduler_history VALUES(?,?,?,?,?,?,?,?,?,?,?)
  * org.quartz.plugin.MyJobHistoryPlugin.querySql = SELECT * FROM qrtz_scheduler_history ORDER BY event_time DESC
+ * org.quartz.plugin.MyJobHistoryPlugin.deleteSql = DELETE qrtz_scheduler_history WHERE event_time < ?
+ * org.quartz.plugin.MyJobHistoryPlugin.deleteIntervalInSecs = 604800
  * org.quartz.plugin.MyJobHistoryPlugin.dataSourceName = quartzDataSource
  * org.quartz.plugin.MyJobHistoryPlugin.schedulerContextKey = JdbcSchedulerHistoryPlugin.Instance
  * 
@@ -99,7 +106,9 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 	private String dataSourceName;
 	private String insertSql;
 	private String querySql;
+	private String deleteSql;
 	private String schedulerContextKey;
+	private long deleteIntervalInSecs;
 	
 	public void setSchedulerContextKey(String schedulerContextKey) {
 		this.schedulerContextKey = schedulerContextKey;
@@ -112,6 +121,15 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 	}
 	public void setInsertSql(String insertSql) {
 		this.insertSql = insertSql;
+	}
+	public void setDeleteSql(String deleteSql) {
+		this.deleteSql = deleteSql;
+	}
+	public void setDeleteIntervalInSecs(long deleteIntervalInSecs) {
+		this.deleteIntervalInSecs = deleteIntervalInSecs;
+	}
+	public long getDeleteIntervalInSecs() {
+		return deleteIntervalInSecs;
 	}
 
 	public List<List<Object>> getJobHistoryData() {
@@ -132,6 +150,19 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 			}
 		});
 		return result;
+	}
+	
+	public int deleteJobHistory(Date olderThanDate) {
+		final List<Integer> result = new ArrayList<Integer>();
+		withConn(new ConnAction() {
+			@Override
+			public void onConn(Connection conn) throws SQLException {
+				Statement stmt = conn.createStatement();
+				int count = stmt.executeUpdate(deleteSql);
+				result.add(count);
+			}
+		});
+		return result.get(0);
 	}
 
 	private void insertHistory(final String sql, final Object[] params) {
@@ -245,7 +276,6 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 				new Date(),
 				trigger.getKey().toString(),
 				trigger.getJobKey().toString(),
-				null,
 				null,
 				null,
 				null
@@ -395,6 +425,29 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 				null
 			};
 			insertHistory(insertSql, params);
+			
+			// Auto add a job to delete job history if configured to do so
+			if (deleteIntervalInSecs > 0) {
+				try {
+					String jobName = "JobHistoryRemovalJob";
+					if (scheduler.checkExists(TriggerKey.triggerKey(jobName))) {
+						scheduler.unscheduleJob(TriggerKey.triggerKey(jobName));
+						logger.info("The JobHistoryRemovalJob already exist. Removed it from scheduler first.");
+					}
+					JobDetail job = JobBuilder.newJob(JobHistoryRemovalJob.class).
+							withIdentity(jobName).
+							usingJobData(JobHistoryRemovalJob.PLUGIN_KEY_NAME, schedulerContextKey).
+							build();
+					Trigger trigger = TriggerBuilder.newTrigger().withIdentity(jobName).
+							withSchedule(SimpleScheduleBuilder.repeatSecondlyForever((int)deleteIntervalInSecs)).
+							startAt(new Date(System.currentTimeMillis() - (deleteIntervalInSecs * 1000))).
+							build();
+					scheduler.scheduleJob(job, trigger);
+					logger.info("Added JobHistoryRemovalJob that runs every {} secs.", deleteIntervalInSecs);
+				} catch (SchedulerException e) {
+					logger.error("Failed to insert JobHistoryRemovalJob.", e);
+				}
+			}
 		}
 
 		@Override
@@ -538,5 +591,23 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 			
 			insertHistory(insertSql, params);
 		}
+	}
+	
+	public static class JobHistoryRemovalJob implements Job {
+		public static final String PLUGIN_KEY_NAME = "JdbcSchedulerHistoryPluginKey";
+		@Override
+		public void execute(JobExecutionContext context) throws JobExecutionException {
+			try {
+				Scheduler scheduler = context.getScheduler();
+				String pluginKey = context.getMergedJobDataMap().getString(PLUGIN_KEY_NAME);
+				JdbcSchedulerHistoryPlugin plugin = (JdbcSchedulerHistoryPlugin)scheduler.getContext().get(pluginKey);
+				long deleteIntervalInSecs = plugin.getDeleteIntervalInSecs();
+				Date olderThanDate = new Date(System.currentTimeMillis() - (deleteIntervalInSecs * 1000));
+				int result = plugin.deleteJobHistory(olderThanDate);
+				logger.info("{} job history records were deleted with date older than {}.", result, olderThanDate);
+			} catch (SchedulerException e) {
+				throw new JobExecutionException("Failed to run JobHistoryRemovalJob.", e);
+			}
+		}		
 	}
 }
