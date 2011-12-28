@@ -60,6 +60,7 @@ public class MainServlet extends ActionHandlerServlet {
 		addActionHandler("/job/pauseTrigger", jobHandlers.getPauseTriggerHandler());
 		addActionHandler("/job/resumeTrigger", jobHandlers.getResumeTriggerHandler());
 		addActionHandler("/job/job-history", jobHandlers.getJobHistory());
+		addActionHandler("/job/cron-tool", jobHandlers.getCronTool());
 		
 		addActionHandler("/scheduler/detail", schedulerHandlers.getDetailHandler());
 		addActionHandler("/scheduler/listeners", schedulerHandlers.getListenersHandler());

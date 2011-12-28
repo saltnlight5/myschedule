@@ -3,6 +3,8 @@ package myschedule.web.servlet.app.handler;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +28,7 @@ import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.session.SessionData;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -388,6 +391,59 @@ public class JobHandlers {
 			// Get the history table
 			List<List<Object>> jobHistoryTable = plugin.getJobHistoryData();
 			viewData.addData("data", ViewData.mkMap("jobHistoryTable", jobHistoryTable));
+		}
+	};
+	
+	@Getter
+	private ActionHandler cronTool = new UrlRequestActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {			
+			String validate = viewData.getRequest().getParameter("validate");
+			String cronStr = viewData.getRequest().getParameter("cron");
+			String afterTimeStr = viewData.getRequest().getParameter("afterTime");
+			String fireTimesCountStr = viewData.getRequest().getParameter("fireTimesCount");
+			int fireTimesCount = 20;
+			Date afterTime = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			
+			Map<String, Object> dataMap = ViewData.mkMap(
+					"afterTimeStr", dateFormat.format(afterTime),
+					"fireTimesCount", fireTimesCount,
+					"cron", cronStr);
+			viewData.addData("data", dataMap);
+
+			if (validate == null) {
+				dataMap.put("cron", "* * * * * ?");
+				return;
+			}
+			if (fireTimesCountStr != null) {
+				fireTimesCount = Integer.parseInt(fireTimesCountStr);
+				dataMap.put("fireTimesCount", fireTimesCount);
+			}
+			if (afterTimeStr != null) {
+				try {
+					afterTime = dateFormat.parse(afterTimeStr);
+					dataMap.put("afterTimeStr", dateFormat.format(afterTime));
+				} catch (ParseException e) {
+					dataMap.put("invalidAfterTime", true);
+					dataMap.put("exceptionStr", e.getMessage());
+					dataMap.put("afterTimeStr", afterTimeStr);
+					return;
+				}
+			}
+			try {
+				CronExpression cronExp = new CronExpression(cronStr);
+				List<Date> fireTimes = new ArrayList<Date>();
+				for (int i = 0; i < fireTimesCount; i++) {
+					afterTime = cronExp.getTimeAfter(afterTime);
+					fireTimes.add(afterTime);
+				}
+				dataMap.put("cronExp", cronExp);
+				dataMap.put("fireTimes", fireTimes);
+			} catch (ParseException e) {
+				dataMap.put("invalidCron", true);
+				dataMap.put("exceptionStr", e.getMessage());
+			}
 		}
 	};
 	
