@@ -76,13 +76,13 @@
 		<finalName>myschedule-${project.version}</finalName>
 		<plugins>
 			<!-- TODO: We have to temporary comment this plugin out to perform release simply because it's snapshot!
-			See http://jira.codehaus.org/browse/MRELEASE-216			
+			See http://jira.codehaus.org/browse/MRELEASE-216 -->			
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.0-SNAPSHOT</version>
 			</plugin>
-			-->
+			
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
