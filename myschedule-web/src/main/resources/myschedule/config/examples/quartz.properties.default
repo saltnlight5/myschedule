@@ -127,3 +127,13 @@ org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript
 org.quartz.plugin.MyScriptingPlugin.initializeScript = my-initialize.js
 #org.quartz.plugin.MyScriptingPlugin.startScript = my-start.js
 #org.quartz.plugin.MyScriptingPlugin.shutdownScript = my-shutdown.js
+
+# Quartz Extra - Jdbc Scheduler History Plugin
+org.quartz.plugin.MyJobHistoryPlugin.class = myschedule.quartz.extra.JdbcSchedulerHistoryPlugin
+org.quartz.plugin.MyJobHistoryPlugin.insertSql = INSERT INTO qrtz_scheduler_history VALUES(?,?,?,?,?,?,?,?,?,?,?)
+org.quartz.plugin.MyJobHistoryPlugin.querySql = SELECT * FROM qrtz_scheduler_history ORDER BY event_time DESC
+org.quartz.plugin.MyJobHistoryPlugin.deleteSql = DELETE qrtz_scheduler_history WHERE event_time < ?
+org.quartz.plugin.MyJobHistoryPlugin.deleteIntervalInSecs = 604800
+org.quartz.plugin.MyJobHistoryPlugin.dataSourceName = quartzDataSource
+org.quartz.plugin.MyJobHistoryPlugin.schedulerContextKey = JdbcSchedulerHistoryPlugin.Instance
+
