@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
+import myschedule.quartz.extra.JdbcSchedulerHistoryPlugin;
 import myschedule.quartz.extra.QuartzExtraUtils;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.XmlJobLoader;
@@ -363,6 +364,30 @@ public class JobHandlers {
 			
 			viewData.addData("data", 
 					ViewData.mkMap("triggerWrapper", triggerWrapper, "fireTimesCount", fireTimesCount));
+		}
+	};
+	
+	@Getter
+	private ActionHandler jobHistory = new UrlRequestActionHandler() {
+		@Override
+		protected void handleViewData(ViewData viewData) {
+			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
+			String configId = sessionData.getCurrentSchedulerConfigId();
+			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			
+			// Verify plugin exists.
+			// TODO: We should let this key be configurable!
+			String key = JdbcSchedulerHistoryPlugin.DEFAULT_SCHEDULER_CONTEXT_KEY;			
+			JdbcSchedulerHistoryPlugin plugin = 
+					(JdbcSchedulerHistoryPlugin)schedulerService.getScheduler().getContext().get(key);
+			if (plugin == null) {
+				viewData.addData("data", ViewData.mkMap("jobHistoryPluginNotFound", true));
+				return;
+			}
+			
+			// Get the history table
+			List<List<Object>> jobHistoryTable = plugin.getJobHistoryData();
+			viewData.addData("data", ViewData.mkMap("jobHistoryTable", jobHistoryTable));
 		}
 	};
 	

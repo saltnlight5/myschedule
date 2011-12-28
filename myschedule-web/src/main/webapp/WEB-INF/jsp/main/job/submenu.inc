@@ -5,5 +5,6 @@
 <li><a href="${ mainPath }/job/list-calendars">Calendars</a></li>
 <li><a href="${ mainPath }/job/list-executing-jobs">Currently Executing Jobs</a></li>
 <li><a href="${ mainPath }/job/load-xml">Load Jobs (Xml)</a></li>
+<li><a href="${ mainPath }/job/job-history">Job History</a></li>
 </ul>
 </div>

@@ -4,8 +4,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
@@ -51,7 +55,9 @@ import org.slf4j.LoggerFactory;
  * # Jdbc Scheduler History Plugin
  * org.quartz.plugin.MyJobHistoryPlugin.class = myschedule.quartz.extra.JdbcSchedulerHistoryPlugin
  * org.quartz.plugin.MyJobHistoryPlugin.insertSql = INSERT INTO qrtz_scheduler_history VALUES(?,?,?,?,?,?,?,?,?,?,?)
+ * org.quartz.plugin.MyJobHistoryPlugin.querySql = SELECT * FROM qrtz_scheduler_history ORDER BY event_time DESC
  * org.quartz.plugin.MyJobHistoryPlugin.dataSourceName = quartzDataSource
+ * org.quartz.plugin.MyJobHistoryPlugin.schedulerContextKey = JdbcSchedulerHistoryPlugin.Instance
  * 
  * # JobStore: JDBC jobStoreTX
  * org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
@@ -80,6 +86,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
+	
+	public static final String DEFAULT_SCHEDULER_CONTEXT_KEY = "JdbcSchedulerHistoryPlugin.Instance";
 		
 	private static final Logger logger = LoggerFactory.getLogger(JdbcSchedulerHistoryPlugin.class);
 	private String name;
@@ -90,28 +98,64 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 	
 	private String dataSourceName;
 	private String insertSql;
+	private String querySql;
+	private String schedulerContextKey;
 	
+	public void setSchedulerContextKey(String schedulerContextKey) {
+		this.schedulerContextKey = schedulerContextKey;
+	}
 	public void setDataSourceName(String dataSourceName) {
 		this.dataSourceName = dataSourceName;
 	}
-	
+	public void setQuerySql(String querySql) {
+		this.querySql = querySql;
+	}
 	public void setInsertSql(String insertSql) {
 		this.insertSql = insertSql;
 	}
 
-	private void insertHistory(String sql, Object[] params) {
+	public List<List<Object>> getJobHistoryData() {
+		final List<List<Object>> result = new ArrayList<List<Object>>();
+		withConn(new ConnAction() {
+			@Override
+			public void onConn(Connection conn) throws SQLException {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(querySql);
+				int colCount = rs.getMetaData().getColumnCount();
+				while(rs.next()) {
+					List<Object> row = new ArrayList<Object>();
+					for (int i = 1; i <= colCount; i++) {
+						row.add(rs.getObject(i));
+					}
+					result.add(row);
+				}
+			}
+		});
+		return result;
+	}
+
+	private void insertHistory(final String sql, final Object[] params) {
+		withConn(new ConnAction() {
+			@Override
+			public void onConn(Connection conn) throws SQLException {
+				PreparedStatement stmt = conn.prepareStatement(insertSql);
+				for (int i = 1; i <= params.length; i++) {
+					stmt.setObject(i, params[i - 1]);
+				}
+				int result = stmt.executeUpdate();
+				logger.info("History record inserted: {}", result);
+				stmt.close();
+			}
+		});
+	}
+	
+	private void withConn(ConnAction action) {
 		Connection conn = null;
 		try {
 			conn = DBConnectionManager.getInstance().getConnection(dataSourceName);
-			PreparedStatement stmt = conn.prepareStatement(insertSql);
-			for (int i = 1; i <= params.length; i++) {
-				stmt.setObject(i, params[i - 1]);
-			}
-			int result = stmt.executeUpdate();
-			logger.info("History record inserted: {}", result);
-			stmt.close();
+			action.onConn(conn);
 		} catch (SQLException e) {
-			throw new QuartzRuntimeException("Failed to insert history record.", e);
+			throw new QuartzRuntimeException("Failed to execute DB connection action.", e);
 		} finally {
 			if (conn != null) {
 				try {
@@ -122,6 +166,10 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 				}
 			}
 		}
+	}
+	
+	private static interface ConnAction {
+		void onConn(Connection conn) throws SQLException;
 	}
 
 	private String retrieveLocalHost() {
@@ -149,8 +197,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 			throw new QuartzRuntimeException(e);
 		}
 	}
-
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(String name, Scheduler scheduler) throws SchedulerException {
@@ -160,9 +207,15 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 		this.localHost = retrieveLocalHost();
 		this.schedulerNameAndId = retrieveSchedulerNameAndId();
 		
-		//register listeners
+		// Register listeners
 		scheduler.getListenerManager().addTriggerListener(new HistoryTriggerListener());
 		scheduler.getListenerManager().addSchedulerListener(new HistorySchedulerListener());
+		
+		// Store this plugin instance into scheduler context map
+		if (schedulerContextKey == null)
+			schedulerContextKey = DEFAULT_SCHEDULER_CONTEXT_KEY;
+		scheduler.getContext().put(schedulerContextKey, this);
+		logger.info("Added plugin instance {} to scheduler context key: {}", this, schedulerContextKey);
 	}
 	
 	@Override
