@@ -67,7 +67,7 @@ public class ServiceContainer extends AbstractService {
 	@Override
 	protected void stopService() {
 		// Stopping in reverse order.
-		for (int i = services.size() - 1; i > 0; i--) {
+		for (int i = services.size() - 1; i >= 0; i--) {
 			Initable service = services.get(i);
 			if (service instanceof Service) {
 				logger.debug("Stopping service {}.", service);
@@ -80,7 +80,7 @@ public class ServiceContainer extends AbstractService {
 	@Override
 	protected void destroyService() {
 		// Destroying in reverse order.
-		for (int i = services.size() - 1; i > 0; i--) {
+		for (int i = services.size() - 1; i >= 0; i--) {
 			Initable service = services.get(i);
 			logger.debug("Destroying service {}.", service);
 			service.destroy();
