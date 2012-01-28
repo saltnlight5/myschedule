@@ -14,7 +14,7 @@ import org.junit.Test;
  *
  * @author Zemian Deng
  */
-public class ObjectUtilsTest {
+public class ServiceUtilsTest {
 
 	@Test
 	public void testDump() throws Exception {
