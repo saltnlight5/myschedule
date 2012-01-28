@@ -1,10 +1,12 @@
 syntax: glob
 target/*
 quartz-extra/target/*
+quartz-extra/.externalToolBuilders/*
 quartz-extra/.settings/*
 quartz-extra/.project
 quartz-extra/.classpath
 myschedule-web/target/*
+myschedule-web/.externalToolBuilders/*
 myschedule-web/.settings/*
 myschedule-web/.project
 myschedule-web/.classpath
