@@ -38,10 +38,10 @@ public class PropsConfig {
 	// ====================
 	public String getConfig(String key) {
 		ensureKeyExists(key);
-		return config.getProperty(key);
+		return config.getProperty(key).trim();
 	}
 	public String getConfig(String key, String def) {
-		return config.getProperty(key, def);
+		return config.getProperty(key, def).trim();
 	}
 	
 	public int getConfigInt(String key) {

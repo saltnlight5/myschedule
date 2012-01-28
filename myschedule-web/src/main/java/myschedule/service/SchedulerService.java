@@ -56,10 +56,10 @@ public class SchedulerService extends AbstractService {
 		String configPropsText = configStore.get(configId);
 		Properties props = ServiceUtils.textToProps(configPropsText);
 		
-		autoInit = Boolean.parseBoolean(props.getProperty(AUTO_INIT_KEY, "true"));
-		autoStart = Boolean.parseBoolean(props.getProperty(AUTO_START_KEY, "false"));		
-		preventAutoStartRemoteScheduler = Boolean.parseBoolean(props.getProperty(PREVENT_AUTO_START_REMOTE_SCHEDULER_KEY, "false"));
-		waitForJobsToComplete = Boolean.parseBoolean(props.getProperty(WAIT_FOR_JOBS_TO_COMPLETES_KEY, "false"));
+		autoInit = Boolean.parseBoolean(props.getProperty(AUTO_INIT_KEY, "true").trim());
+		autoStart = Boolean.parseBoolean(props.getProperty(AUTO_START_KEY, "false").trim());		
+		preventAutoStartRemoteScheduler = Boolean.parseBoolean(props.getProperty(PREVENT_AUTO_START_REMOTE_SCHEDULER_KEY, "false").trim());
+		waitForJobsToComplete = Boolean.parseBoolean(props.getProperty(WAIT_FOR_JOBS_TO_COMPLETES_KEY, "false").trim());
 		
 		return props;
 	}
