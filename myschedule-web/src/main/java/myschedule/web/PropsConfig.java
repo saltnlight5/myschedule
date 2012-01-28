@@ -44,7 +44,10 @@ public class PropsConfig {
 		return result;
 	}
 	public String getConfig(String key, String def) {
-		return config.getProperty(key, def);
+		String result = getConfig(key);
+		if (result == null)
+			return def;
+		return result;
 	}
 	
 	public int getConfigInt(String key) {
