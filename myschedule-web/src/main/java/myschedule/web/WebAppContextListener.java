@@ -37,6 +37,17 @@ public class WebAppContextListener implements ServletContextListener {
 		AppConfig appConfig = AppConfig.getInstance();
 		appConfig.destroy();
 		logger.info("Web application destroyed.");
+		
+		// Check for pause after shutdown
+		long pauseAfterShutdown = appConfig.getPauseAfterShutdown();
+		if (pauseAfterShutdown > 0) {
+			try {
+				logger.info("Pausing {}ms after sheduler shutdown to avoid server problem.", pauseAfterShutdown);
+				Thread.sleep(pauseAfterShutdown);
+			} catch (InterruptedException e) {
+				//We are shutting down anyway, if failed, just ignore it. 
+			}
+		}
 	}
 
 }

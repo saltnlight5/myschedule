@@ -87,11 +87,11 @@ public class AppConfig extends EasyMap implements Initable {
 		}
 		logger.info("ConfigStore set to: {}", configStore);
 		serviceContainer.addService(configStore);
-		
+
 		schedulerContainer = new SchedulerContainer();
 		schedulerContainer.setConfigStore(configStore);
 		serviceContainer.addService(schedulerContainer);
-		
+
 		dashboardHandler = new DashboardHandlers();
 		dashboardHandler.setSchedulerContainer(schedulerContainer);
 		dashboardHandler.setResourceLoader(resourceLoader);
@@ -177,7 +177,7 @@ public class AppConfig extends EasyMap implements Initable {
 			String version = props.getProperty("version");
 			return "myschedule-" + version;
 		} catch (RuntimeException e) {
-			logger.warn("Failed to get myschedule version properties. Use LATEST.SNAPSHOT label instead.", e);
+			logger.debug("Not able to get myschedule version properties. Use LATEST.SNAPSHOT label instead.");
 			return "myschedule-LATEST.SNAPSHOT";
 		}
 	}
@@ -191,5 +191,9 @@ public class AppConfig extends EasyMap implements Initable {
 			logger.warn("Failed to get quartz version properties. Use UNKNOWN label instead.", e);
 			return "quartz-UNKNOWN";
 		}
+	}
+	
+	public long getPauseAfterShutdown() {
+		return getConfigLong("myschedule.web.pauseAfterShutdown");
 	}
 }
