@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Zemian Deng <saltnlight5@gmail.com>
  *
  */
-public class AppConfig extends PropsConfig implements Initable {
+public class AppConfig extends EasyMap implements Initable {
 	private static final String CONFIG_FILE_KEY = "myschedule.config";
 	private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 	
@@ -114,21 +114,6 @@ public class AppConfig extends PropsConfig implements Initable {
 		// Ensure all services get init and started.
 		serviceContainer.init();
 		serviceContainer.start();
-	}
-	
-	private <T> T newInstance(Class<?> cls) {
-		Object obj;
-		try {
-			obj = cls.newInstance();
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-		
-		@SuppressWarnings("unchecked")
-		T result = (T)obj;
-		return result;
 	}
 	
 	@Override
