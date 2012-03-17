@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<web-app 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+	version="2.5">
+
+	<description>MySchedule - A Quartz Scheduler Dashboard</description>
+	
+	<!-- MySchedule Web App Context Listener -->
+	<listener>
+		<listener-class>myschedule.web.WebAppContextListener</listener-class>
+	</listener>
+	
+	<!-- MySchedule Servlet Mappings -->
+	<servlet>
+		<servlet-name>MainServlet</servlet-name>
+		<servlet-class>myschedule.web.servlet.app.MainServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MainServlet</servlet-name>
+		<url-pattern>/main/*</url-pattern>
+	</servlet-mapping>
+		
+	<!-- Session timeout in minutes. 1440 mins = 24 hours. -->
+	<session-config>
+        <session-timeout>1440</session-timeout> 
+    </session-config>
+
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/jsp/main/error.jsp</location>
+	</error-page>	
+</web-app>

@@ -1,0 +1,21 @@
+# This config will setup Quartz like InMemory, but with JMX enabled.
+#
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
+#
+
+# Main Quartz configuration
+org.quartz.scheduler.skipUpdateCheck = true
+org.quartz.scheduler.instanceName = JmxScheduler
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 5
+
+# Enable JMX features (Once started, you may use jconsole to view the MBeans exposed.)
+org.quartz.scheduler.jmx.export = true
+#org.quartz.scheduler.jmx.objectName = quartz:type=QuartzScheduler,name=JmxScheduler,instanceId=NONE_CLUSTER
+
+# MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)
+myschedule.schedulerService.autoInit = true
+myschedule.schedulerService.autoStart = true
+myschedule.schedulerService.waitForJobsToComplete = true

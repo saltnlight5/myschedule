@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>myschedule</groupId>
+	<artifactId>myschedule</artifactId>
+	<version>2.4.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>myschedule-quartz-extra</module>
+		<module>myschedule-web</module>
+	</modules>
+	<developers>
+		<developer>
+			<id>saltnlight5</id>
+			<name>Zemian Deng</name>
+			<email>saltnlight5@gmail.com</email>
+			<roles>
+				<role>Project Owner and Primary Developer</role>
+			</roles>
+			<timezone>-5</timezone>
+		</developer>
+	</developers>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- Library version -->
+		<slf4j.version>1.6.3</slf4j.version>
+		<quartz.version>2.1.1</quartz.version>
+	</properties>
+	<licenses>
+		<license>
+			<name>Apache 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+	<distributionManagement>
+		<repository>
+			<id>local-m2-repo</id>
+			<url>file:///${user.home}/.m2/repository</url>
+			<uniqueVersion>true</uniqueVersion>
+		</repository>
+	</distributionManagement>
+	<scm>
+		<connection>scm:hg:file:///${basedir}</connection>
+		<developerConnection>scm:hg:file:///${basedir}</developerConnection>
+		<url>http://code.google.com/p/myschedule/source/browse</url>
+	</scm>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>myschedule</groupId>
+				<artifactId>myschedule-quartz-extra</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<dependencies>
+		<!-- Getter and Setter Generator -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>0.10.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Testing libraries -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>1.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit-dep</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Logging libraries -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<!-- Quartz library -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<disableXmlReport>true</disableXmlReport>
+					<!-- Include only unit tests -->
+					<includes>
+						<include>unit/**/*Test.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>integration</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.10</version>
+						<configuration>
+							<disableXmlReport>true</disableXmlReport>
+							<!-- Include integration tests -->
+							<includes>
+								<include>integration/**/*Test.java</include>
+							</includes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>opt</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
+				<!-- SLF4j impl -->
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+					<version>${slf4j.version}</version>
+				</dependency>
+
+				<!-- Groovy Scripting Engine -->
+				<dependency>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy</artifactId>
+					<version>1.8.4</version>
+				</dependency>				
+
+				<!-- JRuby Scripting Engine 
+				<dependency>
+				    <groupId>org.jruby</groupId>
+				    <artifactId>jruby</artifactId>
+				    <version>1.6.5</version>
+				</dependency>
+				-->
+
+				<!-- Quartz MySql JDBC Driver (Note: there is no extra quartz component 
+					is needed with MySql.) -->
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<version>5.1.16</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<!-- Use to copy src/test/resources into main for tomcat:run uses. -->
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<configuration>
+									<target>
+										<copy todir="target/classes">
+											<fileset dir="src/test/resources">
+												<include name="log4j.properties" />
+											</fileset>
+										</copy>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>oracle</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
+				<!-- Quartz Oracle and JDBC Driver -->
+				<dependency>
+					<groupId>org.quartz-scheduler</groupId>
+					<artifactId>quartz-oracle</artifactId>
+					<version>${quartz.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+					<version>11.2.0.2.0</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>heroku</id>
+			<activation>
+				<os>
+					<name>Linux</name>
+					<arch>amd64</arch>
+					<version>2.6.32-316-ec2</version>
+				</os>
+			</activation>
+			<dependencies>
+				<!-- SLF4j impl -->
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+					<version>${slf4j.version}</version>
+				</dependency>
+				
+				<!-- Groovy Scripting Engine -->
+				<dependency>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy</artifactId>
+					<version>1.8.4</version>
+				</dependency>				
+
+				<!-- JRuby Scripting Engine -->
+				<dependency>
+				    <groupId>org.jruby</groupId>
+				    <artifactId>jruby</artifactId>
+				    <version>1.6.5</version>
+				</dependency>
+				
+				<!-- PostGres Database Driver -->
+				<dependency>
+					<groupId>postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<version>9.0-801.jdbc4</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.3</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals><goal>copy</goal></goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.mortbay.jetty</groupId>
+											<artifactId>jetty-runner</artifactId>
+											<version>7.5.4.v20111024</version>
+											<destFileName>jetty-runner.jar</destFileName>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
