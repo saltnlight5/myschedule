@@ -5,11 +5,13 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -37,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * <p>You must also set the {@link #dataSourceName} name in the quartz.properties. It can be the same data source you
  * setup for the JdbcJobStore configuration (see Quartz doc.)
  * 
- * Here is example of how to create the history table on MySQL.
+ * Here is an example of how to create the history table on MySQL.
  * <pre>
  * CREATE TABLE qrtz_scheduler_history (
  *   host_ip VARCHAR(15) NOT NULL,
@@ -53,6 +55,25 @@ import org.slf4j.LoggerFactory;
  *   info5 VARCHAR(256) NULL,
  *   INDEX(host_ip, host_name, event_type,event_name,event_time)
  * )
+ * </pre>
+ *
+ * And here is an example of how to create the history table on Oracle.
+ * <pre>
+ * CREATE TABLE "QRTZ_SCHEDULER_HISTORY"
+ * (
+ * "HOST_IP" VARCHAR2(120 BYTE) NOT NULL,
+ * "HOST_NAME" VARCHAR2(200 BYTE) NOT NULL,
+ * "SCHEDULER_NAME" VARCHAR2(250 BYTE) NOT NULL,
+ * "EVENT_TYPE" VARCHAR2(250 BYTE) NOT NULL,
+ * "EVENT_NAME" VARCHAR2(250 BYTE) NOT NULL,
+ * "EVENT_TIME" TIMESTAMP NOT NULL,
+ * "INFO1" VARCHAR2(250 BYTE),
+ * "INFO2" VARCHAR2(250 BYTE),
+ * "INFO3" VARCHAR2(250 BYTE),
+ * "INFO4" VARCHAR2(250 BYTE),
+ * "INFO5" VARCHAR2(250 BYTE)
+ * );
+ * CREATE INDEX QRTZ_SCHEDULER_HISTORY_INDEX on QRTZ_SCHEDULER_HISTORY(HOST_IP, HOST_NAME, EVENT_TYPE,EVENT_NAME,EVENT_TIME);
  * </pre>
  * 
  * <p>Here is an example of how you configure this plugin in <code>quartz.properties</code> file.
@@ -109,6 +130,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 	private String deleteSql;
 	private String schedulerContextKey;
 	private long deleteIntervalInSecs;
+	private int[] columnSqlTypes;
 	
 	public void setSchedulerContextKey(String schedulerContextKey) {
 		this.schedulerContextKey = schedulerContextKey;
@@ -166,12 +188,28 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 	}
 
 	private void insertHistory(final String sql, final Object[] params) {
+		logger.debug("Insert SQL: {}", sql);
 		withConn(new ConnAction() {
 			@Override
 			public void onConn(Connection conn) throws SQLException {
 				PreparedStatement stmt = conn.prepareStatement(insertSql);
-				for (int i = 1; i <= params.length; i++) {
-					stmt.setObject(i, params[i - 1]);
+				if (columnSqlTypes != null) {
+					for (int i = 1; i <= params.length; i++) {
+						Object param = params[i - 1];
+						if (param instanceof Date) {
+							long time = ((Date)param).getTime();
+							param = new java.sql.Timestamp(time);
+						}
+						int type = columnSqlTypes[i - 1];
+						logger.debug("Binding param[{}]: {}, type={}", new Object[]{i, param, type});
+						stmt.setObject(i, param, type);
+					}
+				} else {
+					for (int i = 1; i <= params.length; i++) {
+						Object param = params[i - 1];
+						logger.debug("Binding param[{}]: {}", i, param);
+						stmt.setObject(i, param);
+					}
 				}
 				int result = stmt.executeUpdate();
 				logger.info("History record inserted: {}", result);
@@ -247,6 +285,28 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 			schedulerContextKey = DEFAULT_SCHEDULER_CONTEXT_KEY;
 		scheduler.getContext().put(schedulerContextKey, this);
 		logger.info("Added plugin instance {} to scheduler context key: {}", this, schedulerContextKey);
+		
+		// Extract and find all the SQL types for table columns.
+		withConn(new ConnAction() {
+			@Override
+			public void onConn(Connection conn) throws SQLException {
+				PreparedStatement stmt = conn.prepareStatement(querySql);
+				ResultSetMetaData metaData = stmt.getMetaData();
+				if (metaData != null) {
+					int size = metaData.getColumnCount();
+					columnSqlTypes = new int[size];
+					for (int i = 1; i <= size; i++) {
+						int type = metaData.getColumnType(i);
+						String typeName = metaData.getColumnTypeName(i);
+						String name = metaData.getColumnName(i);
+						logger.debug("History table SQL column {}, type={}, typeName={}", 
+								new Object[]{name, type, typeName});
+						columnSqlTypes[i - 1] = type;
+					}
+				}
+				stmt.close();
+			}			
+		});
 	}
 	
 	@Override
