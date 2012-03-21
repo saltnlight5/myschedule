@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>myschedule</groupId>
 	<artifactId>myschedule</artifactId>
-	<version>2.4.2</version>
+	<version>2.4.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>myschedule-quartz-extra</module>
@@ -43,7 +43,7 @@
 	</distributionManagement>
 	<scm>
 		<connection>scm:hg:file:///${basedir}</connection>
-		<developerConnection>scm:hg:file:///${basedir}</developerConnection>
+		<developerConnection>scm:hg:${basedir}</developerConnection>
 		<url>http://code.google.com/p/myschedule/source/browse</url>
 	</scm>
 	<dependencyManagement>
