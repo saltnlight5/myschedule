@@ -6,33 +6,35 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** 
- * A configuration class that backed by Java Properties. You may use multiple ways to add configuration values into
- * this class, and each time you add properties, it will auto check to expand any <code>${variable}</code> using 
- * existing System Properties and what's already loaded as lookup values.
+/**
+ * A easy map for configuration that backed by Java Properties. You may use multiple ways to add configuration values into this
+ * class, and each time you add properties, it will auto check to expand any <code>${variable}</code> using existing
+ * System Properties and what's already loaded as lookup values.
  * 
  * @author Zemian Deng <saltnlight5@gmail.com>
- *
+ * 
  */
-public class PropsConfig {
-	private static final Logger logger = LoggerFactory.getLogger(PropsConfig.class);
+public class EasyMap {
 	private static final String CLASSPATH_PREFIX = "classpath:";
-	private Properties config;
-	
-	public PropsConfig() {
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+	protected Properties config;
+
+	public EasyMap() {
 		config = new Properties();
 	}
-	
-	public PropsConfig(String configFile) {
+
+	public EasyMap(String configFile) {
 		config = new Properties();
-		addConfig(configFile);
+		if (configFile != null)
+			addConfig(configFile);
 	}
-	
+
 	// ====================
 	// Config value getters
 	// ====================
@@ -43,22 +45,34 @@ public class PropsConfig {
 			result = result.trim();
 		return result;
 	}
+
 	public String getConfig(String key, String def) {
-		String result = getConfig(key);
-		if (result == null)
-			return def;
-		return result;
+		return config.getProperty(key, def);
 	}
-	
+
 	public int getConfigInt(String key) {
 		ensureKeyExists(key);
 		String val = getConfig(key);
 		int ret = Integer.parseInt(val);
 		return ret;
 	}
+
 	public int getConfigInt(String key, int def) {
 		String val = getConfig(key, "" + def);
 		int ret = Integer.parseInt(val);
+		return ret;
+	}
+	
+	public long getConfigLong(String key) {
+		ensureKeyExists(key);
+		String val = getConfig(key);
+		long ret = Long.parseLong(val);
+		return ret;
+	}
+
+	public long getConfigLong(String key, long def) {
+		String val = getConfig(key, "" + def);
+		long ret = Long.parseLong(val);
 		return ret;
 	}
 
@@ -67,20 +81,27 @@ public class PropsConfig {
 		String val = getConfig(key);
 		double ret = Double.parseDouble(val);
 		return ret;
-	}	
+	}
+
 	public double getConfigDouble(String key, double def) {
 		String val = getConfig(key, "" + def);
 		double ret = Double.parseDouble(val);
 		return ret;
 	}
-	public Class<?> getConfigClass(String key) {
+
+	@SuppressWarnings("unchecked")
+	public <T> T getConfigClass(String key) {
 		ensureKeyExists(key);
 		String val = getConfig(key);
-		return toClass(val);
+		return (T)toClass(val);
 	}
-	public Class<?> getConfigClass(String key, String def) {
+
+	@SuppressWarnings("unchecked")
+	public <T> T getConfigClass(String key, String def) {
 		String val = getConfig(key, def);
-		return toClass(val);
+		if (val == null)
+			return null;
+		return (T)toClass(val);
 	}
 
 	// ========================
@@ -88,6 +109,7 @@ public class PropsConfig {
 	// ========================
 	/**
 	 * Add a direct Properties as configuration values.
+	 * 
 	 * @param newConfig
 	 */
 	public void addConfig(Properties newConfig) {
@@ -95,17 +117,19 @@ public class PropsConfig {
 		Properties props = expandVariables(newConfig, config);
 		config.putAll(props);
 	}
-	
+
 	/**
 	 * Add any file configuration. It will support any URL and 'classpath:' protocol as well.
 	 * 
-	 * @param configFile - a file or resource name to load Properties as configuration values.
+	 * @param configFile
+	 *            - a file or resource name to load Properties as configuration values.
 	 */
 	public void addConfig(String configFile) {
 		logger.debug("Adding configuration from URL: {}.", configFile);
-		InputStream inStream = null;		
+		InputStream inStream = null;
 		if (configFile.startsWith(CLASSPATH_PREFIX)) {
-			// If configFile is prefix with 'classpath:' then load it as jar resource
+			// If configFile is prefix with 'classpath:' then load it as jar
+			// resource
 			String resName = configFile.substring(CLASSPATH_PREFIX.length());
 			inStream = getClassLoader().getResourceAsStream(resName);
 			if (inStream == null) {
@@ -123,7 +147,7 @@ public class PropsConfig {
 				throw new RuntimeException("Config file is invalid: " + configFile, e);
 			}
 		}
-		
+
 		// Load config from inStream.
 		Properties props = null;
 		try {
@@ -139,12 +163,12 @@ public class PropsConfig {
 				IOUtils.closeQuietly(inStream);
 			}
 		}
-		
+
 		// Expand variables and then add to config store.
 		props = expandVariables(props, config);
 		config.putAll(props);
 	}
-	
+
 	/**
 	 * Check to see if Java System Properties exists with a key, and then load it as URL or 'classpath:' protocol
 	 * configuration values.
@@ -157,25 +181,25 @@ public class PropsConfig {
 			addConfig(configFile);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Auto expand any ${variable} in expandProps using a lookupProps for existing variable definitions. This method
-	 * will automatically search the System Properties space for lookup as well. 
+	 * will automatically search the System Properties space for lookup as well.
 	 */
 	protected Properties expandVariables(Properties props, Properties lookupProps) {
 		Properties expandedProps = new Properties();
 		expandedProps.putAll(props);
-		
+
 		Properties lookupPropsCopy = new Properties();
 		lookupPropsCopy.putAll(lookupProps);
 		lookupPropsCopy.putAll(System.getProperties());
-		
+
 		StrSubstitutor substitutor = new StrSubstitutor(lookupPropsCopy);
 		for (String name : expandedProps.stringPropertyNames()) {
 			String val = expandedProps.getProperty(name);
 			String newVal = substitutor.replace(val);
 			if (!newVal.equals(val)) {
-				expandedProps.put(name,  newVal);
+				expandedProps.put(name, newVal);
 				logger.debug("Props {} has variable substituted with new value: {}", name, newVal);
 			}
 		}
@@ -185,21 +209,33 @@ public class PropsConfig {
 	// ====================
 	// Supporting functions
 	// ====================
-	private void ensureKeyExists(String key) {
+	protected void ensureKeyExists(String key) {
 		if (!config.containsKey(key)) {
 			throw new IllegalArgumentException("Config key not found: " + key);
-		}		
+		}
 	}
-	
-	private Class<?> toClass(String className) {
+
+	protected Class<?> toClass(String className) {
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private ClassLoader getClassLoader() {
+
+	protected ClassLoader getClassLoader() {
 		return getClass().getClassLoader();
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T newInstance(Class<?> cls) {
+		try {
+			Object obj = cls.newInstance();
+			return (T)obj;
+		} catch (InstantiationException e) {
+			throw new RuntimeException("Failed to create new instance: From " + cls, e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Failed to create new instance: From " + cls, e);
+		}
 	}
 }
