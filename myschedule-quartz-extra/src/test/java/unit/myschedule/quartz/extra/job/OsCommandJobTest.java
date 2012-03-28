@@ -18,6 +18,30 @@ import unit.myschedule.quartz.extra.util.ProcessUtilsTest;
 
 public class OsCommandJobTest {
 	@Test
+	public void testJavaOsCommandJobSingleLine() {
+		String pathSep = File.separator;
+		String javaHome = System.getProperty("java.home");
+		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
+		String classpath = System.getProperty("java.class.path");
+		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
+		String cmdArg = javaBin + " -cp " + classpath + " " + mainClass.getName() + " " + "500";
+		
+		ResultJobListener.resetResult();
+		SchedulerTemplate st = new SchedulerTemplate();
+		st.addJobListener(new ResultJobListener());
+		
+		JobDetail job = SchedulerTemplate.createJobDetail("MyOsCommandJobTest", OsCommandJob.class);
+		JobDataMap dataMap = job.getJobDataMap();
+		dataMap.put(OsCommandJob.CMD_ARGS_KEY, cmdArg);
+		Trigger trigger = SchedulerTemplate.createSimpleTrigger("MyOsCommandJobTest");
+		st.scheduleJob(job, trigger);
+		st.startAndShutdown(99);
+		
+		assertThat(ResultJobListener.result.jobResults.size(), is(1));
+		assertThat((Integer)ResultJobListener.result.jobResults.get(0), is(0));
+	}
+	
+	@Test
 	public void testJavaOsCommandJob() {
 		String pathSep = File.separator;
 		String javaHome = System.getProperty("java.home");
