@@ -64,7 +64,15 @@ public class OsCommandJob implements Job, InterruptableJob {
 		if (!dataMap.containsKey(CMD_ARGS_KEY)) {
 			throw new JobExecutionException(CMD_ARGS_KEY + " not found in data map");			
 		}
-		String[] commandArguments = (String[])dataMap.get(CMD_ARGS_KEY);
+		String[] commandArguments = null;
+		Object cmdObj = dataMap.get(CMD_ARGS_KEY);
+		if (cmdObj instanceof String) {
+			commandArguments = ((String)cmdObj).split(" ");
+		} else if (cmdObj instanceof String[]) {
+			commandArguments = (String[])cmdObj;
+		} else {
+			throw new JobExecutionException(CMD_ARGS_KEY + " type is invalid. Use either String or String array.");	
+		}
 		logger.debug("Executing command: {}", Arrays.asList(commandArguments));
 		
 		// Will only in use when RUN_IN_BACKGROUND_KEY is not set (meaning the job will block until command is done.)
