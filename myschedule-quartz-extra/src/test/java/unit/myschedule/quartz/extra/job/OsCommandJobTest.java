@@ -24,7 +24,7 @@ public class OsCommandJobTest {
 		String javaBin = javaHome + pathSep + "bin" + pathSep + "java";
 		String classpath = System.getProperty("java.class.path");
 		Class<?> mainClass = ProcessUtilsTest.RunBackgroundProcessMain.class;
-		String cmdArg = javaBin + " -cp " + classpath + " " + mainClass.getName() + " " + "500";
+		String cmdArg = javaBin + " -cp \"" + classpath + "\" " + mainClass.getName() + " " + "500";
 		
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
