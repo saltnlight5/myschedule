@@ -3,13 +3,14 @@ package myschedule.web.servlet.app.filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import lombok.Setter;
+
 import myschedule.service.ErrorCodeException;
 import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionFilter;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.session.SessionData;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +23,11 @@ public class SessionDataFilter implements ActionFilter {
 
 	private static final Logger logger = LoggerFactory.getLogger(SessionDataFilter.class);
 
-	@Setter
 	private SchedulerContainer schedulerContainer;
+	
+	public void setSchedulerContainer(SchedulerContainer schedulerContainer) {
+		this.schedulerContainer = schedulerContainer;
+	}
 
 	@Override
 	public ViewData beforeAction(String actionPath, HttpServletRequest req, HttpServletResponse resp) throws Exception {

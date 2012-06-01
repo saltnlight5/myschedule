@@ -11,8 +11,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
+
 import myschedule.quartz.extra.JdbcSchedulerHistoryPlugin;
 import myschedule.quartz.extra.QuartzExtraUtils;
 import myschedule.quartz.extra.SchedulerTemplate;
@@ -27,6 +26,7 @@ import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.session.SessionData;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
@@ -45,12 +45,19 @@ public class JobHandlers {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JobHandlers.class);
 	
-	@Setter
 	private SchedulerContainer schedulerContainer;
-	@Setter
 	private int defaultFireTimesCount;
 	
-	@Getter
+	public void setSchedulerContainer(SchedulerContainer schedulerContainer) {
+		this.schedulerContainer = schedulerContainer;
+	}
+	public void setDefaultFireTimesCount(int defaultFireTimesCount) {
+		this.defaultFireTimesCount = defaultFireTimesCount;
+	}
+	
+	public ActionHandler getPauseTriggerHandler() {
+		return pauseTriggerHandler;
+	}
 	private ActionHandler pauseTriggerHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -67,7 +74,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getResumeTriggerHandler() {
+		return resumeTriggerHandler;
+	}
 	private ActionHandler resumeTriggerHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -84,7 +93,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getListHandler() {
+		return listHandler;
+	}
 	private ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -132,7 +143,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getListExecutingJobsHandler() {
+		return listExecutingJobsHandler;
+	}
 	private ActionHandler listExecutingJobsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -145,7 +158,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getListNoTriggerJobsHandler() {
+		return listNoTriggerJobsHandler;
+	}
 	private ActionHandler listNoTriggerJobsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -176,7 +191,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getListCalendarsHandler() {
+		return listCalendarsHandler;
+	}
 	private ActionHandler listCalendarsHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -194,7 +211,9 @@ public class JobHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getUnscheduleHandler() {
+		return unscheduleHandler;
+	}
 	private ActionHandler unscheduleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -226,7 +245,9 @@ public class JobHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getDeleteHandler() {
+		return deleteHandler;
+	}
 	private ActionHandler deleteHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -247,7 +268,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getRunJobHandler() {
+		return runJobHandler;
+	}
 	private ActionHandler runJobHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -263,10 +286,14 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getLoadXmlHandler() {
+		return loadXmlHandler;
+	}
 	private ActionHandler loadXmlHandler = new UrlRequestActionHandler();
 	
-	@Getter
+	public ActionHandler getLoadXmlActionHandler() {
+		return loadXmlActionHandler;
+	}
 	private ActionHandler loadXmlActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -306,8 +333,10 @@ public class JobHandlers {
 		}
 	};
 	
+	public ActionHandler getJobDetailHandler() {
+		return jobDetailHandler;
+	}
 	/** Show a trigger and its job detail page. */	
-	@Getter
 	private ActionHandler jobDetailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -339,7 +368,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getTriggerDetailHandler() {
+		return triggerDetailHandler;
+	}
 	private ActionHandler triggerDetailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -370,7 +401,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getJobHistory() {
+		return jobHistory;
+	}
 	private ActionHandler jobHistory = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -394,7 +427,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getCronTool() {
+		return cronTool;
+	}
 	private ActionHandler cronTool = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {			
@@ -446,7 +481,9 @@ public class JobHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getSchedulerDownHandler() {
+		return schedulerDownHandler;
+	}
 	private ActionHandler schedulerDownHandler = new UrlRequestActionHandler();
 	
 	private List<String> getTriggerFullNames(List<MutableTrigger> triggers) {

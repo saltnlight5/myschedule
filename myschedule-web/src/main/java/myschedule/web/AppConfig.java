@@ -2,9 +2,10 @@ package myschedule.web;
 
 import java.io.File;
 import java.util.Properties;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import lombok.Getter;
+
 import myschedule.service.ConfigStore;
 import myschedule.service.FileConfigStore;
 import myschedule.service.Initable;
@@ -16,6 +17,7 @@ import myschedule.web.servlet.app.handler.DashboardHandlers;
 import myschedule.web.servlet.app.handler.JobHandlers;
 import myschedule.web.servlet.app.handler.SchedulerHandlers;
 import myschedule.web.servlet.app.handler.ScriptingHandlers;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,24 +51,52 @@ public class AppConfig extends EasyMap implements Initable {
 	// This field is not exposed out side
 	private ServiceContainer serviceContainer;
 	
-	@Getter
 	private ConfigStore configStore;
-	@Getter
 	private SchedulerContainer schedulerContainer;
-	@Getter
 	private ResourceLoader resourceLoader;
 	
-	@Getter
 	private DashboardHandlers dashboardHandler;	
-	@Getter
 	private JobHandlers jobHandlers;
-	@Getter
 	private SchedulerHandlers schedulerHandlers;
-	@Getter
 	private ScriptingHandlers scriptingHandlers;
-    @Getter
     protected SessionDataFilter sessionDataFilter;
-	
+    
+	public ServiceContainer getServiceContainer() {
+		return serviceContainer;
+	}
+
+	public ConfigStore getConfigStore() {
+		return configStore;
+	}
+
+	public SchedulerContainer getSchedulerContainer() {
+		return schedulerContainer;
+	}
+
+	public ResourceLoader getResourceLoader() {
+		return resourceLoader;
+	}
+
+	public DashboardHandlers getDashboardHandler() {
+		return dashboardHandler;
+	}
+
+	public JobHandlers getJobHandlers() {
+		return jobHandlers;
+	}
+
+	public SchedulerHandlers getSchedulerHandlers() {
+		return schedulerHandlers;
+	}
+
+	public ScriptingHandlers getScriptingHandlers() {
+		return scriptingHandlers;
+	}
+
+	public SessionDataFilter getSessionDataFilter() {
+		return sessionDataFilter;
+	}
+
 	@Override
 	public void init() {
 		// Let user add more config if needed to.
