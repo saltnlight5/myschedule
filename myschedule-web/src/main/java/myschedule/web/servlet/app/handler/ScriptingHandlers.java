@@ -8,21 +8,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
-import lombok.Getter;
-import lombok.Setter;
+
 import myschedule.service.ErrorCode;
 import myschedule.service.ErrorCodeException;
 import myschedule.service.ResourceLoader;
 import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
 import myschedule.web.servlet.ActionHandler;
-import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.UrlRequestActionHandler;
+import myschedule.web.servlet.ViewData;
 import myschedule.web.session.SessionData;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -30,10 +31,15 @@ import org.slf4j.LoggerFactory;
 
 public class ScriptingHandlers {
 	
-	@Setter
 	private SchedulerContainer schedulerContainer;
-	@Setter
 	private ResourceLoader resourceLoader;
+	
+	public void setSchedulerContainer(SchedulerContainer schedulerContainer) {
+		this.schedulerContainer = schedulerContainer;
+	}
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(ScriptingHandlers.class);
 	private static final Map<String, String> SCRIPT_EXT_MAPPINGS = new HashMap<String, String>();
@@ -44,7 +50,9 @@ public class ScriptingHandlers {
 		SCRIPT_EXT_MAPPINGS.put("JRuby", ".rb");
 	}
 			
-	@Getter
+	public ActionHandler getRunHandler() {
+		return runHandler;
+	}
 	private ActionHandler runHandler = new UrlRequestActionHandler(){
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
@@ -57,7 +65,9 @@ public class ScriptingHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getRunActionHandler() {
+		return runActionHandler;
+	}
 	private ActionHandler runActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(myschedule.web.servlet.ViewData viewData) {
@@ -119,7 +129,9 @@ public class ScriptingHandlers {
 		};
 	};
 	
-	@Getter
+	public ActionHandler getScriptExampleHandler() {
+		return scriptExampleHandler;
+	}
 	private ActionHandler scriptExampleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {

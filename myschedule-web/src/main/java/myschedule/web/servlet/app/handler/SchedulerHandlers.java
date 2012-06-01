@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import lombok.Getter;
-import lombok.Setter;
 import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
@@ -15,8 +13,8 @@ import myschedule.service.SchedulerContainer;
 import myschedule.service.SchedulerService;
 import myschedule.service.ServiceUtils;
 import myschedule.web.servlet.ActionHandler;
-import myschedule.web.servlet.ViewData;
 import myschedule.web.servlet.UrlRequestActionHandler;
+import myschedule.web.servlet.ViewData;
 import myschedule.web.session.SessionData;
 
 import org.quartz.JobDetail;
@@ -33,10 +31,15 @@ public class SchedulerHandlers {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SchedulerHandlers.class);
 
-	@Setter
 	private SchedulerContainer schedulerContainer;
-		
-	@Getter
+
+	public void setSchedulerContainer(SchedulerContainer schedulerContainer) {
+		this.schedulerContainer = schedulerContainer;
+	}
+	
+	public ActionHandler getListenersHandler() {
+		return listenersHandler;
+	}
 	private ActionHandler listenersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -58,7 +61,9 @@ public class SchedulerHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getModifyHandler() {
+		return modifyHandler;
+	}
 	private ActionHandler modifyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -74,7 +79,10 @@ public class SchedulerHandlers {
 		}
 	};
 
-	@Getter
+
+	public ActionHandler getModifyActionHandler() {
+		return modifyActionHandler;
+	}
 	private ActionHandler modifyActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -96,7 +104,9 @@ public class SchedulerHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getSummaryHandler() {
+		return summaryHandler;
+	}
 	private ActionHandler summaryHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -115,7 +125,9 @@ public class SchedulerHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getDetailHandler() {
+		return detailHandler;
+	}
 	private ActionHandler detailHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -134,7 +146,9 @@ public class SchedulerHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getPauseAllTriggersHandler() {
+		return pauseAllTriggersHandler;
+	}
 	private ActionHandler pauseAllTriggersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -158,7 +172,9 @@ public class SchedulerHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getResumeAllTriggersHandler() {
+		return resumeAllTriggersHandler;
+	}
 	private ActionHandler resumeAllTriggersHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -173,7 +189,9 @@ public class SchedulerHandlers {
 		}
 	};
 	
-	@Getter
+	public ActionHandler getStartHandler() {
+		return startHandler;
+	}
 	private ActionHandler startHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -189,7 +207,9 @@ public class SchedulerHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getStandbyHandler() {
+		return standbyHandler;
+	}
 	private ActionHandler standbyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {

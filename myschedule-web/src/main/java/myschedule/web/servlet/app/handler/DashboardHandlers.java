@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
+
 import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.service.ErrorCode;
@@ -20,6 +19,7 @@ import myschedule.web.servlet.ActionHandler;
 import myschedule.web.servlet.UrlRequestActionHandler;
 import myschedule.web.servlet.ViewData;
 import myschedule.web.session.SessionData;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +28,19 @@ public class DashboardHandlers {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardHandlers.class);
 
-	@Setter
 	private SchedulerContainer schedulerContainer;
-	@Setter
 	private ResourceLoader resourceLoader;
+	
+	public void setSchedulerContainer(SchedulerContainer schedulerContainer) {
+		this.schedulerContainer = schedulerContainer;
+	}
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
 
-	@Getter
+	public ActionHandler getIndexHandler() {
+		return indexHandler;
+	}
 	private ActionHandler indexHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -53,7 +60,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getListHandler() {
+		return listHandler;
+	}
 	private ActionHandler listHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -110,7 +119,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getConfigExampleHandler() {
+		return configExampleHandler;
+	}
 	private ActionHandler configExampleHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -127,10 +138,14 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getCreateHandler() {
+		return createHandler;
+	}
 	private ActionHandler createHandler = new UrlRequestActionHandler();
 
-	@Getter
+	public ActionHandler getCreateActionHandler() {
+		return createActionHandler;
+	}
 	private ActionHandler createActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -141,7 +156,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getModifyHandler() {
+		return modifyHandler;
+	}
 	private ActionHandler modifyHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -154,7 +171,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getModifyActionHandler() {
+		return modifyActionHandler;
+	}
 	private ActionHandler modifyActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -169,7 +188,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getDeleteActionHandler() {
+		return deleteActionHandler;
+	}
 	private ActionHandler deleteActionHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -183,7 +204,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getInitHandler() {
+		return initHandler;
+	}
 	private ActionHandler initHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -201,7 +224,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getShutdownHandler() {
+		return shutdownHandler;
+	}
 	private ActionHandler shutdownHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
@@ -212,7 +237,9 @@ public class DashboardHandlers {
 		}
 	};
 
-	@Getter
+	public ActionHandler getSwitchSchedulerHandler() {
+		return switchSchedulerHandler;
+	}
 	private ActionHandler switchSchedulerHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {

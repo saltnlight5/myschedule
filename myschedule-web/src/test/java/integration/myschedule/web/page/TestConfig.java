@@ -1,6 +1,5 @@
 package integration.myschedule.web.page;
 
-import lombok.Getter;
 
 public class TestConfig {
 	
@@ -21,6 +20,9 @@ public class TestConfig {
 	// Web Server Config
 	// =================
 	
-	@Getter
 	private String webappUrl = "http://localhost:8080/myschedule";
+	
+	public String getWebappUrl() {
+		return webappUrl;
+	}
 }
