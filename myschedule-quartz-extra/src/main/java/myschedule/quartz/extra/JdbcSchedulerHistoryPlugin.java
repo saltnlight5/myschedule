@@ -503,8 +503,11 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 							usingJobData(JobHistoryRemovalJob.PLUGIN_KEY_NAME, schedulerContextKey).
 							build();
 					Trigger trigger = TriggerBuilder.newTrigger().withIdentity(jobName).
-							withSchedule(SimpleScheduleBuilder.repeatSecondlyForever((int)deleteIntervalInSecs)).
-							startAt(new Date(System.currentTimeMillis() - (deleteIntervalInSecs * 1000))).
+							withSchedule(
+									SimpleScheduleBuilder.repeatSecondlyForever((int)deleteIntervalInSecs).
+									withMisfireHandlingInstructionNextWithRemainingCount()
+									).
+							startAt(new Date(System.currentTimeMillis() + (deleteIntervalInSecs * 1000))).
 							build();
 					scheduler.scheduleJob(job, trigger);
 					logger.info("Added JobHistoryRemovalJob that runs every {} secs.", deleteIntervalInSecs);
