@@ -174,13 +174,17 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 		return result;
 	}
 	
-	public int deleteJobHistory(Date olderThanDate) {
+	public int deleteJobHistory(final Date olderThanDate) {
+		logger.debug("Delete SQL: {}", deleteSql);
 		final List<Integer> result = new ArrayList<Integer>();
 		withConn(new ConnAction() {
 			@Override
 			public void onConn(Connection conn) throws SQLException {
-				Statement stmt = conn.createStatement();
-				int count = stmt.executeUpdate(deleteSql);
+				PreparedStatement stmt = conn.prepareStatement(deleteSql);
+				stmt.setObject(1, new java.sql.Timestamp(olderThanDate.getTime()));
+				int count = stmt.executeUpdate();
+				logger.info("History record deleted: {}", count);
+				stmt.close();
 				result.add(count);
 			}
 		});
