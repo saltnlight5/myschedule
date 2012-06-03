@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
@@ -44,19 +43,7 @@ public class DashboardHandlers {
 	private ActionHandler indexHandler = new UrlRequestActionHandler() {
 		@Override
 		protected void handleViewData(ViewData viewData) {
-			String redirectName = null;
-			Set<String> configIds = schedulerContainer.getAllConfigIds();
-			if (configIds.size() == 0) {
-				redirectName = "/dashboard/create";
-			} else {
-				try {
-					redirectName = "/job/list";
-				} catch (RuntimeException e) {
-					// No scheduler service are initialized, so list them all
-					redirectName = "/dashboard/list";
-				}
-			}
-			viewData.setViewName("redirect:" + redirectName);
+			viewData.setViewName("redirect:/dashboard/list");
 		}
 	};
 
