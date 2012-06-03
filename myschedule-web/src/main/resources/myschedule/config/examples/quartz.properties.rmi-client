@@ -1,0 +1,28 @@
+# This config will setup Quartz like InMemory, but with RMI enabled. It will act as a RMI client.
+#
+# NOTE: Quartz RMI connections are not fault tolerant! It means you have to live with the fact that there
+# is one connection point of failure.
+#
+# NOTE2: even if you enabled autoStart, the MySchedule webapp is hardcoded not to start any Quartz's 
+# RemoteScheduler instance, which what RMI client is. This is done to prevent accidental shutdown of the 
+# quartz server! You may still start the scheduler manually through the UI though. Just not auto start
+# by the webapp as startup (nor shutdown.)
+#
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
+#
+
+# Main Quartz configuration
+org.quartz.scheduler.skipUpdateCheck = true
+org.quartz.scheduler.instanceName = RmiQuartzScheduler
+org.quartz.scheduler.instanceId = NON_CLUSTERED
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
+org.quartz.scheduler.rmi.proxy = true
+org.quartz.scheduler.rmi.registryHost = localhost
+org.quartz.scheduler.rmi.registryPort = 1099
+
+# MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)
+myschedule.schedulerService.autoInit = true
+myschedule.schedulerService.autoStart = true
+myschedule.schedulerService.preventAutoStartRemoteScheduler = true
+myschedule.schedulerService.waitForJobsToComplete = false

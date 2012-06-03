@@ -1,0 +1,59 @@
+# This config will setup Quartz to use a MySQL database for job data storage. 
+# This config is not for clustering use! This config example assume you have JBossAS Container 
+# Managed Transaction (CMT) setup. See http://jboss.org/jbossas on how to configure and setup 
+# the server. There are some example configs for JBossAS here: 
+# http://code.google.com/p/myschedule/source/browse/?repo=experiment#hg%2Fjboss6-quartz
+#
+# You must setup the JEE server properly and database first before starting this quartz config.
+#
+# You can not use Tomcat server for this, because Tomcat itself is not a full JEE server, and it does not
+# provide JTA service support. You would need a server that support this to use this config.
+#
+# NOTE: In order to configure Quartz to participate in a CMT env, you MUST define TWO datasources! 
+# See example below.  
+#
+# Note: setting up a quartz database schema is a manual process, and you may get 
+# a copy of the database schema here:
+# http://svn.terracotta.org/fisheye/browse/Quartz/tags/quartz-2.0.2/docs/dbTables
+#
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
+#
+
+# Main Quartz configuration
+org.quartz.scheduler.skipUpdateCheck = true
+org.quartz.scheduler.instanceName = DatabaseCMTScheduler
+org.quartz.scheduler.instanceId = NON_CLUSTERED
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 5
+
+# JobStore: JDBC jobStoreCMT
+org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreCMT
+org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+org.quartz.jobStore.dataSource = managedTxQuartzDataSource
+org.quartz.jobStore.tablePrefix = QRTZ_
+org.quartz.jobStore.nonManagedTXDataSource=nonManagedTxQuartzDataSource
+org.quartz.jobStore.dontSetAutoCommitFalse=false
+org.quartz.jobStore.dontSetNonManagedTXConnectionAutoCommitFalse=false
+org.quartz.jobStore.txIsolationLevelSerializable=false
+org.quartz.jobStore.txIsolationLevelReadCommitted=false
+
+# DataSource #1: A conn pooled DataSource for Quartz use (A non JTA managed tx)
+org.quartz.dataSource.nonManagedTxQuartzDataSource.driver = com.mysql.jdbc.Driver
+org.quartz.dataSource.nonManagedTxQuartzDataSource.URL = jdbc:mysql://localhost:3306/quartz2
+org.quartz.dataSource.nonManagedTxQuartzDataSource.user = quartz2
+org.quartz.dataSource.nonManagedTxQuartzDataSource.password = quartz2123
+org.quartz.dataSource.nonManagedTxQuartzDataSource.maxConnections = 4
+
+# DataSource #2: A JNDI DataSource for Quartz to participate in JTA (A JTA managed tx)
+org.quartz.dataSource.NAME.jndiURL=/datasource/Quartz2XaDs
+org.quartz.dataSource.NAME.java.naming.factory.initial=org.jnp.interfaces.NamingContextFactory 
+org.quartz.dataSource.NAME.java.naming.provider.url=jnp://localhost:1099
+org.quartz.dataSource.NAME.java.naming.security.principal=
+org.quartz.dataSource.NAME.java.naming.security.credentials=
+
+# MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)
+myschedule.schedulerService.autoInit = true
+myschedule.schedulerService.autoStart = true
+myschedule.schedulerService.waitForJobsToComplete = true

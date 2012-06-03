@@ -1,0 +1,39 @@
+# This config will setup Quartz to use a MySQL database for job data storage.
+#
+# Note: setting up a quartz database schema is a manual process, and you may get 
+# a copy of the database schema here:
+# http://svn.terracotta.org/fisheye/browse/Quartz/tags/quartz-2.0.2/docs/dbTables
+#
+# In Quartz Cluster mode, ensure each node's configuration has the same "instanceName"
+# and unique "instanceId" (if you do not use AUTO that is.). Also ensure 
+# "org.quartz.jobStore.isClustered=true" is set.
+#
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
+#
+
+# Main Quartz configuration
+org.quartz.scheduler.skipUpdateCheck = true
+org.quartz.scheduler.instanceName = DatabaseClusteredScheduler
+org.quartz.scheduler.instanceId = AUTO
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
+org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTX
+org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+org.quartz.jobStore.dataSource = quartzDataSource
+org.quartz.jobStore.tablePrefix = QRTZ_
+org.quartz.jobStore.isClustered = true
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 5
+
+# JobStore: JDBC jobStoreTX
+org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
+org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/quartz2
+org.quartz.dataSource.quartzDataSource.user = quartz2
+org.quartz.dataSource.quartzDataSource.password = quartz2123
+# Recommend threadPool size + 3
+org.quartz.dataSource.quartzDataSource.maxConnections = 8
+
+# MySchedule scheduler service parameters (These are not used by quartz itself, but for the webapp only.)
+myschedule.schedulerService.autoInit = true
+myschedule.schedulerService.autoStart = true
+myschedule.schedulerService.waitForJobsToComplete = true

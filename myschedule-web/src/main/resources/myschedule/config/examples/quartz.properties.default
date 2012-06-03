@@ -1,0 +1,139 @@
+# This configuration properties will contain all Quartz default settings.
+#
+# NOTE: Some settings are mutually exclusive, and you must pick an option and remove the rest. But they are all listed
+# here for convenience.
+#
+# Full detail of Quartz configuration documentation can be found at
+# http://www.quartz-scheduler.org/documentation/quartz-2.1.x/configuration
+#
+
+# Main Quartz configuration
+org.quartz.scheduler.instanceName =  QuartzScheduler
+org.quartz.scheduler.instanceId = NON_CLUSTERED
+org.quartz.scheduler.instanceIdGenerator.class = org.quartz.simpl.SimpleInstanceIdGenerator
+# Default: instanceName + '_QuartzSchedulerThread'
+org.quartz.scheduler.threadName =  
+org.quartz.scheduler.makeSchedulerThreadDaemon = false
+org.quartz.scheduler.threadsInheritContextClassLoaderOfInitializer = false
+org.quartz.scheduler.idleWaitTime = 30000
+org.quartz.scheduler.dbFailureRetryInterval = 15000
+org.quartz.scheduler.classLoadHelper.class = org.quartz.simpl.PropertySettingJobFactory
+org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
+org.quartz.context.key.SOME_KEY = 
+org.quartz.scheduler.userTransactionURL = java:comp/UserTransaction
+org.quartz.scheduler.wrapJobExecutionInUserTransaction = false
+org.quartz.scheduler.skipUpdateCheck = false
+org.quartz.scheduler.batchTriggerAcquisitionMaxCount = 1
+org.quartz.scheduler.batchTriggerAcquisitionFireAheadTimeWindow = 0
+
+# Thread pool
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = -1
+org.quartz.threadPool.threadPriority = 5
+# This is SimpleThreadPool specific
+org.quartz.threadPool.makeThreadsDaemons = false
+org.quartz.threadPool.threadsInheritGroupOfInitializingThread = true
+org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread = false
+
+# Trigger Trigger Listeners
+#org.quartz.triggerListener.NAME.class = com.foo.MyListenerClass
+#org.quartz.triggerListener.NAME.propName = propValue
+#org.quartz.triggerListener.NAME.prop2Name = prop2Value
+
+# Trigger Job Listeners
+#org.quartz.jobListener.NAME.class = com.foo.MyListenerClass
+#org.quartz.jobListener.NAME.propName = propValue
+#org.quartz.jobListener.NAME.prop2Name = prop2Value
+
+# Plugins
+#org.quartz.plugin.NAME.class = com.foo.MyPluginClass
+#org.quartz.plugin.NAME.propName = propValue
+#org.quartz.plugin.NAME.prop2Name = prop2Value
+
+# RMI client/server
+org.quartz.scheduler.rmi.export = false
+org.quartz.scheduler.rmi.registryHost = localhost
+org.quartz.scheduler.rmi.registryPort = 1099
+org.quartz.scheduler.rmi.createRegistry = never
+org.quartz.scheduler.rmi.serverPort = 
+org.quartz.scheduler.rmi.proxy = 
+
+# JobStore Option#1: In Memory
+org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+org.quartz.jobStore.misfireThreshold = 60000
+
+# JobStore Option#2: JDBC JobStoreTx
+org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTX
+org.quartz.jobStore.driverDelegateClass = 
+org.quartz.jobStore.dataSource = NAME
+org.quartz.jobStore.tablePrefix = QRTZ_
+org.quartz.jobStore.useProperties = false
+org.quartz.jobStore.misfireThreshold = 60000
+org.quartz.jobStore.isClustered = false
+org.quartz.jobStore.clusterCheckinInterval = 15000
+org.quartz.jobStore.maxMisfiresToHandleAtATime = 20
+org.quartz.jobStore.dontSetAutoCommitFalse = false
+org.quartz.jobStore.selectWithLockSQL = SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE
+org.quartz.jobStore.txIsolationLevelSerializable = false
+org.quartz.jobStore.acquireTriggersWithinLock = false
+org.quartz.jobStore.lockHandler.class = 
+#org.quartz.jobStore.driverDelegateInitString = 
+
+# JobStore Option#3: JDBC jobStoreCMT
+org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreCMT
+org.quartz.jobStore.driverDelegateClass = 
+org.quartz.jobStore.dataSource = NAME
+org.quartz.jobStore.nonManagedTXDataSource = 
+org.quartz.jobStore.tablePrefix = QRTZ_
+org.quartz.jobStore.useProperties = false
+org.quartz.jobStore.misfireThreshold = 60000
+org.quartz.jobStore.isClustered = false
+org.quartz.jobStore.clusterCheckinInterval = 15000
+org.quartz.jobStore.maxMisfiresToHandleAtATime = 20
+org.quartz.jobStore.dontSetAutoCommitFalse = false
+org.quartz.jobStore.dontSetNonManagedTXConnectionAutoCommitFalse = false
+org.quartz.jobStore.selectWithLockSQL = SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE
+org.quartz.jobStore.txIsolationLevelSerializable = false
+org.quartz.jobStore.txIsolationLevelReadCommitted = false
+org.quartz.jobStore.acquireTriggersWithinLock = false
+org.quartz.jobStore.lockHandler.class = 
+#org.quartz.jobStore.driverDelegateInitString = 
+
+# DataSource Option#1: A conn pooled DataSource for one of JDBC JobStore above (You may replace and use any NAME)
+org.quartz.dataSource.NAME.driver = 
+org.quartz.dataSource.NAME.URL = 
+org.quartz.dataSource.NAME.user = 
+org.quartz.dataSource.NAME.password = 
+org.quartz.dataSource.NAME.maxConnections = 10
+org.quartz.dataSource.NAME.validationQuery = 
+org.quartz.dataSource.NAME.idleConnectionValidationSeconds = 50
+org.quartz.dataSource.NAME.validateOnCheckout = false
+org.quartz.dataSource.NAME.discardIdleConnectionsSeconds = 0
+
+# DataSource Option#2: A JNDI DataSource for one of JDBC JobStore above (You may replace and use any NAME)
+org.quartz.dataSource.NAME.jndiURL = 
+org.quartz.dataSource.NAME.java.naming.factory.initial = 
+org.quartz.dataSource.NAME.java.naming.provider.url = 
+org.quartz.dataSource.NAME.java.naming.security.principal = 
+org.quartz.dataSource.NAME.java.naming.security.credentials = 
+
+# DataSource Option#3: A user custom DataSource for one of JDBC JobStore above (You may replace and use any NAME)
+# The user class must implements org.quartz.utils.ConnectionProvider interface.
+#org.quartz.dataSource.NAME.connectionProvider.class = my.ConnectionProviderImpl
+
+# Quartz Extra - ScriptingSchedulerPlugin
+org.quartz.plugin.MyScriptingPlugin.class = myschedule.quartz.extra.ScriptingSchedulerPlugin
+org.quartz.plugin.MyScriptingPlugin.scriptEngineName = JavaScript
+org.quartz.plugin.MyScriptingPlugin.initializeScript = my-initialize.js
+#org.quartz.plugin.MyScriptingPlugin.startScript = my-start.js
+#org.quartz.plugin.MyScriptingPlugin.shutdownScript = my-shutdown.js
+
+# Quartz Extra - Jdbc Scheduler History Plugin
+org.quartz.plugin.MyJobHistoryPlugin.class = myschedule.quartz.extra.JdbcSchedulerHistoryPlugin
+org.quartz.plugin.MyJobHistoryPlugin.insertSql = INSERT INTO qrtz_scheduler_history VALUES(?,?,?,?,?,?,?,?,?,?,?)
+org.quartz.plugin.MyJobHistoryPlugin.querySql = SELECT * FROM qrtz_scheduler_history ORDER BY event_time DESC
+org.quartz.plugin.MyJobHistoryPlugin.deleteSql = DELETE qrtz_scheduler_history WHERE event_time < ?
+org.quartz.plugin.MyJobHistoryPlugin.deleteIntervalInSecs = 604800
+org.quartz.plugin.MyJobHistoryPlugin.dataSourceName = quartzDataSource
+org.quartz.plugin.MyJobHistoryPlugin.schedulerContextKey = JdbcSchedulerHistoryPlugin.Instance
+
