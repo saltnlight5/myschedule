@@ -277,11 +277,24 @@ public class JobHandlers {
 			SessionData sessionData = viewData.findData(SessionData.SESSION_DATA_KEY);
 			String configId = sessionData.getCurrentSchedulerConfigId();
 			SchedulerService schedulerService = schedulerContainer.getSchedulerService(configId);
+			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
+			
 			String jobName = viewData.findData("jobName");
 			String jobGroup = viewData.findData("jobGroup");
-			logger.debug("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
-			SchedulerTemplate schedulerTemplate = schedulerService.getScheduler();
-			schedulerTemplate.triggerJob(JobKey.jobKey(jobName, jobGroup));
+						
+			// Try to invoke the schedule job with Trigger info given first.
+			String triggerName = viewData.findData("triggerName");
+			String triggerGroup = viewData.findData("triggerGroup");			
+			if (triggerName != null && triggerGroup != null) {
+				logger.debug("Run triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + " now.");
+				Trigger trigger = schedulerTemplate.getTrigger(TriggerKey.triggerKey(triggerName, triggerGroup));
+				schedulerTemplate.triggerJob(JobKey.jobKey(jobName, jobGroup), trigger.getJobDataMap());
+			} else {
+				// No trigger given, then we manually trigger the job.
+				logger.debug("Run jobName=" + jobName + ", jobGroup=" + jobGroup + " now.");
+				schedulerTemplate.triggerJob(JobKey.jobKey(jobName, jobGroup));
+			}
+			
 			viewData.setViewName("redirect:/job/list");
 		}
 	};

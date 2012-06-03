@@ -117,7 +117,7 @@ $(document).ready(function() {
 		<td>${ triggerScheduleDesc }</td>
 		<td><fmt:formatDate value="${ trigger.nextFireTime }" pattern="MM/dd/yy HH:mm:ss"/></td>
 		<td class="action">
-			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }">Run It Now</a> |
+			<a href="${ mainPath }/job/run-job?jobName=${ trigger.jobKey.name }&jobGroup=${ trigger.jobKey.group }&triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Run It Now</a> |
 			
 			<c:choose><c:when test="${ jobWithTrigger.paused }">
 				<a class="resume-trigger" style="color: red;" href="${ mainPath }/job/resumeTrigger?triggerName=${ trigger.key.name }&triggerGroup=${ trigger.key.group }">Resume</a> |
