@@ -19,7 +19,7 @@ public class ResultFile {
 	
 	/** Create a new file in a temporary directory. */
 	public ResultFile(String filename) {
-		this.file = new File(System.getProperty("java.io.tmpdir") + "/" + filename);
+		this.file = new File(filename);
 	}
 	public ResultFile(File file) {
 		this.file = file;
