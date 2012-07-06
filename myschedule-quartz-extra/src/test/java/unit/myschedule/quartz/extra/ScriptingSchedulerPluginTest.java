@@ -19,7 +19,7 @@ import org.quartz.JobDetail;
 import unit.myschedule.quartz.extra.util.ResultFile;
 
 public class ScriptingSchedulerPluginTest {
-	public static ResultFile RESULT_FILE = new ResultFile(ScriptingSchedulerPluginTest.class.getSimpleName() + ".tmp");
+	public static ResultFile RESULT_FILE = new ResultFile("target/" + ScriptingSchedulerPluginTest.class.getSimpleName() + ".tmp");
 	
 	@Test
 	public void testScriptingSchedulerPlugin() throws Exception {
