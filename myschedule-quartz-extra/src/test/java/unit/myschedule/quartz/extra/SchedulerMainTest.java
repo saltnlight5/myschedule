@@ -17,11 +17,12 @@ import org.quartz.spi.SchedulerPlugin;
 import unit.myschedule.quartz.extra.util.ResultFile;
 
 public class SchedulerMainTest {
-	public static ResultFile RESULT_FILE = new ResultFile("SchedulerMainTest.tmp");
+	public static ResultFile RESULT_FILE = new ResultFile("target/SchedulerMainTest.tmp");
 	
 	@Test
 	public void testMainWithTimeout() throws Exception {		
 		try {
+			RESULT_FILE.resetFile();
 			// Run SchedulerMain with timeout settings so it should exit automatically.
 			String config = "unit/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
 			String[] javaCmdArgs = { SchedulerMain.class.getName(), config };
@@ -42,6 +43,7 @@ public class SchedulerMainTest {
 	@Test
 	public void testMainAsServer() throws Exception {		
 		try {
+			RESULT_FILE.resetFile();
 			try {
 				// Default SchedulerMain will run as server, so this should cause test to timeout.
 				String config = "unit/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
