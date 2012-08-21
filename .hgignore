@@ -1,4 +1,7 @@
 syntax: glob
+.project
+.classpath
+.settings
 target/*
 quartz-extra/target/*
 quartz-extra/.externalToolBuilders/*
