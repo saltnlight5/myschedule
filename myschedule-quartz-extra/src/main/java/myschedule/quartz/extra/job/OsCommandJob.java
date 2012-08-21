@@ -1,6 +1,8 @@
 package myschedule.quartz.extra.job;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import myschedule.quartz.extra.util.ProcessUtils;
 import myschedule.quartz.extra.util.ProcessUtils.BackgroundProcess;
@@ -67,7 +69,7 @@ public class OsCommandJob implements Job, InterruptableJob {
 		String[] commandArguments = null;
 		Object cmdObj = dataMap.get(CMD_ARGS_KEY);
 		if (cmdObj instanceof String) {
-			commandArguments = ((String)cmdObj).split(" ");
+			commandArguments = splitCommandLine((String)cmdObj);
 		} else if (cmdObj instanceof String[]) {
 			commandArguments = (String[])cmdObj;
 		} else {
@@ -137,5 +139,60 @@ public class OsCommandJob implements Job, InterruptableJob {
 		jobKey = jobDetail.getKey();
 		logger.info("Job {} has been executed.", jobKey);		
 	}
+	
+	/**
+     * Split a command line input into array of command and arguments by a space. 
+     * This split would escape spaces within any quoted substring with either "" or ''.
+     * 
+     * @param cmdLine single command line input.
+     * @return Array of command and arguments.
+     * @throws IllegalArgumentException if substring contains un-paired quotes.
+     */
+    private String[] splitCommandLine(String cmdLine) {
+        cmdLine = cmdLine.trim();
+        List<String> result = new ArrayList<String>();
+        int pos = 0, lastPos = 0, max = cmdLine.length();
+        while (pos < max) {
+            // Skip any spaces
+            while ( cmdLine.charAt(pos) == ' ' && pos < max) {
+                pos++;
+            }
+            
+            // Ensure we didn't pass end of the string.
+            if (pos >= max)
+                break;
+            lastPos = pos; // reset our last pos found.
+            
+            // Ensure we escape quotes (" or ').
+            if (cmdLine.charAt(pos) == '"') {
+                lastPos = pos + 1; // skip the starting " char.
+                pos = cmdLine.indexOf("\"", lastPos);
+                if (pos < 0)
+                    throw new IllegalArgumentException("Missing closing quote \" that started at position " + lastPos);
 
+                result.add(cmdLine.substring(lastPos, pos));
+                pos++; // skip the ending " char.
+            } else if (cmdLine.charAt(pos) == '\'') {
+                lastPos = pos + 1; // skip the starting ' char.
+                pos = cmdLine.indexOf("'", lastPos);
+                if (pos < 0)
+                    throw new IllegalArgumentException("Missing closing quote \" that started at position " + lastPos);
+
+                result.add(cmdLine.substring(lastPos, pos));
+                pos++; // skip the ending ' char.
+            } else {
+                // We don't see quote, so let's grap the next word until next space is found.
+                pos = cmdLine.indexOf(" ", lastPos);
+                if (pos < 0) {
+                    result.add(cmdLine.substring(lastPos));
+                    break; // we hit the end of cmdLine here.
+                } else {
+                    result.add(cmdLine.substring(lastPos, pos));
+                    pos++; // skip the space.
+                }
+            }
+        }
+        // Done, return array from list.
+        return result.toArray(new String[result.size()]);
+    }
 }
