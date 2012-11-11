@@ -61,7 +61,8 @@ public class ProcessUtils {
 							lineAction.onLine(line);
 						}
 					} catch (IOException e) {
-						logger.error("Failed to read process STDOUT.", e);
+						// If we get a IO exception, it's likely that the process has already died, so do nothing.
+						//logger.error("Failed to read process STDOUT.", e);
 					} finally {
 						if (inStream != null)
 							try {
@@ -258,7 +259,11 @@ public class ProcessUtils {
 		LineCollector lineCollector = new LineCollector();
 		runJavaWithOpts(timeout, javaOpts, javaCmdArgs, lineCollector);
 		List<String> outputs = lineCollector.getLines();
-		logger.debug("Java process completed with output lines size {}.", outputs.size());
+		if (logger.isDebugEnabled()) {
+			logger.debug("Java process completed with output lines size {}.", outputs.size());
+			for (String line : outputs)
+				logger.debug("OUT> {}", line);
+		}
 		return outputs;
 	}
 
