@@ -16,5 +16,8 @@ You may deploy the `myschedule.war` into any Java Servlet container server.
 
 Or if you want to run it directly from this project source, run
 
+bash> mvn install
 bash> cd myschedule-web
-bash> mvn tomcat:run
+bash> mvn tomcat7:run
+
+Then visit http://localhost:8080/myschedule
