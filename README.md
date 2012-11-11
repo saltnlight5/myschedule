@@ -21,3 +21,11 @@ bash> cd myschedule-web
 bash> mvn tomcat7:run
 
 Then visit http://localhost:8080/myschedule
+
+# Versioning and Maintence Branches
+
+This project is stored in Mercurial with the following branches
+
+default (myschedule-2.5) => The latest development: Redesign web app using Vaadin/JSON.
+myschedule-2.4 => Use to maintain the web app for Quartz 2.1.x library using JQuery and table layout.
+myschedule-1.x => Use to maintain the web app for Quartz 1.8.x library using JQuery and table layout.
