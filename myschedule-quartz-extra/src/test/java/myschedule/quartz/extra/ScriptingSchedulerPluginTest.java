@@ -1,4 +1,4 @@
-package unit.myschedule.quartz.extra;
+package myschedule.quartz.extra;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -11,12 +11,12 @@ import java.util.List;
 
 import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
+import myschedule.quartz.extra.util.ResultFile;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.quartz.JobDetail;
 
-import unit.myschedule.quartz.extra.util.ResultFile;
 
 public class ScriptingSchedulerPluginTest {
 	public static ResultFile RESULT_FILE = new ResultFile("target/" + ScriptingSchedulerPluginTest.class.getSimpleName() + ".tmp");
@@ -27,7 +27,7 @@ public class ScriptingSchedulerPluginTest {
 			// We will use the script to write to result file then verify
 			RESULT_FILE.resetFile();
 			SchedulerTemplate st = new SchedulerTemplate(
-					"unit/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz.properties");
+					"myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz.properties");
 			st.startAndShutdown(700);
 			
 			List<String> result = RESULT_FILE.readLines();
@@ -46,7 +46,7 @@ public class ScriptingSchedulerPluginTest {
 		try {
 			RESULT_FILE.resetFile();
 			SchedulerTemplate st = new SchedulerTemplate(
-					"unit/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-filenotfound.properties");
+					"myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-filenotfound.properties");
 			st.startAndShutdown(700);
 			Assert.fail("We should faile with file not found.");
 		} catch (QuartzRuntimeException e) {
@@ -62,7 +62,7 @@ public class ScriptingSchedulerPluginTest {
 			// We will use the script to write to result file then verify
 			RESULT_FILE.resetFile();
 			SchedulerTemplate st = new SchedulerTemplate(
-					"unit/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-classpath.properties");
+					"myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-classpath.properties");
 			st.startAndShutdown(700);
 			
 			List<String> result = RESULT_FILE.readLines();
@@ -77,7 +77,7 @@ public class ScriptingSchedulerPluginTest {
 	@Test
 	public void testScriptingSchedulerPluginMultiFiles() throws Exception {
 		SchedulerTemplate st = new SchedulerTemplate(
-				"unit/myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-multifiles.properties");
+				"myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-multifiles.properties");
 		List<JobDetail> jobs = st.getAllJobDetails();
 		assertThat(jobs.size(), is(2));
 		List<String> names = new ArrayList<String>();

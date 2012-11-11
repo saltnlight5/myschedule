@@ -1,4 +1,4 @@
-package unit.myschedule.quartz.extra.job;
+package myschedule.quartz.extra.job;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -6,15 +6,15 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 
+import myschedule.quartz.extra.ResultJobListener;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.job.OsCommandJob;
+import myschedule.quartz.extra.util.ProcessUtilsTest;
 
 import org.junit.Test;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
-import unit.myschedule.quartz.extra.ResultJobListener;
-import unit.myschedule.quartz.extra.util.ProcessUtilsTest;
 
 public class OsCommandJobTest {
 	@Test

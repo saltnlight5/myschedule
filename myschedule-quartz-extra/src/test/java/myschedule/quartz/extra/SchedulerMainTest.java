@@ -1,4 +1,4 @@
-package unit.myschedule.quartz.extra;
+package myschedule.quartz.extra;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -9,12 +9,12 @@ import java.util.Date;
 import java.util.List;
 import myschedule.quartz.extra.SchedulerMain;
 import myschedule.quartz.extra.util.ProcessUtils;
+import myschedule.quartz.extra.util.ResultFile;
 
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.spi.SchedulerPlugin;
-import unit.myschedule.quartz.extra.util.ResultFile;
 
 public class SchedulerMainTest {
 	public static ResultFile RESULT_FILE = new ResultFile("target/SchedulerMainTest.tmp");
@@ -24,7 +24,7 @@ public class SchedulerMainTest {
 		try {
 			RESULT_FILE.resetFile();
 			// Run SchedulerMain with timeout settings so it should exit automatically.
-			String config = "unit/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
+			String config = "myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
 			String[] javaCmdArgs = { SchedulerMain.class.getName(), config };
 			String[] javaOpts = { "-DSchedulerMain.Timeout=700" };
 			ProcessUtils.runJavaWithOpts(3000, javaOpts, javaCmdArgs);
@@ -46,7 +46,7 @@ public class SchedulerMainTest {
 			RESULT_FILE.resetFile();
 			try {
 				// Default SchedulerMain will run as server, so this should cause test to timeout.
-				String config = "unit/myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
+				String config = "myschedule/quartz/extra/SchedulerMainTest-quartz.properties";
 				ProcessUtils.runJava(700, SchedulerMain.class.getName(), config);
 				fail("We should have timed-out, but didn't.");
 			} catch (ProcessUtils.TimeoutException e) {

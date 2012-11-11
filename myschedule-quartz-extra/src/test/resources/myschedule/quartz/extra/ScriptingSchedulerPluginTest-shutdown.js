@@ -1,4 +1,4 @@
 logger.info("Plugin shutdown");
 
-importClass(Packages.unit.myschedule.quartz.extra.ScriptingSchedulerPluginTest);
+importClass(Packages.myschedule.quartz.extra.ScriptingSchedulerPluginTest);
 ScriptingSchedulerPluginTest.RESULT_FILE.appendLine('shutdown: ' + new Date());
