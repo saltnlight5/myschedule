@@ -1,4 +1,4 @@
-package unit.myschedule.quartz.extra.util;
+package myschedule.quartz.extra.util;
 
 import java.io.File;
 import java.io.FileWriter;

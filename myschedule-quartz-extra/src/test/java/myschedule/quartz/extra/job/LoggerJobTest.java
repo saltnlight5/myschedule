@@ -1,12 +1,12 @@
-package unit.myschedule.quartz.extra.job;
+package myschedule.quartz.extra.job;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import myschedule.quartz.extra.ResultJobListener;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.job.LoggerJob;
 
 import org.junit.Test;
-import unit.myschedule.quartz.extra.ResultJobListener;
 
 public class LoggerJobTest {
 	@Test

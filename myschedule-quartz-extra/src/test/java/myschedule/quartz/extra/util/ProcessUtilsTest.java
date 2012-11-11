@@ -1,4 +1,4 @@
-package unit.myschedule.quartz.extra.util;
+package myschedule.quartz.extra.util;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;

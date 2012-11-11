@@ -1,4 +1,4 @@
-package unit.myschedule.quartz.extra.job;
+package myschedule.quartz.extra.job;
 
 import static myschedule.quartz.extra.SchedulerTemplate.createJobDetail;
 import static myschedule.quartz.extra.SchedulerTemplate.createSimpleTrigger;
@@ -8,13 +8,14 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import java.io.File;
+
+import myschedule.quartz.extra.ResultJobListener;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.job.ScriptingJob;
 import org.junit.Test;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
-import unit.myschedule.quartz.extra.ResultJobListener;
 
 public class ScriptingJobTest {
 	@Test
@@ -83,7 +84,7 @@ public class ScriptingJobTest {
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.addJobListener(new ResultJobListener());
 		
-		File file = new File("src/test/resources/unit/myschedule/quartz/extra/job/ScriptingJobTest-1.js");
+		File file = new File("src/test/resources/myschedule/quartz/extra/job/ScriptingJobTest-1.js");
 		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
 		job.getJobDataMap().put(ScriptingJob.SCRIPT_FILE_KEY, file.getAbsolutePath());
