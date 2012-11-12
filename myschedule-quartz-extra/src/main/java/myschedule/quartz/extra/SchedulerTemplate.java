@@ -4,6 +4,7 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 import org.quartz.Calendar;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -633,6 +635,22 @@ public class SchedulerTemplate {
 				}
 			}
 			return jobs;
+		} catch (SchedulerException e) {
+			throw new QuartzRuntimeException(e);
+		}
+	}
+	public List<Trigger> getAllTriggers() {
+		try {
+			List<Trigger> triggers = new ArrayList<Trigger>();
+			List<String> groups = scheduler.getTriggerGroupNames();
+			for (String group : groups) {
+				Set<TriggerKey> keys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(group));
+				for (TriggerKey key : keys) {
+					Trigger trigger = scheduler.getTrigger(key);
+					triggers.add(trigger);
+				}
+			}
+			return triggers;
 		} catch (SchedulerException e) {
 			throw new QuartzRuntimeException(e);
 		}
