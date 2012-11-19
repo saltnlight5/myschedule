@@ -13,15 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package myschedule.web;
+package myschedule.web.ui;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
-import myschedule.quartz.extra.SchedulerTemplate;
-import myschedule.quartz.extra.job.LoggerJob;
+import org.quartz.SchedulerMetaData;
 
-import org.quartz.Trigger;
+import myschedule.quartz.extra.SchedulerTemplate;
+import myschedule.web.MySchedule;
 
 import com.vaadin.Application;
 import com.vaadin.data.Container;
@@ -36,19 +36,21 @@ import com.vaadin.ui.Window;
 /**
  * A Vaadin UI application to manage Quartz.
  */
-public class MyScheduleUiApp extends Application
+public class MyScheduleApp extends Application
 {	
-    @Override
+	private static final long serialVersionUID = 1L;
+	private static MySchedule mySchedule = MySchedule.getInstance();
+
+	@Override
     public void init()
-    {	
+    {
         setMainWindow(createWindow());
     }
 
 	private Window createWindow() {
 		VerticalLayout layout = new VerticalLayout();
-        //layout.setSizeFull();
         layout.addComponent(createToolbar());
-        layout.addComponent(createTable());
+        layout.addComponent(createShedulerSettingsTable());
         
         Window window = new Window("MySchedule - A UI for managing Quartz Schedulers");
         window.setContent(layout);
@@ -57,24 +59,51 @@ public class MyScheduleUiApp extends Application
 
 	 private Component createToolbar() {
 		HorizontalLayout layout = new HorizontalLayout();
-		layout.addComponent(new Button("Create New Scheduler"));
-		layout.addComponent(new Button("WebApp Settings"));
+		layout.addComponent(new Button("Settings"));
+		layout.addComponent(new Button("New Scheduler"));
 		return layout;
 	}
 
-	private Component createTable() {
-		String[] columns = new String[]{ "key", "jobKey", "description", "nextFireTime", "previousFireTime", 
-				"startTime", "endTime", "misfireInstruction", "priority", "calendarName"};
+	private Component createShedulerSettingsTable() {
 	    Table table = new Table();
 	    table.setContainerDataSource(createTableDataSource());
-	    for (Object s : table.getVisibleColumns()) System.out.println(s);
-	    table.setVisibleColumns(columns);
 		return table;
 	}
 
 	private Container createTableDataSource() {
-		List<Trigger> triggers = Collections.EMPTY_LIST;
-		Container dataSource = new BeanItemContainer(Trigger.class, triggers);
+		// ConfigId = settingsName
+		List<SchedulerSettingsRow> rows = new ArrayList<SchedulerSettingsRow>();
+		for (String settingsName : mySchedule.getSchedulerSettingsNames()) {
+			SchedulerSettingsRow row = new SchedulerSettingsRow();
+			row.setConfigId(settingsName);
+			
+			SchedulerTemplate scheduler = mySchedule.getScheduler(settingsName);
+			if (scheduler != null) {
+				row.setSchedulerInfo(scheduler.getMetaData());
+			}
+			rows.add(row);
+		}
+		
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		Container dataSource = new BeanItemContainer(SchedulerSettingsRow.class, rows);
         return dataSource;
     }
+	
+	public static class SchedulerSettingsRow {
+		private String configId;
+		private SchedulerMetaData schedulerInfo;
+		
+		public void setConfigId(String configId) {
+			this.configId = configId;
+		}
+		public String getConfigId() {
+			return configId;
+		}
+		public SchedulerMetaData getSchedulerInfo() {
+			return schedulerInfo;
+		}
+		public void setSchedulerInfo(SchedulerMetaData schedulerInfo) {
+			this.schedulerInfo = schedulerInfo;
+		}
+	}
 }
