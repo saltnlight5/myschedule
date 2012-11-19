@@ -16,11 +16,14 @@
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
-            <param-value>myschedule.web.QuartzGuiApp</param-value>
+            <param-value>myschedule.web.MyScheduleUiApp</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>VaadinApplicationServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+    <listener>
+		<listener-class>myschedule.web.MyScheduleContextListener</listener-class>
+	</listener>
 </web-app>
