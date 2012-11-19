@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MyScheduleSettings {
 	public static final String SETTINGS_SYS_PROPS_KEY = "myschedule.settings";
-	public static final String DEFAULT_SETTINGS_URL = "classpath:///myschedule/web/default-settings.properties";
+	public static final String DEFAULT_SETTINGS_URL = "classpath:///myschedule/web/default-myschedule-settings.properties";
 	public static final String SETTINGS_KEY_PREFIX = "myschedule.web.";
 	private static Logger logger = LoggerFactory.getLogger(MyScheduleSettings.class);
 	private Props props;
@@ -48,5 +48,9 @@ public class MyScheduleSettings {
 
 	public File getSchedulerSettingsDir() {
 		return new File(props.getString(SETTINGS_KEY_PREFIX + "schedulerSettingsDir"));
+	}
+	
+	public String getDefaultSchedulerSettings() {
+		return props.getString(SETTINGS_KEY_PREFIX + "defaultSchedulerSettings");
 	}
 }
