@@ -2,6 +2,9 @@ package myschedule.web;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.UUID;
 import myschedule.quartz.extra.SchedulerTemplate;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +51,32 @@ public class MySchedule {
 		initMyScheduleSettings();
 		initSchedulerSettings();
 		initSchedulers();
+		addDefaultSchedulerSettings();
 		logger.info("MySchedule initialized.");
+	}
+
+	private void addDefaultSchedulerSettings() {
+		// Do nothing if we already have some scheduler settings loaded.
+		if (schedulerSettingsMap.size() > 0)
+			return;
+		
+		// Check to see if need to load default scheduler
+		String defaultSchedulerSettingsUrl = myScheduleSettings.getDefaultSchedulerSettings();
+		if (StringUtils.isNotEmpty(defaultSchedulerSettingsUrl)) {
+			logger.info("Generating default scheduler settings from {}", defaultSchedulerSettingsUrl);
+			URL url = ClasspathURLStreamHandler.createURL(defaultSchedulerSettingsUrl);
+			InputStream inStream = null;
+			try {
+				inStream = url.openStream();
+				String propsString = IOUtils.toString(inStream);
+				addSchedulerSettings(propsString);
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to load default scheduler settings " + defaultSchedulerSettingsUrl);
+			} finally {
+				if (inStream != null)
+					IOUtils.closeQuietly(inStream);
+			}
+		}
 	}
 
 	private void initSchedulerSettings() {
@@ -125,11 +154,17 @@ public class MySchedule {
 	public void addSchedulerSettings(String propsString) {
 		String settingsName = UUID.randomUUID().toString();
 		File file = getSettingsFile(settingsName);
+		logger.info("Adding new scheduler settings file: {}", file);
+		FileWriter writer = null;
 		try {
-			FileWriter writer = new FileWriter(file);
+			writer = new FileWriter(file);
 			IOUtils.write(propsString, writer);
+			writer.flush();
 		} catch (Exception e) {
 			logger.error("Failed to save scheduler settings file {}", settingsName, e);
+		} finally {
+			if (writer != null)
+				IOUtils.closeQuietly(writer);
 		}
 	
 		SchedulerSettings schedulerSettings = new SchedulerSettings(file.getPath());
@@ -146,6 +181,7 @@ public class MySchedule {
 		SchedulerSettings schedulerSettings = schedulerSettingsMap.get(settingsName);
 		if (schedulerSettings != null) {
 			File file = new File(schedulerSettings.getSettingsUrl());
+			logger.info("Deleting scheduler settings file: {}", file);
 			file.delete();
 			schedulerSettingsMap.remove(settingsName);
 		}
