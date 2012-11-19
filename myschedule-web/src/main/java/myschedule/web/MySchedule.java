@@ -2,7 +2,9 @@ package myschedule.web;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,7 +41,7 @@ public class MySchedule {
 		}
 		return instance;
 	}
-
+	
 	public void init() {
 		logger.debug("Initializing MySchedule ...");
 		initMyScheduleSettings();
@@ -160,8 +162,15 @@ public class MySchedule {
 
 	public void destroy() {
 		logger.debug("Destroying MySchedule ...");
+		shutdownAllSchedulers();
 		delayShutdown();
 		logger.info("MySchedule destroyed.");
+	}
+
+	private void shutdownAllSchedulers() {
+		for (String settingsName : schedulerSettingsMap.keySet()) {
+			shutdownScheduler(settingsName);
+		}
 	}
 
 	private void delayShutdown() {
@@ -176,6 +185,14 @@ public class MySchedule {
 				//We are shutting down anyway, if failed, just ignore it.
 			}
 		}
+	}
+	
+	public List<String> getSchedulerSettingsNames() {
+		return new ArrayList<String>(schedulerSettingsMap.keySet());
+	}
+	
+	public SchedulerSettings getSchedulerSettings(String settingsName) {
+		return schedulerSettingsMap.get(settingsName);
 	}
 	
 	public SchedulerTemplate getScheduler(String settingsName) {
