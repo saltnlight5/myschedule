@@ -50,7 +50,7 @@ public class MySchedule {
 		logger.debug("Initializing MySchedule ...");
 		initMyScheduleSettings();
 		initSchedulerSettings();
-		initSchedulers();
+		createSchedulers();
 		addDefaultSchedulerSettings();
 		logger.info("MySchedule initialized.");
 	}
@@ -98,27 +98,27 @@ public class MySchedule {
 		}
 	}
 
-	private void initSchedulers() {
+	private void createSchedulers() {
 		// Init the map first
 		schedulers = new HashMap<String, SchedulerTemplate>();
 		
-		// Init all schedulers
+		// Create and init all schedulers
 		for (String name : schedulerSettingsMap.keySet()) {
-			initScheduler(name);
+			SchedulerSettings schedulerSettings = schedulerSettingsMap.get(name);
+			if (schedulerSettings.isAutoCreate())
+				createScheduler(name, schedulerSettings);
 		}
 	}
 	
-	/** Init scheduler and add to scheduler map. */
-	public void initScheduler(String settingsName) {
+	/** Create and init scheduler and add to scheduler map. */
+	public void createScheduler(String settingsName, SchedulerSettings schedulerSettings) {
 		// If scheduler already exists, shut it down first
 		if (schedulers.containsKey(settingsName)) {
 			logger.warn("Scheduler settings {} has already been initiazlied. Will shutdown first.", settingsName);
 			shutdownScheduler(settingsName);
 		}
 		
-		// Now init the scheduler
-		logger.info("Initializing scheduler settings: {}", settingsName);
-		SchedulerSettings schedulerSettings = schedulerSettingsMap.get(settingsName);
+		// Now create the scheduler
 		try {
 			// Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
 			logger.info("Creating Quartz scheduler from {}", schedulerSettings.getSettingsUrl());
@@ -169,7 +169,8 @@ public class MySchedule {
 	
 		SchedulerSettings schedulerSettings = new SchedulerSettings(file.getPath());
 		schedulerSettingsMap.put(settingsName, schedulerSettings);
-		initScheduler(settingsName);
+		if (schedulerSettings.isAutoCreate())
+			createScheduler(settingsName, schedulerSettings);
 	}
 
 	/** Remove from schedulerSettingsMap and scheduler map, and remove the file. */

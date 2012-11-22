@@ -39,6 +39,11 @@ public class SchedulerSettings {
 		return props.toProperties();
 	}
 
+	/** Auto create scheduler instance. Default is true. */
+	public boolean isAutoCreate() {
+		return props.getBoolean(SETTINGS_KEY_PREFIX + "autoCreate", true);
+	}
+	
 	/** Auto start this scheduler after MySchedule is inited. Default is true. */
 	public boolean isAutoStart() {
 		return props.getBoolean(SETTINGS_KEY_PREFIX + "autoStart", true);
