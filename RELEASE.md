@@ -1,6 +1,6 @@
 = Current development =
 
-# 3.0.0_q2-SNAPSHOT
+==  3.0.0_q2-SNAPSHOT ==
 
   * Issue#104 - New release format to reflect new development work
   * Issue#105 - Prepare myschedule-3.0.0 for new development branch of work
