@@ -26,6 +26,7 @@ Then visit http://localhost:8080/myschedule
 
 This project is stored in Mercurial with the following branches
 
-default (myschedule-2.5) => The latest development: Redesign web app using Vaadin/JSON.
+default => The latest development: Redesign web app using Vaadin
+           The version label format is 3.0.0_q2 for quartz 2.x, and 3.0.0_q1 for quartz 1.x.
 myschedule-2.4 => Use to maintain the web app for Quartz 2.1.x library using JQuery and table layout.
 myschedule-1.x => Use to maintain the web app for Quartz 1.8.x library using JQuery and table layout.
