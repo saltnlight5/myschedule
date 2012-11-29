@@ -2,9 +2,9 @@
 
 # 3.0.0_q2-SNAPSHOT
 
-Issue#104 - New release format to reflect new development work
-Issue#105 - Prepare myschedule-3.0.0 for new development branch of work
-Issue#9 - Use Vaadin UI instead of jQuery/Table
+  * Issue#104 - New release format to reflect new development work
+  * Issue#105 - Prepare myschedule-3.0.0 for new development branch of work
+  * Issue#9 - Use Vaadin UI instead of jQuery/Table
 
 = Stable Releases =
 
