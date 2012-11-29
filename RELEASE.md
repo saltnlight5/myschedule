@@ -1,4 +1,19 @@
-= Latest Stable Releases =
+= Current development =
+
+# 3.0.0_q2-SNAPSHOT
+
+Issue#104 - New release format to reflect new development work
+Issue#105 - Prepare myschedule-3.0.0 for new development branch of work
+Issue#9 - Use Vaadin UI instead of jQuery/Table
+
+= Stable Releases =
+
+Before myschedule-2.x, the release version format are organized as follow:
+
+  * myschedule-2.x (war) is for quartz-2.x
+  * myschedule-quartz-extra-2.x (jar) for quartz-2.x
+  * myschedule-1.x (war) is for quartz-1.8.x
+  * myschedule-quartz-extra-1.x (jar) for quartz-1.8.x
 
 == myschedule-2.4.4.war and myschedule-quartz-extra-2.4.4.jar 08/21/2012 ==
 
