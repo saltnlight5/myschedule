@@ -1,4 +1,8 @@
 syntax: glob
+# Intellij IDEA
+.idea
+*.iml
+**/*.iml
 
 # Eclipse IDE files
 .project
