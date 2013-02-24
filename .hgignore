@@ -1,4 +1,8 @@
 syntax: glob
+
+# Maven
+target
+
 # Intellij IDEA
 .idea
 *.iml
@@ -8,8 +12,6 @@ syntax: glob
 .project
 .classpath
 .settings
-target
-
 **/.project
 **/.classpath
 **/.settings
