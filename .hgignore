@@ -13,6 +13,10 @@ myschedule-web/.externalToolBuilders/*
 myschedule-web/.settings/*
 myschedule-web/.project
 myschedule-web/.classpath
+.idea
+myschedule.iml
+myschedule-quartz-extra/myschedule-quartz-extra.iml
+myschedule-web/myschedule-web.iml
 
 # Ignore GIT repository files (use for Heroku deployment.)
 .git
