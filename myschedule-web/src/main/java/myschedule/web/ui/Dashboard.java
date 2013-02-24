@@ -1,10 +1,11 @@
 package myschedule.web.ui;
 
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import myschedule.web.SchedulerSettings;
+import myschedule.web.SchedulerStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +44,14 @@ public class Dashboard extends VerticalLayout {
         for (String settingsName : names) {
             SchedulerSettings settings = mySchedule.getSchedulerSettings(settingsName);
             LOGGER.debug("Populating dashboard with: {}", settings);
-            String status = "?"; // TODO: get status
-            Integer jobCount = new Integer(0); // TODO we need to calculate this value.
+            SchedulerTemplate scheduler = mySchedule.getScheduler(settingsName);
+            SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
+            Integer jobCount = (status == SchedulerStatus.STANDBY || status == SchedulerStatus.RUNNING) ?
+                scheduler.getAllTriggers().size() : 0;
             Object[] row = new Object[] {
                 "", // Action
                 settings.getSchedulerFullName(),
-                status,
+                status.toString(),
                 jobCount
             };
             schedulers.addItem(row, settingsName);
