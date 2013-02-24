@@ -1,5 +1,7 @@
 package myschedule.web;
 
+import org.quartz.core.QuartzScheduler;
+
 import java.util.Properties;
 
 
@@ -13,16 +15,30 @@ import java.util.Properties;
  */
 public class SchedulerSettings {
 	public static final String SETTINGS_KEY_PREFIX = "myschedule.scheduler.";
+    private String settingsName;
 	private String settingsUrl;
 	private Props props;
 	/** If scheduler failed to init, then we will save the exception, else it's null. */
 	private Exception schedulerException;
-	
-	public SchedulerSettings(String settingsUrl) {
+    public static final String DEFAULT_SCHEDULER_NAME = "DefaultQuartzScheduler";
+    public static final String DEFAULT_SCHEDULER_ID = "NON_CLUSTERED";
+    private String schedulerFullName;
+
+	public SchedulerSettings(String settingsName, String settingsUrl) {
+        this.settingsName = settingsName;
 		this.settingsUrl = settingsUrl;
 		this.props = new Props(settingsUrl);
 	}
-	
+
+    public String getSchedulerFullName() {
+        if (schedulerFullName == null && props != null) {
+            String name = props.getString("org.quartz.scheduler.instanceName", DEFAULT_SCHEDULER_NAME);
+            String id = props.getString("org.quartz.scheduler.instanceId", DEFAULT_SCHEDULER_ID);
+            schedulerFullName = name + "_$_" + id;
+        }
+        return schedulerFullName;
+    }
+
 	public void setSchedulerException(Exception schedulerException) {
 		this.schedulerException = schedulerException;
 	}
@@ -53,4 +69,13 @@ public class SchedulerSettings {
 	public boolean isWaitForJobToComplete() {
 		return props.getBoolean(SETTINGS_KEY_PREFIX + "waitForJobToComplete", true);
 	}
+
+    @Override
+    public String toString()
+    {
+        return "SchedulerSettings{" +
+            "settingsName='" + settingsName + '\'' +
+            ", schedulerFullName='" + getSchedulerFullName() + '\'' +
+            '}';
+    }
 }

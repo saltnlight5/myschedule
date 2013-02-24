@@ -15,10 +15,11 @@ public class MyScheduleUi extends UI {
     protected void init(final VaadinRequest vaadinRequest) {
         getPage().setTitle("MySchedule - UI Manager for Quartz Scheduler");
 
+        // Populate main content
         content = new VerticalLayout();
-        setContent(content);
-
+        content.setMargin(true);
         content.setSizeFull();
         content.addComponent(new Dashboard());
+        setContent(content);
     }
 }
