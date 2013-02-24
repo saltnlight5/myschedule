@@ -18,7 +18,7 @@ public class MyScheduleSettings {
 	public static final String SETTINGS_SYS_PROPS_KEY = "myschedule.settings";
 	public static final String DEFAULT_SETTINGS_URL = "classpath:///myschedule/web/default-myschedule-settings.properties";
 	public static final String SETTINGS_KEY_PREFIX = "myschedule.web.";
-	private static Logger logger = LoggerFactory.getLogger(MyScheduleSettings.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MyScheduleSettings.class);
 	private Props props;
 	
 	public MyScheduleSettings() {
@@ -27,19 +27,19 @@ public class MyScheduleSettings {
 	
 	private void initProps() {
 		// Load default settings first
-		logger.debug("Loading default settings {}", DEFAULT_SETTINGS_URL);
+		LOGGER.debug("Loading default settings {}", DEFAULT_SETTINGS_URL);
 		props = new Props(DEFAULT_SETTINGS_URL);
 		
 		// Load custom settings properties
 		String customSettings = System.getProperty(SETTINGS_SYS_PROPS_KEY, null);
 		if (customSettings != null) {
-			logger.info("Loadding custom settings {}", customSettings);
+			LOGGER.info("Loadding custom settings {}", customSettings);
 			props.load(customSettings);
 		}
 		
 		// Expand vars if there are any.
 		props.expandVariables();
-		logger.debug("MySchedule settings are ready.");
+		LOGGER.debug("MySchedule settings are ready.");
 	}
 
 	public long getPauseTimeAfterShutdown() {
