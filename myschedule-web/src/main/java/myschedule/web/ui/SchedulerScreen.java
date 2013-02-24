@@ -4,8 +4,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
-import myschedule.web.SchedulerSettings;
-import myschedule.web.SchedulerStatus;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Trigger;
@@ -26,7 +24,7 @@ public class SchedulerScreen extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerScreen.class);
 	private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
-    private Table jobsTable;
+    private Table table;
 
     public SchedulerScreen(String schedulerSettingsName) {
         this.schedulerSettingsName = schedulerSettingsName;
@@ -35,16 +33,16 @@ public class SchedulerScreen extends VerticalLayout {
     }
 
     private void initJobsTable() {
-        jobsTable = new Table();
-        jobsTable.setSizeFull();
+        table = new Table();
+        table.setSizeFull();
 
         Object defaultValue = null; // Not used.
-        jobsTable.addContainerProperty("Actions", String.class, defaultValue);
-        jobsTable.addContainerProperty("Trigger", String.class, defaultValue);
-        jobsTable.addContainerProperty("JobDetail", String.class, defaultValue);
-        jobsTable.addContainerProperty("Type", Integer.class, defaultValue);
-        jobsTable.addContainerProperty("Next Run", Integer.class, defaultValue);
-        jobsTable.addContainerProperty("Last Run", Integer.class, defaultValue);
+        table.addContainerProperty("Actions", String.class, defaultValue);
+        table.addContainerProperty("Trigger", String.class, defaultValue);
+        table.addContainerProperty("JobDetail", String.class, defaultValue);
+        table.addContainerProperty("Type", String.class, defaultValue);
+        table.addContainerProperty("Next Run", String.class, defaultValue);
+        table.addContainerProperty("Last Run", String.class, defaultValue);
 
         // Fill table data
         LOGGER.debug("Loading triggers from scheduler {}", schedulerSettingsName);
@@ -61,14 +59,14 @@ public class SchedulerScreen extends VerticalLayout {
                 "", // Action
                 triggerKey.toString(),
                 jobKey.toString(),
-                trigger.getClass().getSimpleName() + "/" + jobDetail.getClass().getSimpleName(),
+                trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
                 df.format(trigger.getNextFireTime()),
                 (previousFireTime == null) ? "" : df.format(previousFireTime)
             };
-            jobsTable.addItem(row, triggerKey.toString());
+            table.addItem(row, triggerKey.toString());
         }
 
         // Add table to this UI screen
-        addComponent(jobsTable);
+        addComponent(table);
     }
 }
