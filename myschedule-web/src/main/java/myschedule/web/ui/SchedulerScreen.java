@@ -2,8 +2,20 @@ package myschedule.web.ui;
 
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import myschedule.quartz.extra.SchedulerTemplate;
+import myschedule.web.MySchedule;
+import myschedule.web.SchedulerSettings;
+import myschedule.web.SchedulerStatus;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * UI screen that display a table of jobs found in a scheduler. This list of jobs are all Trigger found in Quartz
@@ -29,30 +41,32 @@ public class SchedulerScreen extends VerticalLayout {
         Object defaultValue = null; // Not used.
         jobsTable.addContainerProperty("Actions", String.class, defaultValue);
         jobsTable.addContainerProperty("Trigger", String.class, defaultValue);
-        jobsTable.addContainerProperty("Job", String.class, defaultValue);
+        jobsTable.addContainerProperty("JobDetail", String.class, defaultValue);
         jobsTable.addContainerProperty("Type", Integer.class, defaultValue);
         jobsTable.addContainerProperty("Next Run", Integer.class, defaultValue);
         jobsTable.addContainerProperty("Last Run", Integer.class, defaultValue);
 
-//        // Fill table data
-//        MySchedule mySchedule = MySchedule.getInstance();
-//        List<String> names = mySchedule.getSchedulerSettingsNames();
-//        LOGGER.debug("Loading {} scheduler config settings.", names.size());
-//        for (String settingsName : names) {
-//            SchedulerSettings settings = mySchedule.getSchedulerSettings(settingsName);
-//            LOGGER.debug("Populating dashboard with: {}", settings);
-//            SchedulerTemplate scheduler = mySchedule.getScheduler(settingsName);
-//            SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
-//            Integer jobCount = (status == SchedulerStatus.STANDBY || status == SchedulerStatus.RUNNING) ?
-//                scheduler.getAllTriggers().size() : 0;
-//            Object[] row = new Object[] {
-//                "", // Action
-//                settings.getSchedulerFullName(),
-//                status.toString(),
-//                jobCount
-//            };
-//            jobsTable.addItem(row, settingsName);
-//        }
+        // Fill table data
+        LOGGER.debug("Loading triggers from scheduler {}", schedulerSettingsName);
+        MySchedule mySchedule = MySchedule.getInstance();
+        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+        List<Trigger> triggers = scheduler.getAllTriggers();
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        for (Trigger trigger : triggers) {
+            TriggerKey triggerKey = trigger.getKey();
+            JobKey jobKey = trigger.getJobKey();
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            Date previousFireTime = trigger.getPreviousFireTime();
+            Object[] row = new Object[] {
+                "", // Action
+                triggerKey.toString(),
+                jobKey.toString(),
+                trigger.getClass().getSimpleName() + "/" + jobDetail.getClass().getSimpleName(),
+                df.format(trigger.getNextFireTime()),
+                (previousFireTime == null) ? "" : df.format(previousFireTime)
+            };
+            jobsTable.addItem(row, triggerKey.toString());
+        }
 
         // Add table to this UI screen
         addComponent(jobsTable);
