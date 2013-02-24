@@ -86,11 +86,15 @@ public class MySchedule {
 		schedulerSettingsMap = new HashMap<String, SchedulerSettings>();
 		File[] files = configDir.listFiles();
 		for (File file : files) {
-			String name = file.getName();
-            String settingsName = name.split(SETTINGS_FILE_EXT)[0];
-			SchedulerSettings schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
-            LOGGER.info("Loaded {}", schedulerSettings);
-			schedulerSettingsMap.put(settingsName, schedulerSettings);
+            try {
+                String name = file.getName();
+                String settingsName = name.split(SETTINGS_FILE_EXT)[0];
+                SchedulerSettings schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
+                LOGGER.info("Loaded {}", schedulerSettings);
+                schedulerSettingsMap.put(settingsName, schedulerSettings);
+            } catch (Exception e) {
+                LOGGER.warn("Failed to load scheduler settings file={}", file);
+            }
 		}
 	}
 
@@ -101,8 +105,17 @@ public class MySchedule {
 		// Create and init all schedulers
 		for (String name : schedulerSettingsMap.keySet()) {
 			SchedulerSettings schedulerSettings = schedulerSettingsMap.get(name);
-			if (schedulerSettings.isAutoCreate())
-				createScheduler(name, schedulerSettings);
+			if (schedulerSettings.isAutoCreate()) {
+                // Now create the scheduler
+                try {
+                    createScheduler(name, schedulerSettings);
+                } catch (RuntimeException e) {
+                    // Even if Quartz scheduler failed to load, we will allow the MySchedule to continue, so we simply log
+                    // the error and continue.
+                    LOGGER.error("Failed to load scheduler from config settings name: {}", name, e);
+                    schedulerSettings.setSchedulerException(e);
+                }
+            }
 		}
 	}
 	
@@ -110,30 +123,23 @@ public class MySchedule {
 	public void createScheduler(String settingsName, SchedulerSettings schedulerSettings) {
 		// If scheduler already exists, shut it down first
 		if (schedulers.containsKey(settingsName)) {
-			LOGGER.warn("Scheduler settings {} has already been initiazlied. Will shutdown first.", settingsName);
+			LOGGER.warn("Scheduler settings {} has already been initialized. Will shutdown first.", settingsName);
 			shutdownScheduler(settingsName);
 		}
 		
 		// Now create the scheduler
-		try {
-			// Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
-			LOGGER.info("Creating Quartz scheduler from {}", schedulerSettings.getSettingsUrl());
-			SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerSettings.getQuartzProperties());
-			schedulers.put(settingsName, schedulerTemplate);
-			schedulerSettings.setSchedulerException(null);
-			LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
-			
-			if (schedulerSettings.isAutoStart()) {
-				LOGGER.debug("Auto starting scheduler.");
-				schedulerTemplate.start();
-				LOGGER.info("Auto started scheduler per configured settings.");
-			}
-		} catch (RuntimeException e) {
-			// Even if Quartz scheduler failed to load, we will allow the MySchedule to continue, so we simply log
-			// the error and continue.
-			LOGGER.error("Failed to load scheduler from config settings name: {}", settingsName, e);
-			schedulerSettings.setSchedulerException(e);
-		}
+        // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
+        LOGGER.info("Creating Quartz scheduler from {}", schedulerSettings.getSettingsUrl());
+        SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerSettings.getQuartzProperties());
+        schedulers.put(settingsName, schedulerTemplate);
+        schedulerSettings.setSchedulerException(null);
+        LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
+
+        if (schedulerSettings.isAutoStart()) {
+            LOGGER.debug("Auto starting scheduler.");
+            schedulerTemplate.start();
+            LOGGER.info("Auto started scheduler per configured settings.");
+        }
 	}
 
 	/** Shutdown scheduler and remove from scheduler map. */
@@ -141,8 +147,14 @@ public class MySchedule {
 		SchedulerSettings schedulerSettings = schedulerSettingsMap.get(settingsName);
 		boolean waitForJobToComplete = schedulerSettings.isWaitForJobToComplete();
 		LOGGER.info("Shutting down {} with waitForJobToComplete={}", schedulerSettings, waitForJobToComplete);
-		schedulers.get(settingsName).shutdown(waitForJobToComplete);
-		schedulers.remove(settingsName);
+		SchedulerTemplate scheduler = schedulers.get(settingsName);
+        if (scheduler != null) {
+            if (!scheduler.isShutdown())
+                scheduler.shutdown(waitForJobToComplete);
+            else
+                LOGGER.info("Scheduler settingsName={} has already been shutdown. No action.", settingsName);
+		    schedulers.remove(settingsName);
+        }
 	}
 	
 	/** Add to schedulerSettingsMap and scheduler map, and create the file. */
@@ -201,7 +213,11 @@ public class MySchedule {
 
 	private void shutdownAllSchedulers() {
 		for (String settingsName : schedulerSettingsMap.keySet()) {
-			shutdownScheduler(settingsName);
+            try {
+			    shutdownScheduler(settingsName);
+            } catch (RuntimeException e) {
+                LOGGER.warn("Failed to shutdown scheduler settingsName={}.", settingsName);
+            }
 		}
 	}
 

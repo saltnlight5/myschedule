@@ -39,10 +39,10 @@ public class Dashboard extends VerticalLayout {
         // Fill table data
         MySchedule mySchedule = MySchedule.getInstance();
         List<String> names = mySchedule.getSchedulerSettingsNames();
-        LOGGER.info("Loading {} scheduler config settings.", names.size());
+        LOGGER.debug("Loading {} scheduler config settings.", names.size());
         for (String settingsName : names) {
             SchedulerSettings settings = mySchedule.getSchedulerSettings(settingsName);
-            LOGGER.info("Populating dashboard with: {}", settings);
+            LOGGER.debug("Populating dashboard with: {}", settings);
             String status = "?"; // TODO: get status
             Integer jobCount = new Integer(0); // TODO we need to calculate this value.
             Object[] row = new Object[] {
