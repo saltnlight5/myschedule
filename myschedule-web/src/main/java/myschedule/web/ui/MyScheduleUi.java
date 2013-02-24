@@ -41,7 +41,7 @@ public class MyScheduleUi extends UI {
 
         MySchedule mySchedule = MySchedule.getInstance();
         String schedulerFullName = mySchedule.getSchedulerSettings(schedulerSettingsName).getSchedulerFullName();
-        breadcrumbBar.addSchedulerCrumb(schedulerFullName);
+        breadcrumbBar.addSchedulerCrumb(schedulerFullName, schedulerSettingsName);
     }
 
     void loadDashboardScreen() {
@@ -50,5 +50,11 @@ public class MyScheduleUi extends UI {
         content.addComponent(currentScreen);
 
         breadcrumbBar.removeSchedulerCrumb();
+    }
+
+    void loadScriptingConsoleScreen(String schedulerSettingsName) {
+        content.removeComponent(currentScreen);
+        currentScreen = new ScriptingConsoleScreen(schedulerSettingsName);
+        content.addComponent(currentScreen);
     }
 }
