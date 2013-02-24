@@ -211,15 +211,15 @@ public class MySchedule {
 	}
 
 	private void delayShutdown() {
-		// Tomcat is known to spit out bogus error messages if we don't slow down a bit, so if user configured so, pause 
-		// briefly.
+		// Tomcat is known to spit out bogus error messages if we don't slow down a bit here, so we purposely delay
+		// briefly. User may configured to zero it out if their server do not have this problem.
 		long pauseTime = myScheduleSettings.getPauseTimeAfterShutdown();
 		if (pauseTime > 0) {
 			try {
-				logger.info("Pausing {}ms after all schedulers shutdown to avoid server problem.", pauseTime);
+				logger.debug("Pausing {}ms after all schedulers shutdown to avoid web server problem.", pauseTime);
 				Thread.sleep(pauseTime); 
 			} catch (InterruptedException e) {
-				//We are shutting down anyway, if failed, just ignore it.
+                // Can not sleep? Oh well, we are shutting down anyway, so just ignore and continue.
 			}
 		}
 	}
