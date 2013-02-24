@@ -49,7 +49,7 @@
 
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
+            <artifactId>groovy-jsr223</artifactId>
             <scope>runtime</scope>
         </dependency>
 

@@ -9,7 +9,6 @@ import myschedule.web.SchedulerSettings;
 import myschedule.web.SchedulerStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vaadin.ui.Link;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class DashboardScreen extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardScreen.class);
 	private static final long serialVersionUID = 1L;
     private MyScheduleUi myScheduleUi;
-    private Table schedulersTable;
+    private Table table;
 
     public DashboardScreen(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
@@ -31,14 +30,14 @@ public class DashboardScreen extends VerticalLayout {
 	}
 
     private void initSchedulersTable() {
-        schedulersTable = new Table();
-        schedulersTable.setSizeFull();
+        table = new Table();
+        table.setSizeFull();
 
         Object defaultValue = null; // Not used.
-        schedulersTable.addContainerProperty("Actions", String.class, defaultValue);
-        schedulersTable.addContainerProperty("Scheduler", Button.class, defaultValue);
-        schedulersTable.addContainerProperty("Status", String.class, defaultValue);
-        schedulersTable.addContainerProperty("Job Counts", Integer.class, defaultValue);
+        table.addContainerProperty("Actions", String.class, defaultValue);
+        table.addContainerProperty("Scheduler", Button.class, defaultValue);
+        table.addContainerProperty("Status", String.class, defaultValue);
+        table.addContainerProperty("Job Counts", Integer.class, defaultValue);
 
         // Fill table data
         MySchedule mySchedule = MySchedule.getInstance();
@@ -64,11 +63,11 @@ public class DashboardScreen extends VerticalLayout {
                 status.toString(),
                 jobCount
             };
-            schedulersTable.addItem(row, settingsName);
+            table.addItem(row, settingsName);
         }
 
         // Add table to this UI screen
-        addComponent(schedulersTable);
+        addComponent(table);
     }
 
     private Button createSchedulerNameComponent(String schedulerFullName, final String settingsName) {
