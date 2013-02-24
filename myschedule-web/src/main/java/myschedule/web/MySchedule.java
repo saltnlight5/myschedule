@@ -246,4 +246,18 @@ public class MySchedule {
 	public SchedulerTemplate getScheduler(String settingsName) {
 		return schedulers.get(settingsName);
 	}
+
+    public static SchedulerStatus getSchedulerStatus(SchedulerTemplate scheduler) {
+        if (scheduler == null)
+            return SchedulerStatus.UNINITIALZED;
+
+        else if (scheduler.isShutdown())
+            return SchedulerStatus.SHUTDOWN;
+        else if (scheduler.isInStandbyMode())
+            return SchedulerStatus.STANDBY;
+        else if (scheduler.isStarted())
+            return SchedulerStatus.RUNNING;
+
+        return SchedulerStatus.UNINITIALZED;
+    }
 }

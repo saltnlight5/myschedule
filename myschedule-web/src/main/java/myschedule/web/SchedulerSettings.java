@@ -1,9 +1,6 @@
 package myschedule.web;
 
-import org.quartz.core.QuartzScheduler;
-
 import java.util.Properties;
-
 
 /**
  * A class to holder a Quartz Scheduler configuration (quartz.properties) and extra settings to be manage by 
