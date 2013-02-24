@@ -16,7 +16,7 @@
 		<init-param>
 			<description>Vaadin UI main entry</description>
 			<param-name>UI</param-name>
-			<param-value>myschedule.web.ui.MyScheduleUI</param-value>
+			<param-value>myschedule.web.ui.MyScheduleUi</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
