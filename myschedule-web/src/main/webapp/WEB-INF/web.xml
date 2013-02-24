@@ -11,16 +11,16 @@
 		<param-value>false</param-value>
 	</context-param>
 	<servlet>
-		<servlet-name>VaadinApplicationServlet</servlet-name>
-		<servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+		<servlet-name>VaadinServlet</servlet-name>
+		<servlet-class>com.vaadin.server.VaadinServlet</servlet-class>
 		<init-param>
-			<description>Vaadin application class to start</description>
-			<param-name>application</param-name>
-			<param-value>myschedule.web.ui.MyScheduleApp</param-value>
+			<description>Vaadin UI main entry</description>
+			<param-name>UI</param-name>
+			<param-value>myschedule.web.ui.MyScheduleUI</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>VaadinApplicationServlet</servlet-name>
+		<servlet-name>VaadinServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	<listener>
