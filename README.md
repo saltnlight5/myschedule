@@ -7,7 +7,7 @@ For more information, see project home at http://code.google.com/p/myschedule
 
 # Getting the source code
 
-	bash> hg clone https://saltnlight5@code.google.com/p/myschedule
+	bash> hg clone https://code.google.com/p/myschedule
 	bash> cd myschedule
 
 The default branch is the latest development of 3.x release work and it may not be stable yet!
