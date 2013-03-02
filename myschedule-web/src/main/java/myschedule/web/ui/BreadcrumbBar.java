@@ -11,7 +11,6 @@ public class BreadcrumbBar extends HorizontalLayout {
 	private static final long serialVersionUID = 1L;
     private MyScheduleUi myScheduleUi;
     private Button schedulerCrumb;
-    private Button scriptingConsole;
 
     public BreadcrumbBar(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
@@ -38,24 +37,13 @@ public class BreadcrumbBar extends HorizontalLayout {
             }
         });
         addComponent(schedulerCrumb);
-
-        scriptingConsole = new Button("Scripting Console");
-        scriptingConsole.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                BreadcrumbBar.this.myScheduleUi.loadScriptingConsoleScreen(schedulerSettingsName);
-            }
-        });
-        addComponent(scriptingConsole);
     }
 
     public void removeSchedulerCrumb() {
         if (schedulerCrumb == null)
             return;
 
-        removeComponent(scriptingConsole);
         removeComponent(schedulerCrumb);
-        scriptingConsole = null;
         schedulerCrumb = null;
     }
 }

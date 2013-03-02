@@ -1,5 +1,7 @@
 package myschedule.web.ui;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
@@ -23,13 +25,33 @@ import java.util.List;
 public class SchedulerScreen extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerScreen.class);
 	private static final long serialVersionUID = 1L;
+    private MyScheduleUi myScheduleUi;
     private String schedulerSettingsName;
+    private HorizontalLayout toolbar;
     private Table table;
 
-    public SchedulerScreen(String schedulerSettingsName) {
+    public SchedulerScreen(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
+        this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
-
+        initToolbar();
         initJobsTable();
+    }
+
+    private void initToolbar() {
+        toolbar = new HorizontalLayout();
+        toolbar.addComponent(createScriptConsoleButton());
+        addComponent(toolbar);
+    }
+
+    private Button createScriptConsoleButton() {
+        Button button = new Button("ScriptConsole");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                myScheduleUi.loadScriptingConsoleScreen(schedulerSettingsName);
+            }
+        });
+        return button;
     }
 
     private void initJobsTable() {
@@ -37,7 +59,6 @@ public class SchedulerScreen extends VerticalLayout {
         table.setSizeFull();
 
         Object defaultValue = null; // Not used.
-        table.addContainerProperty("Actions", String.class, defaultValue);
         table.addContainerProperty("Trigger", String.class, defaultValue);
         table.addContainerProperty("JobDetail", String.class, defaultValue);
         table.addContainerProperty("Type", String.class, defaultValue);
@@ -56,7 +77,6 @@ public class SchedulerScreen extends VerticalLayout {
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             Date previousFireTime = trigger.getPreviousFireTime();
             Object[] row = new Object[] {
-                "", // Action
                 triggerKey.toString(),
                 jobKey.toString(),
                 trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),

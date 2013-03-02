@@ -36,7 +36,7 @@ public class MyScheduleUi extends UI {
 
     void loadSchedulerScreen(String schedulerSettingsName) {
         content.removeComponent(currentScreen);
-        currentScreen = new SchedulerScreen(schedulerSettingsName);
+        currentScreen = new SchedulerScreen(this, schedulerSettingsName);
         content.addComponent(currentScreen);
 
         MySchedule mySchedule = MySchedule.getInstance();
