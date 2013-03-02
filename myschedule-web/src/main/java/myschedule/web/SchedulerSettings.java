@@ -27,6 +27,11 @@ public class SchedulerSettings {
 		this.props = new Props(settingsUrl);
 	}
 
+    /**
+     * A method to return the full scheduler name. If nothing is set, it will return default values that used
+     * by Quartz.
+     * @return String in <code>[schedulerName]_$_[schedulerId]</code> format.
+     */
     public String getSchedulerFullName() {
         if (schedulerFullName == null && props != null) {
             String name = props.getString("org.quartz.scheduler.instanceName", DEFAULT_SCHEDULER_NAME);
