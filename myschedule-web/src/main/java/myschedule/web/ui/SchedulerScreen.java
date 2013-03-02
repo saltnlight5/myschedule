@@ -48,7 +48,8 @@ public class SchedulerScreen extends VerticalLayout {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                myScheduleUi.loadScriptingConsoleScreen(schedulerSettingsName);
+                ScriptConsoleWindow console = new ScriptConsoleWindow(schedulerSettingsName);
+                myScheduleUi.addWindow(console);
             }
         });
         return button;

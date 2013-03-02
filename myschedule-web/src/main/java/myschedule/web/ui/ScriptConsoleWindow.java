@@ -1,15 +1,12 @@
 package myschedule.web.ui;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
+import myschedule.web.SchedulerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,26 +14,33 @@ import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 /**
  * UI screen that display scripting console text editor to manipulate a scheduler.
  */
-public class ScriptingConsoleScreen extends VerticalLayout {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptingConsoleScreen.class);
+public class ScriptConsoleWindow extends Window {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptConsoleWindow.class);
 	private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
     private TextArea editor;
+    private MySchedule mySchedule = MySchedule.getInstance();
 
-    public ScriptingConsoleScreen(String schedulerSettingsName) {
+    public ScriptConsoleWindow(String schedulerSettingsName) {
         this.schedulerSettingsName = schedulerSettingsName;
 
         initEditor();
     }
 
     private void initEditor() {
+        SchedulerSettings settings = mySchedule.getSchedulerSettings(schedulerSettingsName);
+        setCaption("ScriptConsole for " + settings.getSchedulerFullName());
+        setWidth("90%");
+        setHeight("90%");
+        center();
+
+        VerticalLayout content = new VerticalLayout();
+        setContent(content);
+
         editor = new TextArea();
         editor.setSizeFull();
         editor.setRows(25);
@@ -54,8 +58,8 @@ public class ScriptingConsoleScreen extends VerticalLayout {
         });
 
         // Add component to this UI screen
-        addComponent(editor);
-        addComponent(button);
+        content.addComponent(editor);
+        content.addComponent(button);
     }
 
     private void runScriptText(String scriptText, String scriptEngineName) {
@@ -67,11 +71,11 @@ public class ScriptingConsoleScreen extends VerticalLayout {
             throw new RuntimeException("Script engine=" + scriptEngineName + " is not found.");
         }
 
-        MySchedule mySchedule = MySchedule.getInstance();
-        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-
         // Script engine binding variables.
         Bindings bindings = scriptEngine.createBindings();
+
+        // Bind scheduler as implicit variable
+        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         bindings.put("scheduler", scheduler);
 
         // Evaluate script text.
