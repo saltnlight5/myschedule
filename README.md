@@ -12,10 +12,18 @@ For more information, see project home at http://code.google.com/p/myschedule
 
 The default branch is the latest development of 3.x release work and it may not be stable yet!
 
-If you want the 2.x release source, then simply switch to that branch. For example:
+If you want an extract release source code, then simply switch to the tag name like this:
+
+	bash> hg update myschedule-2.4.4
+
+Or if you want the 2.4 maintence branch source code, then switch to the branch name like this:
 
 	bash> hg update myschedule-2.4.x
 
+Or to get back to latest development branch, then switch like this:
+
+	bash> hg update default
+	
 
 # How to build this project (generate latest jar and war files etc)
 
