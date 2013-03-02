@@ -50,28 +50,44 @@ public class MySchedule {
 		LOGGER.info("MySchedule initialized.");
 	}
 
+    /**
+     * Retrieve user default scheduler config text. If not found it returns empty string, not null!
+     */
+    public String getUserDefaultSchedulerConfig() {
+        String defaultSchedulerSettingsUrl = myScheduleSettings.getDefaultSchedulerSettings();
+        if (StringUtils.isNotEmpty(defaultSchedulerSettingsUrl)) {
+            return "";
+        } else {
+            LOGGER.debug("Reading user default scheduler settings/config text url={}", defaultSchedulerSettingsUrl);
+            URL url = ClasspathURLStreamHandler.createURL(defaultSchedulerSettingsUrl);
+            InputStream inStream = null;
+            try {
+                inStream = url.openStream();
+                String result = IOUtils.toString(inStream);
+                return result;
+            } catch (IOException e) {
+                throw new RuntimeException("Failed read user default scheduler settings/config text url=" + defaultSchedulerSettingsUrl);
+            } finally {
+                if (inStream != null)
+                    IOUtils.closeQuietly(inStream);
+            }
+        }
+    }
+
+    /**
+     * If MySchedule do not have any scheduler settings, and user does provided a default one, this method will auto
+     * add it into the settings map.
+     */
 	private void addDefaultSchedulerSettings() {
 		// Do nothing if we already have some scheduler settings loaded.
 		if (schedulerSettingsMap.size() > 0)
 			return;
-		
-		// Check to see if need to load default scheduler
-		String defaultSchedulerSettingsUrl = myScheduleSettings.getDefaultSchedulerSettings();
-		if (StringUtils.isNotEmpty(defaultSchedulerSettingsUrl)) {
-			LOGGER.info("Generating default scheduler settings from {}", defaultSchedulerSettingsUrl);
-			URL url = ClasspathURLStreamHandler.createURL(defaultSchedulerSettingsUrl);
-			InputStream inStream = null;
-			try {
-				inStream = url.openStream();
-				String propsString = IOUtils.toString(inStream);
-				addSchedulerSettings(propsString);
-			} catch (IOException e) {
-				throw new RuntimeException("Failed to load default scheduler settings " + defaultSchedulerSettingsUrl);
-			} finally {
-				if (inStream != null)
-					IOUtils.closeQuietly(inStream);
-			}
-		}
+
+        String propsString = getUserDefaultSchedulerConfig();
+        if (StringUtils.isNotEmpty(propsString)) {
+            LOGGER.info("Adding a new scheduler from default config settings.");
+            addSchedulerSettings(propsString);
+        }
 	}
 
 	private void initSchedulerSettings() {
