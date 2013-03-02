@@ -42,7 +42,7 @@ public class DashboardScreen extends VerticalLayout {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                LOGGER.info("Create New Scheduler.");
+                myScheduleUi.addWindow(new NewSchedulerWindow(myScheduleUi));
             }
         });
         return button;

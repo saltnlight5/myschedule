@@ -158,7 +158,7 @@ public class MySchedule {
 	}
 	
 	/** Add to schedulerSettingsMap and scheduler map, and create the file. */
-	public void addSchedulerSettings(String propsString) {
+	public SchedulerSettings addSchedulerSettings(String propsString) {
 		String settingsName = UUID.randomUUID().toString();
 		File file = getSettingsFile(settingsName);
 		LOGGER.info("Adding new scheduler settings file: {}", file);
@@ -176,8 +176,11 @@ public class MySchedule {
 	
 		SchedulerSettings schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
 		schedulerSettingsMap.put(settingsName, schedulerSettings);
-		if (schedulerSettings.isAutoCreate())
+
+        if (schedulerSettings.isAutoCreate())
 			createScheduler(settingsName, schedulerSettings);
+
+        return schedulerSettings;
 	}
 
 	/** Remove from schedulerSettingsMap and scheduler map, and remove the file. */
