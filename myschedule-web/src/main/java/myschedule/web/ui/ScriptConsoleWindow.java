@@ -16,9 +16,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 /**
- * UI screen that display scripting console text editor to manipulate a scheduler.
+ * A popup UI window to display scripting console text editor to manipulate a scheduler.
  */
-public class ScriptConsoleWindow extends Window {
+public class ScriptConsoleWindow extends AbstractWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptConsoleWindow.class);
 	private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
@@ -34,12 +34,6 @@ public class ScriptConsoleWindow extends Window {
     private void initEditor() {
         SchedulerSettings settings = mySchedule.getSchedulerSettings(schedulerSettingsName);
         setCaption("ScriptConsole for " + settings.getSchedulerFullName());
-        setWidth("90%");
-        setHeight("90%");
-        center();
-
-        VerticalLayout content = new VerticalLayout();
-        setContent(content);
 
         editor = new TextArea();
         editor.setSizeFull();
