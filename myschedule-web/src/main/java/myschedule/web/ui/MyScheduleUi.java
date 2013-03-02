@@ -51,10 +51,4 @@ public class MyScheduleUi extends UI {
 
         breadcrumbBar.removeSchedulerCrumb();
     }
-
-    void loadScriptingConsoleScreen(String schedulerSettingsName) {
-        content.removeComponent(currentScreen);
-        currentScreen = new ScriptingConsoleScreen(schedulerSettingsName);
-        content.addComponent(currentScreen);
-    }
 }
