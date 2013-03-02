@@ -55,7 +55,8 @@ public class MySchedule {
      */
     public String getUserDefaultSchedulerConfig() {
         String defaultSchedulerSettingsUrl = myScheduleSettings.getDefaultSchedulerSettings();
-        if (StringUtils.isNotEmpty(defaultSchedulerSettingsUrl)) {
+        if (StringUtils.isEmpty(defaultSchedulerSettingsUrl)) {
+            LOGGER.debug("User default scheduler settings/config text is EMPTY.");
             return "";
         } else {
             LOGGER.debug("Reading user default scheduler settings/config text url={}", defaultSchedulerSettingsUrl);
