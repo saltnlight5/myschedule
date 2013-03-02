@@ -1,6 +1,7 @@
 package myschedule.web.ui;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
@@ -21,20 +22,37 @@ public class DashboardScreen extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardScreen.class);
 	private static final long serialVersionUID = 1L;
     private MyScheduleUi myScheduleUi;
+    private HorizontalLayout toolbar;
     private Table table;
 
     public DashboardScreen(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
-
+        initToolbar();
         initSchedulersTable();
 	}
+
+    private void initToolbar() {
+        toolbar = new HorizontalLayout();
+        toolbar.addComponent(createNewSchedulerButton());
+        addComponent(toolbar);
+    }
+
+    private Button createNewSchedulerButton() {
+        Button button = new Button("Create New Scheduler");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                LOGGER.info("Create New Scheduler.");
+            }
+        });
+        return button;
+    }
 
     private void initSchedulersTable() {
         table = new Table();
         table.setSizeFull();
 
         Object defaultValue = null; // Not used.
-        table.addContainerProperty("Actions", String.class, defaultValue);
         table.addContainerProperty("Scheduler", Button.class, defaultValue);
         table.addContainerProperty("Status", String.class, defaultValue);
         table.addContainerProperty("Job Counts", Integer.class, defaultValue);
@@ -58,7 +76,6 @@ public class DashboardScreen extends VerticalLayout {
             }
 
             Object[] row = new Object[] {
-                "", // Action
                 schedulerNameComponent,
                 status.toString(),
                 jobCount
