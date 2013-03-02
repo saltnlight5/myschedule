@@ -42,7 +42,7 @@ Or if you want to run it directly from this project source, then try
 	bash> cd myschedule-web
 	bash> mvn tomcat7:run
 
-Then visit http://localhost:8080/myschedule
+Then visit http://localhost:8080/myschedule-web
 
 
 # Versioning and Maintence Branches
