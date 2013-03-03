@@ -1,6 +1,7 @@
 package myschedule.web;
 
 import myschedule.quartz.extra.SchedulerTemplate;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -60,18 +61,23 @@ public class MySchedule {
             return "";
         } else {
             LOGGER.debug("Reading user default scheduler settings/config text url={}", defaultSchedulerSettingsUrl);
-            URL url = ClasspathURLStreamHandler.createURL(defaultSchedulerSettingsUrl);
-            InputStream inStream = null;
-            try {
-                inStream = url.openStream();
-                String result = IOUtils.toString(inStream);
-                return result;
-            } catch (IOException e) {
-                throw new RuntimeException("Failed read user default scheduler settings/config text url=" + defaultSchedulerSettingsUrl);
-            } finally {
-                if (inStream != null)
-                    IOUtils.closeQuietly(inStream);
-            }
+            String result = getSchedulerSettingsConfig(defaultSchedulerSettingsUrl);
+            return result;
+        }
+    }
+
+    public String getSchedulerSettingsConfig(String configUrlName) {
+        URL url = ClasspathURLStreamHandler.createURL(configUrlName);
+        InputStream inStream = null;
+        try {
+            inStream = url.openStream();
+            String result = IOUtils.toString(inStream);
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed read scheduler settings url=" + configUrlName);
+        } finally {
+            if (inStream != null)
+                IOUtils.closeQuietly(inStream);
         }
     }
 
@@ -123,39 +129,38 @@ public class MySchedule {
 		for (String name : schedulerSettingsMap.keySet()) {
 			SchedulerSettings schedulerSettings = schedulerSettingsMap.get(name);
 			if (schedulerSettings.isAutoCreate()) {
-                // Now create the scheduler
-                try {
-                    createScheduler(name, schedulerSettings);
-                } catch (RuntimeException e) {
-                    // Even if Quartz scheduler failed to load, we will allow the MySchedule to continue, so we simply log
-                    // the error and continue.
-                    LOGGER.error("Failed to load scheduler from config settings name: {}", name, e);
-                    schedulerSettings.setSchedulerException(e);
-                }
+                createScheduler(name, schedulerSettings);
             }
 		}
 	}
 	
 	/** Create and init scheduler and add to scheduler map. */
 	public void createScheduler(String settingsName, SchedulerSettings schedulerSettings) {
-		// If scheduler already exists, shut it down first
-		if (schedulers.containsKey(settingsName)) {
-			LOGGER.warn("Scheduler settings {} has already been initialized. Will shutdown first.", settingsName);
-			shutdownScheduler(settingsName);
-		}
-		
-		// Now create the scheduler
-        // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
-        LOGGER.info("Creating Quartz scheduler from {}", schedulerSettings.getSettingsUrl());
-        SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerSettings.getQuartzProperties());
-        schedulers.put(settingsName, schedulerTemplate);
-        schedulerSettings.setSchedulerException(null);
-        LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
+        try {
+            // If scheduler already exists, shut it down first
+            if (schedulers.containsKey(settingsName)) {
+                LOGGER.warn("Scheduler settings {} has already been initialized. Will shutdown first.", settingsName);
+                shutdownScheduler(settingsName);
+            }
 
-        if (schedulerSettings.isAutoStart()) {
-            LOGGER.debug("Auto starting scheduler.");
-            schedulerTemplate.start();
-            LOGGER.info("Auto started scheduler per configured settings.");
+            // Now create the scheduler
+            // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
+            LOGGER.info("Creating Quartz scheduler from {}", schedulerSettings.getSettingsUrl());
+            SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerSettings.getQuartzProperties());
+            schedulers.put(settingsName, schedulerTemplate);
+            schedulerSettings.setSchedulerException(null);
+            LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
+
+            if (schedulerSettings.isAutoStart()) {
+                LOGGER.debug("Auto starting scheduler.");
+                schedulerTemplate.start();
+                LOGGER.info("Auto started scheduler per configured settings.");
+            }
+        } catch (RuntimeException e) {
+            // Even if Quartz scheduler failed to load, we will allow the MySchedule to continue, so we simply log
+            // the error and continue.
+            LOGGER.error("Failed to init scheduler with settings {}", settingsName, e);
+            schedulerSettings.setSchedulerException(e);
         }
 	}
 
@@ -179,19 +184,9 @@ public class MySchedule {
 		String settingsName = UUID.randomUUID().toString();
 		File file = getSettingsFile(settingsName);
 		LOGGER.info("Adding new scheduler settings file: {}", file);
-		FileWriter writer = null;
-		try {
-			writer = new FileWriter(file);
-			IOUtils.write(propsString, writer);
-			writer.flush();
-		} catch (Exception e) {
-			LOGGER.error("Failed to save scheduler settings file {}", settingsName, e);
-		} finally {
-			if (writer != null)
-				IOUtils.closeQuietly(writer);
-		}
-	
-		SchedulerSettings schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
+        writeFile(file, propsString);
+
+        SchedulerSettings schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
 		schedulerSettingsMap.put(settingsName, schedulerSettings);
 
         if (schedulerSettings.isAutoCreate())
@@ -199,6 +194,14 @@ public class MySchedule {
 
         return schedulerSettings;
 	}
+
+    private void writeFile(File file, String text) {
+        try {
+            FileUtils.write(file, text);
+        } catch (IOException e) {
+            LOGGER.error("Failed to save file={}", file, e);
+        }
+    }
 
 	/** Remove from schedulerSettingsMap and scheduler map, and remove the file. */
 	public void deleteSchedulerSettings(String settingsName) {
@@ -210,10 +213,34 @@ public class MySchedule {
 		if (schedulerSettings != null) {
 			File file = new File(schedulerSettings.getSettingsUrl());
 			LOGGER.info("Deleting scheduler settings file: {}", file);
-			file.delete();
+			if (!file.delete()) {
+                throw new RuntimeException("Failed to delete file=" + file);
+            }
 			schedulerSettingsMap.remove(settingsName);
 		}
 	}
+
+    /** Update an existing scheduler settings config file. */
+    public void updateSchedulerSettings(String settingsName, String propsString) {
+        if (schedulers.containsKey(settingsName)) {
+            shutdownScheduler(settingsName);
+        }
+
+        SchedulerSettings schedulerSettings = schedulerSettingsMap.get(settingsName);
+        if (schedulerSettings != null) {
+            File file = new File(schedulerSettings.getSettingsUrl());
+            LOGGER.info("Updating scheduler settings file: {}", file);
+            writeFile(file, propsString);
+
+            // Recreate schedulerSettings for this config file.
+            schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
+            schedulerSettingsMap.put(settingsName, schedulerSettings);
+
+            // Create the scheduler instance if needed
+            if (schedulerSettings.isAutoCreate())
+                createScheduler(settingsName, schedulerSettings);
+        }
+    }
 	
 	private File getSettingsFile(String settingsName) {
 		File configDir = myScheduleSettings.getSchedulerSettingsDir();
@@ -269,7 +296,7 @@ public class MySchedule {
 
     public static SchedulerStatus getSchedulerStatus(SchedulerTemplate scheduler) {
         if (scheduler == null)
-            return SchedulerStatus.UNINITIALZED;
+            return SchedulerStatus.SHUTDOWN;
 
         else if (scheduler.isShutdown())
             return SchedulerStatus.SHUTDOWN;
@@ -278,6 +305,6 @@ public class MySchedule {
         else if (scheduler.isStarted())
             return SchedulerStatus.RUNNING;
 
-        return SchedulerStatus.UNINITIALZED;
+        return SchedulerStatus.SHUTDOWN;
     }
 }

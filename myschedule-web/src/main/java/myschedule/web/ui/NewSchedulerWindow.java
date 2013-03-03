@@ -19,24 +19,17 @@ import java.util.Date;
 /**
  * A popup UI window to display a text editor to create a scheduler by a Quartz config properties content.
  */
-public class NewSchedulerWindow extends AbstractWindow {
+public class NewSchedulerWindow extends EditorWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewSchedulerWindow.class);
 	private static final long serialVersionUID = 1L;
-    private TextArea editor;
-    private MyScheduleUi myScheduleUi;
-    private MySchedule mySchedule = MySchedule.getInstance();
 
     public NewSchedulerWindow(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
-        initEditor();
+        initControls();
     }
 
-    private void initEditor() {
+    private void initControls() {
         setCaption("Creating a new Scheduler with Quartz configuration properties");
-
-        editor = new TextArea();
-        editor.setSizeFull();
-        editor.setRows(25);
 
         // Load default text
         String defaultText = mySchedule.getUserDefaultSchedulerConfig();
@@ -58,14 +51,11 @@ public class NewSchedulerWindow extends AbstractWindow {
                 createScheduler(configText);
             }
         });
-
-        // Add component to this UI screen
-        content.addComponent(editor);
         content.addComponent(button);
     }
 
     private void createScheduler(String propsString) {
-        LOGGER.debug("Creating new scheduler with a config text.");
+        LOGGER.debug("Creating new scheduler settings.");
         mySchedule.addSchedulerSettings(propsString);
         close(); // This is a popup, so close it self upon completion.
         myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the newly create scheduler to show.
