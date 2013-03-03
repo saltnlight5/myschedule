@@ -1,9 +1,6 @@
 package myschedule.web.ui;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import myschedule.web.SchedulerSettings;
@@ -18,16 +15,14 @@ import javax.script.ScriptException;
 /**
  * A popup UI window to display scripting console text editor to manipulate a scheduler.
  */
-public class ScriptConsoleWindow extends AbstractWindow {
+public class ScriptConsoleWindow extends EditorWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptConsoleWindow.class);
 	private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
-    private TextArea editor;
-    private MySchedule mySchedule = MySchedule.getInstance();
 
-    public ScriptConsoleWindow(String schedulerSettingsName) {
+    public ScriptConsoleWindow(MyScheduleUi myScheduleUi,  String schedulerSettingsName) {
+        this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
-
         initEditor();
     }
 
@@ -35,11 +30,10 @@ public class ScriptConsoleWindow extends AbstractWindow {
         SchedulerSettings settings = mySchedule.getSchedulerSettings(schedulerSettingsName);
         setCaption("ScriptConsole for " + settings.getSchedulerFullName());
 
-        editor = new TextArea();
-        editor.setSizeFull();
-        editor.setRows(25);
+        HorizontalLayout controls = new HorizontalLayout();
+        content.addComponent(controls);
 
-        Button button = new Button("Run");
+        Button button = new Button("Execute and Close");
         button.addClickListener(new Button.ClickListener()
         {
             @Override
@@ -48,12 +42,23 @@ public class ScriptConsoleWindow extends AbstractWindow {
                 String scriptText = editor.getValue();
                 String scriptEngineName = "Groovy";
                 runScriptText(scriptText, scriptEngineName);
+                myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+                close();
             }
         });
+        controls.addComponent(button);
 
-        // Add component to this UI screen
-        content.addComponent(editor);
-        content.addComponent(button);
+        button = new Button("Execute");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                String scriptText = editor.getValue();
+                String scriptEngineName = "Groovy";
+                runScriptText(scriptText, scriptEngineName);
+                myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+            }
+        });
+        controls.addComponent(button);
     }
 
     private void runScriptText(String scriptText, String scriptEngineName) {
