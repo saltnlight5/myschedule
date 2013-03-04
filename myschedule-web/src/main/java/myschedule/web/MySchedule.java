@@ -24,7 +24,7 @@ public class MySchedule extends AbstractService {
 	private static volatile MySchedule instance;
 	private MyScheduleSettings myScheduleSettings;
 	private Map<String, SchedulerSettings> schedulerSettingsMap; //key=SettingsName
-	private Map<String, SchedulerTemplate> schedulers;           //key=SettingsName
+	private Map<String, SchedulerTemplate> schedulersMap;        //key=SettingsName
     private SchedulerSettingsStore schedulerSettingsStore;
 	
 	private MySchedule() {
@@ -49,7 +49,7 @@ public class MySchedule extends AbstractService {
 		initMyScheduleSettings();
         initInternalServices();
 		initSchedulerSettingsMap();
-		initSchedulers();
+		initSchedulersMap();
 		LOGGER.info("MySchedule initialized.");
 	}
 
@@ -88,11 +88,11 @@ public class MySchedule extends AbstractService {
         }
 	}
 
-	private void initSchedulers() {
+	private void initSchedulersMap() {
 		// Init the map first
-		schedulers = new HashMap<String, SchedulerTemplate>();
+		schedulersMap = new HashMap<String, SchedulerTemplate>();
 		
-		// Create and init all schedulers using schedulerSettingsMap
+		// Create and init all schedulersMap using schedulerSettingsMap
 		for (SchedulerSettings settings : schedulerSettingsMap.values()) {
 			if (settings.isAutoCreate()) {
                 createScheduler(settings);
@@ -105,7 +105,7 @@ public class MySchedule extends AbstractService {
         String settingsName = settings.getSettingsName();
         try {
             // If scheduler already exists, shut it down first
-            if (schedulers.containsKey(settingsName)) {
+            if (schedulersMap.containsKey(settingsName)) {
                 LOGGER.warn("Scheduler settings {} has already been initialized. Will shutdown first.", settingsName);
                 shutdownScheduler(settingsName);
             }
@@ -114,7 +114,7 @@ public class MySchedule extends AbstractService {
             // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
             LOGGER.info("Creating Quartz scheduler from {}", settings.getSettingsUrl());
             SchedulerTemplate schedulerTemplate = new SchedulerTemplate(settings.getQuartzProperties());
-            schedulers.put(settingsName, schedulerTemplate);
+            schedulersMap.put(settingsName, schedulerTemplate);
             settings.setSchedulerException(null);
             LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
 
@@ -136,13 +136,13 @@ public class MySchedule extends AbstractService {
 		SchedulerSettings schedulerSettings = schedulerSettingsMap.get(settingsName);
 		boolean waitForJobToComplete = schedulerSettings.isWaitForJobToComplete();
 		LOGGER.info("Shutting down {} with waitForJobToComplete={}", schedulerSettings, waitForJobToComplete);
-		SchedulerTemplate scheduler = schedulers.get(settingsName);
+		SchedulerTemplate scheduler = schedulersMap.get(settingsName);
         if (scheduler != null) {
             if (!scheduler.isShutdown())
                 scheduler.shutdown(waitForJobToComplete);
             else
                 LOGGER.info("Scheduler settingsName={} has already been shutdown. No action.", settingsName);
-		    schedulers.remove(settingsName);
+		    schedulersMap.remove(settingsName);
         }
 	}
 
@@ -188,7 +188,7 @@ public class MySchedule extends AbstractService {
 
 	/** Remove from schedulerSettingsMap and scheduler map, and remove the file. */
 	public void deleteSchedulerSettings(String settingsName) {
-		if (schedulers.containsKey(settingsName)) {
+		if (schedulersMap.containsKey(settingsName)) {
 			shutdownScheduler(settingsName);
 		}
 		
@@ -201,7 +201,7 @@ public class MySchedule extends AbstractService {
 
     /** Update an existing scheduler settings config file. */
     public void updateSchedulerSettings(String settingsName, String propsString) {
-        if (schedulers.containsKey(settingsName)) {
+        if (schedulersMap.containsKey(settingsName)) {
             shutdownScheduler(settingsName);
         }
 
@@ -237,7 +237,7 @@ public class MySchedule extends AbstractService {
 		long pauseTime = myScheduleSettings.getPauseTimeAfterShutdown();
 		if (pauseTime > 0) {
 			try {
-				LOGGER.debug("Pausing {}ms after all schedulers shutdown to avoid web server problem.", pauseTime);
+				LOGGER.debug("Pausing {}ms after all schedulersMap shutdown to avoid web server problem.", pauseTime);
 				Thread.sleep(pauseTime); 
 			} catch (InterruptedException e) {
                 // Can not sleep? Oh well, we are shutting down anyway, so just ignore and continue.
@@ -254,7 +254,7 @@ public class MySchedule extends AbstractService {
 	}
 	
 	public SchedulerTemplate getScheduler(String settingsName) {
-		return schedulers.get(settingsName);
+		return schedulersMap.get(settingsName);
 	}
 
     public static SchedulerStatus getSchedulerStatus(SchedulerTemplate scheduler) {
