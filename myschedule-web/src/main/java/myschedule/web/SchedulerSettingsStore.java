@@ -44,7 +44,7 @@ public class SchedulerSettingsStore extends AbstractService {
             tryCount++;
         }
 
-        if (exists(name))
+        if (tryCount == maxTryCount && exists(name))
             throw new RuntimeException("Unable to generate a unique scheduler settings name in storeDir=" + storeDir);
 
         return name;
