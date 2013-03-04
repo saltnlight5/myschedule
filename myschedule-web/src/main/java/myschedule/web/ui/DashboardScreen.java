@@ -134,7 +134,7 @@ public class DashboardScreen extends VerticalLayout {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 SchedulerSettings settings = mySchedule.getSchedulerSettings(settingsName);
-                mySchedule.createScheduler(settingsName, settings);
+                mySchedule.createScheduler(settings);
                 myScheduleUi.loadDashboardScreen();
             }
         });
