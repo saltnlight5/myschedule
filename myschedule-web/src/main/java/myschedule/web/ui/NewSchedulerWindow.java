@@ -36,7 +36,7 @@ public class NewSchedulerWindow extends EditorWindow {
         if (StringUtils.isNotEmpty(defaultText)) {
             // Try to make default scheduler name unique
             SimpleDateFormat df = new SimpleDateFormat("YYYYmmdd-HHmmss");
-            String newName = SchedulerSettings.DEFAULT_SCHEDULER_NAME + df.format(new Date());
+            String newName = "MyQuartzScheduler-" + df.format(new Date());
             defaultText = defaultText.replace(SchedulerSettings.DEFAULT_SCHEDULER_NAME, newName);
             editor.setValue(defaultText);
         }
