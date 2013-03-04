@@ -30,6 +30,7 @@ public class SchedulerSettingsStore extends AbstractService {
             LOGGER.info("Creating scheduler settings store dir={}.", storeDir);
             storeDir.mkdirs();
         }
+        LOGGER.debug("Service SchedulerSettingsStore is ready.");
     }
 
     @Override

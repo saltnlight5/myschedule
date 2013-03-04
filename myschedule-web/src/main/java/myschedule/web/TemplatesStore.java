@@ -14,9 +14,9 @@ import java.util.List;
  *
  * @author Zemian Deng
  */
-public class TemplateStore extends AbstractService {
+public class TemplatesStore extends AbstractService {
     public static final String FILE_EXT = ".txt";
-    private static final Logger LOGGER = LoggerFactory.getLogger(TemplateStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TemplatesStore.class);
     private File storeDir;
 
     @Override
@@ -29,13 +29,14 @@ public class TemplateStore extends AbstractService {
             LOGGER.info("Creating template store dir={}.", storeDir);
             storeDir.mkdirs();
         }
+        LOGGER.debug("Service TemplatesStore[" + storeDir.getName() + "] is ready.");
     }
 
     @Override
     public void destroyService() {
     }
 
-    public TemplateStore(File storeDir) {
+    public TemplatesStore(File storeDir) {
         this.storeDir = storeDir;
     }
 
