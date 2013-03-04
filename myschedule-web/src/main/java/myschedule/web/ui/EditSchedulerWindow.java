@@ -27,9 +27,7 @@ public class EditSchedulerWindow extends EditorWindow {
         setCaption("Editing Scheduler Config ID: " + schedulerSettingsName);
 
         // Load default text
-        SchedulerSettings settings = mySchedule.getSchedulerSettings(schedulerSettingsName);
-        String settingsUrl = settings.getSettingsUrl();
-        String editText = mySchedule.getSchedulerSettingsConfig(settingsUrl);
+        String editText = mySchedule.getUserDefaultSchedulerConfig();
         editor.setValue(editText);
 
         Button button = new Button("Save and Restart Scheduler");
