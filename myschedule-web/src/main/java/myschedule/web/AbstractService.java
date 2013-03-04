@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Zemian Deng
  */
 public abstract class AbstractService implements Service {
-    private AtomicBoolean inited = new AtomicBoolean(false);
+    AtomicBoolean inited = new AtomicBoolean(false);
 
     public boolean isInited() {
         return inited.get();
