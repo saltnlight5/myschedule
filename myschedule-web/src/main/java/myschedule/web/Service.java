@@ -6,4 +6,5 @@ package myschedule.web;
 public interface Service {
     void init();
     void destroy();
+    boolean isInited();
 }

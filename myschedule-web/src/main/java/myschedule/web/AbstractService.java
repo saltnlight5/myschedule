@@ -8,6 +8,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractService implements Service {
     private AtomicBoolean inited = new AtomicBoolean(false);
 
+    public boolean isInited() {
+        return inited.get();
+    }
+
     @Override
     public void init() {
         if (inited.get())
