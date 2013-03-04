@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is the central manager of the MySchedule application. There is only one instance of MySchedule application, 
@@ -23,9 +23,11 @@ public class MySchedule {
 	public static final String SETTINGS_FILE_EXT = ".properties";
 	private static final Logger LOGGER = LoggerFactory.getLogger(MySchedule.class);
 	private static volatile MySchedule instance;
+    private AtomicBoolean inited = new AtomicBoolean(false);
 	private MyScheduleSettings myScheduleSettings;
 	private Map<String, SchedulerSettings> schedulerSettingsMap; //key=SettingsName
 	private Map<String, SchedulerTemplate> schedulers;           //key=SettingsName
+    private SchedulerSettingsStore schedulerSettingsStore;
 	
 	private MySchedule() {
 	}
@@ -36,6 +38,7 @@ public class MySchedule {
 			synchronized(MySchedule.class) {
 				if (instance == null) {
 					instance = new MySchedule();
+                    instance.init();
 				}
 			}
 		}
@@ -43,43 +46,18 @@ public class MySchedule {
 	}
 	
 	public void init() {
+        if (inited.get())
+            return;
+
 		LOGGER.debug("Initializing MySchedule ...");
 		initMyScheduleSettings();
-		initSchedulerSettings();
+        initServices();
+		initSchedulerSettingsMap();
 		createSchedulers();
 		addDefaultSchedulerSettings();
 		LOGGER.info("MySchedule initialized.");
+        inited.set(true);
 	}
-
-    /**
-     * Retrieve user default scheduler config text. If not found it returns empty string, not null!
-     */
-    public String getUserDefaultSchedulerConfig() {
-        String defaultSchedulerSettingsUrl = myScheduleSettings.getDefaultSchedulerSettings();
-        if (StringUtils.isEmpty(defaultSchedulerSettingsUrl)) {
-            LOGGER.debug("User default scheduler settings/config text is EMPTY.");
-            return "";
-        } else {
-            LOGGER.debug("Reading user default scheduler settings/config text url={}", defaultSchedulerSettingsUrl);
-            String result = getSchedulerSettingsConfig(defaultSchedulerSettingsUrl);
-            return result;
-        }
-    }
-
-    public String getSchedulerSettingsConfig(String configUrlName) {
-        URL url = ClasspathURLStreamHandler.createURL(configUrlName);
-        InputStream inStream = null;
-        try {
-            inStream = url.openStream();
-            String result = IOUtils.toString(inStream);
-            return result;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed read scheduler settings url=" + configUrlName);
-        } finally {
-            if (inStream != null)
-                IOUtils.closeQuietly(inStream);
-        }
-    }
 
     /**
      * If MySchedule do not have any scheduler settings, and user does provided a default one, this method will auto
@@ -97,28 +75,17 @@ public class MySchedule {
         }
 	}
 
-	private void initSchedulerSettings() {
-		// Get configDir and create it if not exists
-		File configDir = myScheduleSettings.getSchedulerSettingsDir();
-		if (!configDir.exists()) {
-			LOGGER.info("Creating scheduler settings dir {}.", configDir);
-			configDir.mkdirs();
-		}
+    private void initServices() {
+        // Init schedulerSettingsStore
+        schedulerSettingsStore = new SchedulerSettingsStore(myScheduleSettings.getSchedulerSettingsDir());
+        schedulerSettingsStore.init();
+    }
 
+	private void initSchedulerSettingsMap() {
 		// Load up all scheduler settings from config dir files.
 		schedulerSettingsMap = new HashMap<String, SchedulerSettings>();
-		File[] files = configDir.listFiles();
-		for (File file : files) {
-            try {
-                String name = file.getName();
-                String settingsName = name.split(SETTINGS_FILE_EXT)[0];
-                SchedulerSettings schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
-                LOGGER.info("Loaded {}", schedulerSettings);
-                schedulerSettingsMap.put(settingsName, schedulerSettings);
-            } catch (Exception e) {
-                LOGGER.warn("Failed to load scheduler settings file={}", file);
-            }
-		}
+        for (SchedulerSettings settings : schedulerSettingsStore.getAll())
+            schedulerSettingsMap.put(settings.getSettingsName(), settings);
 	}
 
 	private void createSchedulers() {
@@ -178,30 +145,48 @@ public class MySchedule {
 		    schedulers.remove(settingsName);
         }
 	}
+
+    /**
+     * Retrieve user default scheduler config text. If not found it returns empty string, not null!
+     */
+    public String getUserDefaultSchedulerConfig() {
+        String defaultSchedulerSettingsUrl = myScheduleSettings.getDefaultSchedulerSettings();
+        if (StringUtils.isEmpty(defaultSchedulerSettingsUrl)) {
+            LOGGER.debug("User default scheduler settings/config text is EMPTY.");
+            return "";
+        } else {
+            LOGGER.debug("Reading user default scheduler settings/config text url={}", defaultSchedulerSettingsUrl);
+            String result = getSchedulerSettingsConfig(defaultSchedulerSettingsUrl);
+            return result;
+        }
+    }
+
+    public String getSchedulerSettingsConfig(String configUrlName) {
+        URL url = ClasspathURLStreamHandler.createURL(configUrlName);
+        InputStream inStream = null;
+        try {
+            inStream = url.openStream();
+            String result = IOUtils.toString(inStream);
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed read scheduler settings url=" + configUrlName);
+        } finally {
+            if (inStream != null)
+                IOUtils.closeQuietly(inStream);
+        }
+    }
 	
 	/** Add to schedulerSettingsMap and scheduler map, and create the file. */
 	public SchedulerSettings addSchedulerSettings(String propsString) {
-		String settingsName = UUID.randomUUID().toString();
-		File file = getSettingsFile(settingsName);
-		LOGGER.info("Adding new scheduler settings file: {}", file);
-        writeFile(file, propsString);
+        SchedulerSettings settings = schedulerSettingsStore.add(propsString);
+        String settingsName = settings.getSettingsName();
+		schedulerSettingsMap.put(settingsName, settings);
 
-        SchedulerSettings schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
-		schedulerSettingsMap.put(settingsName, schedulerSettings);
+        if (settings.isAutoCreate())
+			createScheduler(settingsName, settings);
 
-        if (schedulerSettings.isAutoCreate())
-			createScheduler(settingsName, schedulerSettings);
-
-        return schedulerSettings;
+        return settings;
 	}
-
-    private void writeFile(File file, String text) {
-        try {
-            FileUtils.write(file, text);
-        } catch (IOException e) {
-            LOGGER.error("Failed to save file={}", file, e);
-        }
-    }
 
 	/** Remove from schedulerSettingsMap and scheduler map, and remove the file. */
 	public void deleteSchedulerSettings(String settingsName) {
@@ -211,11 +196,7 @@ public class MySchedule {
 		
 		SchedulerSettings schedulerSettings = schedulerSettingsMap.get(settingsName);
 		if (schedulerSettings != null) {
-			File file = new File(schedulerSettings.getSettingsUrl());
-			LOGGER.info("Deleting scheduler settings file: {}", file);
-			if (!file.delete()) {
-                throw new RuntimeException("Failed to delete file=" + file);
-            }
+            schedulerSettingsStore.remove(settingsName);
 			schedulerSettingsMap.remove(settingsName);
 		}
 	}
@@ -228,12 +209,8 @@ public class MySchedule {
 
         SchedulerSettings schedulerSettings = schedulerSettingsMap.get(settingsName);
         if (schedulerSettings != null) {
-            File file = new File(schedulerSettings.getSettingsUrl());
-            LOGGER.info("Updating scheduler settings file: {}", file);
-            writeFile(file, propsString);
-
-            // Recreate schedulerSettings for this config file.
-            schedulerSettings = new SchedulerSettings(settingsName, file.getPath());
+            // Update and reload a new settings instance.
+            schedulerSettings = schedulerSettingsStore.update(settingsName, propsString);
             schedulerSettingsMap.put(settingsName, schedulerSettings);
 
             // Create the scheduler instance if needed
@@ -241,21 +218,20 @@ public class MySchedule {
                 createScheduler(settingsName, schedulerSettings);
         }
     }
-	
-	private File getSettingsFile(String settingsName) {
-		File configDir = myScheduleSettings.getSchedulerSettingsDir();
-		return new File(configDir, settingsName + SETTINGS_FILE_EXT);
-	}
 
 	private void initMyScheduleSettings() {
 		myScheduleSettings = new MyScheduleSettings();
 	}
 
 	public void destroy() {
+        if (!inited.get())
+            return;
+
 		LOGGER.debug("Destroying MySchedule ...");
 		shutdownAllSchedulers();
 		delayShutdown();
 		LOGGER.info("MySchedule destroyed.");
+        inited.set(false);
 	}
 
 	private void shutdownAllSchedulers() {

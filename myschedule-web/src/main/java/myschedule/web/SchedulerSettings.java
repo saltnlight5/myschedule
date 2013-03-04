@@ -27,6 +27,10 @@ public class SchedulerSettings {
 		this.props = new Props(settingsUrl);
 	}
 
+    public String getSettingsName() {
+        return settingsName;
+    }
+
     /**
      * A method to return the full scheduler name. If nothing is set, it will return default values that used
      * by Quartz.
