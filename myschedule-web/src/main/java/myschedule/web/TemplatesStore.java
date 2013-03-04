@@ -62,7 +62,7 @@ public class TemplatesStore extends AbstractService {
         }
     }
 
-    private String get(String name) {
+    public String get(String name) {
         File file = getTemplateFile(name);
         try {
             return FileUtils.readFileToString(file);

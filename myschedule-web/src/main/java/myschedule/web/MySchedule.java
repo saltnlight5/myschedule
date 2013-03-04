@@ -65,6 +65,10 @@ public class MySchedule extends AbstractService {
         LOGGER.info("MySchedule is destroyed.");
     }
 
+    private void initMyScheduleSettings() {
+        myScheduleSettings = new MyScheduleSettings();
+    }
+
     private void initInternalServices() {
         schedulerSettingsStore = new SchedulerSettingsStore(myScheduleSettings.getSchedulerSettingsDir());
         schedulerSettingsStore.init();
@@ -166,18 +170,18 @@ public class MySchedule extends AbstractService {
             return "";
         } else {
             LOGGER.debug("Reading user default scheduler settings/config text url={}", defaultSchedulerSettingsUrl);
-            return getSchedulerSettingsConfig(defaultSchedulerSettingsUrl);
+            return readText(defaultSchedulerSettingsUrl);
         }
     }
 
-    public String getSchedulerSettingsConfig(String configUrlName) {
-        URL url = ClasspathURLStreamHandler.createURL(configUrlName);
+    public String readText(String urlName) {
+        URL url = ClasspathURLStreamHandler.createURL(urlName);
         InputStream inStream = null;
         try {
             inStream = url.openStream();
             return IOUtils.toString(inStream);
         } catch (IOException e) {
-            throw new RuntimeException("Failed read scheduler settings url=" + configUrlName);
+            throw new RuntimeException("Failed read content from url=" + urlName);
         } finally {
             if (inStream != null)
                 IOUtils.closeQuietly(inStream);
@@ -227,10 +231,6 @@ public class MySchedule extends AbstractService {
         }
     }
 
-	private void initMyScheduleSettings() {
-		myScheduleSettings = new MyScheduleSettings();
-	}
-
 	private void shutdownAllSchedulers() {
 		for (String settingsName : schedulerSettingsMap.keySet()) {
             try {
@@ -279,5 +279,13 @@ public class MySchedule extends AbstractService {
             return SchedulerStatus.RUNNING;
 
         return SchedulerStatus.SHUTDOWN;
+    }
+
+    public TemplatesStore getSchedulerTemplatesStore() {
+        return schedulerTemplatesStore;
+    }
+
+    public TemplatesStore getScriptTemplatesStore() {
+        return scriptTemplatesStore;
     }
 }
