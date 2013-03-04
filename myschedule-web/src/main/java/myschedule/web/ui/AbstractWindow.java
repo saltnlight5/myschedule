@@ -11,9 +11,9 @@ import myschedule.web.MySchedule;
  * This base class also provide and setup MySchedule and MyScheduleUi access.
  */
 public class AbstractWindow extends Window {
-    protected MySchedule mySchedule = MySchedule.getInstance();
-    protected VerticalLayout content;
-    protected MyScheduleUi myScheduleUi;
+    MySchedule mySchedule = MySchedule.getInstance();
+    VerticalLayout content;
+    MyScheduleUi myScheduleUi;
 
     public AbstractWindow() {
         // Give default Window position and size

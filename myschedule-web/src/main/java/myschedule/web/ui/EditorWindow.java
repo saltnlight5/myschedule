@@ -16,7 +16,7 @@ import java.util.Date;
  * This class
  */
 public class EditorWindow extends AbstractWindow {
-    protected TextArea editor;
+    TextArea editor;
 
     public EditorWindow() {
         editor = new TextArea();
