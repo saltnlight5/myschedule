@@ -1,29 +1,27 @@
 package myschedule.web;
 
 import myschedule.quartz.extra.SchedulerTemplate;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is the central manager of the MySchedule application. There is only one instance of MySchedule application, 
  * and it's used to hold all config and initialization of code. User may use the {@link #getInstance()} to retrieve it.
  * @author zemian
  */
-public class MySchedule {
-	public static final String SETTINGS_FILE_EXT = ".properties";
+public class MySchedule extends AbstractService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MySchedule.class);
 	private static volatile MySchedule instance;
-    private AtomicBoolean inited = new AtomicBoolean(false);
 	private MyScheduleSettings myScheduleSettings;
 	private Map<String, SchedulerSettings> schedulerSettingsMap; //key=SettingsName
 	private Map<String, SchedulerTemplate> schedulers;           //key=SettingsName
@@ -44,20 +42,26 @@ public class MySchedule {
 		}
 		return instance;
 	}
-	
-	public void init() {
-        if (inited.get())
-            return;
 
+    @Override
+	public void initService() {
 		LOGGER.debug("Initializing MySchedule ...");
 		initMyScheduleSettings();
-        initServices();
+        initInternalServices();
 		initSchedulerSettingsMap();
 		createSchedulers();
 		addDefaultSchedulerSettings();
 		LOGGER.info("MySchedule initialized.");
-        inited.set(true);
 	}
+
+    @Override
+    public void destroyService() {
+        LOGGER.debug("Destroying MySchedule ...");
+        shutdownAllSchedulers();
+        delayShutdown();
+        destroyInternalServices();
+        LOGGER.info("MySchedule destroyed.");
+    }
 
     /**
      * If MySchedule do not have any scheduler settings, and user does provided a default one, this method will auto
@@ -75,10 +79,14 @@ public class MySchedule {
         }
 	}
 
-    private void initServices() {
+    private void initInternalServices() {
         // Init schedulerSettingsStore
         schedulerSettingsStore = new SchedulerSettingsStore(myScheduleSettings.getSchedulerSettingsDir());
         schedulerSettingsStore.init();
+    }
+
+    private void destroyInternalServices() {
+        schedulerSettingsStore.destroy();
     }
 
 	private void initSchedulerSettingsMap() {
@@ -221,17 +229,6 @@ public class MySchedule {
 
 	private void initMyScheduleSettings() {
 		myScheduleSettings = new MyScheduleSettings();
-	}
-
-	public void destroy() {
-        if (!inited.get())
-            return;
-
-		LOGGER.debug("Destroying MySchedule ...");
-		shutdownAllSchedulers();
-		delayShutdown();
-		LOGGER.info("MySchedule destroyed.");
-        inited.set(false);
 	}
 
 	private void shutdownAllSchedulers() {

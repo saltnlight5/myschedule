@@ -1,15 +1,11 @@
 package myschedule.web;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,12 +15,13 @@ import java.util.UUID;
  *
  * @author Zemian Deng
  */
-public class SchedulerSettingsStore {
+public class SchedulerSettingsStore extends AbstractService {
     public static final String SETTINGS_FILE_EXT = ".properties";
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerSettingsStore.class);
     private File storeDir;
 
-    public void init() {
+    @Override
+    public void initService() {
         if (storeDir == null)
             throw new RuntimeException("Scheduler settings store dir can not be empty.");
 
@@ -33,6 +30,10 @@ public class SchedulerSettingsStore {
             LOGGER.info("Creating scheduler settings store dir={}.", storeDir);
             storeDir.mkdirs();
         }
+    }
+
+    @Override
+    public void destroyService() {
     }
 
     public String generateSettingsName() {
