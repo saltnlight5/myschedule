@@ -49,8 +49,7 @@ public class MySchedule extends AbstractService {
 		initMyScheduleSettings();
         initInternalServices();
 		initSchedulerSettingsMap();
-		createSchedulers();
-		addDefaultSchedulerSettings();
+		initSchedulers();
 		LOGGER.info("MySchedule initialized.");
 	}
 
@@ -62,22 +61,6 @@ public class MySchedule extends AbstractService {
         destroyInternalServices();
         LOGGER.info("MySchedule destroyed.");
     }
-
-    /**
-     * If MySchedule do not have any scheduler settings, and user does provided a default one, this method will auto
-     * add it into the settings map.
-     */
-	private void addDefaultSchedulerSettings() {
-		// Do nothing if we already have some scheduler settings loaded.
-		if (schedulerSettingsMap.size() > 0)
-			return;
-
-        String propsString = getUserDefaultSchedulerConfig();
-        if (StringUtils.isNotEmpty(propsString)) {
-            LOGGER.info("Adding a new scheduler from default config settings.");
-            addSchedulerSettings(propsString);
-        }
-	}
 
     private void initInternalServices() {
         // Init schedulerSettingsStore
@@ -94,23 +77,32 @@ public class MySchedule extends AbstractService {
 		schedulerSettingsMap = new HashMap<String, SchedulerSettings>();
         for (SchedulerSettings settings : schedulerSettingsStore.getAll())
             schedulerSettingsMap.put(settings.getSettingsName(), settings);
+
+        // Check and see if we need to auto create a default scheduler settings
+        if (schedulerSettingsMap.size() == 0) {
+            String propsString = getUserDefaultSchedulerConfig();
+            if (StringUtils.isNotBlank(propsString)) {
+                LOGGER.info("Adding a new default scheduler settings.");
+                addSchedulerSettings(propsString);
+            }
+        }
 	}
 
-	private void createSchedulers() {
+	private void initSchedulers() {
 		// Init the map first
 		schedulers = new HashMap<String, SchedulerTemplate>();
 		
-		// Create and init all schedulers
-		for (String name : schedulerSettingsMap.keySet()) {
-			SchedulerSettings schedulerSettings = schedulerSettingsMap.get(name);
-			if (schedulerSettings.isAutoCreate()) {
-                createScheduler(name, schedulerSettings);
+		// Create and init all schedulers using schedulerSettingsMap
+		for (SchedulerSettings settings : schedulerSettingsMap.values()) {
+			if (settings.isAutoCreate()) {
+                createScheduler(settings);
             }
 		}
 	}
 	
 	/** Create and init scheduler and add to scheduler map. */
-	public void createScheduler(String settingsName, SchedulerSettings schedulerSettings) {
+	public void createScheduler(SchedulerSettings settings) {
+        String settingsName = settings.getSettingsName();
         try {
             // If scheduler already exists, shut it down first
             if (schedulers.containsKey(settingsName)) {
@@ -120,13 +112,13 @@ public class MySchedule extends AbstractService {
 
             // Now create the scheduler
             // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
-            LOGGER.info("Creating Quartz scheduler from {}", schedulerSettings.getSettingsUrl());
-            SchedulerTemplate schedulerTemplate = new SchedulerTemplate(schedulerSettings.getQuartzProperties());
+            LOGGER.info("Creating Quartz scheduler from {}", settings.getSettingsUrl());
+            SchedulerTemplate schedulerTemplate = new SchedulerTemplate(settings.getQuartzProperties());
             schedulers.put(settingsName, schedulerTemplate);
-            schedulerSettings.setSchedulerException(null);
+            settings.setSchedulerException(null);
             LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
 
-            if (schedulerSettings.isAutoStart()) {
+            if (settings.isAutoStart()) {
                 LOGGER.debug("Auto starting scheduler.");
                 schedulerTemplate.start();
                 LOGGER.info("Auto started scheduler per configured settings.");
@@ -135,7 +127,7 @@ public class MySchedule extends AbstractService {
             // Even if Quartz scheduler failed to load, we will allow the MySchedule to continue, so we simply log
             // the error and continue.
             LOGGER.error("Failed to init scheduler with settings {}", settingsName, e);
-            schedulerSettings.setSchedulerException(e);
+            settings.setSchedulerException(e);
         }
 	}
 
@@ -164,8 +156,7 @@ public class MySchedule extends AbstractService {
             return "";
         } else {
             LOGGER.debug("Reading user default scheduler settings/config text url={}", defaultSchedulerSettingsUrl);
-            String result = getSchedulerSettingsConfig(defaultSchedulerSettingsUrl);
-            return result;
+            return getSchedulerSettingsConfig(defaultSchedulerSettingsUrl);
         }
     }
 
@@ -174,8 +165,7 @@ public class MySchedule extends AbstractService {
         InputStream inStream = null;
         try {
             inStream = url.openStream();
-            String result = IOUtils.toString(inStream);
-            return result;
+            return IOUtils.toString(inStream);
         } catch (IOException e) {
             throw new RuntimeException("Failed read scheduler settings url=" + configUrlName);
         } finally {
@@ -191,7 +181,7 @@ public class MySchedule extends AbstractService {
 		schedulerSettingsMap.put(settingsName, settings);
 
         if (settings.isAutoCreate())
-			createScheduler(settingsName, settings);
+			createScheduler(settings);
 
         return settings;
 	}
@@ -223,7 +213,7 @@ public class MySchedule extends AbstractService {
 
             // Create the scheduler instance if needed
             if (schedulerSettings.isAutoCreate())
-                createScheduler(settingsName, schedulerSettings);
+                createScheduler(schedulerSettings);
         }
     }
 
