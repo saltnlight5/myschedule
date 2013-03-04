@@ -26,7 +26,9 @@ public class MySchedule extends AbstractService {
 	private Map<String, SchedulerSettings> schedulerSettingsMap; //key=SettingsName
 	private Map<String, SchedulerTemplate> schedulersMap;        //key=SettingsName
     private SchedulerSettingsStore schedulerSettingsStore;
-	
+    private TemplatesStore schedulerTemplatesStore;
+    private TemplatesStore scriptTemplatesStore;
+
 	private MySchedule() {
 	}
 	
@@ -50,7 +52,8 @@ public class MySchedule extends AbstractService {
         initInternalServices();
 		initSchedulerSettingsMap();
 		initSchedulersMap();
-		LOGGER.info("MySchedule initialized.");
+        initDefaultSchedulerIfNeeded();
+		LOGGER.info("MySchedule is initialized.");
 	}
 
     @Override
@@ -59,17 +62,22 @@ public class MySchedule extends AbstractService {
         shutdownAllSchedulers();
         delayShutdown();
         destroyInternalServices();
-        LOGGER.info("MySchedule destroyed.");
+        LOGGER.info("MySchedule is destroyed.");
     }
 
     private void initInternalServices() {
-        // Init schedulerSettingsStore
         schedulerSettingsStore = new SchedulerSettingsStore(myScheduleSettings.getSchedulerSettingsDir());
         schedulerSettingsStore.init();
+        schedulerTemplatesStore = new TemplatesStore(myScheduleSettings.getSchedulerTemplatesDir());
+        schedulerTemplatesStore.init();
+        scriptTemplatesStore = new TemplatesStore(myScheduleSettings.getScriptTemplatesDir());
+        scriptTemplatesStore.init();
     }
 
     private void destroyInternalServices() {
         schedulerSettingsStore.destroy();
+        schedulerTemplatesStore.destroy();
+        scriptTemplatesStore.destroy();
     }
 
 	private void initSchedulerSettingsMap() {
@@ -77,7 +85,9 @@ public class MySchedule extends AbstractService {
 		schedulerSettingsMap = new HashMap<String, SchedulerSettings>();
         for (SchedulerSettings settings : schedulerSettingsStore.getAll())
             schedulerSettingsMap.put(settings.getSettingsName(), settings);
+	}
 
+    private void initDefaultSchedulerIfNeeded() {
         // Check and see if we need to auto create a default scheduler settings
         if (schedulerSettingsMap.size() == 0) {
             String propsString = getUserDefaultSchedulerConfig();
@@ -86,7 +96,7 @@ public class MySchedule extends AbstractService {
                 addSchedulerSettings(propsString);
             }
         }
-	}
+    }
 
 	private void initSchedulersMap() {
 		// Init the map first

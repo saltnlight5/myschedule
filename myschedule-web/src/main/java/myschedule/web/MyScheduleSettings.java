@@ -49,6 +49,14 @@ public class MyScheduleSettings {
 	public File getSchedulerSettingsDir() {
 		return new File(props.getString(SETTINGS_KEY_PREFIX + "schedulerSettingsDir"));
 	}
+
+    public File getSchedulerTemplatesDir() {
+        return new File(props.getString(SETTINGS_KEY_PREFIX + "schedulerTemplatesDir"));
+    }
+
+    public File getScriptTemplatesDir() {
+        return new File(props.getString(SETTINGS_KEY_PREFIX + "scriptTemplatesDir"));
+    }
 	
 	public String getDefaultSchedulerSettings() {
 		return props.getString(SETTINGS_KEY_PREFIX + "defaultSchedulerSettings");
