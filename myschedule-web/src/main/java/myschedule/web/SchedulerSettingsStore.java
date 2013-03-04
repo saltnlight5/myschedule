@@ -16,7 +16,7 @@ import java.util.UUID;
  * @author Zemian Deng
  */
 public class SchedulerSettingsStore extends AbstractService {
-    public static final String SETTINGS_FILE_EXT = ".properties";
+    public static final String FILE_EXT = ".properties";
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerSettingsStore.class);
     private File storeDir;
 
@@ -68,7 +68,7 @@ public class SchedulerSettingsStore extends AbstractService {
         try {
             FileUtils.write(file, text);
         } catch (IOException e) {
-            LOGGER.error("Failed to save file={}", file, e);
+            LOGGER.error("Failed to write scheduler settings file={}", file, e);
         }
     }
 
@@ -83,12 +83,12 @@ public class SchedulerSettingsStore extends AbstractService {
     private SchedulerSettings get(File settingsFile) {
         try {
             String name = settingsFile.getName();
-            String settingsName = name.split(SETTINGS_FILE_EXT)[0];
+            String settingsName = name.split(FILE_EXT)[0];
             LOGGER.info("Loading scheduler settings from file={}", settingsFile);
             SchedulerSettings settings = new SchedulerSettings(settingsName, settingsFile.getPath());
             return settings;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load scheduler settings file={}" + settingsFile);
+            throw new RuntimeException("Failed to read scheduler settings file={}" + settingsFile);
         }
     }
 
@@ -114,6 +114,6 @@ public class SchedulerSettingsStore extends AbstractService {
     }
 
     private File getSettingsFile(String settingsName) {
-        return new File(storeDir, settingsName + SETTINGS_FILE_EXT);
+        return new File(storeDir, settingsName + FILE_EXT);
     }
 }
