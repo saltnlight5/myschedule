@@ -112,7 +112,7 @@ public class MySchedule extends AbstractService {
 
             // Now create the scheduler
             // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
-            LOGGER.info("Creating Quartz scheduler from {}", settings.getSettingsUrl());
+            LOGGER.info("Creating new Quartz scheduler from {}", settings);
             SchedulerTemplate schedulerTemplate = new SchedulerTemplate(settings.getQuartzProperties());
             schedulersMap.put(settingsName, schedulerTemplate);
             settings.setSchedulerException(null);
