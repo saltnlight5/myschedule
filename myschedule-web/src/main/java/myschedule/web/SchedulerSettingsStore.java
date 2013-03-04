@@ -80,10 +80,6 @@ public class SchedulerSettingsStore extends AbstractService {
         }
     }
 
-    public SchedulerSettings get(String settingsName) {
-        return get(getSettingsFile(settingsName));
-    }
-
     private SchedulerSettings get(File settingsFile) {
         try {
             String name = settingsFile.getName();
