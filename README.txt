@@ -12,13 +12,13 @@ For more information, see project home at http://code.google.com/p/myschedule
 
 The default branch is the latest development of 3.x release work and it may not be stable yet!
 
-If you want an extract release source code, then simply switch to the tag name like this:
+If you want an exact release source code, then simply switch to the tag name like this:
 
 	bash> hg update myschedule-2.4.4
 
-Or if you want the 2.4 maintence branch source code, then switch to the branch name like this:
+Or if you want the 2.x maintence branch source code, then switch to the branch name like this:
 
-	bash> hg update myschedule-2.4.x
+	bash> hg update myschedule-2.x
 
 Or to get back to latest development branch, then switch like this:
 
@@ -49,6 +49,7 @@ Then visit http://localhost:8080/myschedule
 
 This project is using Mercurial source control and we are using the following workflow branches
 
-* default => The latest development of MySchedule 3.0.0_q21 for quartz 2.1.x
-* myschedule-2.4 => Use to maintain the web app for Quartz 2.1.x library using JQuery and table layout.
-* myschedule-1.x => Use to maintain the web app for Quartz 1.8.x library using JQuery and table layout.
+* default => The latest development branch (might not be stable)
+* myschedule-3.x => Stable branch to maintain the 3.x release series (Vaadin UI with Quartz 2).
+* myschedule-2.x => Stable branch to maintain the 2.x release series (JQuery UI with Quartz 2).
+* myschedule-1.x => Stable branch to maintain the 1.x release series (JQuery UI with Quartz 1).
