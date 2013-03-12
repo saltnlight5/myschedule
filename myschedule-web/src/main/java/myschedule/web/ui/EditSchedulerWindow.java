@@ -1,13 +1,8 @@
 package myschedule.web.ui;
 
 import com.vaadin.ui.Button;
-import myschedule.web.SchedulerSettings;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * A popup UI window to display a text editor to create a scheduler by a Quartz config properties content.
@@ -20,10 +15,10 @@ public class EditSchedulerWindow extends EditorWindow {
     public EditSchedulerWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
-        initControls();
+        initEditorControls();
     }
 
-    private void initControls() {
+    private void initEditorControls() {
         setCaption("Editing Scheduler Config ID: " + schedulerSettingsName);
 
         // Load default text

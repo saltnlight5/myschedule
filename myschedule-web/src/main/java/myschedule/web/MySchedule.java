@@ -72,10 +72,43 @@ public class MySchedule extends AbstractService {
     private void initInternalServices() {
         schedulerSettingsStore = new SchedulerSettingsStore(myScheduleSettings.getSchedulerSettingsDir());
         schedulerSettingsStore.init();
-        schedulerTemplatesStore = new TemplatesStore(myScheduleSettings.getSchedulerTemplatesDir());
+
+        schedulerTemplatesStore = new TemplatesStore(myScheduleSettings.getSchedulerTemplatesDir(),
+            ".properties",
+            getDefaultSchedulerConfigsTemplates());
         schedulerTemplatesStore.init();
-        scriptTemplatesStore = new TemplatesStore(myScheduleSettings.getScriptTemplatesDir());
+
+        scriptTemplatesStore = new TemplatesStore(myScheduleSettings.getScriptTemplatesDir(),
+            "", // empty file extension for these templates set
+            getDefaultScriptsTemplates());
         scriptTemplatesStore.init();
+    }
+
+    private String[] getDefaultSchedulerConfigsTemplates() {
+        String resNamePrefix = "/myschedule/web/templates/schedulerconfigs/";
+        String[] result = {
+            resNamePrefix + "full-config-quartz.properties",
+            resNamePrefix + "in-memory-quartz.properties",
+            resNamePrefix + "jmx-quartz.properties",
+            resNamePrefix + "mysql-clustered-quartz.properties",
+            resNamePrefix + "mysql-jee-cmt-quartz.properties",
+            resNamePrefix + "mysql-quartz.properties",
+            resNamePrefix + "rmi-client-quartz.properties",
+            resNamePrefix + "rmi-server-quartz.properties"
+        };
+        return result;
+    }
+
+    private String[] getDefaultScriptsTemplates() {
+        String resNamePrefix = "/myschedule/web/templates/scripts/";
+        String[] result = {
+            resNamePrefix + "jobSamples.groovy",
+            resNamePrefix + "simpleJobs.js",
+            resNamePrefix + "cronJobs.js",
+            resNamePrefix + "calendarJobs.js",
+            resNamePrefix + "advanceJobs.js"
+        };
+        return result;
     }
 
     private void destroyInternalServices() {
