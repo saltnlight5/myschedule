@@ -1,18 +1,11 @@
 package myschedule.web.ui;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.TextArea;
-import myschedule.quartz.extra.SchedulerTemplate;
-import myschedule.web.MySchedule;
 import myschedule.web.SchedulerSettings;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,17 +18,17 @@ public class NewSchedulerWindow extends EditorWindow {
 
     public NewSchedulerWindow(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
-        initControls();
+        initEditorControls();
     }
 
-    private void initControls() {
+    private void initEditorControls() {
         setCaption("Creating a new Scheduler with Quartz configuration properties");
 
         // Load default text
         String defaultText = mySchedule.getUserDefaultSchedulerConfig();
         if (StringUtils.isNotEmpty(defaultText)) {
             // Try to make default scheduler name unique
-            SimpleDateFormat df = new SimpleDateFormat("YYYYmmdd-HHmmss");
+            SimpleDateFormat df = new SimpleDateFormat("yyyMMdd-HHmmss");
             String newName = "MyQuartzScheduler-" + df.format(new Date());
             defaultText = defaultText.replace(SchedulerSettings.DEFAULT_SCHEDULER_NAME, newName);
             editor.setValue(defaultText);
