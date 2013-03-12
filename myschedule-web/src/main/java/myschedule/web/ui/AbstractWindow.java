@@ -16,6 +16,10 @@ public class AbstractWindow extends Window {
     MyScheduleUi myScheduleUi;
 
     public AbstractWindow() {
+        initContent();
+    }
+
+    protected void initContent() {
         // Give default Window position and size
         setWidth("80%");
         setHeight("98%");
