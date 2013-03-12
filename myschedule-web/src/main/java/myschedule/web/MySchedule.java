@@ -87,7 +87,7 @@ public class MySchedule extends AbstractService {
     private String[] getDefaultSchedulerConfigsTemplates() {
         String resNamePrefix = "/myschedule/web/templates/schedulerconfigs/";
         String[] result = {
-            resNamePrefix + "all-quartz.properties",
+            resNamePrefix + "full-config-quartz.properties",
             resNamePrefix + "in-memory-quartz.properties",
             resNamePrefix + "jmx-quartz.properties",
             resNamePrefix + "mysql-clustered-quartz.properties",
