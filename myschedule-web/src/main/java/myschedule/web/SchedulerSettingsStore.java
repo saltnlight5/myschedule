@@ -102,6 +102,15 @@ public class SchedulerSettingsStore extends AbstractService {
         return result;
     }
 
+    public String getConfigText(String settingsName) {
+        File file = getSettingsFile(settingsName);
+        try {
+            return FileUtils.readFileToString(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read scheduler config file=" + file);
+        }
+    }
+
     public SchedulerSettings update(String settingsName, String settingsPropsContent) {
         File file = getSettingsFile(settingsName);
         writeFile(file, settingsPropsContent);
