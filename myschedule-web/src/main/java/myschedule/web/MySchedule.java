@@ -166,10 +166,14 @@ public class MySchedule extends AbstractService {
             settings.setSchedulerException(null);
             LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
 
-            if (settings.isAutoStart()) {
-                LOGGER.debug("Auto starting scheduler.");
-                schedulerTemplate.start();
-                LOGGER.info("Auto started scheduler per configured settings.");
+            if (settings.isPreventAutoStartShutdownRemoteScheduler()) {
+                LOGGER.info("Scheduler settings={} has configured not to auto start on remote scheduler.", settingsName);
+            } else {
+                if (settings.isAutoStart()) {
+                    LOGGER.debug("Auto starting scheduler with settings={}", settingsName);
+                    schedulerTemplate.start();
+                    LOGGER.info("Auto started scheduler per configured settings={}", settingsName);
+                }
             }
         } catch (RuntimeException e) {
             // Even if Quartz scheduler failed to load, we will allow the MySchedule to continue, so we simply log
@@ -186,10 +190,15 @@ public class MySchedule extends AbstractService {
 		LOGGER.info("Shutting down {} with waitForJobToComplete={}", schedulerSettings, waitForJobToComplete);
 		SchedulerTemplate scheduler = schedulersMap.get(settingsName);
         if (scheduler != null) {
-            if (!scheduler.isShutdown())
-                scheduler.shutdown(waitForJobToComplete);
-            else
-                LOGGER.info("Scheduler settingsName={} has already been shutdown. No action.", settingsName);
+            boolean preventShutdown = schedulerSettings.isPreventAutoStartShutdownRemoteScheduler();
+            if (preventShutdown) {
+                LOGGER.info("Scheduler settingsName={} has been configured NOT to shutdown remote scheduler.", settingsName);
+            } else {
+                if (!scheduler.isShutdown())
+                    scheduler.shutdown(waitForJobToComplete);
+                else
+                    LOGGER.info("Scheduler settingsName={} has already been shutdown. No action.", settingsName);
+            }
 		    schedulersMap.remove(settingsName);
         }
 	}

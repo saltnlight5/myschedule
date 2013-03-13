@@ -11,7 +11,7 @@ import java.util.Properties;
  *
  */
 public class SchedulerSettings {
-	public static final String SETTINGS_KEY_PREFIX = "myschedule.scheduler.";
+	public static final String SETTINGS_KEY_PREFIX = "myschedule.schedulerService.";
     private String settingsName;
 	private String settingsUrl;
 	private Props props;
@@ -61,9 +61,9 @@ public class SchedulerSettings {
 		return props.toProperties();
 	}
 
-	/** Auto create scheduler instance. Default is true. */
+	/** Auto create/(quartz calls this init) scheduler instance. Default is true. */
 	public boolean isAutoCreate() {
-		return props.getBoolean(SETTINGS_KEY_PREFIX + "autoCreate", true);
+		return props.getBoolean(SETTINGS_KEY_PREFIX + "autoInit", true);
 	}
 	
 	/** Auto start this scheduler after MySchedule is inited. Default is true. */
@@ -75,6 +75,12 @@ public class SchedulerSettings {
 	public boolean isWaitForJobToComplete() {
 		return props.getBoolean(SETTINGS_KEY_PREFIX + "waitForJobToComplete", true);
 	}
+
+    /** If scheduler is a Quartz Remote scheduler, allow autoStart/Shutdown to be NOT called to prevent
+     * unwanted side effect. Default to true. */
+    public boolean isPreventAutoStartShutdownRemoteScheduler() {
+        return props.getBoolean(SETTINGS_KEY_PREFIX + "preventAutoStartRemoteScheduler", true);
+    }
 
     @Override
     public String toString()
