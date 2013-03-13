@@ -128,7 +128,7 @@ public class MySchedule extends AbstractService {
     private void initDefaultSchedulerIfNeeded() {
         // Check and see if we need to auto create a default scheduler settings
         if (schedulerSettingsMap.size() == 0) {
-            String propsString = getUserDefaultSchedulerConfig();
+            String propsString = getDefaultSchedulerSettingsConfigText();
             if (StringUtils.isNotBlank(propsString)) {
                 LOGGER.info("Adding a new default scheduler settings.");
                 addSchedulerSettings(propsString);
@@ -197,7 +197,7 @@ public class MySchedule extends AbstractService {
     /**
      * Retrieve user default scheduler config text. If not found it returns empty string, not null!
      */
-    public String getUserDefaultSchedulerConfig() {
+    public String getDefaultSchedulerSettingsConfigText() {
         String defaultSchedulerSettingsUrl = myScheduleSettings.getDefaultSchedulerSettings();
         if (StringUtils.isEmpty(defaultSchedulerSettingsUrl)) {
             LOGGER.debug("User default scheduler settings/config text is EMPTY.");
@@ -296,6 +296,10 @@ public class MySchedule extends AbstractService {
 	public SchedulerSettings getSchedulerSettings(String settingsName) {
 		return schedulerSettingsMap.get(settingsName);
 	}
+
+    public String getSchedulerSettingsConfig(String settingsName) {
+        return schedulerSettingsStore.getConfigText(settingsName);
+    }
 	
 	public SchedulerTemplate getScheduler(String settingsName) {
 		return schedulersMap.get(settingsName);
