@@ -93,6 +93,7 @@ public class MySchedule extends AbstractService {
             resNamePrefix + "mysql-clustered-quartz.properties",
             resNamePrefix + "mysql-jee-cmt-quartz.properties",
             resNamePrefix + "mysql-quartz.properties",
+            resNamePrefix + "oracle-quartz.properties",
             resNamePrefix + "rmi-client-quartz.properties",
             resNamePrefix + "rmi-server-quartz.properties"
         };
