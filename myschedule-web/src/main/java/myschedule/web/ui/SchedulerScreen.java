@@ -1,5 +1,6 @@
 package myschedule.web.ui;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
@@ -29,6 +30,8 @@ public class SchedulerScreen extends VerticalLayout {
     private String schedulerSettingsName;
     private HorizontalLayout toolbar;
     private Table table;
+    private Button viewJobDetailsButton;
+    private String selectedTriggerKeyName;
 
     public SchedulerScreen(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
@@ -40,6 +43,7 @@ public class SchedulerScreen extends VerticalLayout {
     private void initToolbar() {
         toolbar = new HorizontalLayout();
         toolbar.addComponent(createScriptConsoleButton());
+        toolbar.addComponent(createViewJobDetailButton());
         addComponent(toolbar);
     }
 
@@ -55,9 +59,28 @@ public class SchedulerScreen extends VerticalLayout {
         return button;
     }
 
+    private Button createViewJobDetailButton() {
+        viewJobDetailsButton = new Button("View Details");
+        viewJobDetailsButton.setEnabled(false); // Default disable it until user select a job from table
+        viewJobDetailsButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                if (selectedTriggerKeyName == null)
+                    return;
+
+                TriggerAndJobDetailWindow window = new TriggerAndJobDetailWindow(
+                    myScheduleUi, schedulerSettingsName, selectedTriggerKeyName);
+                myScheduleUi.addWindow(window);
+            }
+        });
+        return viewJobDetailsButton;
+    }
+
     private void initJobsTable() {
         table = new Table();
         table.setSizeFull();
+        table.setImmediate(true);
+        table.setSelectable(true);
 
         Object defaultValue = null; // Not used.
         table.addContainerProperty("Trigger", String.class, defaultValue);
@@ -71,21 +94,33 @@ public class SchedulerScreen extends VerticalLayout {
         MySchedule mySchedule = MySchedule.getInstance();
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         List<Trigger> triggers = scheduler.getAllTriggers();
-        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (Trigger trigger : triggers) {
             TriggerKey triggerKey = trigger.getKey();
             JobKey jobKey = trigger.getJobKey();
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             Date previousFireTime = trigger.getPreviousFireTime();
+            String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
             Object[] row = new Object[] {
-                triggerKey.toString(),
-                jobKey.toString(),
+                triggerKeyName,
+                jobKey.getName() + "/" + jobKey.getGroup(),
                 trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
                 df.format(trigger.getNextFireTime()),
                 (previousFireTime == null) ? "" : df.format(previousFireTime)
             };
-            table.addItem(row, triggerKey.toString());
+            table.addItem(row, triggerKeyName);
         }
+
+        table.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                selectedTriggerKeyName = (String)event.getProperty().getValue();
+                if (selectedTriggerKeyName == null)
+                    viewJobDetailsButton.setEnabled(false);
+                else
+                    viewJobDetailsButton.setEnabled(true);
+            }
+        });
 
         // Add table to this UI screen
         addComponent(table);
