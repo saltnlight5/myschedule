@@ -3,6 +3,7 @@ package myschedule.web;
 import myschedule.quartz.extra.SchedulerTemplate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.quartz.impl.RemoteScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,17 +162,19 @@ public class MySchedule extends AbstractService {
             // Now create the scheduler
             // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
             LOGGER.info("Creating new Quartz scheduler from {}", settings);
-            SchedulerTemplate schedulerTemplate = new SchedulerTemplate(settings.getQuartzProperties());
-            schedulersMap.put(settingsName, schedulerTemplate);
+            SchedulerTemplate scheduler = new SchedulerTemplate(settings.getQuartzProperties());
+            schedulersMap.put(settingsName, scheduler);
             settings.setSchedulerException(null);
             LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
 
-            if (settings.isPreventAutoStartShutdownRemoteScheduler()) {
+            // Be user friendly and prevent unwanted remote scheduler auto/start effect if possible.
+            if (scheduler.getScheduler() instanceof RemoteScheduler &&
+                settings.isPreventAutoStartShutdownRemoteScheduler()) {
                 LOGGER.info("Scheduler settings={} has configured not to auto start on remote scheduler.", settingsName);
             } else {
                 if (settings.isAutoStart()) {
                     LOGGER.debug("Auto starting scheduler with settings={}", settingsName);
-                    schedulerTemplate.start();
+                    scheduler.start();
                     LOGGER.info("Auto started scheduler per configured settings={}", settingsName);
                 }
             }
@@ -190,8 +193,9 @@ public class MySchedule extends AbstractService {
 		LOGGER.info("Shutting down {} with waitForJobToComplete={}", schedulerSettings, waitForJobToComplete);
 		SchedulerTemplate scheduler = schedulersMap.get(settingsName);
         if (scheduler != null) {
+            // Be user friendly and prevent unwanted remote scheduler shutdown effect if possible.
             boolean preventShutdown = schedulerSettings.isPreventAutoStartShutdownRemoteScheduler();
-            if (preventShutdown) {
+            if (scheduler.getScheduler() instanceof RemoteScheduler && preventShutdown) {
                 LOGGER.info("Scheduler settingsName={} has been configured NOT to shutdown remote scheduler.", settingsName);
             } else {
                 if (!scheduler.isShutdown())
