@@ -76,7 +76,7 @@ public class NewSchedulerWindow extends EditorWindow {
         setCaption("New Quartz Scheduler Configuration Properties");
 
         // Load default text
-        String defaultText = mySchedule.getUserDefaultSchedulerConfig();
+        String defaultText = mySchedule.getDefaultSchedulerSettingsConfigText();
         if (StringUtils.isNotEmpty(defaultText)) {
             // Try to make default scheduler name unique
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss");
