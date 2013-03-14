@@ -1,0 +1,21 @@
+syntax: glob
+
+test.md
+
+# Maven
+target
+
+# Intellij IDEA
+.idea
+*.iml
+**/*.iml
+
+# Eclipse IDE files
+.project
+.classpath
+.settings
+**/.project
+**/.classpath
+**/.settings
+**/.externalToolBuilders
+**/target
