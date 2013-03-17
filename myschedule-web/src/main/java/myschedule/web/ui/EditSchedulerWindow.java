@@ -31,16 +31,13 @@ public class EditSchedulerWindow extends EditorWindow {
             public void buttonClick(Button.ClickEvent event)
             {
                 String configText = editor.getValue();
-                updateScheduler(configText);
+
+                LOGGER.debug("Updating scheduler settings {}.", schedulerSettingsName);
+                mySchedule.updateSchedulerSettings(schedulerSettingsName, configText);
+                myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
+                close(); // This is a popup, so close it self upon completion.
             }
         });
         content.addComponent(button);
-    }
-
-    private void updateScheduler(String propsString) {
-        LOGGER.debug("Updating scheduler settings {}.", schedulerSettingsName);
-        mySchedule.updateSchedulerSettings(schedulerSettingsName, propsString);
-        close(); // This is a popup, so close it self upon completion.
-        myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the newly create scheduler to show.
     }
 }
