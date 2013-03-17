@@ -128,32 +128,32 @@ public class DashboardScreen extends VerticalLayout {
             this.selectedSettingsName = settingsName;
 
             if (selectedSettingsName == null) {
-                disableAll(edit, delete, init, start, standby, shutdown);
+                disableButtons(edit, delete, init, start, standby, shutdown);
             } else {
-                enableAll(edit, delete);
+                enableButtons(edit, delete);
 
                 SchedulerTemplate scheduler = mySchedule.getScheduler(selectedSettingsName);
                 SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
 
                 if (status == SchedulerStatus.RUNNING) {
-                    disableAll(init, start);
-                    enableAll(standby, shutdown);
+                    disableButtons(init, start);
+                    enableButtons(standby, shutdown);
                 } else if (status == SchedulerStatus.SHUTDOWN) {
-                    enableAll(init, start);
-                    disableAll(standby, shutdown);
+                    enableButtons(init);
+                    disableButtons(start, standby, shutdown);
                 } else if (status == SchedulerStatus.STANDBY) {
-                    disableAll(init, standby);
-                    enableAll(standby, shutdown);
+                    disableButtons(init, standby);
+                    enableButtons(start, shutdown);
                 }
             }
         }
 
-        private void enableAll(Button ... buttons) {
+        private void enableButtons(Button... buttons) {
             for (Button b : buttons)
                 b.setEnabled(true);
         }
 
-        private void disableAll(Button ... buttons) {
+        private void disableButtons(Button... buttons) {
             for (Button b : buttons)
                 b.setEnabled(false);
         }
@@ -176,7 +176,6 @@ public class DashboardScreen extends VerticalLayout {
             button.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    // The editor will refresh the dashboard upon close.
                     myScheduleUi.addWindow(new EditSchedulerWindow(myScheduleUi, selectedSettingsName));
                 }
             });

@@ -92,16 +92,14 @@ public class NewSchedulerWindow extends EditorWindow {
             public void buttonClick(Button.ClickEvent event)
             {
                 String configText = editor.getValue();
-                createScheduler(configText);
+
+                LOGGER.debug("Creating new scheduler settings.");
+                mySchedule.addSchedulerSettings(configText);
+
+                close(); // This is a popup, so close it self upon completion.
+                myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the new scheduler.
             }
         });
         content.addComponent(button);
-    }
-
-    private void createScheduler(String propsString) {
-        LOGGER.debug("Creating new scheduler settings.");
-        mySchedule.addSchedulerSettings(propsString);
-        close(); // This is a popup, so close it self upon completion.
-        myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the newly create scheduler to show.
     }
 }
