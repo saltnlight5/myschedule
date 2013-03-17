@@ -1,6 +1,7 @@
 package myschedule.web.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
@@ -52,7 +53,7 @@ public class DashboardScreen extends VerticalLayout {
         table.setImmediate(true);
 
         Object defaultValue = null; // Not used.
-        table.addContainerProperty("Scheduler", Button.class, defaultValue);
+        table.addContainerProperty("Scheduler", String.class, defaultValue);
         table.addContainerProperty("Config ID", String.class, defaultValue);
         table.addContainerProperty("Status", String.class, defaultValue);
         table.addContainerProperty("Job Counts", Integer.class, defaultValue);
@@ -65,16 +66,14 @@ public class DashboardScreen extends VerticalLayout {
             SchedulerTemplate scheduler = mySchedule.getScheduler(settingsName);
             SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
             Integer jobCount = 0;
-            Button schedulerNameComponent = createSchedulerNameComponent(settings.getSchedulerFullName(), settingsName);
+            String schedulerName = settings.getSchedulerFullName();
 
             if (status == SchedulerStatus.RUNNING || status == SchedulerStatus.STANDBY) {
                 jobCount = scheduler.getAllTriggers().size();
-            } else {
-                schedulerNameComponent.setEnabled(false);
             }
 
             Object[] row = new Object[] {
-                schedulerNameComponent,
+                schedulerName,
                 settingsName,
                 status.toString(),
                 jobCount
@@ -90,17 +89,17 @@ public class DashboardScreen extends VerticalLayout {
                 schedulerButtonGroup.updateSelectedSettingsName(settingsName);
             }
         });
-    }
 
-    private Button createSchedulerNameComponent(String schedulerFullName, final String settingsName) {
-        Button label = new Button(schedulerFullName);
-        label.addClickListener(new Button.ClickListener() {
+        // Double click drill down action - show scheduler screen (jobs)
+        table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                DashboardScreen.this.myScheduleUi.loadSchedulerScreen(settingsName);
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    String settingsName = (String)event.getItemId();
+                    DashboardScreen.this.myScheduleUi.loadSchedulerScreen(settingsName);
+                }
             }
         });
-        return label;
     }
 
     class SchedulerButtonGroup extends HorizontalLayout {
