@@ -1,6 +1,7 @@
 package myschedule.web.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
@@ -68,16 +69,22 @@ public class SchedulerScreen extends VerticalLayout {
                 if (selectedTriggerKeyName == null)
                     return;
 
-                TriggerAndJobDetailWindow window = new TriggerAndJobDetailWindow(
-                    myScheduleUi, schedulerSettingsName, selectedTriggerKeyName);
-                myScheduleUi.addWindow(window);
+                showTriggerAndJobDetailsWindow();
             }
         });
         return viewJobDetailsButton;
     }
 
+    private void showTriggerAndJobDetailsWindow() {
+        TriggerAndJobDetailWindow window = new TriggerAndJobDetailWindow(
+            myScheduleUi, schedulerSettingsName, selectedTriggerKeyName);
+        myScheduleUi.addWindow(window);
+    }
+
     private void initJobsTable() {
         table = new Table();
+        addComponent(table);
+
         table.setSizeFull();
         table.setImmediate(true);
         table.setSelectable(true);
@@ -111,6 +118,7 @@ public class SchedulerScreen extends VerticalLayout {
             table.addItem(row, triggerKeyName);
         }
 
+        // Selectable handler
         table.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
@@ -122,7 +130,15 @@ public class SchedulerScreen extends VerticalLayout {
             }
         });
 
-        // Add table to this UI screen
-        addComponent(table);
+        // Double click handler - drill down to trigger/job details
+        table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    selectedTriggerKeyName = (String)event.getItemId();
+                    showTriggerAndJobDetailsWindow();
+                }
+            }
+        });
     }
 }
