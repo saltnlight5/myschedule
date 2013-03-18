@@ -11,6 +11,7 @@ public class BreadcrumbBar extends HorizontalLayout {
 	private static final long serialVersionUID = 1L;
     private MyScheduleUi myScheduleUi;
     private Button schedulerCrumb;
+    private Label schedulerStatusCrumb;
 
     public BreadcrumbBar(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
@@ -25,7 +26,7 @@ public class BreadcrumbBar extends HorizontalLayout {
         addComponent(dashboardButton);
     }
 
-    public void addSchedulerCrumb(String schedulerFullName, final String schedulerSettingsName) {
+    public void addSchedulerCrumb(String schedulerFullName, final String schedulerSettingsName, String status) {
         if (schedulerCrumb != null)
             removeSchedulerCrumb();
 
@@ -37,6 +38,9 @@ public class BreadcrumbBar extends HorizontalLayout {
             }
         });
         addComponent(schedulerCrumb);
+
+        schedulerStatusCrumb = new Label("Status: " + status);
+        addComponent(schedulerStatusCrumb);
     }
 
     public void removeSchedulerCrumb() {
@@ -45,5 +49,8 @@ public class BreadcrumbBar extends HorizontalLayout {
 
         removeComponent(schedulerCrumb);
         schedulerCrumb = null;
+
+        removeComponent(schedulerStatusCrumb);
+        schedulerStatusCrumb = null;
     }
 }
