@@ -31,8 +31,9 @@ public class SchedulerScreen extends VerticalLayout {
     private String schedulerSettingsName;
     private HorizontalLayout toolbar;
     private Table table;
-    private Button viewJobDetailsButton;
+    private Button viewDetailsButton;
     private String selectedTriggerKeyName;
+    private TriggerButtonGroup triggerButtonGroup;
 
     public SchedulerScreen(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
@@ -43,9 +44,12 @@ public class SchedulerScreen extends VerticalLayout {
 
     private void initToolbar() {
         toolbar = new HorizontalLayout();
-        toolbar.addComponent(createScriptConsoleButton());
-        toolbar.addComponent(createViewJobDetailButton());
         addComponent(toolbar);
+
+        triggerButtonGroup = new TriggerButtonGroup();
+        toolbar.addComponent(triggerButtonGroup);
+
+        toolbar.addComponent(createScriptConsoleButton());
     }
 
     private Button createScriptConsoleButton() {
@@ -58,21 +62,6 @@ public class SchedulerScreen extends VerticalLayout {
             }
         });
         return button;
-    }
-
-    private Button createViewJobDetailButton() {
-        viewJobDetailsButton = new Button("View Details");
-        viewJobDetailsButton.setEnabled(false); // Default disable it until user select a job from table
-        viewJobDetailsButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (selectedTriggerKeyName == null)
-                    return;
-
-                showTriggerAndJobDetailsWindow();
-            }
-        });
-        return viewJobDetailsButton;
     }
 
     private void showTriggerAndJobDetailsWindow() {
@@ -124,9 +113,9 @@ public class SchedulerScreen extends VerticalLayout {
             public void valueChange(Property.ValueChangeEvent event) {
                 selectedTriggerKeyName = (String)event.getProperty().getValue();
                 if (selectedTriggerKeyName == null)
-                    viewJobDetailsButton.setEnabled(false);
+                    viewDetailsButton.setEnabled(false);
                 else
-                    viewJobDetailsButton.setEnabled(true);
+                    viewDetailsButton.setEnabled(true);
             }
         });
 
@@ -140,5 +129,37 @@ public class SchedulerScreen extends VerticalLayout {
                 }
             }
         });
+    }
+
+    class TriggerButtonGroup extends HorizontalLayout {
+        Button viewDetails = createViewDetailsButton();
+
+        public TriggerButtonGroup() {
+            addComponent(viewDetails);
+            updateSelectedTrigger();
+        }
+
+        private void updateSelectedTrigger() {
+            if (selectedTriggerKeyName == null) {
+                viewDetails.setEnabled(false);
+            }
+        }
+
+        private Button createViewDetailsButton() {
+            viewDetailsButton = new Button("View Details");
+            viewDetailsButton.setEnabled(false); // Default disable it until user select a job from table
+            viewDetailsButton.addClickListener(new Button.ClickListener()
+            {
+                @Override
+                public void buttonClick(Button.ClickEvent event)
+                {
+                    if (selectedTriggerKeyName == null)
+                        return;
+
+                    showTriggerAndJobDetailsWindow();
+                }
+            });
+            return viewDetailsButton;
+        }
     }
 }
