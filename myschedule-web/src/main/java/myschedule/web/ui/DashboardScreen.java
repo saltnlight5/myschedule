@@ -30,7 +30,7 @@ public class DashboardScreen extends VerticalLayout {
     private Table table;
     private MySchedule mySchedule = MySchedule.getInstance();
     private String selectedSettingsName;
-    private Button viewDetail;
+    private Button viewDetailsButton;
 
     public DashboardScreen(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
@@ -45,17 +45,19 @@ public class DashboardScreen extends VerticalLayout {
         schedulerButtonGroup = new SchedulerButtonGroup();
         toolbar.addComponent(schedulerButtonGroup);
 
-        viewDetail = new Button("View Details");
-        viewDetail.setEnabled(false);
-        toolbar.addComponent(viewDetail);
+        viewDetailsButton = new Button("View Details");
+        viewDetailsButton.setEnabled(false);
+        toolbar.addComponent(viewDetailsButton);
 
-        viewDetail.addClickListener(new Button.ClickListener() {
+        viewDetailsButton.addClickListener(new Button.ClickListener()
+        {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
+            public void buttonClick(Button.ClickEvent event)
+            {
                 if (selectedSettingsName != null)
                     DashboardScreen.this.myScheduleUi.loadSchedulerScreen(selectedSettingsName);
                 else
-                    viewDetail.setEnabled(false);
+                    viewDetailsButton.setEnabled(false);
             }
         });
     }
@@ -104,7 +106,7 @@ public class DashboardScreen extends VerticalLayout {
                 String settingsName = (String)event.getProperty().getValue();
                 selectedSettingsName = settingsName;
                 schedulerButtonGroup.updateSelectedSettingsName(settingsName);
-                viewDetail.setEnabled(true);
+                viewDetailsButton.setEnabled(true);
             }
         });
 
