@@ -24,13 +24,13 @@ public class TriggerAndJobDetailWindow extends AbstractWindow {
     private MySchedule mySchedule = MySchedule.getInstance();
     private Table triggerDetailsTable;
     private Table jobDetailTable;
-    private String triggerKeyName;
+    private TriggerKey triggerKey;
     private JobKey jobDetailKey;
 
-    public TriggerAndJobDetailWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, String triggerKeyName) {
+    public TriggerAndJobDetailWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, TriggerKey triggerKey) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
-        this.triggerKeyName = triggerKeyName;
+        this.triggerKey = triggerKey;
         initTriggerDetailsTable();
         initJobDetailTable();
         setCaption("Trigger and JobDetail Properties");
@@ -48,13 +48,8 @@ public class TriggerAndJobDetailWindow extends AbstractWindow {
         table.addContainerProperty("Property Value", String.class, defaultValue);
 
         // Fill table data
-        LOGGER.debug("Loading trigger={} from scheduler {}", triggerKeyName, schedulerSettingsName);
+        LOGGER.debug("Loading triggerKey={} from scheduler {}", triggerKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        String[] names = StringUtils.split(triggerKeyName, "/");
-        if (names.length != 2)
-            throw new RuntimeException("Unable to retrieve trigger: invalid trigger name/group format used.");
-
-        TriggerKey triggerKey = new TriggerKey(names[0], names[1]);
         Trigger trigger = scheduler.getTrigger(triggerKey);
         jobDetailKey = trigger.getJobKey();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

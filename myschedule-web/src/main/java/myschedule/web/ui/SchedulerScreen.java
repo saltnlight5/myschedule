@@ -8,12 +8,14 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
+import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +36,7 @@ public class SchedulerScreen extends VerticalLayout {
     private Button viewDetailsButton;
     private String selectedTriggerKeyName;
     private TriggerButtonGroup triggerButtonGroup;
+    private MySchedule mySchedule = MySchedule.getInstance();
 
     public SchedulerScreen(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
@@ -65,9 +68,18 @@ public class SchedulerScreen extends VerticalLayout {
     }
 
     private void showTriggerAndJobDetailsWindow() {
-        TriggerAndJobDetailWindow window = new TriggerAndJobDetailWindow(
-            myScheduleUi, schedulerSettingsName, selectedTriggerKeyName);
+        TriggerKey triggerKey = getSelectedTriggerKey();
+        TriggerAndJobDetailWindow window = new TriggerAndJobDetailWindow(myScheduleUi, schedulerSettingsName, triggerKey);
         myScheduleUi.addWindow(window);
+    }
+
+    private TriggerKey getSelectedTriggerKey() {
+        String[] names = StringUtils.split(selectedTriggerKeyName, "/");
+        if (names.length != 2)
+            throw new RuntimeException("Unable to retrieve trigger: invalid trigger name/group format used.");
+
+        TriggerKey triggerKey = new TriggerKey(names[0], names[1]);
+        return triggerKey;
     }
 
     private void initJobsTable() {
@@ -112,10 +124,7 @@ public class SchedulerScreen extends VerticalLayout {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 selectedTriggerKeyName = (String)event.getProperty().getValue();
-                if (selectedTriggerKeyName == null)
-                    viewDetailsButton.setEnabled(false);
-                else
-                    viewDetailsButton.setEnabled(true);
+                triggerButtonGroup.updateSelectedTrigger();
             }
         });
 
@@ -133,30 +142,53 @@ public class SchedulerScreen extends VerticalLayout {
 
     class TriggerButtonGroup extends HorizontalLayout {
         Button viewDetails = createViewDetailsButton();
+        Button delete = createDeleteButton();
 
         public TriggerButtonGroup() {
             addComponent(viewDetails);
+            addComponent(delete);
             updateSelectedTrigger();
         }
 
         private void updateSelectedTrigger() {
+
             if (selectedTriggerKeyName == null) {
                 viewDetails.setEnabled(false);
+                delete.setEnabled(false);
+            } else {
+                viewDetails.setEnabled(true);
+                delete.setEnabled(true);
             }
         }
 
         private Button createViewDetailsButton() {
             viewDetailsButton = new Button("View Details");
-            viewDetailsButton.setEnabled(false); // Default disable it until user select a job from table
-            viewDetailsButton.addClickListener(new Button.ClickListener()
-            {
+            viewDetailsButton.addClickListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(Button.ClickEvent event)
-                {
-                    if (selectedTriggerKeyName == null)
-                        return;
-
+                public void buttonClick(Button.ClickEvent event) {
                     showTriggerAndJobDetailsWindow();
+                }
+            });
+            return viewDetailsButton;
+        }
+
+        private Button createDeleteButton() {
+            viewDetailsButton = new Button("Delete");
+            viewDetailsButton.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent event) {
+                    ConfirmDialog.show(myScheduleUi, "Are you sure to delete trigger?",
+                        new ConfirmDialog.Listener() {
+                            public void onClose(ConfirmDialog dialog) {
+                                if (dialog.isConfirmed()) {
+                                    TriggerKey triggerKey = getSelectedTriggerKey();
+                                    SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+                                    scheduler.unscheduleJob(triggerKey);
+                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+                                }
+                            }
+                        }
+                    );
                 }
             });
             return viewDetailsButton;
