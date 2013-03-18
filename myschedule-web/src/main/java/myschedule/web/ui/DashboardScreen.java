@@ -42,14 +42,18 @@ public class DashboardScreen extends VerticalLayout {
         toolbar = new HorizontalLayout();
         addComponent(toolbar);
 
-        schedulerButtonGroup = new SchedulerButtonGroup();
-        toolbar.addComponent(schedulerButtonGroup);
-
-        viewDetailsButton = new Button("View Details");
-        viewDetailsButton.setEnabled(false);
+        viewDetailsButton = createViewDetailsButton();
         toolbar.addComponent(viewDetailsButton);
 
-        viewDetailsButton.addClickListener(new Button.ClickListener()
+        schedulerButtonGroup = new SchedulerButtonGroup();
+        toolbar.addComponent(schedulerButtonGroup);
+    }
+
+    private Button createViewDetailsButton() {
+        final Button button = new Button("View Details");
+        button.setEnabled(false);
+
+        button.addClickListener(new Button.ClickListener()
         {
             @Override
             public void buttonClick(Button.ClickEvent event)
@@ -57,9 +61,11 @@ public class DashboardScreen extends VerticalLayout {
                 if (selectedSettingsName != null)
                     DashboardScreen.this.myScheduleUi.loadSchedulerScreen(selectedSettingsName);
                 else
-                    viewDetailsButton.setEnabled(false);
+                    button.setEnabled(false);
             }
         });
+
+        return button;
     }
 
     private void initSchedulersTable() {
@@ -123,21 +129,21 @@ public class DashboardScreen extends VerticalLayout {
     }
 
     class SchedulerButtonGroup extends HorizontalLayout {
-        Button edit = createEditButton();
-        Button delete = createDeleteButton();
         Button init = createInitButton();
         Button start = createStartButton();
         Button standby = createStandbyButton();
         Button shutdown = createShutdownButton();
+        Button edit = createEditButton();
+        Button delete = createDeleteButton();
 
         public SchedulerButtonGroup() {
-            addComponent(createNewButton());
-            addComponent(edit);
-            addComponent(delete);
             addComponent(init);
             addComponent(start);
             addComponent(standby);
             addComponent(shutdown);
+            addComponent(edit);
+            addComponent(delete);
+            addComponent(createNewButton());
 
             updateSelectedSettingsName(null);
         }
