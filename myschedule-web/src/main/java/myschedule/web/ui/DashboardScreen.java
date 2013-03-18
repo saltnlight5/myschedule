@@ -29,6 +29,8 @@ public class DashboardScreen extends VerticalLayout {
     private SchedulerButtonGroup schedulerButtonGroup;
     private Table table;
     private MySchedule mySchedule = MySchedule.getInstance();
+    private String selectedSettingsName;
+    private Button viewDetail;
 
     public DashboardScreen(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
@@ -42,6 +44,20 @@ public class DashboardScreen extends VerticalLayout {
 
         schedulerButtonGroup = new SchedulerButtonGroup();
         toolbar.addComponent(schedulerButtonGroup);
+
+        viewDetail = new Button("View Details");
+        viewDetail.setEnabled(false);
+        toolbar.addComponent(viewDetail);
+
+        viewDetail.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                if (selectedSettingsName != null)
+                    DashboardScreen.this.myScheduleUi.loadSchedulerScreen(selectedSettingsName);
+                else
+                    viewDetail.setEnabled(false);
+            }
+        });
     }
 
     private void initSchedulersTable() {
@@ -86,7 +102,9 @@ public class DashboardScreen extends VerticalLayout {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 String settingsName = (String)event.getProperty().getValue();
+                selectedSettingsName = settingsName;
                 schedulerButtonGroup.updateSelectedSettingsName(settingsName);
+                viewDetail.setEnabled(true);
             }
         });
 
@@ -109,7 +127,6 @@ public class DashboardScreen extends VerticalLayout {
         Button start = createStartButton();
         Button standby = createStandbyButton();
         Button shutdown = createShutdownButton();
-        String selectedSettingsName;
 
         public SchedulerButtonGroup() {
             addComponent(createNewButton());
@@ -124,8 +141,6 @@ public class DashboardScreen extends VerticalLayout {
         }
 
         void updateSelectedSettingsName(String settingsName) {
-            this.selectedSettingsName = settingsName;
-
             if (selectedSettingsName == null) {
                 disableButtons(edit, delete, init, start, standby, shutdown);
             } else {
