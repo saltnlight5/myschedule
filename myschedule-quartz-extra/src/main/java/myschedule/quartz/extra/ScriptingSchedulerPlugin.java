@@ -1,22 +1,14 @@
 package myschedule.quartz.extra;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import myschedule.quartz.extra.util.ScriptingUtils;
+import myschedule.quartz.extra.util.Utils;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.spi.SchedulerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * This plugin allow you to execute any script during scheduler initialize, start or shutdown state. 
@@ -48,13 +40,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ScriptingSchedulerPlugin implements SchedulerPlugin {
-	
-	private static final String CLASSPATH_PREFIX = "classpath:";
-
 	private static final Logger logger = LoggerFactory.getLogger(ScriptingSchedulerPlugin.class);
 
 	private String name;
-	private ScriptEngine scriptEngine;
 	private Scheduler scheduler;
 	
 	private String scriptEngineName = "JavaScript";
@@ -64,9 +52,6 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	
 	public String getName() {
 		return name;
-	}
-	public ScriptEngine getScriptEngine() {
-		return scriptEngine;
 	}
 	public Scheduler getScheduler() {
 		return scheduler;
@@ -102,23 +87,15 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	public void initialize(String name, Scheduler scheduler) throws SchedulerException {
 		this.name = name;
 		this.scheduler = scheduler;
-		
-		scriptEngineName = scriptEngineName.toLowerCase(); // it's more safe to use lowercase for lookup.
-		logger.debug("Initializing scripting plugin {} with ScriptEngine {}", name, scriptEngineName);
-		
-		// If JRuby script engine, we need to use transient variable bindings so we do not need to prefix '$'
-		if (scriptEngineName.equals("jruby")) {
-			System.setProperty("org.jruby.embed.localvariable.behavior", "transient");
-		}
-					
-		ScriptEngineManager factory = new ScriptEngineManager();
-        scriptEngine = factory.getEngineByName(scriptEngineName);
+
+        logger.debug("Initializing scripting plugin {} with ScriptEngine {}", name, scriptEngineName);
+        scriptEngineName = scriptEngineName.toLowerCase(); // it's more safe to use lowercase for lookup.
 		
 		if (initializeScript != null) {
 	        logger.debug("Running initialize script {}", initializeScript);
 			String[] filenames = initializeScript.split("\\s*,\\s*");
 			for (String filename : filenames) {
-		        runScript(filename);
+		        runScriptFile(filename);
 			}
 		}
 	}
@@ -129,7 +106,7 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	        logger.debug("Running start script {}", startScript);
 			String[] filenames = startScript.split("\\s*,\\s*");
 			for (String filename : filenames) {
-		        runScript(filename);
+		        runScriptFile(filename);
 			}
 		}
 	}
@@ -140,59 +117,19 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
 	        logger.debug("Running shutdown script {}", shutdownScript);
 			String[] filenames = shutdownScript.split("\\s*,\\s*");
 			for (String filename : filenames) {
-		        runScript(filename);
+		        runScriptFile(filename);
 			}
 		}
 	}
-	
-	protected URL getResource(String resName) {
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		return loader.getResource(resName);
-	}
 
-	protected void runScript(String filename) {
+	protected void runScriptFile(String filename) {
 		logger.debug("Run script {}", filename);
 
-        Bindings bindings = scriptEngine.createBindings();
+        Map<String, Object> bindings = Utils.toMap();
         bindings.put("schedulerPlugin", this);
         bindings.put("scheduler", new SchedulerTemplate(scheduler));
 		bindings.put("logger", logger);
-		
-		URL url = null;
-		Reader reader = null;
-		try {
-			if (filename.startsWith(CLASSPATH_PREFIX)) {
-				String resName = filename.substring(CLASSPATH_PREFIX.length());
-				url = getResource(resName);
-			} else {
-				try {
-					url = new URL(filename);
-				} catch (MalformedURLException e) {
-					url = new File(filename).toURI().toURL();
-				}
-			}
-			if (url == null) {
-				throw new FileNotFoundException("Filename " + filename + " not found.");
-			}
-			logger.debug("Reading url {}", url);
-			InputStream inStream = url.openStream();
-			reader = new InputStreamReader(inStream);
-			scriptEngine.eval(reader, bindings);
-		} catch (FileNotFoundException e) {
-			throw new QuartzRuntimeException("Failed to find script " + filename, e);
-		} catch (ScriptException e) {
-			throw new QuartzRuntimeException("Failed to run script " + filename, e);
-		} catch (IOException e) {
-			throw new QuartzRuntimeException("Failed to read script " + filename, e);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				throw new QuartzRuntimeException("Failed to close reader for script " + filename, e);
-			}
-		}
-		logger.info("Script {} ran successfully.", filename);
+
+		ScriptingUtils.runScriptFile(scriptEngineName, filename, bindings);
 	}
 }

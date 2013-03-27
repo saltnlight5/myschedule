@@ -1,4 +1,4 @@
-package myschedule.web;
+package myschedule.quartz.extra.util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 
 
@@ -149,7 +148,11 @@ public class Props extends HashMap<String, String> {
 			throw new RuntimeException(e);
 		} finally {
 			if (inStream != null) {
-				IOUtils.closeQuietly(inStream);
+                try {
+                    inStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to close input stream", e);
+                }
 			}
 		}
 		fromProperties(props);
