@@ -1,4 +1,4 @@
-package myschedule.web;
+package myschedule.quartz.extra.util;
 
 import java.io.File;
 import java.io.IOException;
