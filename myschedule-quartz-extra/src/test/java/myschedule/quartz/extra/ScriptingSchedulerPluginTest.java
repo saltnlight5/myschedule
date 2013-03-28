@@ -13,6 +13,7 @@ import myschedule.quartz.extra.QuartzRuntimeException;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.util.ResultFile;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.quartz.JobDetail;
@@ -48,9 +49,9 @@ public class ScriptingSchedulerPluginTest {
 			SchedulerTemplate st = new SchedulerTemplate(
 					"myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-filenotfound.properties");
 			st.startAndShutdown(700);
-			Assert.fail("We should faile with file not found.");
+			Assert.fail("We should fail with file not found.");
 		} catch (QuartzRuntimeException e) {
-			assertThat(e.getCause() instanceof FileNotFoundException, is(true));
+            assertThat(ExceptionUtils.getRootCause(e) instanceof FileNotFoundException, is(true));
 		} finally {
 			RESULT_FILE.delete();
 		}

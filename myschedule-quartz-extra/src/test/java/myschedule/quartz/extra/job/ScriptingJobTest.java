@@ -8,10 +8,14 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import java.io.File;
+import java.io.FileWriter;
+import java.net.URL;
 
 import myschedule.quartz.extra.ResultJobListener;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.job.ScriptingJob;
+import myschedule.quartz.extra.util.ClasspathURLStreamHandler;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
@@ -79,24 +83,34 @@ public class ScriptingJobTest {
 	}
 	
 	@Test
-	public void testScriptFileJob() {
+	public void testScriptFileJob() throws Exception {
 		ResultJobListener.resetResult();
 		SchedulerTemplate st = new SchedulerTemplate();
 		st.addJobListener(new ResultJobListener());
-		
-		File file = new File("src/test/resources/myschedule/quartz/extra/job/ScriptingJobTest-1.js");
-		JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
-		job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
-		job.getJobDataMap().put(ScriptingJob.SCRIPT_FILE_KEY, file.getAbsolutePath());
-		Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
-		st.scheduleJob(job, trigger);
-		st.startAndShutdown(99);
-		
-		assertThat(ResultJobListener.result.jobResults.size(), is(1));
-		assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
-		assertThat(ResultJobListener.result.jobToBeExecutedTimes.size(), is(1));
-		assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
-		assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
+
+        URL templateFile = ClasspathURLStreamHandler.createURL("classpath:myschedule/quartz/extra/job/ScriptingJobTest-1.js");
+        File file = File.createTempFile(getClass().getSimpleName() + "-test.js", "");
+        try {
+            FileWriter writer = new FileWriter(file);
+            IOUtils.copy(templateFile.openStream(), writer);
+            writer.flush();
+            writer.close();
+
+            JobDetail job = createJobDetail("MyScriptingJobTest", ScriptingJob.class);
+            job.getJobDataMap().put(ScriptingJob.SCRIPT_ENGINE_NAME_KEY, "JavaScript");
+            job.getJobDataMap().put(ScriptingJob.SCRIPT_FILE_KEY, file.getAbsolutePath());
+            Trigger trigger = createSimpleTrigger("MyScriptingJobTest");
+            st.scheduleJob(job, trigger);
+            st.startAndShutdown(99);
+
+            assertThat(ResultJobListener.result.jobResults.size(), is(1));
+            assertThat((Double)ResultJobListener.result.jobResults.get(0), is(new Double(100.0)));
+            assertThat(ResultJobListener.result.jobToBeExecutedTimes.size(), is(1));
+            assertThat(ResultJobListener.result.jobExecutionVetoedTimes.size(), is(0));
+            assertThat(ResultJobListener.result.jobWasExecutedTimes.size(), is(1));
+        } finally {
+            file.delete();
+        }
 	}
 	
 	@Test
