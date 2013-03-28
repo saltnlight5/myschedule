@@ -1,16 +1,12 @@
 package myschedule.quartz.extra.job;
 
-import java.io.FileReader;
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import myschedule.quartz.extra.util.ScriptingUtils;
+import myschedule.quartz.extra.util.Utils;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /** 
  * A Quartz job to evaluate any script text or file using one of Java javax.script.ScriptEngine implementation.
@@ -85,24 +81,11 @@ public class ScriptingJob implements Job {
 				throw new IllegalArgumentException("Neither " + SCRIPT_TEXT_KEY + " nor " + 
 						SCRIPT_FILE_KEY + " is found in data map."); 
 			}
-			logger.debug("Creating ScriptEngine {} to evaluate {}.", engineName, scriptType);
-			
-			// If JRuby script engine, we need to use transient variable bindings so we do not need to prefix '$'
-			if (engineName.equals("jruby")) {
-				System.setProperty("org.jruby.embed.localvariable.behavior", "transient");
-			}
-			
-			// Create a Java ScriptEngine
-			ScriptEngineManager factory = new ScriptEngineManager();
-	        ScriptEngine scriptEngine = factory.getEngineByName(engineName);	        
-	        if (scriptEngine == null) {
-	        	throw new IllegalArgumentException("Failed to find ScriptEngine " + SCRIPT_ENGINE_NAME_KEY);
-	        }
 
-			// Script engine binding variables.
-	        Bindings bindings = scriptEngine.createBindings();
-	        bindings.put("jobExecutionContext", jobExecutionContext);
-			bindings.put("logger", logger);
+            // Script engine binding variables.
+            Map<String,Object> bindings = Utils.toMap(
+                    "jobExecutionContext", jobExecutionContext,
+                    "logger", logger);
 			
 			Object result = null;
 			if (scriptType.equals(SCRIPT_TEXT_KEY)) {
@@ -117,7 +100,7 @@ public class ScriptingJob implements Job {
 				} else {
 					logger.debug("Evaluating scriptText length {}.", scriptText.length());
 				}
-				result = scriptEngine.eval(scriptText, bindings);
+				result = ScriptingUtils.runScriptText(engineName, scriptText, bindings);
 			} else {
 				// We only have two options, and this is the last case.
 				bindings.put("scriptFile", filename);
@@ -125,12 +108,7 @@ public class ScriptingJob implements Job {
 
 				// Evaluate script file.
 				logger.debug("Evaluating scriptFile {}.", filename);
-				FileReader reader = new FileReader(filename);
-				try {
-					result = scriptEngine.eval(reader, bindings);
-				} finally {
-					reader.close();
-				}
+                result = ScriptingUtils.runScriptFile(engineName, filename, bindings);
 			}
 			
 			// Store the result in case there is JobListener or TriggerListener setup to retrieve it.

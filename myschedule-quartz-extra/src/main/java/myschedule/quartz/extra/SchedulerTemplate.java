@@ -55,7 +55,7 @@ public class SchedulerTemplate {
 	public SchedulerTemplate() {
 		try {
 			scheduler = StdSchedulerFactory.getDefaultScheduler();
-		} catch (SchedulerException e) {
+		} catch (Exception e) {
 			throw new QuartzRuntimeException("Failed to create scheduler.", e);
 		}
 	}
@@ -64,7 +64,7 @@ public class SchedulerTemplate {
 		try {
 			StdSchedulerFactory factory = new StdSchedulerFactory(quartzConfigFilename);
 			scheduler = factory.getScheduler();
-		} catch (SchedulerException e) {
+		} catch (Exception e) {
 			throw new QuartzRuntimeException("Failed to create scheduler using config file: " + 
 					quartzConfigFilename, e);
 		}
@@ -74,7 +74,7 @@ public class SchedulerTemplate {
 		try {
 			StdSchedulerFactory factory = new StdSchedulerFactory(props);
 			scheduler = factory.getScheduler();
-		} catch (SchedulerException e) {
+		} catch (Exception e) {
 			throw new QuartzRuntimeException("Failed to create scheduler using custom properties.", e);
 		}
 	}

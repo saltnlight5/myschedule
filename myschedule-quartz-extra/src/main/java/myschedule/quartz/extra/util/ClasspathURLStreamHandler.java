@@ -1,4 +1,4 @@
-package myschedule.web;
+package myschedule.quartz.extra.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,10 @@ import java.net.URLStreamHandler;
 
 /**
  * Custom URL protocol handler to load any resource files using 'classpath' prefix. If 'classpath' is not found, then
- * it will try using default java.net.URL. And if that fails, then try local java.io.File(path) location. 
+ * it will try using default java.net.URL. And if that fails, then try local java.io.File(path) location.
+ *
+ * <p>Note that 'classpath' resources are default search by the current Thread's ClassLoader. If you need
+ * different classloader, then you need to pass it explicitly with one of the constructor.</p>
  * 
  * <p>
  * You may use this class like this:
@@ -24,7 +27,7 @@ public class ClasspathURLStreamHandler extends URLStreamHandler {
 	private ClassLoader classLoader;
 
 	public ClasspathURLStreamHandler() {
-		this.classLoader = Thread.currentThread().getContextClassLoader();
+		this(null);
 	}
 
 	public ClasspathURLStreamHandler(ClassLoader classLoader) {
@@ -32,7 +35,7 @@ public class ClasspathURLStreamHandler extends URLStreamHandler {
 			this.classLoader = Thread.currentThread().getContextClassLoader();
 		else
 			this.classLoader = classLoader;
-	}
+    }
 
 	public ClassLoader getClassLoader() {
 		return classLoader;

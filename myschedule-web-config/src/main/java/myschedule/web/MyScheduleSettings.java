@@ -2,6 +2,7 @@ package myschedule.web;
 
 import java.io.File;
 
+import myschedule.quartz.extra.util.Props;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MyScheduleSettings {
 	public static final String SETTINGS_SYS_PROPS_KEY = "myschedule.settings";
-	public static final String DEFAULT_SETTINGS_URL = "classpath:///myschedule/web/default-myschedule-settings.properties";
+	public static final String DEFAULT_SETTINGS_URL = "classpath:///myschedule/web/myschedule-settings.properties";
 	public static final String SETTINGS_KEY_PREFIX = "myschedule.web.";
 	private static final Logger LOGGER = LoggerFactory.getLogger(MyScheduleSettings.class);
 	private Props props;
@@ -61,4 +62,8 @@ public class MyScheduleSettings {
 	public String getDefaultSchedulerSettings() {
 		return props.getString(SETTINGS_KEY_PREFIX + "defaultSchedulerSettings");
 	}
+
+    public String getDefaultScriptEngineName() {
+        return props.getString(SETTINGS_KEY_PREFIX + "defaultScriptEngineName");
+    }
 }

@@ -1,6 +1,7 @@
 package myschedule.web;
 
 import myschedule.quartz.extra.SchedulerTemplate;
+import myschedule.quartz.extra.util.ClasspathURLStreamHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.impl.RemoteScheduler;
@@ -338,5 +339,9 @@ public class MySchedule extends AbstractService {
 
     public TemplatesStore getScriptTemplatesStore() {
         return scriptTemplatesStore;
+    }
+
+    public MyScheduleSettings getMyScheduleSettings() {
+        return myScheduleSettings;
     }
 }
