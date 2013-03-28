@@ -1,6 +1,7 @@
 syntax: glob
 
 test.md
+.DS_Store
 
 # Maven
 target
