@@ -4,6 +4,8 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Map;
+
 /**
  * @author Zemian Deng
  */
@@ -30,5 +32,14 @@ public class ScriptingUtilsTest {
                 "classpath:myschedule/quartz/extra/util/ScriptingUtils-test.js", null);
         Assert.assertThat(result, Matchers.instanceOf(String.class));
         Assert.assertThat((String) result, Matchers.is(System.getProperty("user.name")));
+    }
+
+    @Test
+    public void testBindingParams() throws Exception {
+        String text = "'Hello ' + name";
+        Map<String, Object> params = Utils.toMap("name", "World!");
+        Object result = ScriptingUtils.runScriptText("JavaScript", text, params);
+        Assert.assertThat(result, Matchers.instanceOf(String.class));
+        Assert.assertThat((String) result, Matchers.startsWith("Hello World!"));
     }
 }
