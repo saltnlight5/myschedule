@@ -35,7 +35,6 @@ public class ClasspathURLStreamHandler extends URLStreamHandler {
 			this.classLoader = Thread.currentThread().getContextClassLoader();
 		else
 			this.classLoader = classLoader;
-        System.out.println(">>> classloader used: " + classLoader);
     }
 
 	public ClassLoader getClassLoader() {
