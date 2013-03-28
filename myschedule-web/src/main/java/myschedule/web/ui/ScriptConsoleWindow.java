@@ -103,12 +103,8 @@ public class ScriptConsoleWindow extends EditorWindow {
         scriptEngineList.setNullSelectionAllowed(false);
         for (String engineName : scriptEngineNames)
             scriptEngineList.addItem(engineName);
-        if (scriptEngineNames.size() > 0) {
-            if (scriptEngineNames.contains("Groovy"))
-                scriptEngineList.setValue("Groovy");
-            else
-                scriptEngineList.setValue(scriptEngineNames.get(0));
-        }
+        if (scriptEngineNames.size() > 0)
+            scriptEngineList.setValue(scriptEngineNames.get(0));
         controls.addComponent(new Label("Scripting Engine: "));
         controls.addComponent(scriptEngineList);
     }
