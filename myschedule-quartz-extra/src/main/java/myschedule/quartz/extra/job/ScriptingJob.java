@@ -108,7 +108,7 @@ public class ScriptingJob implements Job {
 
 				// Evaluate script file.
 				logger.debug("Evaluating scriptFile {}.", filename);
-                result = ScriptingUtils.runScriptText(engineName, filename, bindings);
+                result = ScriptingUtils.runScriptFile(engineName, filename, bindings);
 			}
 			
 			// Store the result in case there is JobListener or TriggerListener setup to retrieve it.
