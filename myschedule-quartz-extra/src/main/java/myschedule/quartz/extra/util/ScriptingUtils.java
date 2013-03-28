@@ -37,37 +37,6 @@ public class ScriptingUtils {
         return scriptEngineNames;
     }
 
-    public static Object runScriptText(String scriptEngineName, String scriptText, Map<String, Object> bindingParams) {
-        LOGGER.debug("Evaluating script text using engine={}.", scriptEngineName);
-        ScriptEngine scriptEngine = getScriptEngine(scriptEngineName);
-
-        // Script engine binding variables.
-        Bindings bindings = scriptEngine.createBindings();
-
-        // Bind scheduler as implicit variable
-        for (Map.Entry<String, Object> entry : bindingParams.entrySet()) {
-            LOGGER.debug("Binding param: {}", entry);
-            bindings.put(entry.getKey(), entry.getValue());
-        }
-
-        // Evaluate script text.
-        try {
-            LOGGER.debug("Evaluating script text (length={}).", scriptText.length());
-            Object result = scriptEngine.eval(scriptText, bindings);
-            LOGGER.info("Script text evaluated with result={}", result);
-            return result;
-        } catch (ScriptException e) {
-            throw new RuntimeException("Failed to run script text with engine=" + scriptEngineName, e);
-        }
-    }
-
-
-    public static Object runScriptFile(String scriptEngineName, String filename, Map<String, Object> bindingParams) {
-        URL url = ClasspathURLStreamHandler.createURL(filename);
-        File file = new File(url.getFile());
-        return runScriptFile(scriptEngineName, file, bindingParams);
-    }
-
     public static ScriptEngine getScriptEngine(String scriptEngineName) {
         ScriptEngineManager factory = new ScriptEngineManager();
 
@@ -84,39 +53,72 @@ public class ScriptingUtils {
         return scriptEngine;
     }
 
+    public static Object runScriptText(String scriptEngineName, String scriptText, Map<String, Object> bindingParams) {
+        LOGGER.debug("Evaluating script text. length={}", scriptText.length());
+        Reader reader = new StringReader(scriptText);
+        return runScriptFile(scriptEngineName, reader, bindingParams);
+    }
+
+    public static Object runScriptFile(String scriptEngineName, String filename, Map<String, Object> bindingParams) {
+        LOGGER.debug("Evaluating script filename={}", filename);
+        Reader reader = null;
+        try {
+            URL url = ClasspathURLStreamHandler.createURL(filename);
+            InputStream inStream = url.openStream();
+            reader = new InputStreamReader(inStream);
+            return runScriptFile(scriptEngineName, reader, bindingParams);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read script filename=" + filename, e);
+        } finally {
+            if (reader != null)
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.warn("Failed to close reader for script filename={}", filename, e);
+                }
+        }
+    }
+
     public static Object runScriptFile(String scriptEngineName, File file, Map<String, Object> bindingParams) {
-        LOGGER.debug("Evaluating script file={} using engine={}.", file, scriptEngineName);
+        LOGGER.debug("Evaluating script file={}", file);
+        Reader reader = null;
+        try {
+            reader = new FileReader(file);
+            return runScriptFile(scriptEngineName, reader, bindingParams);
+        } catch (FileNotFoundException e) {
+            throw new QuartzRuntimeException("Failed to find script file=" + file, e);
+        } finally {
+            if (reader != null)
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.warn("Failed to close reader for script file={}", file, e);
+                }
+        }
+    }
+
+    /** Read script text from reader and evaluate it and return its result using script engine given by name. User is
+     * responsible to close the reader! */
+    public static Object runScriptFile(String scriptEngineName, Reader scriptReader, Map<String, Object> bindingParams) {
+        LOGGER.debug("Evaluating script text using engine={}.", scriptEngineName);
         ScriptEngine scriptEngine = getScriptEngine(scriptEngineName);
 
         // Script engine binding variables.
         Bindings bindings = scriptEngine.createBindings();
 
         // Bind scheduler as implicit variable
-        for (Map.Entry<String, Object> entry : bindingParams.entrySet()) {
-            LOGGER.debug("Binding param: {}", entry);
-            bindings.put(entry.getKey(), entry.getValue());
-        }
+        if (bindingParams != null)
+            for (Map.Entry<String, Object> entry : bindingParams.entrySet()) {
+                LOGGER.debug("Binding param: {}", entry);
+                bindings.put(entry.getKey(), entry.getValue());
+            }
 
-        Reader reader = null;
         try {
-            LOGGER.debug("Evaluating script file={}", file);
-            reader = new FileReader(file);
-            Object result = scriptEngine.eval(reader, bindings);
-            LOGGER.info("Script file={} evaluated with result={}", file, result);
+            Object result = scriptEngine.eval(scriptReader, bindings);
+            LOGGER.info("Script evaluated with result={}", result);
             return result;
-        } catch (FileNotFoundException e) {
-            throw new QuartzRuntimeException("Failed to find script file=" + file, e);
         } catch (ScriptException e) {
-            throw new QuartzRuntimeException("Failed to run script file=" + file, e);
-        } catch (IOException e) {
-            throw new QuartzRuntimeException("Failed to read script file=" + file, e);
-        } finally {
-            if (reader != null)
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    throw new QuartzRuntimeException("Failed to close reader for script " + file, e);
-                }
+            throw new RuntimeException("Failed to run script.", e);
         }
     }
 }
