@@ -11,6 +11,7 @@
 
 	<modules>
 		<module>myschedule-quartz-extra</module>
+		<module>myschedule-web-config</module>
 		<module>myschedule-web</module>
 		<module>myschedule-package</module>
 	</modules>
@@ -51,6 +52,11 @@
 			<dependency>
 				<groupId>myschedule</groupId>
 				<artifactId>myschedule-quartz-extra</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>myschedule</groupId>
+				<artifactId>myschedule-web-config</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
