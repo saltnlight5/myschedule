@@ -1,3 +1,4 @@
+package myschedule.web.templates.scripts
 // Simple Jobs
 // ===========
 
