@@ -340,4 +340,8 @@ public class MySchedule extends AbstractService {
     public TemplatesStore getScriptTemplatesStore() {
         return scriptTemplatesStore;
     }
+
+    public MyScheduleSettings getMyScheduleSettings() {
+        return myScheduleSettings;
+    }
 }
