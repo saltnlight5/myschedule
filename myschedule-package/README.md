@@ -1,6 +1,6 @@
 # Project
 
-MySchedule is a web application for managing Quartz Scheduler.
+MySchedule is a web application for managing Quartz Schedulers.
 
 For more information, see project home at http://code.google.com/p/myschedule
 
@@ -18,7 +18,7 @@ Now open a browser and visit http://localhost:8081
 
 Simply copy the myschedule-3.*/war/myschedule.war file into your Servlet container such as Tomcat.
 
-## Command line usage
+## Command line usage (option 3: quickly test your quartz config)
 
 	bash> cd myschedule-3.*
 	bash> bin/myschedule.sh bin/quartz.properties

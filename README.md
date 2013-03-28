@@ -1,6 +1,6 @@
 # Project
 
-MySchedule is a web application for managing Quartz Scheduler.
+MySchedule is a web application for managing Quartz Schedulers.
 
 For more information, see project home at http://code.google.com/p/myschedule
 
