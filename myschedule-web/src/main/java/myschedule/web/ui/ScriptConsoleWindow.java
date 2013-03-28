@@ -23,12 +23,15 @@ public class ScriptConsoleWindow extends EditorWindow {
     private VerticalLayout templatesContent;
     private ComboBox scriptEngineList;
     private List<String> scriptEngineNames;
+    private String defaultScriptEngineName;
 
     public ScriptConsoleWindow(MyScheduleUi myScheduleUi,  String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
 
         this.scriptEngineNames = ScriptingUtils.getAllScriptEngineNames();
+        this.defaultScriptEngineName = mySchedule.getMyScheduleSettings().getDefaultScriptEngineName();
+
         initEditorControls();
         initTemplatesList();
     }
@@ -103,8 +106,12 @@ public class ScriptConsoleWindow extends EditorWindow {
         scriptEngineList.setNullSelectionAllowed(false);
         for (String engineName : scriptEngineNames)
             scriptEngineList.addItem(engineName);
-        if (scriptEngineNames.size() > 0)
-            scriptEngineList.setValue(scriptEngineNames.get(0));
+        if (scriptEngineNames.size() > 0) {
+            if (scriptEngineNames.contains(defaultScriptEngineName))
+                scriptEngineList.setValue(defaultScriptEngineName);
+            else
+                scriptEngineList.setValue(scriptEngineNames.get(0));
+        }
         controls.addComponent(new Label("Scripting Engine: "));
         controls.addComponent(scriptEngineList);
     }

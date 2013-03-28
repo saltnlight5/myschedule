@@ -62,4 +62,8 @@ public class MyScheduleSettings {
 	public String getDefaultSchedulerSettings() {
 		return props.getString(SETTINGS_KEY_PREFIX + "defaultSchedulerSettings");
 	}
+
+    public String getDefaultScriptEngineName() {
+        return props.getString(SETTINGS_KEY_PREFIX + "defaultScriptEngineName");
+    }
 }
