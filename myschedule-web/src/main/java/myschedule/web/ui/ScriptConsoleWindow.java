@@ -3,15 +3,14 @@ package myschedule.web.ui;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import myschedule.quartz.extra.SchedulerTemplate;
+import myschedule.quartz.extra.util.ScriptingUtils;
+import myschedule.quartz.extra.util.Utils;
 import myschedule.web.SchedulerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A popup UI window to display scripting console text editor to manipulate a scheduler.
@@ -22,10 +21,17 @@ public class ScriptConsoleWindow extends EditorWindow {
     private String schedulerSettingsName;
     private VerticalLayout consoleContent;
     private VerticalLayout templatesContent;
+    private ComboBox scriptEngineList;
+    private List<String> scriptEngineNames;
+    private String defaultScriptEngineName;
 
     public ScriptConsoleWindow(MyScheduleUi myScheduleUi,  String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
+
+        this.scriptEngineNames = ScriptingUtils.getAllScriptEngineNames();
+        this.defaultScriptEngineName = mySchedule.getMyScheduleSettings().getDefaultScriptEngineName();
+
         initEditorControls();
         initTemplatesList();
     }
@@ -88,36 +94,32 @@ public class ScriptConsoleWindow extends EditorWindow {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 String scriptText = editor.getValue();
-                String scriptEngineName = "Groovy";
-                runScriptText(scriptText, scriptEngineName);
+                String scriptEngineName = (String)scriptEngineList.getValue();
+                runScriptText(scriptEngineName, scriptText);
                 myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
             }
         });
         controls.addComponent(button);
+
+        // Create script engine option list that default to Groovy if found.
+        scriptEngineList = new ComboBox();
+        scriptEngineList.setNullSelectionAllowed(false);
+        for (String engineName : scriptEngineNames)
+            scriptEngineList.addItem(engineName);
+        if (scriptEngineNames.size() > 0) {
+            if (scriptEngineNames.contains(defaultScriptEngineName))
+                scriptEngineList.setValue(defaultScriptEngineName);
+            else
+                scriptEngineList.setValue(scriptEngineNames.get(0));
+        }
+        controls.addComponent(new Label("Scripting Engine: "));
+        controls.addComponent(scriptEngineList);
     }
 
-    private void runScriptText(String scriptText, String scriptEngineName) {
-        LOGGER.debug("Evaluating script using engine={}.", scriptEngineName);
-
-        ScriptEngineManager factory = new ScriptEngineManager();
-        ScriptEngine scriptEngine = factory.getEngineByName(scriptEngineName);
-        if (scriptEngine == null) {
-            throw new RuntimeException("Script engine=" + scriptEngineName + " is not found.");
-        }
-
-        // Script engine binding variables.
-        Bindings bindings = scriptEngine.createBindings();
-
+    private void runScriptText(String scriptEngineName, String scriptText) {
         // Bind scheduler as implicit variable
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        bindings.put("scheduler", scheduler);
-
-        // Evaluate script text.
-        try {
-            Object result = scriptEngine.eval(scriptText, bindings);
-            LOGGER.info("Script evaluated with result={}", result);
-        } catch (ScriptException e) {
-            throw new RuntimeException("Failed to run " + scriptEngineName + " script.", e);
-        }
+        Map<String, Object> bindings = Utils.toMap("scheduler", scheduler);
+        ScriptingUtils.runScriptText(scriptEngineName, scriptText, bindings);
     }
 }
