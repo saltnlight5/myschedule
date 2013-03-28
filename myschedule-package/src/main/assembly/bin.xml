@@ -32,7 +32,7 @@
 					</fileSet>
 					<fileSet>
 						<outputDirectory>bin</outputDirectory>
-						<directory>../myschedule-web/src/main/resources/myschedule/web</directory>
+						<directory>../myschedule-web-config/src/main/resources/myschedule/web</directory>
 						<includes>
 							<include>myschedule-settings.properties</include>
 						</includes>
@@ -46,6 +46,7 @@
 			<useAllReactorProjects>true</useAllReactorProjects>
 			<includes>
 				<include>myschedule:myschedule-quartz-extra</include>
+				<include>myschedule:myschedule-web-config</include>
 				<include>myschedule:myschedule-package</include>
 			</includes>
 			<binaries>
