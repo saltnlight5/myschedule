@@ -44,6 +44,8 @@ Or if you want to run it directly from this project source, then try
 
 Then visit http://localhost:8080/myschedule-web
 
+(NOTE: for myschedule-2.x or lower source, we used Tomcat 6 maven plugin, so you need to run "mvn tomcat:run" 
+without the "7" instead.)
 
 # Versioning and Maintence Branches
 
