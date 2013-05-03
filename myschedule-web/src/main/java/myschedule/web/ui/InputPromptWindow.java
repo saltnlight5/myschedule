@@ -18,7 +18,7 @@ public class InputPromptWindow extends Window {
 
     protected void initContent() {
         // Give default Window position and size
-        setWidth("300px");
+        setWidth("400px");
         setHeight("200px");
         center();
 
