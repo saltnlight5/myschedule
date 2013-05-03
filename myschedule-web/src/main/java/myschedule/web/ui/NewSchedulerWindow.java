@@ -85,7 +85,7 @@ public class NewSchedulerWindow extends EditorWindow {
             editor.setValue(defaultText);
         }
 
-        Button button = new Button("Create");
+        Button button = new Button("Create Scheduler");
         button.addClickListener(new Button.ClickListener()
         {
             @Override

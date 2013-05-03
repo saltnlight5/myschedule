@@ -89,7 +89,7 @@ public class ScriptConsoleWindow extends EditorWindow {
         HorizontalLayout controls = new HorizontalLayout();
         consoleContent.addComponent(controls);
 
-        Button button = new Button("Execute");
+        Button button = new Button("Run Script");
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
