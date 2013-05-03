@@ -7,7 +7,7 @@ import myschedule.web.MySchedule;
 /**
  * A base class to provide a popup UI window on an existing screen. It setup screen to fill up 90% by 90% on center of
  * the screen. It also provide a default vertical layout for subclass to add content components.
- *
+ * <p/>
  * This base class also provide and setup MySchedule and MyScheduleUi access.
  */
 public class AbstractWindow extends Window {

@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class SchedulerScreen extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerScreen.class);
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private MyScheduleUi myScheduleUi;
     private String schedulerSettingsName;
     private HorizontalLayout toolbar;
@@ -109,12 +109,12 @@ public class SchedulerScreen extends VerticalLayout {
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             Date previousFireTime = trigger.getPreviousFireTime();
             String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
-            Object[] row = new Object[] {
-                triggerKeyName,
-                jobKey.getName() + "/" + jobKey.getGroup(),
-                trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
-                df.format(trigger.getNextFireTime()),
-                (previousFireTime == null) ? "" : df.format(previousFireTime)
+            Object[] row = new Object[]{
+                    triggerKeyName,
+                    jobKey.getName() + "/" + jobKey.getGroup(),
+                    trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
+                    df.format(trigger.getNextFireTime()),
+                    (previousFireTime == null) ? "" : df.format(previousFireTime)
             };
             table.addItem(row, triggerKeyName);
         }
@@ -123,7 +123,7 @@ public class SchedulerScreen extends VerticalLayout {
         table.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                selectedTriggerKeyName = (String)event.getProperty().getValue();
+                selectedTriggerKeyName = (String) event.getProperty().getValue();
                 triggerButtonGroup.updateSelectedTrigger();
             }
         });
@@ -133,7 +133,7 @@ public class SchedulerScreen extends VerticalLayout {
             @Override
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick()) {
-                    selectedTriggerKeyName = (String)event.getItemId();
+                    selectedTriggerKeyName = (String) event.getItemId();
                     showTriggerAndJobDetailsWindow();
                 }
             }
@@ -178,16 +178,16 @@ public class SchedulerScreen extends VerticalLayout {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     ConfirmDialog.show(myScheduleUi, "Are you sure to delete trigger?",
-                        new ConfirmDialog.Listener() {
-                            public void onClose(ConfirmDialog dialog) {
-                                if (dialog.isConfirmed()) {
-                                    TriggerKey triggerKey = getSelectedTriggerKey();
-                                    SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    scheduler.unscheduleJob(triggerKey);
-                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+                            new ConfirmDialog.Listener() {
+                                public void onClose(ConfirmDialog dialog) {
+                                    if (dialog.isConfirmed()) {
+                                        TriggerKey triggerKey = getSelectedTriggerKey();
+                                        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+                                        scheduler.unscheduleJob(triggerKey);
+                                        myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+                                    }
                                 }
                             }
-                        }
                     );
                 }
             });
