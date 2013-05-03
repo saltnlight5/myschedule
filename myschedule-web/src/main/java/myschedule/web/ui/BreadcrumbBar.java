@@ -8,7 +8,7 @@ import com.vaadin.ui.Label;
  * A navigation bar for the main application.
  */
 public class BreadcrumbBar extends HorizontalLayout {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private MyScheduleUi myScheduleUi;
     private Button schedulerCrumb;
     private Label schedulerStatusCrumb;
