@@ -14,12 +14,15 @@ import java.util.Map;
 
 /**
  * A utilities class to support Java scripting.
+ *
  * @author Zemian Deng
  */
 public class ScriptingUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptingUtils.class);
 
-    /** Get all scripting engine names available from this JVM. */
+    /**
+     * Get all scripting engine names available from this JVM.
+     */
     public static List<String> getAllScriptEngineNames() {
         List<String> scriptEngineNames = new ArrayList<String>();
         ScriptEngineManager factory = new ScriptEngineManager();
@@ -97,8 +100,10 @@ public class ScriptingUtils {
         }
     }
 
-    /** Read script text from reader and evaluate it and return its result using script engine given by name. User is
-     * responsible to close the reader! */
+    /**
+     * Read script text from reader and evaluate it and return its result using script engine given by name. User is
+     * responsible to close the reader!
+     */
     public static Object runScriptFile(String scriptEngineName, Reader scriptReader, Map<String, Object> bindingParams) {
         LOGGER.debug("Evaluating script text using engine={}.", scriptEngineName);
         ScriptEngine scriptEngine = getScriptEngine(scriptEngineName);

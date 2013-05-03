@@ -1,7 +1,9 @@
 package myschedule.web.ui;
 
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import myschedule.web.SchedulerStatus;
