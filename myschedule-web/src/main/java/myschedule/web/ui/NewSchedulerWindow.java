@@ -19,6 +19,7 @@ public class NewSchedulerWindow extends EditorWindow {
     private static final long serialVersionUID = 1L;
     private VerticalLayout consoleContent;
     private VerticalLayout templatesContent;
+    private ListSelect templatesList;
 
     public NewSchedulerWindow(MyScheduleUi myScheduleUi) {
         this.myScheduleUi = myScheduleUi;
@@ -46,42 +47,23 @@ public class NewSchedulerWindow extends EditorWindow {
     }
 
     private void initTemplatesList() {
-        final ListSelect list = new ListSelect("Config Templates");
-        templatesContent.addComponent(list);
+        templatesList = new ListSelect("Config Templates");
+        templatesContent.addComponent(templatesList);
 
-        list.setNullSelectionAllowed(false);
+        templatesList.setNullSelectionAllowed(false);
         List<String> names = mySchedule.getSchedulerTemplatesStore().getNames();
         for (String name : names) {
-            list.addItem(name);
+            templatesList.addItem(name);
         }
 
         // On selection value change even handler, let's update the editor content
-        list.setImmediate(true);
-        list.addValueChangeListener(new Property.ValueChangeListener() {
+        templatesList.setImmediate(true);
+        templatesList.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 String name = (String) event.getProperty().getValue();
                 String text = mySchedule.getSchedulerTemplatesStore().get(name);
                 editor.setValue(text);
-            }
-        });
-
-        // Save as ... - save content of editor as new template.
-        Button saveAsButton = new Button("Save as ...");
-        templatesContent.addComponent(saveAsButton);
-        saveAsButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                // Prompt to get a name.
-                String name = "test2.js"; // just a test for now.
-
-                // Save it.
-                String configText = editor.getValue();
-                LOGGER.debug("Saving editor content as new template: " + name);
-                mySchedule.getSchedulerTemplatesStore().add(name, configText);
-
-                // Show it on template list
-                list.addItem(name);
             }
         });
     }
@@ -108,6 +90,10 @@ public class NewSchedulerWindow extends EditorWindow {
             editor.setValue(defaultText);
         }
 
+        HorizontalLayout controls = new HorizontalLayout();
+        content.addComponent(controls);
+
+        // Create new scheduler button
         Button button = new Button("Create Scheduler");
         button.addClickListener(new Button.ClickListener() {
             @Override
@@ -121,6 +107,33 @@ public class NewSchedulerWindow extends EditorWindow {
                 myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the new scheduler.
             }
         });
-        content.addComponent(button);
+        controls.addComponent(button);
+
+        // Save as ... button - save content of editor as new template.
+        button = new Button("Save Config as Template ...");
+        controls.addComponent(button);
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                // Prompt to get a name.
+                InputPromptWindow prompt = new InputPromptWindow("Please enter a template name",
+                        new InputPromptWindow.InputAction() {
+                            @Override
+                            public void onInputOk(String inputValue) {
+                                // Save template content.
+                                String name = inputValue;
+                                String configText = editor.getValue();
+                                if (StringUtils.isEmpty(name))
+                                    throw new RuntimeException("Template name can not be empty.");
+                                LOGGER.debug("Saving editor content as new template: " + name);
+                                mySchedule.getSchedulerTemplatesStore().add(name, configText);
+
+                                // Show it on template list
+                                templatesList.addItem(name);
+                            }
+                        });
+                myScheduleUi.addWindow(prompt);
+            }
+        });
     }
 }
