@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class NewSchedulerWindow extends EditorWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewSchedulerWindow.class);
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private VerticalLayout consoleContent;
     private VerticalLayout templatesContent;
 
@@ -26,28 +26,9 @@ public class NewSchedulerWindow extends EditorWindow {
         initTemplatesList();
     }
 
-    private void initTemplatesList() {
-        ListSelect list = new ListSelect("Config Templates");
-        templatesContent.addComponent(list);
-
-        list.setNullSelectionAllowed(false);
-        List<String> names = mySchedule.getSchedulerTemplatesStore().getNames();
-        for (String name : names) {
-            list.addItem(name);
-        }
-
-        // On selection value change even handler, let's update the editor content
-        list.setImmediate(true);
-        list.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                String name = (String)event.getProperty().getValue();
-                String text = mySchedule.getSchedulerTemplatesStore().get(name);
-                editor.setValue(text);
-            }
-        });
-    }
-
+    /**
+     * Init content will be invoked by super constructor before other initXXX() methods.
+     */
     @Override
     protected void initContent() {
         super.initContent();
@@ -63,6 +44,48 @@ public class NewSchedulerWindow extends EditorWindow {
         scriptConsoleContent.addComponent(templatesContent);
         scriptConsoleContent.setExpandRatio(templatesContent, 1.0f);
     }
+
+    private void initTemplatesList() {
+        final ListSelect list = new ListSelect("Config Templates");
+        templatesContent.addComponent(list);
+
+        list.setNullSelectionAllowed(false);
+        List<String> names = mySchedule.getSchedulerTemplatesStore().getNames();
+        for (String name : names) {
+            list.addItem(name);
+        }
+
+        // On selection value change even handler, let's update the editor content
+        list.setImmediate(true);
+        list.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                String name = (String) event.getProperty().getValue();
+                String text = mySchedule.getSchedulerTemplatesStore().get(name);
+                editor.setValue(text);
+            }
+        });
+
+        // Save as ... - save content of editor as new template.
+        Button saveAsButton = new Button("Save as ...");
+        templatesContent.addComponent(saveAsButton);
+        saveAsButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                // Prompt to get a name.
+                String name = "test2.js"; // just a test for now.
+
+                // Save it.
+                String configText = editor.getValue();
+                LOGGER.debug("Saving editor content as new template: " + name);
+                mySchedule.getSchedulerTemplatesStore().add(name, configText);
+
+                // Show it on template list
+                list.addItem(name);
+            }
+        });
+    }
+
 
     @Override
     protected void initEditor() {
@@ -86,11 +109,9 @@ public class NewSchedulerWindow extends EditorWindow {
         }
 
         Button button = new Button("Create Scheduler");
-        button.addClickListener(new Button.ClickListener()
-        {
+        button.addClickListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event)
-            {
+            public void buttonClick(Button.ClickEvent event) {
                 String configText = editor.getValue();
 
                 LOGGER.debug("Creating new scheduler settings.");
