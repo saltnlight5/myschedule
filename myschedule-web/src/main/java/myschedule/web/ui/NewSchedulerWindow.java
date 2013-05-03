@@ -116,7 +116,7 @@ public class NewSchedulerWindow extends EditorWindow {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 // Prompt to get a name.
-                InputPromptWindow prompt = new InputPromptWindow("Please enter a template name",
+                InputPromptWindow prompt = new InputPromptWindow("Please enter a config template name",
                         new InputPromptWindow.InputAction() {
                             @Override
                             public void onInputOk(String inputValue) {
@@ -125,7 +125,7 @@ public class NewSchedulerWindow extends EditorWindow {
                                 String configText = editor.getValue();
                                 if (StringUtils.isEmpty(name))
                                     throw new RuntimeException("Template name can not be empty.");
-                                LOGGER.debug("Saving editor content as new template: " + name);
+                                LOGGER.debug("Saving editor content as new config template: " + name);
                                 mySchedule.getSchedulerTemplatesStore().add(name, configText);
 
                                 // Show it on template list
