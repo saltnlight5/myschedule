@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class ScriptConsoleWindow extends EditorWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptConsoleWindow.class);
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
     private VerticalLayout consoleContent;
     private VerticalLayout templatesContent;
@@ -25,7 +25,7 @@ public class ScriptConsoleWindow extends EditorWindow {
     private List<String> scriptEngineNames;
     private String defaultScriptEngineName;
 
-    public ScriptConsoleWindow(MyScheduleUi myScheduleUi,  String schedulerSettingsName) {
+    public ScriptConsoleWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
 
@@ -51,7 +51,7 @@ public class ScriptConsoleWindow extends EditorWindow {
         list.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                String name = (String)event.getProperty().getValue();
+                String name = (String) event.getProperty().getValue();
                 String text = mySchedule.getScriptTemplatesStore().get(name);
                 editor.setValue(text);
             }
@@ -94,7 +94,7 @@ public class ScriptConsoleWindow extends EditorWindow {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 String scriptText = editor.getValue();
-                String scriptEngineName = (String)scriptEngineList.getValue();
+                String scriptEngineName = (String) scriptEngineList.getValue();
                 runScriptText(scriptEngineName, scriptText);
                 myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
             }

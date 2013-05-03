@@ -3,8 +3,10 @@ package myschedule.web.ui;
 import com.vaadin.ui.Table;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
-import org.apache.commons.lang.StringUtils;
-import org.quartz.*;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +118,7 @@ public class TriggerAndJobDetailWindow extends AbstractWindow {
     }
 
     private void addTableItem(Table table, int itemId, String name, String value) {
-        Object[] row = new Object[] { name, value };
+        Object[] row = new Object[]{name, value};
         table.addItem(row, itemId);
     }
 }
