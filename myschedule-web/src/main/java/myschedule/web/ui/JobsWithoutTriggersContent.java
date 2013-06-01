@@ -11,8 +11,6 @@ import myschedule.web.MySchedule;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -30,6 +28,7 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
     MyScheduleUi myScheduleUi;
     String schedulerSettingsName;
     HorizontalLayout toolbar;
+    HorizontalLayout tableRowActionButtonsGroup;
     Table table;
     String selectedJobKeyName;
 
@@ -44,19 +43,35 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
         toolbar = new HorizontalLayout();
         addComponent(toolbar);
 
-        toolbar.addComponent(createViewDetailsButton());
-        toolbar.addComponent(createDeleteButton());
-        toolbar.addComponent(createRunItNowButton());
+        toolbar.addComponent(createRefreshButton());
+
+        tableRowActionButtonsGroup = new HorizontalLayout();
+        toolbar.addComponent(tableRowActionButtonsGroup);
+
+        tableRowActionButtonsGroup.addComponent(createViewDetailsButton());
+        tableRowActionButtonsGroup.addComponent(createDeleteButton());
+        tableRowActionButtonsGroup.addComponent(createRunItNowButton());
 
         disableToolbarIfNeeded();
     }
 
     private void disableToolbarIfNeeded() {
         if (selectedJobKeyName == null) {
-            toolbar.setEnabled(false);
+            tableRowActionButtonsGroup.setEnabled(false);
         } else {
-            toolbar.setEnabled(true);
+            tableRowActionButtonsGroup.setEnabled(true);
         }
+    }
+
+    private Button createRefreshButton() {
+        Button button = new Button("Refresh");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                reloadTableContent();
+            }
+        });
+        return button;
     }
 
     private Button createViewDetailsButton() {

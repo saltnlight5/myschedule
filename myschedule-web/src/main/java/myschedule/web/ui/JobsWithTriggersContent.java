@@ -32,6 +32,7 @@ public class JobsWithTriggersContent extends VerticalLayout {
     MyScheduleUi myScheduleUi;
     String schedulerSettingsName;
     HorizontalLayout toolbar;
+    HorizontalLayout tableRowActionButtonsGroup;
     Table table;
     String selectedTriggerKeyName;
 
@@ -46,19 +47,35 @@ public class JobsWithTriggersContent extends VerticalLayout {
         toolbar = new HorizontalLayout();
         addComponent(toolbar);
 
-        toolbar.addComponent(createViewDetailsButton());
-        toolbar.addComponent(createDeleteButton());
-        toolbar.addComponent(createRunItNowButton());
+        toolbar.addComponent(createRefreshButton());
+
+        tableRowActionButtonsGroup = new HorizontalLayout();
+        toolbar.addComponent(tableRowActionButtonsGroup);
+
+        tableRowActionButtonsGroup.addComponent(createViewDetailsButton());
+        tableRowActionButtonsGroup.addComponent(createDeleteButton());
+        tableRowActionButtonsGroup.addComponent(createRunItNowButton());
 
         disableToolbarIfNeeded();
     }
 
     private void disableToolbarIfNeeded() {
         if (selectedTriggerKeyName == null) {
-            toolbar.setEnabled(false);
+            tableRowActionButtonsGroup.setEnabled(false);
         } else {
-            toolbar.setEnabled(true);
+            tableRowActionButtonsGroup.setEnabled(true);
         }
+    }
+
+    private Button createRefreshButton() {
+        Button button = new Button("Refresh");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                reloadTableContent();
+            }
+        });
+        return button;
     }
 
     private Button createViewDetailsButton() {

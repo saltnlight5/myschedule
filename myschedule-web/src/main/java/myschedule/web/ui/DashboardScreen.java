@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * UI screen for displaying a dashboard of all schedulers in a table view. This is the default main screen for the
  * MySchedule application. User should see all the configured scheduler in this screen with their status and actions.
- * This screen should also have a toolbar to allow user to add new scheduler config entry into this scheduler table.
+ * This screen should also have a tableRowActionButtonsGroup to allow user to add new scheduler config entry into this scheduler table.
  */
 public class DashboardScreen extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardScreen.class);
