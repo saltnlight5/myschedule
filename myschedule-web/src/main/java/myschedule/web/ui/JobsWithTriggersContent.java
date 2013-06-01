@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 /**s
- * JobsWithTriggersContent provide a table view for all JobDetails that have triggers associated.
+ * JobsWithTriggersContents provide a table view for all JobDetails that have triggers associated.
  * User: Zemian Deng
  * Date: 6/1/13
  */
@@ -48,6 +48,7 @@ public class JobsWithTriggersContent extends VerticalLayout {
 
         toolbar.addComponent(createViewDetailsButton());
         toolbar.addComponent(createDeleteButton());
+        toolbar.addComponent(createRunItNowButton());
 
         disableToolbarIfNeeded();
     }
@@ -83,6 +84,29 @@ public class JobsWithTriggersContent extends VerticalLayout {
                                     TriggerKey triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                                     scheduler.unscheduleJob(triggerKey);
+                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+                                }
+                            }
+                        }
+                );
+            }
+        });
+        return button;
+    }
+
+    private Button createRunItNowButton() {
+        Button button = new Button("Run It Now");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                ConfirmDialog.show(myScheduleUi, "Are you sure to run it now?",
+                        new ConfirmDialog.Listener() {
+                            public void onClose(ConfirmDialog dialog) {
+                                if (dialog.isConfirmed()) {
+                                    TriggerKey triggerKey = getSelectedTriggerKey();
+                                    SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+                                    Trigger trigger = scheduler.getTrigger(triggerKey);
+                                    scheduler.triggerJob(trigger.getJobKey());
                                     myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
                                 }
                             }

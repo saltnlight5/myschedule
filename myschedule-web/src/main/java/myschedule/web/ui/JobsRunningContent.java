@@ -9,31 +9,33 @@ import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.apache.commons.lang.StringUtils;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-/**
- * JobsWithoutTriggersContent provides a table view for all JobDetails that do not have triggers associated.
+/**s
+ * JobsRunningContent provides a table view for all the current running jobs in scheduler. Note that typical job in
+ * scheduler should complete quickly and will not linger in this view. However if user have some long running job,
+ * or one that stuck, then they may use this view to verify or even interrupt the job.
+ *
  * User: Zemian Deng
  * Date: 6/1/13
  */
-public class JobsWithoutTriggersContent extends VerticalLayout {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobsWithoutTriggersContent.class);
+public class JobsRunningContent extends VerticalLayout {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobsRunningContent.class);
     MySchedule mySchedule = MySchedule.getInstance();
     MyScheduleUi myScheduleUi;
     String schedulerSettingsName;
     HorizontalLayout toolbar;
     Table table;
-    String selectedJobKeyName;
+    String selectedTriggerKeyName;
 
-    public JobsWithoutTriggersContent(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
+    public JobsRunningContent(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
         initToolbar();
@@ -45,14 +47,13 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
         addComponent(toolbar);
 
         toolbar.addComponent(createViewDetailsButton());
-        toolbar.addComponent(createDeleteButton());
-        toolbar.addComponent(createRunItNowButton());
+        toolbar.addComponent(createInterruptButton());
 
         disableToolbarIfNeeded();
     }
 
     private void disableToolbarIfNeeded() {
-        if (selectedJobKeyName == null) {
+        if (selectedTriggerKeyName == null) {
             toolbar.setEnabled(false);
         } else {
             toolbar.setEnabled(true);
@@ -64,46 +65,25 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                showJobsWithoutTriggersWindow();
+                showJobsWithTriggersWindow();
             }
         });
         return button;
     }
 
-    private Button createDeleteButton() {
-        Button button = new Button("Delete");
+    private Button createInterruptButton() {
+        Button button = new Button("Interrupt");
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                ConfirmDialog.show(myScheduleUi, "Are you sure to delete job detail?",
+                ConfirmDialog.show(myScheduleUi, "Are you sure to interrupt this job?",
                         new ConfirmDialog.Listener() {
                             public void onClose(ConfirmDialog dialog) {
                                 if (dialog.isConfirmed()) {
-                                    JobKey jobKey = getSelectedJobKey();
+                                    TriggerKey triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    scheduler.deleteJob(jobKey);
-                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
-                                }
-                            }
-                        }
-                );
-            }
-        });
-        return button;
-    }
-
-    private Button createRunItNowButton() {
-        Button button = new Button("Run It Now");
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                ConfirmDialog.show(myScheduleUi, "Are you sure to run it now?",
-                        new ConfirmDialog.Listener() {
-                            public void onClose(ConfirmDialog dialog) {
-                                if (dialog.isConfirmed()) {
-                                    JobKey jobKey = getSelectedJobKey();
-                                    SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    scheduler.triggerJob(jobKey);
+                                    Trigger trigger = scheduler.getTrigger(triggerKey);
+                                    scheduler.interrupt(trigger.getJobKey());
                                     myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
                                 }
                             }
@@ -123,32 +103,40 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
         table.setSelectable(true);
 
         Object defaultValue = null; // Not used.
+        table.addContainerProperty("Trigger", String.class, defaultValue);
         table.addContainerProperty("JobDetail", String.class, defaultValue);
         table.addContainerProperty("Type", String.class, defaultValue);
+        table.addContainerProperty("Next Run", String.class, defaultValue);
+        table.addContainerProperty("Last Run", String.class, defaultValue);
 
         // Fill table data
-        LOGGER.debug("Loading jobDetails from scheduler {}", schedulerSettingsName);
+        LOGGER.debug("Loading current running jobs from scheduler {}", schedulerSettingsName);
         MySchedule mySchedule = MySchedule.getInstance();
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        List<JobDetail> jobDetails = scheduler.getAllJobDetails();
-        for (JobDetail jobDetail : jobDetails) {
-            if (scheduler.getTriggersOfJob(jobDetail.getKey()).size() > 0) {
-                continue;
-            }
-            JobKey jobKey = jobDetail.getKey();
-            String jobKeyName = jobKey.getName() + "/" + jobKey.getGroup();
+        List<JobExecutionContext> jobs = scheduler.getCurrentlyExecutingJobs();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (JobExecutionContext job : jobs) {
+            Trigger trigger = job.getTrigger();
+            TriggerKey triggerKey = trigger.getKey();
+            JobKey jobKey = trigger.getJobKey();
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            Date previousFireTime = trigger.getPreviousFireTime();
+            String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
             Object[] row = new Object[]{
-                    jobKeyName,
-                    jobDetail.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName()
+                    triggerKeyName,
+                    jobKey.getName() + "/" + jobKey.getGroup(),
+                    trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
+                    df.format(trigger.getNextFireTime()),
+                    (previousFireTime == null) ? "" : df.format(previousFireTime)
             };
-            table.addItem(row, jobKeyName);
+            table.addItem(row, triggerKeyName);
         }
 
         // Selectable handler
         table.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                selectedJobKeyName = (String) event.getProperty().getValue();
+                selectedTriggerKeyName = (String) event.getProperty().getValue();
                 disableToolbarIfNeeded();
             }
         });
@@ -158,25 +146,25 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
             @Override
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick()) {
-                    selectedJobKeyName = (String) event.getItemId();
-                    showJobsWithoutTriggersWindow();
+                    selectedTriggerKeyName = (String) event.getItemId();
+                    showJobsWithTriggersWindow();
                 }
             }
         });
     }
 
-    private void showJobsWithoutTriggersWindow() {
-        JobKey jobKey = getSelectedJobKey();
-        JobsWithoutTriggersWindow window = new JobsWithoutTriggersWindow(myScheduleUi, schedulerSettingsName, jobKey);
+    private void showJobsWithTriggersWindow() {
+        TriggerKey triggerKey = getSelectedTriggerKey();
+        JobsWithTriggersWindow window = new JobsWithTriggersWindow(myScheduleUi, schedulerSettingsName, triggerKey);
         myScheduleUi.addWindow(window);
     }
 
-    private JobKey getSelectedJobKey() {
-        String[] names = StringUtils.split(selectedJobKeyName, "/");
+    private TriggerKey getSelectedTriggerKey() {
+        String[] names = StringUtils.split(selectedTriggerKeyName, "/");
         if (names.length != 2)
             throw new RuntimeException("Unable to retrieve trigger: invalid trigger name/group format used.");
 
-        JobKey jobKey = new JobKey(names[0], names[1]);
-        return jobKey;
+        TriggerKey triggerKey = new TriggerKey(names[0], names[1]);
+        return triggerKey;
     }
 }
