@@ -25,6 +25,9 @@ public class MyScheduleContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         MySchedule mySchedule = MySchedule.getInstance();
         mySchedule.destroy();
+
+        ServletContext ctx = sce.getServletContext();
+        ctx.removeAttribute(MY_SCHEDULE_INSTANCE_KEY);
     }
 
 }

@@ -21,7 +21,7 @@ import java.util.TreeMap;
 public class TriggerAndJobDetailWindow extends AbstractWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(TriggerAndJobDetailWindow.class);
     private static final long serialVersionUID = 1L;
-    private MyScheduleUi myScheduleUi;
+    //private MyScheduleUi myScheduleUi;
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
     private Table triggerDetailsTable;
