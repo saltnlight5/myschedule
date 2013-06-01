@@ -32,6 +32,7 @@ public class SchedulerScreen extends VerticalLayout {
         TabSheet tabSheet;
         VerticalLayout jobsWithTriggersContent = new VerticalLayout();
         VerticalLayout jobsWithoutTriggersContent = new VerticalLayout();
+        VerticalLayout jobsRunningContent = new VerticalLayout();
         VerticalLayout scriptConsoleContent = new VerticalLayout();
         public SchedulerContent() {
             tabSheet = new TabSheet();
@@ -39,6 +40,7 @@ public class SchedulerScreen extends VerticalLayout {
 
             tabSheet.addTab(jobsWithTriggersContent, "Jobs with Triggers");
             tabSheet.addTab(jobsWithoutTriggersContent, "Jobs without Triggers");
+            tabSheet.addTab(jobsRunningContent, "Current Executing Jobs");
             tabSheet.addTab(scriptConsoleContent, "Script Console");
 
             tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
@@ -50,6 +52,8 @@ public class SchedulerScreen extends VerticalLayout {
                         switchJobsWithTriggersContent();
                     } else if (selectedContent == jobsWithoutTriggersContent) {
                         switchJobsWithoutTriggersContent();
+                    } else if (selectedContent == jobsRunningContent) {
+                        switchJobsRunningContent();
                     } else if (selectedContent == scriptConsoleContent) {
                         ScriptConsoleWindow console = new ScriptConsoleWindow(myScheduleUi, schedulerSettingsName);
                         myScheduleUi.addWindow(console);
@@ -71,6 +75,7 @@ public class SchedulerScreen extends VerticalLayout {
 
             // Clean up other tab resources
             jobsWithoutTriggersContent.removeAllComponents();
+            jobsRunningContent.removeAllComponents();
         }
 
         void switchJobsWithoutTriggersContent() {
@@ -78,6 +83,16 @@ public class SchedulerScreen extends VerticalLayout {
             jobsWithoutTriggersContent.addComponent(new JobsWithoutTriggersContent(myScheduleUi, schedulerSettingsName));
 
             // Clean up other tab resources
+            jobsWithTriggersContent.removeAllComponents();
+            jobsRunningContent.removeAllComponents();
+        }
+
+        void switchJobsRunningContent() {
+            jobsRunningContent.removeAllComponents();
+            jobsRunningContent.addComponent(new JobsRunningContent(myScheduleUi, schedulerSettingsName));
+
+            // Clean up other tab resources
+            jobsWithoutTriggersContent.removeAllComponents();
             jobsWithTriggersContent.removeAllComponents();
         }
     }

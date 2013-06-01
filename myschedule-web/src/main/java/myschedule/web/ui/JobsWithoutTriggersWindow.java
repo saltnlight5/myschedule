@@ -18,7 +18,6 @@ import java.util.TreeMap;
 /**
  * A UI popup window to display JobDetails information (ones without any triggers associated with).
  * This window is opened from the SchedulerScreen.
- * //TODO: we should combine similar code from JobsWithTriggerWindow later.
  */
 public class JobsWithoutTriggersWindow extends AbstractWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobsWithoutTriggersWindow.class);
