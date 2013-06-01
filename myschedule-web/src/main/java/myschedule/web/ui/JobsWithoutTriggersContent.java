@@ -82,7 +82,8 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
                                     JobKey jobKey = getSelectedJobKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                                     scheduler.deleteJob(jobKey);
-                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+
+                                    reloadTableContent();
                                 }
                             }
                         }
@@ -104,7 +105,8 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
                                     JobKey jobKey = getSelectedJobKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                                     scheduler.triggerJob(jobKey);
-                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+
+                                    reloadTableContent();
                                 }
                             }
                         }
@@ -126,24 +128,6 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
         table.addContainerProperty("JobDetail", String.class, defaultValue);
         table.addContainerProperty("Type", String.class, defaultValue);
 
-        // Fill table data
-        LOGGER.debug("Loading jobDetails from scheduler {}", schedulerSettingsName);
-        MySchedule mySchedule = MySchedule.getInstance();
-        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        List<JobDetail> jobDetails = scheduler.getAllJobDetails();
-        for (JobDetail jobDetail : jobDetails) {
-            if (scheduler.getTriggersOfJob(jobDetail.getKey()).size() > 0) {
-                continue;
-            }
-            JobKey jobKey = jobDetail.getKey();
-            String jobKeyName = jobKey.getName() + "/" + jobKey.getGroup();
-            Object[] row = new Object[]{
-                    jobKeyName,
-                    jobDetail.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName()
-            };
-            table.addItem(row, jobKeyName);
-        }
-
         // Selectable handler
         table.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -163,6 +147,30 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
                 }
             }
         });
+
+        reloadTableContent();
+    }
+
+    private void reloadTableContent() {
+        table.removeAllItems();
+        // Fill table data
+        LOGGER.debug("Loading jobDetails from scheduler {}", schedulerSettingsName);
+        MySchedule mySchedule = MySchedule.getInstance();
+        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+        List<JobDetail> jobDetails = scheduler.getAllJobDetails();
+        for (JobDetail jobDetail : jobDetails) {
+            if (scheduler.getTriggersOfJob(jobDetail.getKey()).size() > 0) {
+                continue;
+            }
+            JobKey jobKey = jobDetail.getKey();
+            String jobKeyName = jobKey.getName() + "/" + jobKey.getGroup();
+            Object[] row = new Object[]{
+                    jobKeyName,
+                    jobDetail.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName()
+            };
+            table.addItem(row, jobKeyName);
+        }
+
     }
 
     private void showJobsWithoutTriggersWindow() {
