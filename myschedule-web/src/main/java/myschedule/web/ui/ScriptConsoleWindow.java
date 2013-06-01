@@ -94,18 +94,6 @@ public class ScriptConsoleWindow extends EditorWindow {
         HorizontalLayout controls = new HorizontalLayout();
         consoleContent.addComponent(controls);
 
-        Button button = new Button("Run Script");
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                String scriptText = editor.getValue();
-                String scriptEngineName = (String) scriptEngineList.getValue();
-                runScriptText(scriptEngineName, scriptText);
-                myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
-            }
-        });
-        controls.addComponent(button);
-
         // Create script engine option list that default to Groovy if found.
         scriptEngineList = new ComboBox();
         scriptEngineList.setNullSelectionAllowed(false);
@@ -119,6 +107,19 @@ public class ScriptConsoleWindow extends EditorWindow {
         }
         controls.addComponent(new Label("Scripting Engine: "));
         controls.addComponent(scriptEngineList);
+
+        // Create the run script button.
+        Button button = new Button("Run Script");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                String scriptText = editor.getValue();
+                String scriptEngineName = (String) scriptEngineList.getValue();
+                runScriptText(scriptEngineName, scriptText);
+                myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+            }
+        });
+        controls.addComponent(button);
 
         // Save as ... button - save content of editor as new template.
         button = new Button("Save Config as Template ...");
