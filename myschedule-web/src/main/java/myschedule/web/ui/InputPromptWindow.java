@@ -22,6 +22,9 @@ public class InputPromptWindow extends Window {
         setHeight("200px");
         center();
 
+        // adjust input width
+        input.setWidth("300px"); // TODO: how to auto fill the width?
+
         // Prepare content container
         VerticalLayout content = new VerticalLayout();
         content.setMargin(true);
