@@ -32,6 +32,7 @@ public class JobsRunningContent extends VerticalLayout {
     MyScheduleUi myScheduleUi;
     String schedulerSettingsName;
     HorizontalLayout toolbar;
+    HorizontalLayout tableRowActionButtonsGroup;
     Table table;
     String selectedTriggerKeyName;
 
@@ -46,18 +47,34 @@ public class JobsRunningContent extends VerticalLayout {
         toolbar = new HorizontalLayout();
         addComponent(toolbar);
 
-        toolbar.addComponent(createViewDetailsButton());
-        toolbar.addComponent(createInterruptButton());
+        toolbar.addComponent(createRefreshButton());
+
+        tableRowActionButtonsGroup = new HorizontalLayout();
+        toolbar.addComponent(tableRowActionButtonsGroup);
+
+        tableRowActionButtonsGroup.addComponent(createViewDetailsButton());
+        tableRowActionButtonsGroup.addComponent(createInterruptButton());
 
         disableToolbarIfNeeded();
     }
 
     private void disableToolbarIfNeeded() {
         if (selectedTriggerKeyName == null) {
-            toolbar.setEnabled(false);
+            tableRowActionButtonsGroup.setEnabled(false);
         } else {
-            toolbar.setEnabled(true);
+            tableRowActionButtonsGroup.setEnabled(true);
         }
+    }
+
+    private Button createRefreshButton() {
+        Button button = new Button("Refresh");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                reloadTableContent();
+            }
+        });
+        return button;
     }
 
     private Button createViewDetailsButton() {
@@ -109,6 +126,31 @@ public class JobsRunningContent extends VerticalLayout {
         table.addContainerProperty("Next Run", String.class, defaultValue);
         table.addContainerProperty("Last Run", String.class, defaultValue);
 
+        // Selectable handler
+        table.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                selectedTriggerKeyName = (String) event.getProperty().getValue();
+                disableToolbarIfNeeded();
+            }
+        });
+
+        // Double click handler - drill down to trigger/job details
+        table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    selectedTriggerKeyName = (String) event.getItemId();
+                    showJobsWithTriggersWindow();
+                }
+            }
+        });
+
+        reloadTableContent();
+    }
+
+    private void reloadTableContent() {
+        table.removeAllItems();
         // Fill table data
         LOGGER.debug("Loading current running jobs from scheduler {}", schedulerSettingsName);
         MySchedule mySchedule = MySchedule.getInstance();
@@ -132,26 +174,6 @@ public class JobsRunningContent extends VerticalLayout {
             };
             table.addItem(row, triggerKeyName);
         }
-
-        // Selectable handler
-        table.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                selectedTriggerKeyName = (String) event.getProperty().getValue();
-                disableToolbarIfNeeded();
-            }
-        });
-
-        // Double click handler - drill down to trigger/job details
-        table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                if (event.isDoubleClick()) {
-                    selectedTriggerKeyName = (String) event.getItemId();
-                    showJobsWithTriggersWindow();
-                }
-            }
-        });
     }
 
     private void showJobsWithTriggersWindow() {
