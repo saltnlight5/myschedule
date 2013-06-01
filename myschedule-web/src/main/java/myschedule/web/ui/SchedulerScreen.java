@@ -224,23 +224,38 @@ public class SchedulerScreen extends VerticalLayout {
                     TabSheet tabSheet = selectedTabChangeEvent.getTabSheet();
                     VerticalLayout selectedContent = (VerticalLayout)tabSheet.getSelectedTab();
                     if (selectedContent == jobsWithTriggersContent) {
-                        jobsWithTriggersContent.removeAllComponents();
-                        jobsWithTriggersContent.addComponent(new JobsWithTriggersContent());
+                        switchJobsWithTriggersContent();
                     } else if (selectedContent == jobsWithoutTriggersContent) {
-                        jobsWithoutTriggersContent.removeAllComponents();
-                        jobsWithoutTriggersContent.addComponent(new JobsWithoutTriggersContent());
+                        switchJobsWithoutTriggersContent();
                     } else if (selectedContent == scriptConsoleContent) {
                         ScriptConsoleWindow console = new ScriptConsoleWindow(myScheduleUi, schedulerSettingsName);
                         myScheduleUi.addWindow(console);
-                        tabSheet.setSelectedTab(0);
+
+                        // script console is a popup window, and we will switch the content to jobsWithTriggersContent view.
+                        tabSheet.setSelectedTab(jobsWithTriggersContent);
                     }
                 }
             });
 
             // default trigger first tab selection.
             tabSheet.setSelectedTab(jobsWithTriggersContent);
+            switchJobsWithTriggersContent();
+        }
+
+        void switchJobsWithTriggersContent() {
             jobsWithTriggersContent.removeAllComponents();
             jobsWithTriggersContent.addComponent(new JobsWithTriggersContent());
+
+            // Clean up other tab resources
+            jobsWithoutTriggersContent.removeAllComponents();
+        }
+
+        void switchJobsWithoutTriggersContent() {
+            jobsWithoutTriggersContent.removeAllComponents();
+            jobsWithoutTriggersContent.addComponent(new JobsWithoutTriggersContent());
+
+            // Clean up other tab resources
+            jobsWithTriggersContent.removeAllComponents();
         }
     }
 }
