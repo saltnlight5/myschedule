@@ -120,13 +120,14 @@ public class JobsRunningContent extends VerticalLayout {
             TriggerKey triggerKey = trigger.getKey();
             JobKey jobKey = trigger.getJobKey();
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            Date nextFireTime = trigger.getNextFireTime();
             Date previousFireTime = trigger.getPreviousFireTime();
             String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
             Object[] row = new Object[]{
                     triggerKeyName,
                     jobKey.getName() + "/" + jobKey.getGroup(),
                     trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
-                    df.format(trigger.getNextFireTime()),
+                    (nextFireTime == null) ? "" : df.format(nextFireTime),
                     (previousFireTime == null) ? "" : df.format(previousFireTime)
             };
             table.addItem(row, triggerKeyName);

@@ -84,7 +84,8 @@ public class JobsWithTriggersContent extends VerticalLayout {
                                     TriggerKey triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                                     scheduler.unscheduleJob(triggerKey);
-                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+
+                                    reloadTableContent();
                                 }
                             }
                         }
@@ -107,7 +108,8 @@ public class JobsWithTriggersContent extends VerticalLayout {
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                                     Trigger trigger = scheduler.getTrigger(triggerKey);
                                     scheduler.triggerJob(trigger.getJobKey());
-                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+
+                                    reloadTableContent();
                                 }
                             }
                         }
@@ -132,28 +134,6 @@ public class JobsWithTriggersContent extends VerticalLayout {
         table.addContainerProperty("Next Run", String.class, defaultValue);
         table.addContainerProperty("Last Run", String.class, defaultValue);
 
-        // Fill table data
-        LOGGER.debug("Loading triggers from scheduler {}", schedulerSettingsName);
-        MySchedule mySchedule = MySchedule.getInstance();
-        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        List<Trigger> triggers = scheduler.getAllTriggers();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        for (Trigger trigger : triggers) {
-            TriggerKey triggerKey = trigger.getKey();
-            JobKey jobKey = trigger.getJobKey();
-            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-            Date previousFireTime = trigger.getPreviousFireTime();
-            String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
-            Object[] row = new Object[]{
-                    triggerKeyName,
-                    jobKey.getName() + "/" + jobKey.getGroup(),
-                    trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
-                    df.format(trigger.getNextFireTime()),
-                    (previousFireTime == null) ? "" : df.format(previousFireTime)
-            };
-            table.addItem(row, triggerKeyName);
-        }
-
         // Selectable handler
         table.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -173,6 +153,34 @@ public class JobsWithTriggersContent extends VerticalLayout {
                 }
             }
         });
+
+        // Fill table data
+        reloadTableContent();
+    }
+
+    private void reloadTableContent() {
+        table.removeAllItems();
+        LOGGER.debug("Loading triggers from scheduler {}", schedulerSettingsName);
+        MySchedule mySchedule = MySchedule.getInstance();
+        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+        List<Trigger> triggers = scheduler.getAllTriggers();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (Trigger trigger : triggers) {
+            TriggerKey triggerKey = trigger.getKey();
+            JobKey jobKey = trigger.getJobKey();
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            Date nextFireTime = trigger.getNextFireTime();
+            Date previousFireTime = trigger.getPreviousFireTime();
+            String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
+            Object[] row = new Object[]{
+                    triggerKeyName,
+                    jobKey.getName() + "/" + jobKey.getGroup(),
+                    trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
+                    (nextFireTime == null) ? "" : df.format(nextFireTime),
+                    (previousFireTime == null) ? "" : df.format(previousFireTime)
+            };
+            table.addItem(row, triggerKeyName);
+        }
     }
 
     private void showJobsWithTriggersWindow() {
