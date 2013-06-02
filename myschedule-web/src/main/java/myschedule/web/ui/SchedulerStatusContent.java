@@ -1,5 +1,6 @@
 package myschedule.web.ui;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
@@ -26,7 +27,9 @@ public class SchedulerStatusContent extends VerticalLayout {
     public SchedulerStatusContent(String schedulerSettingsName) {
         this.schedulerSettingsName = schedulerSettingsName;
         initSchedulerStatusTable();
+        addComponent(new Label("")); // Just a separator
         initListenersInfoTable();
+        addComponent(new Label("")); // Just a separator
         initPluginsInfoTable();
     }
 
@@ -71,7 +74,7 @@ public class SchedulerStatusContent extends VerticalLayout {
         table.setSizeFull();
 
         Object defaultValue = null; // Not used.
-        table.addContainerProperty("Type", String.class, defaultValue);
+        table.addContainerProperty("Type/Name", String.class, defaultValue);
         table.addContainerProperty("Class", String.class, defaultValue);
         table.addContainerProperty("Info", String.class, defaultValue);
 
@@ -84,10 +87,10 @@ public class SchedulerStatusContent extends VerticalLayout {
             addTableItem(table, index++, "Scheduler Listener", listener.getClass().getName(), listener.toString());
         }
         for (TriggerListener listener : listenerManager.getTriggerListeners()) {
-            addTableItem(table, index++, "Trigger Listener", listener.getClass().getName(), listener.toString());
+            addTableItem(table, index++, "Trigger Listener/" + listener.getName(), listener.getClass().getName(), listener.toString());
         }
         for (JobListener listener : listenerManager.getJobListeners()) {
-            addTableItem(table, index++, "Job Listener", listener.getClass().getName(), listener.toString());
+            addTableItem(table, index++, "Job Listener/" + listener.getName(), listener.getClass().getName(), listener.toString());
         }
     }
 
@@ -116,7 +119,6 @@ public class SchedulerStatusContent extends VerticalLayout {
             pluginClassNames = new HashMap<String, String>();
             Properties props = mySchedule.getSchedulerSettings(schedulerSettingsName).getQuartzProperties();
             String pluginPrefix = "org.quartz.plugin.";
-            int index = 1;
             for (String name : props.stringPropertyNames()) {
                 if (!name.startsWith(pluginPrefix))
                     continue;
