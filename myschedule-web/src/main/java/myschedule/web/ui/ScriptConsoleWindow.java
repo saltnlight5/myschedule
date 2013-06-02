@@ -6,6 +6,7 @@ import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.util.ScriptingUtils;
 import myschedule.quartz.extra.util.Utils;
 import myschedule.web.SchedulerSettings;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,15 +18,16 @@ import java.util.Map;
  */
 public class ScriptConsoleWindow extends EditorWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptConsoleWindow.class);
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
     private VerticalLayout consoleContent;
     private VerticalLayout templatesContent;
     private ComboBox scriptEngineList;
     private List<String> scriptEngineNames;
     private String defaultScriptEngineName;
+    private ListSelect templatesList;
 
-    public ScriptConsoleWindow(MyScheduleUi myScheduleUi,  String schedulerSettingsName) {
+    public ScriptConsoleWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
 
@@ -36,28 +38,9 @@ public class ScriptConsoleWindow extends EditorWindow {
         initTemplatesList();
     }
 
-    private void initTemplatesList() {
-        ListSelect list = new ListSelect("Script Templates");
-        templatesContent.addComponent(list);
-
-        list.setNullSelectionAllowed(false);
-        List<String> names = mySchedule.getScriptTemplatesStore().getNames();
-        for (String name : names) {
-            list.addItem(name);
-        }
-
-        // On selection value change even handler, let's update the editor content
-        list.setImmediate(true);
-        list.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                String name = (String)event.getProperty().getValue();
-                String text = mySchedule.getScriptTemplatesStore().get(name);
-                editor.setValue(text);
-            }
-        });
-    }
-
+    /**
+     * Init content will be invoked by super constructor before other initXXX() methods.
+     */
     @Override
     protected void initContent() {
         super.initContent();
@@ -72,6 +55,28 @@ public class ScriptConsoleWindow extends EditorWindow {
         scriptConsoleContent.setExpandRatio(consoleContent, 5.0f);
         scriptConsoleContent.addComponent(templatesContent);
         scriptConsoleContent.setExpandRatio(templatesContent, 1.0f);
+    }
+
+    private void initTemplatesList() {
+        templatesList = new ListSelect("Script Templates");
+        templatesContent.addComponent(templatesList);
+
+        templatesList.setNullSelectionAllowed(false);
+        List<String> names = mySchedule.getScriptTemplatesStore().getNames();
+        for (String name : names) {
+            templatesList.addItem(name);
+        }
+
+        // On selection value change even handler, let's update the editor content
+        templatesList.setImmediate(true);
+        templatesList.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                String name = (String) event.getProperty().getValue();
+                String text = mySchedule.getScriptTemplatesStore().get(name);
+                editor.setValue(text);
+            }
+        });
     }
 
     @Override
@@ -89,18 +94,6 @@ public class ScriptConsoleWindow extends EditorWindow {
         HorizontalLayout controls = new HorizontalLayout();
         consoleContent.addComponent(controls);
 
-        Button button = new Button("Execute");
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                String scriptText = editor.getValue();
-                String scriptEngineName = (String)scriptEngineList.getValue();
-                runScriptText(scriptEngineName, scriptText);
-                myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
-            }
-        });
-        controls.addComponent(button);
-
         // Create script engine option list that default to Groovy if found.
         scriptEngineList = new ComboBox();
         scriptEngineList.setNullSelectionAllowed(false);
@@ -114,6 +107,46 @@ public class ScriptConsoleWindow extends EditorWindow {
         }
         controls.addComponent(new Label("Scripting Engine: "));
         controls.addComponent(scriptEngineList);
+
+        // Create the run script button.
+        Button button = new Button("Run Script");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                String scriptText = editor.getValue();
+                String scriptEngineName = (String) scriptEngineList.getValue();
+                runScriptText(scriptEngineName, scriptText);
+                myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+            }
+        });
+        controls.addComponent(button);
+
+        // Save as ... button - save content of editor as new template.
+        button = new Button("Save Script as Template ...");
+        controls.addComponent(button);
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                // Prompt to get a name.
+                InputPromptWindow prompt = new InputPromptWindow("Please enter a script template name (with extension)",
+                        new InputPromptWindow.InputAction() {
+                            @Override
+                            public void onInputOk(String inputValue) {
+                                // Save template content.
+                                String name = inputValue;
+                                String configText = editor.getValue();
+                                if (StringUtils.isEmpty(name))
+                                    throw new RuntimeException("Template name can not be empty.");
+                                LOGGER.debug("Saving editor content as new script template: " + name);
+                                mySchedule.getScriptTemplatesStore().add(name, configText);
+
+                                // Show it on template list
+                                templatesList.addItem(name);
+                            }
+                        });
+                myScheduleUi.addWindow(prompt);
+            }
+        });
     }
 
     private void runScriptText(String scriptEngineName, String scriptText) {

@@ -15,7 +15,7 @@ public class ScriptingUtilsTest {
         String text = "1 + 1;";
         Object result = ScriptingUtils.runScriptText("JavaScript", text, null);
         Assert.assertThat(result, Matchers.instanceOf(Number.class));
-        int resultInt = ((Number)result).intValue();
+        int resultInt = ((Number) result).intValue();
         Assert.assertThat(resultInt, Matchers.is(2));
 
         text = "importClass(Packages.myschedule.quartz.extra.job.LoggerJob);\n" +

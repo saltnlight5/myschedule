@@ -3,8 +3,10 @@ package myschedule.web.ui;
 import com.vaadin.ui.Table;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
-import org.apache.commons.lang.StringUtils;
-import org.quartz.*;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +16,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * A UI popup window to display Trigger and JobDetails information.
+ * A UI popup window to display Trigger and associated JobDetails information.
+ * This window is opened from the SchedulerScreen.
  */
-public class TriggerAndJobDetailWindow extends AbstractWindow {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TriggerAndJobDetailWindow.class);
+public class JobsWithTriggersWindow extends AbstractWindow {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobsWithTriggersWindow.class);
     private static final long serialVersionUID = 1L;
-    private MyScheduleUi myScheduleUi;
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
     private Table triggerDetailsTable;
@@ -27,7 +29,7 @@ public class TriggerAndJobDetailWindow extends AbstractWindow {
     private TriggerKey triggerKey;
     private JobKey jobDetailKey;
 
-    public TriggerAndJobDetailWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, TriggerKey triggerKey) {
+    public JobsWithTriggersWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, TriggerKey triggerKey) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
         this.triggerKey = triggerKey;
@@ -116,7 +118,7 @@ public class TriggerAndJobDetailWindow extends AbstractWindow {
     }
 
     private void addTableItem(Table table, int itemId, String name, String value) {
-        Object[] row = new Object[] { name, value };
+        Object[] row = new Object[]{name, value};
         table.addItem(row, itemId);
     }
 }

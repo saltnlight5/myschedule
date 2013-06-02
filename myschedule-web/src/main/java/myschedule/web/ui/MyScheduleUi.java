@@ -1,7 +1,9 @@
 package myschedule.web.ui;
 
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import myschedule.web.SchedulerStatus;
@@ -43,9 +45,7 @@ public class MyScheduleUi extends UI {
 
         MySchedule mySchedule = MySchedule.getInstance();
         String schedulerFullName = mySchedule.getSchedulerSettings(schedulerSettingsName).getSchedulerFullName();
-        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
-        breadcrumbBar.addSchedulerCrumb(schedulerFullName, schedulerSettingsName, status.toString());
+        breadcrumbBar.addSchedulerCrumb(schedulerFullName, schedulerSettingsName);
     }
 
     void loadDashboardScreen() {

@@ -16,7 +16,7 @@ public class UtilsTest {
         Map<String, Object> map = Utils.toMap("a", "one", "b", "two", "c", "three");
         Assert.assertThat(map.size(), Matchers.is(3));
         Assert.assertThat(map.keySet(), Matchers.hasItems("a", "b", "c"));
-        Assert.assertThat(map.values(), Matchers.hasItems((Object)"one", "two", "three"));
+        Assert.assertThat(map.values(), Matchers.hasItems((Object) "one", "two", "three"));
 
         map = Utils.toMap();
         Assert.assertThat(map.size(), Matchers.is(0));
