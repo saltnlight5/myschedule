@@ -108,7 +108,6 @@ public class DashboardScreen extends VerticalLayout {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 String settingsName = (String) event.getProperty().getValue();
-                selectedSettingsName = settingsName;
                 schedulerButtonGroup.updateSelectedSettingsName(settingsName);
             }
         });
@@ -149,12 +148,13 @@ public class DashboardScreen extends VerticalLayout {
         }
 
         void updateSelectedSettingsName(String settingsName) {
-            if (selectedSettingsName == null) {
-                disableButtons(viewDetailsButton, delete, init, start, standby, shutdown);
+            selectedSettingsName = settingsName;
+            if (settingsName == null) {
+                disableButtons(viewDetailsButton, delete, init, start, standby, shutdown, edit);
             } else {
                 enableButtons(viewDetailsButton, edit, delete);
 
-                SchedulerTemplate scheduler = mySchedule.getScheduler(selectedSettingsName);
+                SchedulerTemplate scheduler = mySchedule.getScheduler(settingsName);
                 SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
 
                 if (status == SchedulerStatus.RUNNING) {
