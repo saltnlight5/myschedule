@@ -35,6 +35,7 @@ public class SchedulerScreen extends VerticalLayout {
         VerticalLayout jobsRunningContent = new VerticalLayout();
         VerticalLayout calendarsContent = new VerticalLayout();
         VerticalLayout schedulerStatusContent = new VerticalLayout();
+        VerticalLayout xmlJobLoaderContent = new VerticalLayout();
         VerticalLayout scriptConsoleContent = new VerticalLayout();
 
         public SchedulerContent() {
@@ -46,6 +47,7 @@ public class SchedulerScreen extends VerticalLayout {
             tabSheet.addTab(jobsRunningContent, "Current Running Jobs");
             tabSheet.addTab(calendarsContent, "Calendars/Exclusions");
             tabSheet.addTab(schedulerStatusContent, "Scheduler Status");
+            tabSheet.addTab(xmlJobLoaderContent, "Xml Job Loader");
             tabSheet.addTab(scriptConsoleContent, "Script Console");
 
             tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
@@ -63,11 +65,17 @@ public class SchedulerScreen extends VerticalLayout {
                         switchCalendarsContent();
                     } else if (selectedContent == schedulerStatusContent) {
                         switchSchedulerStatusContent();
+                    } else if (selectedContent == xmlJobLoaderContent) {
+                        XmlJobLoaderWindow xmlJobLoaderWindow = new XmlJobLoaderWindow(myScheduleUi, schedulerSettingsName);
+                        myScheduleUi.addWindow(xmlJobLoaderWindow);
+
+                        // Set select tab to jobsWithTrigger view.
+                        tabSheet.setSelectedTab(jobsWithTriggersContent);
                     } else if (selectedContent == scriptConsoleContent) {
                         ScriptConsoleWindow console = new ScriptConsoleWindow(myScheduleUi, schedulerSettingsName);
                         myScheduleUi.addWindow(console);
 
-                        // script console is a popup window, and we will switch the content to jobsWithTriggersContent view.
+                        // Set select tab to jobsWithTrigger view.
                         tabSheet.setSelectedTab(jobsWithTriggersContent);
                     }
                 }

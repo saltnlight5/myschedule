@@ -58,6 +58,10 @@ public class MyScheduleSettings {
     public File getScriptTemplatesDir() {
         return new File(props.getString(SETTINGS_KEY_PREFIX + "scriptTemplatesDir"));
     }
+
+    public File getXmlJobLoaderTemplatesDir() {
+        return new File(props.getString(SETTINGS_KEY_PREFIX + "xmlJobLoaderTemplatesDir"));
+    }
 	
 	public String getDefaultSchedulerSettings() {
 		return props.getString(SETTINGS_KEY_PREFIX + "defaultSchedulerSettings");
