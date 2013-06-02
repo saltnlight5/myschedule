@@ -45,9 +45,7 @@ public class MyScheduleUi extends UI {
 
         MySchedule mySchedule = MySchedule.getInstance();
         String schedulerFullName = mySchedule.getSchedulerSettings(schedulerSettingsName).getSchedulerFullName();
-        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
-        breadcrumbBar.addSchedulerCrumb(schedulerFullName, schedulerSettingsName, status.toString());
+        breadcrumbBar.addSchedulerCrumb(schedulerFullName, schedulerSettingsName);
     }
 
     void loadDashboardScreen() {

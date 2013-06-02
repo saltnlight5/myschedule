@@ -110,7 +110,6 @@ public class DashboardScreen extends VerticalLayout {
                 String settingsName = (String) event.getProperty().getValue();
                 selectedSettingsName = settingsName;
                 schedulerButtonGroup.updateSelectedSettingsName(settingsName);
-                viewDetailsButton.setEnabled(true);
             }
         });
 
@@ -120,7 +119,10 @@ public class DashboardScreen extends VerticalLayout {
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick()) {
                     String settingsName = (String) event.getItemId();
-                    DashboardScreen.this.myScheduleUi.loadSchedulerScreen(settingsName);
+                    SchedulerTemplate scheduler = mySchedule.getScheduler(settingsName);
+                    SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
+                    if (status != SchedulerStatus.SHUTDOWN)
+                        DashboardScreen.this.myScheduleUi.loadSchedulerScreen(settingsName);
                 }
             }
         });
@@ -139,8 +141,8 @@ public class DashboardScreen extends VerticalLayout {
             addComponent(start);
             addComponent(standby);
             addComponent(shutdown);
-            addComponent(edit);
             addComponent(delete);
+            addComponent(edit);
             addComponent(createNewButton());
 
             updateSelectedSettingsName(null);
@@ -148,9 +150,9 @@ public class DashboardScreen extends VerticalLayout {
 
         void updateSelectedSettingsName(String settingsName) {
             if (selectedSettingsName == null) {
-                disableButtons(edit, delete, init, start, standby, shutdown);
+                disableButtons(viewDetailsButton, delete, init, start, standby, shutdown);
             } else {
-                enableButtons(edit, delete);
+                enableButtons(viewDetailsButton, edit, delete);
 
                 SchedulerTemplate scheduler = mySchedule.getScheduler(selectedSettingsName);
                 SchedulerStatus status = MySchedule.getSchedulerStatus(scheduler);
@@ -160,7 +162,7 @@ public class DashboardScreen extends VerticalLayout {
                     enableButtons(standby, shutdown);
                 } else if (status == SchedulerStatus.SHUTDOWN) {
                     enableButtons(init);
-                    disableButtons(start, standby, shutdown);
+                    disableButtons(viewDetailsButton, start, standby, shutdown);
                 } else if (status == SchedulerStatus.STANDBY) {
                     disableButtons(init, standby);
                     enableButtons(start, shutdown);
