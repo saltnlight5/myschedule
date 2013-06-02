@@ -30,6 +30,7 @@ public class MySchedule extends AbstractService {
     private SchedulerSettingsStore schedulerSettingsStore;
     private TemplatesStore schedulerTemplatesStore;
     private TemplatesStore scriptTemplatesStore;
+    private TemplatesStore xmlJobLoaderTemplatesStore;
 
 	private MySchedule() {
 	}
@@ -84,6 +85,11 @@ public class MySchedule extends AbstractService {
             "", // empty file extension for these templates set
             getDefaultScriptsTemplates());
         scriptTemplatesStore.init();
+
+        xmlJobLoaderTemplatesStore = new TemplatesStore(myScheduleSettings.getXmlJobLoaderTemplatesDir(),
+                ".xml",
+                getDefaultXmlJobLoaderTemplates());
+        xmlJobLoaderTemplatesStore.init();
     }
 
     private String[] getDefaultSchedulerConfigsTemplates() {
@@ -110,6 +116,14 @@ public class MySchedule extends AbstractService {
             resNamePrefix + "cronJobs.js",
             resNamePrefix + "calendarJobs.js",
             resNamePrefix + "advanceJobs.js"
+        };
+        return result;
+    }
+
+    private String[] getDefaultXmlJobLoaderTemplates() {
+        String resNamePrefix = "/myschedule/web/templates/xmljobloader/";
+        String[] result = {
+                resNamePrefix + "simpleJobs.xml",
         };
         return result;
     }
@@ -339,6 +353,10 @@ public class MySchedule extends AbstractService {
 
     public TemplatesStore getScriptTemplatesStore() {
         return scriptTemplatesStore;
+    }
+
+    public TemplatesStore getXmlJobLoaderTemplatesStore() {
+        return xmlJobLoaderTemplatesStore;
     }
 
     public MyScheduleSettings getMyScheduleSettings() {
