@@ -27,9 +27,9 @@ public class SchedulerStatusContent extends VerticalLayout {
     public SchedulerStatusContent(String schedulerSettingsName) {
         this.schedulerSettingsName = schedulerSettingsName;
         initSchedulerStatusTable();
-        addComponent(new Label("")); // Just a separator
+        addComponent(new Label(" ")); // Just a separator
         initListenersInfoTable();
-        addComponent(new Label("")); // Just a separator
+        addComponent(new Label(" ")); // Just a separator
         initPluginsInfoTable();
     }
 
