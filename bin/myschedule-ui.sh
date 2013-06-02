@@ -23,6 +23,11 @@
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)    # This dir is where this script live.
 APP_DIR=$(cd $SCRIPT_DIR/.. && pwd)      # Assume the application dir is one level up from script dir.
 
+if [[ $OS == Windows* ]]; then
+	APP_DIR="`cygpath -wa $APP_DIR`"
+	SCRIPT_DIR="`cygpath -wa $SCRIPT_DIR`"
+fi
+
 $SCRIPT_DIR/run-java \
 -Dscheduler.home=$APP_DIR \
 -Dmyschedule.settings=$SCRIPT_DIR/myschedule-settings.properties \
