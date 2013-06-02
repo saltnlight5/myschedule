@@ -2,7 +2,6 @@ package myschedule.web.ui;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 
 /**
  * A navigation bar for the main application.
