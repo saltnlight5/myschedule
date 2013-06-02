@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EditSchedulerWindow extends EditorWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(EditSchedulerWindow.class);
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
 
     public EditSchedulerWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
@@ -25,11 +25,9 @@ public class EditSchedulerWindow extends EditorWindow {
         editor.setValue(editText);
 
         Button button = new Button("Save and Restart Scheduler");
-        button.addClickListener(new Button.ClickListener()
-        {
+        button.addClickListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event)
-            {
+            public void buttonClick(Button.ClickEvent event) {
                 String configText = editor.getValue();
 
                 LOGGER.debug("Updating scheduler settings {}.", schedulerSettingsName);
