@@ -9,9 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**s
  * This content view shows the scheduler status and runtime information.
@@ -23,15 +21,17 @@ public class SchedulerStatusContent extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerStatusContent.class);
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
-    private Table table;
+    private Map<String, String> pluginClassNames;
 
     public SchedulerStatusContent(String schedulerSettingsName) {
         this.schedulerSettingsName = schedulerSettingsName;
         initSchedulerStatusTable();
+        initListenersInfoTable();
+        initPluginsInfoTable();
     }
 
-    protected void initSchedulerStatusTable() {
-        table = new Table("Scheduler Status and Runtime Information");
+    void initSchedulerStatusTable() {
+        Table table = new Table("Scheduler Status and Runtime Information");
         addComponent(table);
 
         table.setSizeFull();
@@ -41,7 +41,7 @@ public class SchedulerStatusContent extends VerticalLayout {
         table.addContainerProperty("Property Value", String.class, defaultValue);
 
         // Fill table data
-        LOGGER.debug("Loading scheduler status for %s", schedulerSettingsName);
+        LOGGER.debug("Loading scheduler status table for %s", schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         SchedulerMetaData schedulerMetaData = scheduler.getSchedulerMetaData();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -64,6 +64,83 @@ public class SchedulerStatusContent extends VerticalLayout {
         addTableItem(table, index++, "Scheduler Remote", "" + schedulerMetaData.isSchedulerRemote());
     }
 
+    void initListenersInfoTable() {
+        Table table = new Table("Listeners Information");
+        addComponent(table);
+
+        table.setSizeFull();
+
+        Object defaultValue = null; // Not used.
+        table.addContainerProperty("Type", String.class, defaultValue);
+        table.addContainerProperty("Class", String.class, defaultValue);
+        table.addContainerProperty("Info", String.class, defaultValue);
+
+        // Fill table data
+        LOGGER.debug("Loading listeners information table for %s", schedulerSettingsName);
+        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+        ListenerManager listenerManager = scheduler.getListenerManager();
+        int index = 1;
+        for (SchedulerListener listener : listenerManager.getSchedulerListeners()) {
+            addTableItem(table, index++, "Scheduler Listener", listener.getClass().getName(), listener.toString());
+        }
+        for (TriggerListener listener : listenerManager.getTriggerListeners()) {
+            addTableItem(table, index++, "Trigger Listener", listener.getClass().getName(), listener.toString());
+        }
+        for (JobListener listener : listenerManager.getJobListeners()) {
+            addTableItem(table, index++, "Job Listener", listener.getClass().getName(), listener.toString());
+        }
+    }
+
+
+    void initPluginsInfoTable() {
+        Table table = new Table("Plugins Information");
+        addComponent(table);
+
+        table.setSizeFull();
+
+        Object defaultValue = null; // Not used.
+        table.addContainerProperty("Name", String.class, defaultValue);
+        table.addContainerProperty("Class", String.class, defaultValue);
+
+        // Fill table data
+        LOGGER.debug("Loading plugins information table for %s", schedulerSettingsName);
+        Map<String, String> nameClassMap = getPluginClassNames();
+        int index = 1;
+        for (String name : nameClassMap.keySet()) {
+            addTableItem(table, index++, name, nameClassMap.get(name));
+        }
+    }
+
+    private Map<String, String> getPluginClassNames() {
+        if (pluginClassNames == null) {
+            pluginClassNames = new HashMap<String, String>();
+            Properties props = mySchedule.getSchedulerSettings(schedulerSettingsName).getQuartzProperties();
+            String pluginPrefix = "org.quartz.plugin.";
+            int index = 1;
+            for (String name : props.stringPropertyNames()) {
+                if (!name.startsWith(pluginPrefix))
+                    continue;
+
+                String pluginName = name.substring(pluginPrefix.length());
+                int pos = pluginName.indexOf(".");
+                if (pos <= 0)
+                    continue;
+
+                pluginName = pluginName.substring(0, pos);
+                if (pluginClassNames.containsKey(pluginName))
+                    continue;
+
+                String pluginClass = props.getProperty(pluginPrefix + pluginName + ".class");
+                if (pluginClass == null)
+                    continue;
+
+                pluginClassNames.put(pluginName, pluginClass);
+            }
+        }
+
+        return pluginClassNames;
+    }
+
     private String toDateStr(Date date, SimpleDateFormat df) {
         if (date == null)
             return "";
@@ -73,6 +150,11 @@ public class SchedulerStatusContent extends VerticalLayout {
 
     private void addTableItem(Table table, int itemId, String name, String value) {
         Object[] row = new Object[]{name, value};
+        table.addItem(row, itemId);
+    }
+
+    private void addTableItem(Table table, int itemId, String name, String value1, String value2) {
+        Object[] row = new Object[]{name, value1, value2};
         table.addItem(row, itemId);
     }
 }
