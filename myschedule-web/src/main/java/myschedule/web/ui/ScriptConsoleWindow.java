@@ -122,7 +122,7 @@ public class ScriptConsoleWindow extends EditorWindow {
         controls.addComponent(button);
 
         // Save as ... button - save content of editor as new template.
-        button = new Button("Save Config as Template ...");
+        button = new Button("Save Script as Template ...");
         controls.addComponent(button);
         button.addClickListener(new Button.ClickListener() {
             @Override
