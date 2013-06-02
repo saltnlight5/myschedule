@@ -4,9 +4,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
-import myschedule.web.SchedulerStatus;
 
 /**
  * The MySchedule UI application entry point. This UI holds the main application and reference to top level UI

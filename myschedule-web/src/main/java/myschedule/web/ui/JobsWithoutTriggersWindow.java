@@ -5,13 +5,10 @@ import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
