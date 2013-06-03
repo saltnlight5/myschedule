@@ -1,5 +1,6 @@
 package myschedule.web.ui;
 
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Button;
@@ -35,6 +36,7 @@ public class JobsWithTriggersContent extends VerticalLayout {
     HorizontalLayout tableRowActionButtonsGroup;
     Table table;
     String selectedTriggerKeyName;
+    Button pauseOrResumeButton;
 
     public JobsWithTriggersContent(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
@@ -56,13 +58,22 @@ public class JobsWithTriggersContent extends VerticalLayout {
         tableRowActionButtonsGroup.addComponent(createDeleteButton());
         tableRowActionButtonsGroup.addComponent(createRunItNowButton());
 
-        disableToolbarIfNeeded();
+        pauseOrResumeButton = createPauseOrResumeButton();
+        tableRowActionButtonsGroup.addComponent(pauseOrResumeButton);
+
+        disableToolbarIfNeeded(Trigger.TriggerState.NORMAL.toString());
     }
 
-    private void disableToolbarIfNeeded() {
+    private void disableToolbarIfNeeded(String triggerStateName) {
         if (selectedTriggerKeyName == null) {
             tableRowActionButtonsGroup.setEnabled(false);
         } else {
+            // Check and ensure Pause/Resume button has the right label.
+            Trigger.TriggerState triggerState = Trigger.TriggerState.valueOf(triggerStateName);
+            if (triggerState == Trigger.TriggerState.PAUSED)
+                pauseOrResumeButton.setCaption("Resume");
+            else
+                pauseOrResumeButton.setCaption("Pause");
             tableRowActionButtonsGroup.setEnabled(true);
         }
     }
@@ -136,6 +147,36 @@ public class JobsWithTriggersContent extends VerticalLayout {
         return button;
     }
 
+    private Button createPauseOrResumeButton() {
+        Button button = new Button("Pause");
+        button.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                final String caption = event.getButton().getCaption();
+                String msg = caption.equals("Pause") ?
+                        "Are you sure to pause it now?" :
+                        "Are you sure to resume it now?";
+                ConfirmDialog.show(myScheduleUi, msg,
+                        new ConfirmDialog.Listener() {
+                            public void onClose(ConfirmDialog dialog) {
+                                if (dialog.isConfirmed()) {
+                                    TriggerKey triggerKey = getSelectedTriggerKey();
+                                    SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+                                    if (caption.equals("Pause")) {
+                                        scheduler.pauseTrigger(triggerKey);
+                                    } else {
+                                        scheduler.resumeTrigger(triggerKey);
+                                    }
+                                    reloadTableContent();
+                                }
+                            }
+                        }
+                );
+            }
+        });
+        return button;
+    }
+
     private void initJobsTable() {
         table = new Table();
         addComponent(table);
@@ -150,13 +191,18 @@ public class JobsWithTriggersContent extends VerticalLayout {
         table.addContainerProperty("Type", String.class, defaultValue);
         table.addContainerProperty("Next Run", String.class, defaultValue);
         table.addContainerProperty("Last Run", String.class, defaultValue);
+        table.addContainerProperty("Status", String.class, defaultValue);
 
         // Selectable handler
         table.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 selectedTriggerKeyName = (String) event.getProperty().getValue();
-                disableToolbarIfNeeded();
+                Item item = table.getItem(selectedTriggerKeyName);
+                if (item != null) {
+                    String triggerStateName = (String)item.getItemProperty("Status").getValue();
+                    disableToolbarIfNeeded(triggerStateName);
+                }
             }
         });
 
@@ -189,12 +235,14 @@ public class JobsWithTriggersContent extends VerticalLayout {
             Date nextFireTime = trigger.getNextFireTime();
             Date previousFireTime = trigger.getPreviousFireTime();
             String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
+            Trigger.TriggerState triggerState = scheduler.getTriggerState(triggerKey);
             Object[] row = new Object[]{
                     triggerKeyName,
                     jobKey.getName() + "/" + jobKey.getGroup(),
                     trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
                     (nextFireTime == null) ? "" : df.format(nextFireTime),
-                    (previousFireTime == null) ? "" : df.format(previousFireTime)
+                    (previousFireTime == null) ? "" : df.format(previousFireTime),
+                    triggerState.toString()
             };
             table.addItem(row, triggerKeyName);
         }
