@@ -50,22 +50,53 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         LOGGER.debug("Loading triggerKey={} from scheduler {}", triggerKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         Trigger trigger = scheduler.getTrigger(triggerKey);
+        Trigger.TriggerState triggerState = scheduler.getTriggerState(triggerKey);
         jobDetailKey = trigger.getJobKey();
         SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
         String misfireInstructionName = getMisfireInstructionName(trigger);
+        String extraInfo;
+        if (trigger instanceof CronTrigger) {
+            CronTrigger t = ((CronTrigger)trigger);
+            extraInfo = "Cron=" + t.getCronExpression() +
+            ", TimeZone=" + t.getTimeZone().getDisplayName();
+        } else if (trigger instanceof SimpleTrigger) {
+            SimpleTrigger t = ((SimpleTrigger)trigger);
+            extraInfo = "RepeatCount=" + t.getRepeatCount() +
+                    ", RepeatInterval=" + t.getRepeatInterval() +
+                    ", TimesTriggered=" + t.getTimesTriggered();
+        } else if (trigger instanceof CalendarIntervalTrigger) {
+            CalendarIntervalTrigger t = ((CalendarIntervalTrigger)trigger);
+            extraInfo = "RepeatInterval=" + t.getRepeatInterval() +
+                    ", RepeatIntervalUnit=" + t.getRepeatIntervalUnit() +
+                    ", TimesTriggered=" + t.getTimesTriggered() +
+                    ", TimeZone=" + t.getTimeZone().getDisplayName();
+        } else if (trigger instanceof DailyTimeIntervalTrigger) {
+            DailyTimeIntervalTrigger t = ((DailyTimeIntervalTrigger)trigger);
+            extraInfo = "StartTimeOfDay=" + t.getStartTimeOfDay() +
+                    ", EndTimeOfDay=" + t.getEndTimeOfDay() +
+                    ", DaysOfWeek=" + t.getDaysOfWeek() +
+                    ", RepeatIntervalUnit=" + t.getRepeatCount() +
+                    ", RepeatInterval=" + t.getRepeatInterval() +
+                    ", RepeatIntervalUnit=" + t.getRepeatIntervalUnit() +
+                    ", TimesTriggered=" + t.getTimesTriggered();
+        } else {
+            extraInfo = "";
+        }
 
         int index = 1;
         addTableItem(table, index++, "Trigger Key", "" + triggerKey);
+        addTableItem(table, index++, "State", toStr(triggerState));
         addTableItem(table, index++, "Description", "" + toStr(trigger.getDescription()));
         addTableItem(table, index++, "Class", "" + trigger.getClass());
         addTableItem(table, index++, "Misfire Instruction", misfireInstructionName);
         addTableItem(table, index++, "Priority", "" + trigger.getPriority());
-        addTableItem(table, index++, "Calendar Name", "" + toStr(trigger.getCalendarName()));
+        addTableItem(table, index++, "CalendarName", "" + toStr(trigger.getCalendarName()));
         addTableItem(table, index++, "PreviousFireTime", toDateStr(trigger.getPreviousFireTime(), df));
         addTableItem(table, index++, "NextFireTime", toDateStr(trigger.getNextFireTime(), df));
         addTableItem(table, index++, "FinalFireTime", toDateStr(trigger.getFinalFireTime(), df));
         addTableItem(table, index++, "StartTime", toDateStr(trigger.getStartTime(), df));
         addTableItem(table, index++, "EndTime", toDateStr(trigger.getEndTime(), df));
+        addTableItem(table, index++, "Extra Info", "" + extraInfo);
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(trigger.getJobDataMap()));
 
         // Shrink the table height to fit data rows size.
@@ -91,6 +122,10 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         addTableItem(table, index++, "Job Key", "" + jobDetailKey);
         addTableItem(table, index++, "Description", "" + toStr(job.getDescription()));
         addTableItem(table, index++, "Class", "" + job.getJobClass());
+        addTableItem(table, index++, "ConcurrentExecutionDisallowed", "" + toStr(job.isConcurrentExectionDisallowed()));
+        addTableItem(table, index++, "Durable", "" + toStr(job.isDurable()));
+        addTableItem(table, index++, "PersistJobDataAfterExecution", "" + toStr(job.isPersistJobDataAfterExecution()));
+        addTableItem(table, index++, "RequestRecovery", "" + toStr(job.requestsRecovery()));
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(job.getJobDataMap()));
 
         // Shrink the table height to fit data rows size.

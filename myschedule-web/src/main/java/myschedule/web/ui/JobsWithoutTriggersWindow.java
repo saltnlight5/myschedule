@@ -49,6 +49,10 @@ public class JobsWithoutTriggersWindow extends AbstractWindow {
         addTableItem(table, index++, "Job Key", "" + jobDetailKey);
         addTableItem(table, index++, "Description", "" + toStr(job.getDescription()));
         addTableItem(table, index++, "Class", "" + job.getJobClass());
+        addTableItem(table, index++, "ConcurrentExecutionDisallowed", "" + toStr(job.isConcurrentExectionDisallowed()));
+        addTableItem(table, index++, "Durable", "" + toStr(job.isDurable()));
+        addTableItem(table, index++, "PersistJobDataAfterExecution", "" + toStr(job.isPersistJobDataAfterExecution()));
+        addTableItem(table, index++, "RequestRecovery", "" + toStr(job.requestsRecovery()));
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(job.getJobDataMap()));
 
         // Shrink the table height to fit data rows size.
