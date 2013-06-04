@@ -1,6 +1,7 @@
 package myschedule.web.ui;
 
 import com.vaadin.ui.Table;
+import myschedule.quartz.extra.QuartzExtraUtils;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.quartz.*;
@@ -51,12 +52,13 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         Trigger trigger = scheduler.getTrigger(triggerKey);
         jobDetailKey = trigger.getJobKey();
         SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
+        String misfireInstructionName = getMisfireInstructionName(trigger);
 
         int index = 1;
         addTableItem(table, index++, "Trigger Key", "" + triggerKey);
         addTableItem(table, index++, "Description", "" + toStr(trigger.getDescription()));
         addTableItem(table, index++, "Class", "" + trigger.getClass());
-        addTableItem(table, index++, "Misfire Instruction", "" + trigger.getMisfireInstruction());
+        addTableItem(table, index++, "Misfire Instruction", misfireInstructionName);
         addTableItem(table, index++, "Priority", "" + trigger.getPriority());
         addTableItem(table, index++, "Calendar Name", "" + toStr(trigger.getCalendarName()));
         addTableItem(table, index++, "PreviousFireTime", toDateStr(trigger.getPreviousFireTime(), df));
@@ -143,5 +145,49 @@ public class JobsWithTriggersWindow extends AbstractWindow {
     private void addTableItem(Table table, int itemId, String name, String value) {
         Object[] row = new Object[]{name, value};
         table.addItem(row, itemId);
+    }
+
+    private String getMisfireInstructionName(Trigger trigger) {
+        int code = trigger.getMisfireInstruction();
+
+        if (code == Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY) {
+            return "MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY(" + code + ")";
+        } else if (code == Trigger.MISFIRE_INSTRUCTION_SMART_POLICY) {
+            return "MISFIRE_INSTRUCTION_SMART_POLICY(" + code + ")";
+        }
+
+        if (trigger instanceof SimpleTrigger) {
+            if (code == SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW) {
+                return "MISFIRE_INSTRUCTION_FIRE_NOW(" + code + ")";
+            } else if (code == SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT) {
+                return "MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT(" + code + ")";
+            } else if (code == SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT) {
+                return "MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT(" + code + ")";
+            } else if (code == SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT) {
+                return "MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT(" + code + ")";
+            } else if (code == SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT) {
+                return "MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT(" + code + ")";
+            }
+        } else if (trigger instanceof CronTrigger) {
+            if (code == CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING) {
+                return "MISFIRE_INSTRUCTION_DO_NOTHING(" + code + ")";
+            } else if (code == CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) {
+                return "MISFIRE_INSTRUCTION_FIRE_ONCE_NOW(" + code + ")";
+            }
+        } else if (trigger instanceof CalendarIntervalTrigger) {
+            if (code == CalendarIntervalTrigger.MISFIRE_INSTRUCTION_DO_NOTHING) {
+                return "MISFIRE_INSTRUCTION_DO_NOTHING(" + code + ")";
+            } else if (code == CalendarIntervalTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) {
+                return "MISFIRE_INSTRUCTION_FIRE_ONCE_NOW(" + code + ")";
+            }
+        } else if (trigger instanceof DailyTimeIntervalTrigger) {
+            if (code == DailyTimeIntervalTrigger.MISFIRE_INSTRUCTION_DO_NOTHING) {
+                return "MISFIRE_INSTRUCTION_DO_NOTHING(" + code + ")";
+            } else if (code == DailyTimeIntervalTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) {
+                return "MISFIRE_INSTRUCTION_FIRE_ONCE_NOW(" + code + ")";
+            }
+        }
+
+        return "MISFIRE_INSTRUCTION_?(" + code + ")";
     }
 }
