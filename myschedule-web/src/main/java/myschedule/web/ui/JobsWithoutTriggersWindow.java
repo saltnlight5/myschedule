@@ -21,7 +21,6 @@ public class JobsWithoutTriggersWindow extends AbstractWindow {
     private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
-    private Table jobDetailTable;
     private JobKey jobDetailKey;
 
     public JobsWithoutTriggersWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, JobKey jobDetailKey) {
@@ -33,11 +32,8 @@ public class JobsWithoutTriggersWindow extends AbstractWindow {
     }
 
     protected void initJobDetailTable() {
-        jobDetailTable = new Table("JobDetail Information");
-        jobDetailTable.setSizeFull();
-        content.addComponent(jobDetailTable);
-
-        Table table = jobDetailTable; // Use short and local var.
+        Table table = new Table("JobDetail Information");
+        content.addComponent(table);
         table.setSizeFull();
 
         Object defaultValue = null; // Not used.
@@ -48,7 +44,6 @@ public class JobsWithoutTriggersWindow extends AbstractWindow {
         LOGGER.debug("Loading jobDetail={} from scheduler {}", jobDetailKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         JobDetail job = scheduler.getJobDetail(jobDetailKey);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         int index = 1;
         addTableItem(table, index++, "Job Key", "" + jobDetailKey);

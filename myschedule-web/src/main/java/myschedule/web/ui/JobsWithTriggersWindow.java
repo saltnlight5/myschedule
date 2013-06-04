@@ -3,15 +3,13 @@ package myschedule.web.ui;
 import com.vaadin.ui.Table;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -21,11 +19,10 @@ import java.util.TreeMap;
  */
 public class JobsWithTriggersWindow extends AbstractWindow {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobsWithTriggersWindow.class);
+    private static final String DATETIME_FORMAT = "EEE yyyy-MM-dd HH:mm:ss";
     private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
-    private Table triggerDetailsTable;
-    private Table jobDetailTable;
     private TriggerKey triggerKey;
     private JobKey jobDetailKey;
 
@@ -35,14 +32,13 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         this.triggerKey = triggerKey;
         initTriggerDetailsTable();
         initJobDetailTable();
+        initNexFireTimesPreviewTable();
         setCaption("Trigger and JobDetail Properties");
     }
 
     protected void initTriggerDetailsTable() {
-        triggerDetailsTable = new Table("Trigger Information");
-        content.addComponent(triggerDetailsTable);
-
-        Table table = triggerDetailsTable; // Use short and local var.
+        Table table = new Table("Trigger Information");
+        content.addComponent(table);
         table.setSizeFull();
 
         Object defaultValue = null; // Not used.
@@ -54,7 +50,7 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         Trigger trigger = scheduler.getTrigger(triggerKey);
         jobDetailKey = trigger.getJobKey();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 
         int index = 1;
         addTableItem(table, index++, "Trigger Key", "" + triggerKey);
@@ -72,11 +68,8 @@ public class JobsWithTriggersWindow extends AbstractWindow {
     }
 
     protected void initJobDetailTable() {
-        jobDetailTable = new Table("JobDetail Information");
-        jobDetailTable.setSizeFull();
-        content.addComponent(jobDetailTable);
-
-        Table table = jobDetailTable; // Use short and local var.
+        Table table = new Table("JobDetail Information");
+        content.addComponent(table);
         table.setSizeFull();
 
         Object defaultValue = null; // Not used.
@@ -87,13 +80,43 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         LOGGER.debug("Loading jobDetail={} from scheduler {}", jobDetailKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         JobDetail job = scheduler.getJobDetail(jobDetailKey);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 
         int index = 1;
         addTableItem(table, index++, "Job Key", "" + jobDetailKey);
         addTableItem(table, index++, "Description", "" + toStr(job.getDescription()));
         addTableItem(table, index++, "Class", "" + job.getJobClass());
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(job.getJobDataMap()));
+    }
+
+    protected void initNexFireTimesPreviewTable() {
+        Table table = new Table("Preview of Trigger's Next FireTimes");
+        content.addComponent(table);
+        table.setSizeFull();
+
+        Object defaultValue = null; // Not used.
+        table.addContainerProperty("Trigger Next FireTime", String.class, defaultValue);
+        table.addContainerProperty("Calendar exclusion", String.class, defaultValue);
+
+        // Fill table data
+        LOGGER.debug("Loading nextFireTimes preview from triggerKey={} scheduler={}", triggerKey, schedulerSettingsName);
+        SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
+        Trigger trigger = scheduler.getTrigger(triggerKey);
+        int maxCount = mySchedule.getMyScheduleSettings().getNumOfFiretimesPreview();
+        List<Date> nextFireTimes = scheduler.getNextFireTimes(trigger, new Date(), maxCount);
+
+        int index = 1;
+        SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
+        for (Date nextFireTime : nextFireTimes) {
+            String exclusion = "";
+            String calName = trigger.getCalendarName();
+            if (calName != null) {
+                Calendar calendar = scheduler.getCalendar(calName);
+                if (!calendar.isTimeIncluded(nextFireTime.getTime()))
+                    exclusion = "EXCLUDED BY CALENDAR: " + calName;
+            }
+            addTableItem(table, index++, toDateStr(nextFireTime, df), exclusion);
+        }
     }
 
     private String toMapStr(Map map) {
