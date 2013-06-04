@@ -68,6 +68,9 @@ public class SchedulerStatusContent extends VerticalLayout {
         addTableItem(table, index++, "JobStore Clustered", "" + schedulerMetaData.isJobStoreClustered());
         addTableItem(table, index++, "JobStore Supports Persistence", "" + schedulerMetaData.isJobStoreSupportsPersistence());
         addTableItem(table, index++, "Scheduler Remote", "" + schedulerMetaData.isSchedulerRemote());
+
+        // Shrink the table height to fit data rows size.
+        table.setPageLength(table.size());
     }
 
     void initListenersInfoTable() {
@@ -95,6 +98,9 @@ public class SchedulerStatusContent extends VerticalLayout {
         for (JobListener listener : listenerManager.getJobListeners()) {
             addTableItem(table, index++, "Job Listener/" + listener.getName(), listener.getClass().getName(), listener.toString());
         }
+
+        // Shrink the table height to fit data rows size.
+        table.setPageLength(table.size());
     }
 
 
@@ -115,6 +121,9 @@ public class SchedulerStatusContent extends VerticalLayout {
         for (String name : nameClassMap.keySet()) {
             addTableItem(table, index++, name, nameClassMap.get(name));
         }
+
+        // Shrink the table height to fit data rows size.
+        table.setPageLength(table.size());
     }
 
     private Map<String, String> getPluginClassNames() {

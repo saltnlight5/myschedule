@@ -50,6 +50,9 @@ public class JobsWithoutTriggersWindow extends AbstractWindow {
         addTableItem(table, index++, "Description", "" + toStr(job.getDescription()));
         addTableItem(table, index++, "Class", "" + job.getJobClass());
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(job.getJobDataMap()));
+
+        // Shrink the table height to fit data rows size.
+        table.setPageLength(table.size());
     }
 
     private String toMapStr(Map map) {
