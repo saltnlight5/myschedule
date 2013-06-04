@@ -70,4 +70,8 @@ public class MyScheduleSettings {
     public String getDefaultScriptEngineName() {
         return props.getString(SETTINGS_KEY_PREFIX + "defaultScriptEngineName");
     }
+
+    public int getNumOfFiretimesPreview() {
+        return props.getInt(SETTINGS_KEY_PREFIX + "numOfFiretimesPreview");
+    }
 }
