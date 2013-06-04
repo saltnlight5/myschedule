@@ -35,9 +35,9 @@ public class CalendarsContent extends VerticalLayout {
         Object defaultValue = null; // Not used.
         table.addContainerProperty("Name", String.class, defaultValue);
         table.addContainerProperty("Class", String.class, defaultValue);
-        table.addContainerProperty("Info", String.class, defaultValue);
         table.addContainerProperty("Description", String.class, defaultValue);
         table.addContainerProperty("Base Calendar", String.class, defaultValue);
+        table.addContainerProperty("Extra Info", String.class, defaultValue);
 
         // Fill table data
         LOGGER.debug("Loading calendars status table for %s", schedulerSettingsName);
@@ -50,9 +50,9 @@ public class CalendarsContent extends VerticalLayout {
             Object[] row = new Object[]{
                     name,
                     calendar.getClass().getName(),
-                    calendar.toString(),
                     calendar.getDescription(),
-                    calendar.getBaseCalendar()};
+                    calendar.getBaseCalendar(),
+                    calendar.toString()};
             table.addItem(row, index++);
         }
     }
