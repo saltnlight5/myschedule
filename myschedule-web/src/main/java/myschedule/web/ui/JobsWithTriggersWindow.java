@@ -67,6 +67,9 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         addTableItem(table, index++, "StartTime", toDateStr(trigger.getStartTime(), df));
         addTableItem(table, index++, "EndTime", toDateStr(trigger.getEndTime(), df));
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(trigger.getJobDataMap()));
+
+        // Shrink the table height to fit data rows size.
+        table.setPageLength(table.size());
     }
 
     protected void initJobDetailTable() {
@@ -89,6 +92,9 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         addTableItem(table, index++, "Description", "" + toStr(job.getDescription()));
         addTableItem(table, index++, "Class", "" + job.getJobClass());
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(job.getJobDataMap()));
+
+        // Shrink the table height to fit data rows size.
+        table.setPageLength(table.size());
     }
 
     protected void initNexFireTimesPreviewTable() {
@@ -119,6 +125,9 @@ public class JobsWithTriggersWindow extends AbstractWindow {
             }
             addTableItem(table, index++, toDateStr(nextFireTime, df), exclusion);
         }
+
+        // Shrink the table height to fit data rows size.
+        table.setPageLength(table.size());
     }
 
     private String toMapStr(Map map) {
