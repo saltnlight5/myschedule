@@ -25,7 +25,6 @@ public class SchedulerStatusContent extends VerticalLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerStatusContent.class);
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
-    private Map<String, String> pluginClassNames;
 
     public SchedulerStatusContent(String schedulerSettingsName) {
         this.schedulerSettingsName = schedulerSettingsName;
@@ -116,7 +115,7 @@ public class SchedulerStatusContent extends VerticalLayout {
 
         // Fill table data
         LOGGER.debug("Loading plugins information table for %s", schedulerSettingsName);
-        Map<String, String> nameClassMap = getPluginClassNames();
+        Map<String, String> nameClassMap = mySchedule.getSchedulerSettings(schedulerSettingsName).getPluginClassNames();
         int index = 1;
         for (String name : nameClassMap.keySet()) {
             addTableItem(table, index++, name, nameClassMap.get(name));
@@ -124,35 +123,6 @@ public class SchedulerStatusContent extends VerticalLayout {
 
         // Shrink the table height to fit data rows size.
         table.setPageLength(table.size());
-    }
-
-    private Map<String, String> getPluginClassNames() {
-        if (pluginClassNames == null) {
-            pluginClassNames = new HashMap<String, String>();
-            Properties props = mySchedule.getSchedulerSettings(schedulerSettingsName).getQuartzProperties();
-            String pluginPrefix = "org.quartz.plugin.";
-            for (String name : props.stringPropertyNames()) {
-                if (!name.startsWith(pluginPrefix))
-                    continue;
-
-                String pluginName = name.substring(pluginPrefix.length());
-                int pos = pluginName.indexOf(".");
-                if (pos <= 0)
-                    continue;
-
-                pluginName = pluginName.substring(0, pos);
-                if (pluginClassNames.containsKey(pluginName))
-                    continue;
-
-                String pluginClass = props.getProperty(pluginPrefix + pluginName + ".class");
-                if (pluginClass == null)
-                    continue;
-
-                pluginClassNames.put(pluginName, pluginClass);
-            }
-        }
-
-        return pluginClassNames;
     }
 
     private String toDateStr(Date date, SimpleDateFormat df) {

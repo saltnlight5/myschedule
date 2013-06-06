@@ -36,6 +36,7 @@ public class SchedulerScreen extends VerticalLayout {
         VerticalLayout calendarsContent = new VerticalLayout();
         VerticalLayout schedulerStatusContent = new VerticalLayout();
         VerticalLayout xmlJobLoaderContent = new VerticalLayout();
+        VerticalLayout jobsHistoriesContent = new VerticalLayout();
         VerticalLayout scriptConsoleContent = new VerticalLayout();
 
         public SchedulerContent() {
@@ -48,6 +49,7 @@ public class SchedulerScreen extends VerticalLayout {
             tabSheet.addTab(calendarsContent, "Calendars/Exclusions");
             tabSheet.addTab(schedulerStatusContent, "Scheduler Status");
             tabSheet.addTab(xmlJobLoaderContent, "Xml Job Loader");
+            tabSheet.addTab(jobsHistoriesContent, "Job Histories");
             tabSheet.addTab(scriptConsoleContent, "Script Console");
 
             tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
@@ -71,6 +73,8 @@ public class SchedulerScreen extends VerticalLayout {
 
                         // Set select tab to jobsWithTrigger view.
                         tabSheet.setSelectedTab(jobsWithTriggersContent);
+                    } else if (selectedContent == jobsHistoriesContent) {
+                        switchJobsHistoriesContent();
                     } else if (selectedContent == scriptConsoleContent) {
                         ScriptConsoleWindow console = new ScriptConsoleWindow(myScheduleUi, schedulerSettingsName);
                         myScheduleUi.addWindow(console);
@@ -95,6 +99,7 @@ public class SchedulerScreen extends VerticalLayout {
             jobsRunningContent.removeAllComponents();
             schedulerStatusContent.removeAllComponents();
             calendarsContent.removeAllComponents();
+            jobsHistoriesContent.removeAllComponents();
         }
 
         void switchJobsWithoutTriggersContent() {
@@ -106,6 +111,7 @@ public class SchedulerScreen extends VerticalLayout {
             jobsRunningContent.removeAllComponents();
             schedulerStatusContent.removeAllComponents();
             calendarsContent.removeAllComponents();
+            jobsHistoriesContent.removeAllComponents();
         }
 
         void switchJobsRunningContent() {
@@ -117,6 +123,7 @@ public class SchedulerScreen extends VerticalLayout {
             jobsWithTriggersContent.removeAllComponents();
             schedulerStatusContent.removeAllComponents();
             calendarsContent.removeAllComponents();
+            jobsHistoriesContent.removeAllComponents();
         }
 
         void switchCalendarsContent() {
@@ -128,6 +135,7 @@ public class SchedulerScreen extends VerticalLayout {
             jobsWithTriggersContent.removeAllComponents();
             jobsRunningContent.removeAllComponents();
             schedulerStatusContent.removeAllComponents();
+            jobsHistoriesContent.removeAllComponents();
         }
 
         void switchSchedulerStatusContent() {
@@ -139,6 +147,19 @@ public class SchedulerScreen extends VerticalLayout {
             jobsWithTriggersContent.removeAllComponents();
             jobsRunningContent.removeAllComponents();
             calendarsContent.removeAllComponents();
+            jobsHistoriesContent.removeAllComponents();
+        }
+
+        void switchJobsHistoriesContent() {
+            jobsHistoriesContent.removeAllComponents();
+            jobsHistoriesContent.addComponent(new JobsHistoriesContent(myScheduleUi, schedulerSettingsName));
+
+            // Clean up other tab resources
+            jobsWithoutTriggersContent.removeAllComponents();
+            jobsWithTriggersContent.removeAllComponents();
+            jobsRunningContent.removeAllComponents();
+            calendarsContent.removeAllComponents();
+            schedulerStatusContent.removeAllComponents();
         }
     }
 }

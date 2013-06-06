@@ -74,4 +74,8 @@ public class MyScheduleSettings {
     public int getNumOfFiretimesPreview() {
         return props.getInt(SETTINGS_KEY_PREFIX + "numOfFiretimesPreview");
     }
+
+    public String getJdbcSchedulerHistoryPluginContextKey() {
+        return props.getString(SETTINGS_KEY_PREFIX + "JdbcSchedulerHistoryPluginContextKey");
+    }
 }

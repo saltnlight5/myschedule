@@ -666,4 +666,20 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
             }
         }
     }
+
+    public String getInsertSql() {
+        return insertSql;
+    }
+
+    public String getQuerySql() {
+        return querySql;
+    }
+
+    public String getDeleteSql() {
+        return deleteSql;
+    }
+
+    public String getSchedulerContextKey() {
+        return schedulerContextKey;
+    }
 }
