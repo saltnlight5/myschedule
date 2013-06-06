@@ -2,6 +2,8 @@ package myschedule.web;
 
 import myschedule.quartz.extra.util.Props;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -22,6 +24,7 @@ public class SchedulerSettings {
     public static final String DEFAULT_SCHEDULER_NAME = "DefaultQuartzScheduler";
     public static final String DEFAULT_SCHEDULER_ID = "NON_CLUSTERED";
     private String schedulerFullName;
+    private Map<String, String> pluginClassNames;
 
 	public SchedulerSettings(String settingsName, String settingsUrl) {
         this.settingsName = settingsName;
@@ -82,6 +85,38 @@ public class SchedulerSettings {
      * unwanted side effect. Default to true. */
     public boolean isPreventAutoStartShutdownRemoteScheduler() {
         return props.getBoolean(SETTINGS_KEY_PREFIX + "preventAutoStartRemoteScheduler", true);
+    }
+
+    /**
+     * @return a Map of all keys for Quartz plugin class names.
+     */
+    public Map<String, String> getPluginClassNames() {
+        if (pluginClassNames == null) {
+            pluginClassNames = new HashMap<String, String>();
+            Properties props = getQuartzProperties();
+            String pluginPrefix = "org.quartz.plugin.";
+            for (String name : props.stringPropertyNames()) {
+                if (!name.startsWith(pluginPrefix))
+                    continue;
+
+                String pluginName = name.substring(pluginPrefix.length());
+                int pos = pluginName.indexOf(".");
+                if (pos <= 0)
+                    continue;
+
+                pluginName = pluginName.substring(0, pos);
+                if (pluginClassNames.containsKey(pluginName))
+                    continue;
+
+                String pluginClass = props.getProperty(pluginPrefix + pluginName + ".class");
+                if (pluginClass == null)
+                    continue;
+
+                pluginClassNames.put(pluginName, pluginClass);
+            }
+        }
+
+        return pluginClassNames;
     }
 
     @Override
