@@ -2,6 +2,7 @@ package myschedule.web;
 
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.quartz.extra.util.ClasspathURLStreamHandler;
+import myschedule.quartz.extra.util.Props;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.impl.RemoteScheduler;
@@ -11,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This is the central manager of the MySchedule application. There is only one instance of MySchedule application, 
@@ -360,5 +358,38 @@ public class MySchedule extends AbstractService {
 
     public MyScheduleSettings getMyScheduleSettings() {
         return myScheduleSettings;
+    }
+
+    public String getMyScheduleVersion() {
+        String res = "META-INF/maven/myschedule/myschedule-web-config/pom.properties";
+        String version = readPropertyValueFromResource(res, "version");
+        return version;
+    }
+
+    public String getQuartzVersion() {
+        String res = "META-INF/maven/org.quartz-scheduler/quartz/pom.properties";
+        String version = readPropertyValueFromResource(res, "version");
+        return version;
+    }
+
+    /** Return key found from resource properties file, or empty string. */
+    private String readPropertyValueFromResource(String resourceName, String key) {
+        String result = "";
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            InputStream inStream = classLoader.getResourceAsStream(resourceName);
+            if (inStream != null) {
+                try {
+                    Props props = new Props();
+                    props.load(inStream);
+                    result = props.getString(key);
+                } finally {
+                    IOUtils.closeQuietly(inStream);
+                }
+            }
+        } catch (RuntimeException e) {
+            LOGGER.debug("Not able to get " + key + " from {}", resourceName, e); // Use DEBUG on purpose so not to be noisy.
+        }
+        return result;
     }
 }
