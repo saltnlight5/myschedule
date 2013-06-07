@@ -1,9 +1,8 @@
 package myschedule.web.ui;
 
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import myschedule.web.MySchedule;
 
 /**
@@ -28,12 +27,47 @@ public class MyScheduleUi extends UI {
         breadcrumbBar = new BreadcrumbBar(this);
         currentScreen = new DashboardScreen(this);
 
+        HorizontalLayout headerContent = createHeader();
+        HorizontalLayout footerContent = creatFooter();
+
         // Setup content
         content.setImmediate(true);
         content.setMargin(true);
+        content.addComponent(headerContent);
+        content.setComponentAlignment(headerContent, Alignment.MIDDLE_CENTER);
         content.addComponent(breadcrumbBar);
         content.addComponent(currentScreen);
+        content.addComponent(footerContent);
+        content.setComponentAlignment(footerContent, Alignment.BOTTOM_RIGHT);
         setContent(content);
+    }
+
+    private HorizontalLayout createHeader() {
+        Label headerLabel = new Label("<h1>MySchedule - Quartz Scheduler Manager</h1>", ContentMode.HTML);
+
+        HorizontalLayout result = new HorizontalLayout();
+        result.addComponent(headerLabel);
+        return result;
+    }
+
+    private HorizontalLayout creatFooter() {
+        String myScheduleAppName = "myschedule";
+        MySchedule mySchedule = MySchedule.getInstance();
+        String version = mySchedule.getMyScheduleVersion();
+        if (!version.equals(""))
+            myScheduleAppName += "-" + version;
+
+        String quartzAppName = "quartz";
+        version = mySchedule.getQuartzVersion();
+        if (!version.equals(""))
+            quartzAppName += "-" + version;
+
+        String poweredByText = "Powered by " + myScheduleAppName + " with " + quartzAppName;
+        Label poweredByLabel = new Label(poweredByText, ContentMode.PREFORMATTED);
+
+        HorizontalLayout result = new HorizontalLayout();
+        result.addComponent(poweredByLabel);
+        return result;
     }
 
     void loadSchedulerScreen(String schedulerSettingsName) {
