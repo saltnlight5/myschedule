@@ -100,8 +100,12 @@ public class JobsRunningContent extends VerticalLayout {
                                     TriggerKey triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                                     Trigger trigger = scheduler.getTrigger(triggerKey);
-                                    scheduler.interrupt(trigger.getJobKey());
-                                    myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+                                    try {
+                                        scheduler.interrupt(trigger.getJobKey());
+                                        myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
+                                    } catch (RuntimeException e) {
+                                        myScheduleUi.addWindow(new ErrorWindow(e));
+                                    }
                                 }
                             }
                         }

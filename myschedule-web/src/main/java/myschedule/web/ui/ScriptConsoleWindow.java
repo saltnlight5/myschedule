@@ -7,6 +7,7 @@ import myschedule.quartz.extra.util.ScriptingUtils;
 import myschedule.quartz.extra.util.Utils;
 import myschedule.web.SchedulerSettings;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,6 +154,10 @@ public class ScriptConsoleWindow extends EditorWindow {
         // Bind scheduler as implicit variable
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         Map<String, Object> bindings = Utils.toMap("scheduler", scheduler);
-        ScriptingUtils.runScriptText(scriptEngineName, scriptText, bindings);
+        try {
+            ScriptingUtils.runScriptText(scriptEngineName, scriptText, bindings);
+        } catch (RuntimeException e) {
+            myScheduleUi.addWindow(new ErrorWindow(e));
+        }
     }
 }

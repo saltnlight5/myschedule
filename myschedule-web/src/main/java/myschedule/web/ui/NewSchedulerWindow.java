@@ -101,7 +101,11 @@ public class NewSchedulerWindow extends EditorWindow {
                 String configText = editor.getValue();
 
                 LOGGER.debug("Creating new scheduler settings.");
-                mySchedule.addSchedulerSettings(configText);
+                try {
+                    mySchedule.addSchedulerSettings(configText);
+                } catch (RuntimeException e) {
+                    myScheduleUi.addWindow(new ErrorWindow(e));
+                }
 
                 close(); // This is a popup, so close it self upon completion.
                 myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the new scheduler.

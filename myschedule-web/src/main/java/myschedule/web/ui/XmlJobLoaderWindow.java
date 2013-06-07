@@ -103,6 +103,8 @@ public class XmlJobLoaderWindow extends EditorWindow {
                 try {
                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                     QuartzExtraUtils.scheduleXmlSchedulingData(inStream, scheduler.getScheduler());
+                } catch (RuntimeException e) {
+                    myScheduleUi.addWindow(new ErrorWindow(e));
                 } finally {
                     IOUtils.closeQuietly(inStream);
                 }
