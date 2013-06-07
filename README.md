@@ -6,6 +6,8 @@ For more information, see project home at http://code.google.com/p/myschedule
 
 This is a developer README file. For end user README file, see myschedule-package/README.md
 
+Author: Zemian Deng <saltnlight5@gmail.com>
+
 # Getting the source code
 
 	bash> hg clone https://code.google.com/p/myschedule
