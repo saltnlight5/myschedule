@@ -1,20 +1,11 @@
 package myschedule.web.ui;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import myschedule.quartz.extra.JdbcSchedulerHistoryPlugin;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
-import org.apache.commons.lang.StringUtils;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.dialogs.ConfirmDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -90,13 +81,7 @@ public class JobsHistoriesContent extends VerticalLayout {
         if (plugin == null) {
             String msg = "No JdbcSchedulerHistoryPlugin detected! Please configure this plugin to record scheduler " +
                     "events and job histories in your scheduler config settings.";
-            ConfirmDialog.show(myScheduleUi, msg,
-                    new ConfirmDialog.Listener() {
-                        public void onClose(ConfirmDialog dialog) {
-                            // Do nothing.
-                        }
-                    }
-            );
+            Notification.show("WARNING", msg, Notification.Type.WARNING_MESSAGE);
 
             // End this method here.
             return;

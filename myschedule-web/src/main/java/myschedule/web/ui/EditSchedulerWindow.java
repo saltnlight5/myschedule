@@ -31,9 +31,13 @@ public class EditSchedulerWindow extends EditorWindow {
                 String configText = editor.getValue();
 
                 LOGGER.debug("Updating scheduler settings {}.", schedulerSettingsName);
-                mySchedule.updateSchedulerSettings(schedulerSettingsName, configText);
-                myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
-                close(); // This is a popup, so close it self upon completion.
+                try {
+                    mySchedule.updateSchedulerSettings(schedulerSettingsName, configText);
+                    myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
+                    close(); // This is a popup, so close it self upon completion.
+                } catch (RuntimeException e) {
+                    myScheduleUi.addWindow(new ErrorWindow(e));
+                }
             }
         });
         content.addComponent(button);
