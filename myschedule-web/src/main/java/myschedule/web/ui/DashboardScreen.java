@@ -228,14 +228,13 @@ public class DashboardScreen extends VerticalLayout {
             button.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    SchedulerSettings settings = mySchedule.getSchedulerSettings(selectedSettingsName);
-                    mySchedule.createScheduler(settings);
-                    Exception problem = settings.getSchedulerException();
-                    if (problem != null) {
-                        myScheduleUi.addWindow(new ErrorWindow(problem));
-                    } else {
-                        myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
+                    try {
+                        SchedulerSettings settings = mySchedule.getSchedulerSettings(selectedSettingsName);
+                        mySchedule.createScheduler(settings);
+                    } catch (Exception e) {
+                        myScheduleUi.addWindow(new ErrorWindow(e));
                     }
+                    myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
                 }
             });
             return button;
@@ -248,10 +247,10 @@ public class DashboardScreen extends VerticalLayout {
                 public void buttonClick(Button.ClickEvent event) {
                     try {
                         mySchedule.getScheduler(selectedSettingsName).start();
-                        myScheduleUi.loadDashboardScreen();
                     } catch (RuntimeException e) {
                         myScheduleUi.addWindow(new ErrorWindow(e));
                     }
+                    myScheduleUi.loadDashboardScreen();
                 }
             });
             return button;
@@ -268,10 +267,10 @@ public class DashboardScreen extends VerticalLayout {
                                     if (dialog.isConfirmed()) {
                                         try {
                                             mySchedule.getScheduler(selectedSettingsName).standby();
-                                            myScheduleUi.loadDashboardScreen();
                                         } catch (RuntimeException e) {
                                             myScheduleUi.addWindow(new ErrorWindow(e));
                                         }
+                                        myScheduleUi.loadDashboardScreen();
                                     }
                                 }
                             }
