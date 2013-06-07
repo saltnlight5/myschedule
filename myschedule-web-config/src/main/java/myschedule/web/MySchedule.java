@@ -29,6 +29,8 @@ public class MySchedule extends AbstractService {
     private TemplatesStore schedulerTemplatesStore;
     private TemplatesStore scriptTemplatesStore;
     private TemplatesStore xmlJobLoaderTemplatesStore;
+    private String myScheduleVersion;
+    private String quartzVersion;
 
 	private MySchedule() {
 	}
@@ -361,15 +363,19 @@ public class MySchedule extends AbstractService {
     }
 
     public String getMyScheduleVersion() {
-        String res = "META-INF/maven/myschedule/myschedule-web-config/pom.properties";
-        String version = readPropertyValueFromResource(res, "version");
-        return version;
+        if (myScheduleVersion == null) {
+            String res = "META-INF/maven/myschedule/myschedule-web-config/pom.properties";
+            myScheduleVersion = readPropertyValueFromResource(res, "version");
+        }
+        return myScheduleVersion;
     }
 
     public String getQuartzVersion() {
-        String res = "META-INF/maven/org.quartz-scheduler/quartz/pom.properties";
-        String version = readPropertyValueFromResource(res, "version");
-        return version;
+        if (quartzVersion == null) {
+            String res = "META-INF/maven/org.quartz-scheduler/quartz/pom.properties";
+            quartzVersion = readPropertyValueFromResource(res, "version");
+        }
+        return quartzVersion;
     }
 
     /** Return key found from resource properties file, or empty string. */
