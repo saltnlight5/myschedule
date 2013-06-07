@@ -1,5 +1,3 @@
-= Current development (default branch) =
-
 == 3.0.0_q21-SNAPSHOT ==
 
   * Issue#104 - New release format to reflect new development work
@@ -10,18 +8,26 @@
   	  ** myschedule-3.x - Vaddin UI + Quartz 2 stable branch
   	  ** myschedule-2.x - JQuery UI + Quartz 2 stable branch
   	  ** myschedule-1.x - JQuery UI + Quartz 1 stable branch
-  * Issue#109 - Add new MySchedule manager class for web layer management
-  	** SubTask: Clean up old MVC request processing classes
-  	** SubTask: Updated util: Props and ClasspathURLStreamHandler
-  	** SubTask: Added MySchedule, SchedulerSettings, MyScheduleSettings
-  	** SubTask: Added SchedulerSettingsStore and TemplateStore
+  * Issue#109 - Add new `MySchedule` manager class for web layer management
+  	** Sub Task: Clean up old MVC request processing classes
+  	** Sub Task: Updated util: `Props` and `ClasspathURLStreamHandler`
+  	** Sub Task: Added `MySchedule`, `SchedulerSettings`, `MyScheduleSettings`
+  	** Sub Task: Added `SchedulerSettingsStore` and `TemplateStore`
   * Issue#9 - Use Vaadin UI instead of jQuery/Table
-  	** SubTask: Design UI top toolbar with navigational buttons
-  	** SubTask: Design UI new scheduler config screen
-  	** SubTask: Design UI dashboard/scheduler table screen
-  	** SubTask: Design UI job/trigger table screen
-  	** SubTask: Design UI script console screen
+  	** Sub Task: Design UI top toolbar with navigational buttons
+  	** Sub Task: Design UI new scheduler config screen
+  	** Sub Task: Design UI dashboard/scheduler table screen
+  	** Sub Task: Design UI job/trigger table screen
+  	** Sub Task: Design UI script console screen
+  * Issue#110 -	Improve and refactor a `ScriptingUtils` that used in various places
+  * Issue#111 - Upgrade Quartz to 2.1.7
+  * Issue#112 - Use single project packaging distribution zip
+    ** Added bin/myschedule-ui.sh to startup a embedded web server!
+    ** Added war/myschedule.war distribution format.
+    ** Added lib/myschedule-quartz-extra.jar distribution format.
   * Issue#108 - Create editable templates on UI
+  * Issue#117 - Added interrupt button to running jobs.
+  * Issue#113 - Migrate 2.x UI features to 3.0
 
 = Stable Releases =
 
