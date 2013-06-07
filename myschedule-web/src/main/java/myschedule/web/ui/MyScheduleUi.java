@@ -21,7 +21,7 @@ public class MyScheduleUi extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         // Setup main page
-        getPage().setTitle("MySchedule - UI Manager for Quartz Scheduler");
+        getPage().setTitle("MySchedule - Quartz Scheduler Manager");
 
         // Create components
         content = new VerticalLayout();
