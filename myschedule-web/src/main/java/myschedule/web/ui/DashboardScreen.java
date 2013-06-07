@@ -228,9 +228,13 @@ public class DashboardScreen extends VerticalLayout {
             button.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    SchedulerSettings settings = mySchedule.getSchedulerSettings(selectedSettingsName);
-                    mySchedule.createScheduler(settings);
-                    myScheduleUi.loadDashboardScreen();
+                    try {
+                        SchedulerSettings settings = mySchedule.getSchedulerSettings(selectedSettingsName);
+                        mySchedule.createScheduler(settings);
+                        myScheduleUi.loadDashboardScreen();
+                    } catch (RuntimeException e) {
+                        myScheduleUi.addWindow(new ErrorWindow(e));
+                    }
                 }
             });
             return button;
@@ -241,8 +245,12 @@ public class DashboardScreen extends VerticalLayout {
             button.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    mySchedule.getScheduler(selectedSettingsName).start();
-                    myScheduleUi.loadDashboardScreen();
+                    try {
+                        mySchedule.getScheduler(selectedSettingsName).start();
+                        myScheduleUi.loadDashboardScreen();
+                    } catch (RuntimeException e) {
+                        myScheduleUi.addWindow(new ErrorWindow(e));
+                    }
                 }
             });
             return button;
@@ -257,8 +265,12 @@ public class DashboardScreen extends VerticalLayout {
                             new ConfirmDialog.Listener() {
                                 public void onClose(ConfirmDialog dialog) {
                                     if (dialog.isConfirmed()) {
-                                        mySchedule.getScheduler(selectedSettingsName).standby();
-                                        myScheduleUi.loadDashboardScreen();
+                                        try {
+                                            mySchedule.getScheduler(selectedSettingsName).standby();
+                                            myScheduleUi.loadDashboardScreen();
+                                        } catch (RuntimeException e) {
+                                            myScheduleUi.addWindow(new ErrorWindow(e));
+                                        }
                                     }
                                 }
                             }
@@ -277,8 +289,12 @@ public class DashboardScreen extends VerticalLayout {
                             new ConfirmDialog.Listener() {
                                 public void onClose(ConfirmDialog dialog) {
                                     if (dialog.isConfirmed()) {
-                                        mySchedule.shutdownScheduler(selectedSettingsName);
-                                        myScheduleUi.loadDashboardScreen();
+                                        try {
+                                            mySchedule.shutdownScheduler(selectedSettingsName);
+                                            myScheduleUi.loadDashboardScreen();
+                                        } catch (RuntimeException e) {
+                                            myScheduleUi.addWindow(new ErrorWindow(e));
+                                        }
                                     }
                                 }
                             }
