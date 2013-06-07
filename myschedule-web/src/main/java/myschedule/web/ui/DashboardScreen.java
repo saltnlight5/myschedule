@@ -228,12 +228,13 @@ public class DashboardScreen extends VerticalLayout {
             button.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    try {
-                        SchedulerSettings settings = mySchedule.getSchedulerSettings(selectedSettingsName);
-                        mySchedule.createScheduler(settings);
-                        myScheduleUi.loadDashboardScreen();
-                    } catch (RuntimeException e) {
-                        myScheduleUi.addWindow(new ErrorWindow(e));
+                    SchedulerSettings settings = mySchedule.getSchedulerSettings(selectedSettingsName);
+                    mySchedule.createScheduler(settings);
+                    Exception problem = settings.getSchedulerException();
+                    if (problem != null) {
+                        myScheduleUi.addWindow(new ErrorWindow(problem));
+                    } else {
+                        myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
                     }
                 }
             });
