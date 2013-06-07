@@ -3,6 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <!--
+    We needed this module separated from the myschedule-web just so the Winstone standalone server can load these
+    classes properly. It looks like whatever is loaded by the ContextListener must be presented in classloader outside
+    of the WEB-INF/lib. This sounds like a strange behavior from Winstone, but we will workaround by simply
+    creating this module and package it as jar dependency that Winstone loads it properly for now.
+    -->
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>myschedule-web-config</artifactId>
 
