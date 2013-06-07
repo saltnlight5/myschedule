@@ -160,7 +160,12 @@ public class MySchedule extends AbstractService {
 		// Create and init all schedulersMap using schedulerSettingsMap
 		for (SchedulerSettings settings : schedulerSettingsMap.values()) {
 			if (settings.isAutoCreate()) {
-                createScheduler(settings);
+                // We need to try/catch the error and continue so other schedulers may be initialize.
+                try {
+                    createScheduler(settings);
+                } catch (Exception e) {
+                    LOGGER.error("Failed to init and create scheduler instance {}", settings.getSettingsName(), e);
+                }
             }
 		}
 	}
@@ -168,37 +173,30 @@ public class MySchedule extends AbstractService {
 	/** Create and init scheduler and add to scheduler map. */
 	public void createScheduler(SchedulerSettings settings) {
         String settingsName = settings.getSettingsName();
-        try {
-            // If scheduler already exists, shut it down first
-            if (schedulersMap.containsKey(settingsName)) {
-                LOGGER.warn("Scheduler settings {} has already been initialized. Will shutdown first.", settingsName);
-                shutdownScheduler(settingsName);
-            }
 
-            // Now create the scheduler
-            // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
-            LOGGER.info("Creating new Quartz scheduler from {}", settings);
-            SchedulerTemplate scheduler = new SchedulerTemplate(settings.getQuartzProperties());
-            schedulersMap.put(settingsName, scheduler);
-            settings.setSchedulerException(null);
-            LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
+        // If scheduler already exists, shut it down first
+        if (schedulersMap.containsKey(settingsName)) {
+            LOGGER.warn("Scheduler settings {} has already been initialized. Will shutdown first.", settingsName);
+            shutdownScheduler(settingsName);
+        }
 
-            // Be user friendly and prevent unwanted remote scheduler auto/start effect if possible.
-            if (scheduler.getScheduler() instanceof RemoteScheduler &&
+        // Now create the scheduler
+        // Initialize Quartz scheduler. If configured, the Quartz will try to connect to DB upon init!
+        LOGGER.info("Creating new Quartz scheduler from {}", settings);
+        SchedulerTemplate scheduler = new SchedulerTemplate(settings.getQuartzProperties());
+        schedulersMap.put(settingsName, scheduler);
+        LOGGER.info("Quartz scheduler created with settings name {}", settingsName);
+
+        // Be user friendly and prevent unwanted remote scheduler auto/start effect if possible.
+        if (scheduler.getScheduler() instanceof RemoteScheduler &&
                 settings.isPreventAutoStartShutdownRemoteScheduler()) {
-                LOGGER.info("Scheduler settings={} has configured not to auto start on remote scheduler.", settingsName);
-            } else {
-                if (settings.isAutoStart()) {
-                    LOGGER.debug("Auto starting scheduler with settings={}", settingsName);
-                    scheduler.start();
-                    LOGGER.info("Auto started scheduler per configured settings={}", settingsName);
-                }
+            LOGGER.info("Scheduler settings={} has configured not to auto start on remote scheduler.", settingsName);
+        } else {
+            if (settings.isAutoStart()) {
+                LOGGER.debug("Auto starting scheduler with settings={}", settingsName);
+                scheduler.start();
+                LOGGER.info("Auto started scheduler per configured settings={}", settingsName);
             }
-        } catch (RuntimeException e) {
-            // Even if Quartz scheduler failed to load, we will allow the MySchedule to continue, so we simply log
-            // the error and continue.
-            LOGGER.error("Failed to init scheduler with settings {}", settingsName, e);
-            settings.setSchedulerException(e);
         }
 	}
 

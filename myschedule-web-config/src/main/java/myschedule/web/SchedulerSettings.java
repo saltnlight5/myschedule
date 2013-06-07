@@ -19,8 +19,6 @@ public class SchedulerSettings {
     private String settingsName;
 	private String settingsUrl;
 	private Props props;
-	/** If scheduler failed to init, then we will save the exception, else it's null. */
-	private Exception schedulerException;
     public static final String DEFAULT_SCHEDULER_NAME = "DefaultQuartzScheduler";
     public static final String DEFAULT_SCHEDULER_ID = "NON_CLUSTERED";
     private String schedulerFullName;
@@ -49,13 +47,6 @@ public class SchedulerSettings {
         }
         return schedulerFullName;
     }
-
-	public void setSchedulerException(Exception schedulerException) {
-		this.schedulerException = schedulerException;
-	}
-	public Exception getSchedulerException() {
-		return schedulerException;
-	}
 	
 	public String getSettingsUrl() {
 		return settingsUrl;
