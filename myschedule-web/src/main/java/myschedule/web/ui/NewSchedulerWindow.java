@@ -101,14 +101,14 @@ public class NewSchedulerWindow extends EditorWindow {
                 String configText = editor.getValue();
 
                 LOGGER.debug("Creating new scheduler settings.");
-                try {
-                    mySchedule.addSchedulerSettings(configText);
-                } catch (RuntimeException e) {
-                    myScheduleUi.addWindow(new ErrorWindow(e));
+                SchedulerSettings settings = mySchedule.addSchedulerSettings(configText);
+                Exception problem = settings.getSchedulerException();
+                if (problem != null) {
+                    myScheduleUi.addWindow(new ErrorWindow(problem));
+                } else {
+                    close(); // This is a popup, so close it self upon completion.
                 }
-
-                close(); // This is a popup, so close it self upon completion.
-                myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the new scheduler.
+                myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
             }
         });
         controls.addComponent(button);

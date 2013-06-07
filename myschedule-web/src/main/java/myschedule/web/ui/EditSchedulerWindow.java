@@ -29,15 +29,15 @@ public class EditSchedulerWindow extends EditorWindow {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 String configText = editor.getValue();
-
                 LOGGER.debug("Updating scheduler settings {}.", schedulerSettingsName);
-                try {
-                    mySchedule.updateSchedulerSettings(schedulerSettingsName, configText);
-                    myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
+                mySchedule.updateSchedulerSettings(schedulerSettingsName, configText);
+                Exception problem = mySchedule.getSchedulerSettings(schedulerSettingsName).getSchedulerException();
+                if (problem != null) {
+                    myScheduleUi.addWindow(new ErrorWindow(problem));
+                } else {
                     close(); // This is a popup, so close it self upon completion.
-                } catch (RuntimeException e) {
-                    myScheduleUi.addWindow(new ErrorWindow(e));
                 }
+                myScheduleUi.loadDashboardScreen(); // Now refresh the dashboard for the updated scheduler.
             }
         });
         content.addComponent(button);
