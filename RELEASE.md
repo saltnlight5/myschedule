@@ -1,4 +1,4 @@
-== 3.0.0.2-SNAPSHOT ==
+== 3.0.0.2 (2013-06-08) ==
 
   * Issue#104 - New release format to reflect new development work
   	** We now use (3.0.0.2) as version label, where last number is the Quartz's major version.
