@@ -1,7 +1,7 @@
-== 3.0.0.2 (2013-06-08) ==
+== 3.2.0.0 (2013-06-08) ==
 
   * Issue#104 - New release format to reflect new development work
-  	** We now use (3.0.0.2) as version label, where last number is the Quartz's major version.
+  	** We now use (3.2.0.0) as version label, where second number is the Quartz's major version.
   * Issue#105 - Prepare myschedule-3.0.0 for new development branch of work
   	** Re-org repository with the follwing named branches (they should be maintained as stable branches)
   	  ** default - latest changes
