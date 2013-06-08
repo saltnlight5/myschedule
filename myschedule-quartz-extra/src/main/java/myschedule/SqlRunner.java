@@ -1,6 +1,7 @@
 package myschedule;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.FileReader;
 import java.sql.Connection;
@@ -46,6 +47,8 @@ public class SqlRunner {
                 }
 
                 for (String sqlStatement : sqlText.split(sqlSep)) {
+                    if (StringUtils.isBlank(sqlStatement))
+                        continue;
                     log("Executing sql: " + sqlStatement);
                     boolean result = statement.execute(sqlStatement);
                     log("Sql result=" + result);
