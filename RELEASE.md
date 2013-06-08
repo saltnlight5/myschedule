@@ -1,7 +1,7 @@
-== 3.0.0_q21-SNAPSHOT ==
+== 3.0.0.2-SNAPSHOT ==
 
   * Issue#104 - New release format to reflect new development work
-  	** We now use (3.0.0_q21-SNAPSHOT) as version label.
+  	** We now use (3.0.0.2) as version label, where last number is the Quartz's major version.
   * Issue#105 - Prepare myschedule-3.0.0 for new development branch of work
   	** Re-org repository with the follwing named branches (they should be maintained as stable branches)
   	  ** default - latest changes
