@@ -16,6 +16,7 @@ public class MyScheduleUi extends UI {
     private VerticalLayout content;
     private BreadcrumbBar breadcrumbBar;
     private Component currentScreen;
+    private HorizontalLayout currentScreenWrapper;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -30,13 +31,18 @@ public class MyScheduleUi extends UI {
         HorizontalLayout headerContent = createHeader();
         HorizontalLayout footerContent = creatFooter();
 
+        // We needed a wrapper to remain in place so when refreshing currentScreen, the footer won't get messed up.
+        currentScreenWrapper = new HorizontalLayout();
+        currentScreenWrapper.setSizeFull();
+        currentScreenWrapper.addComponent(currentScreen);
+
         // Setup content
         content.setImmediate(true);
         content.setMargin(true);
         content.addComponent(headerContent);
         content.setComponentAlignment(headerContent, Alignment.MIDDLE_CENTER);
         content.addComponent(breadcrumbBar);
-        content.addComponent(currentScreen);
+        content.addComponent(currentScreenWrapper);
         content.addComponent(footerContent);
         content.setComponentAlignment(footerContent, Alignment.BOTTOM_RIGHT);
         setContent(content);
@@ -71,9 +77,9 @@ public class MyScheduleUi extends UI {
     }
 
     void loadSchedulerScreen(String schedulerSettingsName) {
-        content.removeComponent(currentScreen);
+        currentScreenWrapper.removeComponent(currentScreen);
         currentScreen = new SchedulerScreen(this, schedulerSettingsName);
-        content.addComponent(currentScreen);
+        currentScreenWrapper.addComponent(currentScreen);
 
         MySchedule mySchedule = MySchedule.getInstance();
         String schedulerFullName = mySchedule.getSchedulerSettings(schedulerSettingsName).getSchedulerFullName();
@@ -81,9 +87,9 @@ public class MyScheduleUi extends UI {
     }
 
     void loadDashboardScreen() {
-        content.removeComponent(currentScreen);
+        currentScreenWrapper.removeComponent(currentScreen);
         currentScreen = new DashboardScreen(this);
-        content.addComponent(currentScreen);
+        currentScreenWrapper.addComponent(currentScreen);
 
         breadcrumbBar.removeSchedulerCrumb();
     }
