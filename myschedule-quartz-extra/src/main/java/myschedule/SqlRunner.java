@@ -28,6 +28,7 @@ public class SqlRunner {
         String user = System.getProperty("user", "quartz");
         String password = System.getProperty("password", "quartz123");
         String argsMode = System.getProperty("argsMode", "sql"); // sql or file
+        String sqlSep = System.getProperty("sqlSep", ";"); // SQL statement separator
 
         log("Loading JDBC driver " + driver);
         Class.forName(driver);
@@ -43,9 +44,12 @@ public class SqlRunner {
                     log("Reading file: " + arg);
                     sqlText = IOUtils.toString(new FileReader(arg));
                 }
-                log("Executing sql: " + sqlText);
-                boolean result = statement.execute(sqlText);
-                log("Sql result=" + result);
+
+                for (String sqlStatement : sqlText.split(sqlSep)) {
+                    log("Executing sql: " + sqlStatement);
+                    boolean result = statement.execute(sqlStatement);
+                    log("Sql result=" + result);
+                }
             }
             statement.close();
             log("Done.");
