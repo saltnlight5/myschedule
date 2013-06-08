@@ -78,7 +78,7 @@ public class JobsWithTriggersContent extends VerticalLayout {
     }
 
     private int getTriggerStateFromName(String triggerStateName) {
-        if("NORMAL".equals(triggerStateName))
+        if("NORMAL".equals(triggerStateName) || "NONE".equals(triggerStateName))
             return Trigger.STATE_NORMAL;
         else if("BLOCKED".equals(triggerStateName))
             return Trigger.STATE_BLOCKED;
@@ -86,14 +86,12 @@ public class JobsWithTriggersContent extends VerticalLayout {
             return Trigger.STATE_COMPLETE;
         else if("ERROR".equals(triggerStateName))
             return Trigger.STATE_ERROR;
-        else if("NONE".equals(triggerStateName))
-            return Trigger.STATE_NONE;
         else if("PAUSED".equals(triggerStateName))
             return Trigger.STATE_PAUSED;
         return -1;
     }
     private String getTriggerStateName(int triggerState) {
-        if(triggerState == Trigger.STATE_NORMAL)
+        if(triggerState == Trigger.STATE_NORMAL || triggerState == Trigger.STATE_NONE)
             return "NORMAL";
         else if(triggerState == Trigger.STATE_BLOCKED)
             return "BLOCKED";
@@ -101,8 +99,6 @@ public class JobsWithTriggersContent extends VerticalLayout {
             return "COMPLETE";
         else if(triggerState == Trigger.STATE_ERROR)
             return "ERROR";
-        else if(triggerState == Trigger.STATE_NONE)
-            return "NONE";
         else if(triggerState == Trigger.STATE_PAUSED)
             return "PAUSED";
         return "UNKONWN";
