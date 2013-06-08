@@ -3,6 +3,7 @@ package myschedule.quartz.extra.job;
 import myschedule.quartz.extra.util.ProcessUtils;
 import myschedule.quartz.extra.util.ProcessUtils.BackgroundProcess;
 import org.quartz.*;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class OsCommandJob implements Job, InterruptableJob {
 
     private static final Logger logger = LoggerFactory.getLogger(OsCommandJob.class);
     private BackgroundProcess bgProcess;
-    private JobKey jobKey;
+    private Key jobKey;
 
     @Override
     public void interrupt() throws UnableToInterruptJobException {

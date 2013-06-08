@@ -1,27 +1,37 @@
 package myschedule.quartz.extra;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import org.quartz.Calendar;
-import org.quartz.*;
-import org.quartz.Trigger.TriggerState;
+import org.quartz.CronTrigger;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobListener;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerContext;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerListener;
+import org.quartz.SchedulerMetaData;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.TriggerListener;
 import org.quartz.impl.StdSchedulerFactory;
-import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
-import org.quartz.spi.MutableTrigger;
-import org.quartz.spi.OperableTrigger;
-
-import java.util.*;
-
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * A template to simplify creation and scheduling of Quartz jobs. This class can be very handy as one stop shop for
- * simple scheduling needs, and yet you still have full power of the original org.quartz.Scheduler API equivalent
- * available.
- * <p/>
- * <p>This class also shields away Quartz's "checked" SchedulerException into an "unchecked" QuartzRuntimeException,
+ * simple scheduling needs, and yet you still have full power of the original org.quartz.Scheduler API equivalent 
+ * available. 
+ *
+ * <p>This class also shields away Quartz's "checked" SchedulerException into an "unchecked" QuartzRuntimeException, 
  * so you can be more productive.
  *
  * @author Zemian Deng
@@ -33,7 +43,7 @@ public class SchedulerTemplate {
     public SchedulerTemplate() {
         try {
             scheduler = StdSchedulerFactory.getDefaultScheduler();
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
             throw new QuartzRuntimeException("Failed to create scheduler.", e);
         }
     }
@@ -42,7 +52,7 @@ public class SchedulerTemplate {
         try {
             StdSchedulerFactory factory = new StdSchedulerFactory(quartzConfigFilename);
             scheduler = factory.getScheduler();
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
             throw new QuartzRuntimeException("Failed to create scheduler using config file: " +
                     quartzConfigFilename, e);
         }
@@ -52,7 +62,7 @@ public class SchedulerTemplate {
         try {
             StdSchedulerFactory factory = new StdSchedulerFactory(props);
             scheduler = factory.getScheduler();
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
             throw new QuartzRuntimeException("Failed to create scheduler using custom properties.", e);
         }
     }
@@ -69,33 +79,148 @@ public class SchedulerTemplate {
     // ==============================================================
     // Wrap The org.quartz.Scheduler methods with "uncheck" exception
     // ==============================================================
+
+    public void triggerJobWithVolatileTrigger(String jobName, String groupName, JobDataMap data) {
+        try {
+            scheduler.triggerJobWithVolatileTrigger(jobName, groupName, data);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void triggerJobWithVolatileTrigger(String jobName, String groupName) {
+        try {
+            scheduler.triggerJobWithVolatileTrigger(jobName, groupName);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public List<?> getSchedulerListeners() {
+        try {
+            return scheduler.getSchedulerListeners();
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public Set<?> getJobListenerNames() {
+        try {
+            return scheduler.getJobListenerNames();
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public Set<?> getTriggerListenerNames() {
+        try {
+            return scheduler.getTriggerListenerNames();
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public JobListener getJobListener(String name) {
+        try {
+            return scheduler.getJobListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public TriggerListener getTriggerListener(String name) {
+        try {
+            return scheduler.getTriggerListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public List<?> getGlobalJobListeners() {
+        try {
+            return scheduler.getGlobalJobListeners();
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+
+    }
+
+    public List<?> getGlobalTriggerListeners() {
+        try {
+            return scheduler.getGlobalTriggerListeners();
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+
+    }
+
+    public boolean removeGlobalJobListener(String name) {
+        try {
+            return scheduler.removeGlobalJobListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public boolean removeGlobalTriggerListener(String name) {
+        try {
+            return scheduler.removeGlobalTriggerListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public boolean removeJobListener(String name) {
+        try {
+            return scheduler.removeJobListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public boolean removeTriggerListener(String name) {
+        try {
+            return scheduler.removeTriggerListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public TriggerListener getGlobalTriggerListener(String name) {
+        try {
+            return scheduler.getGlobalTriggerListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public JobListener getGlobalJobListener(String name) {
+        try {
+            return scheduler.getGlobalJobListener(name);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public String[] getTriggerNames(String groupName) {
+        try {
+            return scheduler.getTriggerNames(groupName);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void triggerJob(String jobName, String groupName, JobDataMap data) {
+        try {
+            scheduler.triggerJob(jobName, groupName, data);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
     public void addCalendar(String calName, Calendar calendar, boolean replace, boolean updateTriggers) {
         try {
             scheduler.addCalendar(calName, calendar, replace, updateTriggers);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public boolean checkExists(JobKey jobKey) {
-        try {
-            return scheduler.checkExists(jobKey);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public boolean checkExists(TriggerKey triggerKey) {
-        try {
-            return scheduler.checkExists(triggerKey);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public void clear() {
-        try {
-            scheduler.clear();
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -117,17 +242,9 @@ public class SchedulerTemplate {
         }
     }
 
-    public boolean deleteJob(JobKey jobKey) {
+    public boolean deleteJob(String jobName, String groupName) {
         try {
-            return scheduler.deleteJob(jobKey);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public boolean deleteJobs(List<JobKey> jobKeys) {
-        try {
-            return scheduler.deleteJobs(jobKeys);
+            return scheduler.deleteJob(jobName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -141,25 +258,17 @@ public class SchedulerTemplate {
         }
     }
 
-    public JobDetail getJobDetail(JobKey jobKey) {
+    public JobDetail getJobDetail(String jobName, String jobGroup) {
         try {
-            return scheduler.getJobDetail(jobKey);
+            return scheduler.getJobDetail(jobName, jobGroup);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public List<String> getJobGroupNames() {
+    public String[] getJobGroupNames() {
         try {
             return scheduler.getJobGroupNames();
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public Set<JobKey> getJobKeys(GroupMatcher<JobKey> groupMatcher) {
-        try {
-            return scheduler.getJobKeys(groupMatcher);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -173,7 +282,7 @@ public class SchedulerTemplate {
         }
     }
 
-    public Set<String> getPausedTriggerGroups() {
+    public Set<?> getPausedTriggerGroups() {
         try {
             return scheduler.getPausedTriggerGroups();
         } catch (SchedulerException e) {
@@ -181,15 +290,15 @@ public class SchedulerTemplate {
         }
     }
 
-    public Trigger getTrigger(TriggerKey triggerKey) {
+    public Trigger getTrigger(String triggerName, String triggerGroup) {
         try {
-            return scheduler.getTrigger(triggerKey);
+            return scheduler.getTrigger(triggerName, triggerGroup);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public List<String> getTriggerGroupNames() {
+    public String[] getTriggerGroupNames() {
         try {
             return scheduler.getTriggerGroupNames();
         } catch (SchedulerException e) {
@@ -197,41 +306,25 @@ public class SchedulerTemplate {
         }
     }
 
-    public Set<TriggerKey> getTriggerKeys(GroupMatcher<TriggerKey> groupMatcher) {
+    public int getTriggerState(String triggerName, String triggerGroup) {
         try {
-            return scheduler.getTriggerKeys(groupMatcher);
+            return scheduler.getTriggerState(triggerName, triggerGroup);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public TriggerState getTriggerState(TriggerKey triggerKey) {
+    public Trigger[] getTriggersOfJob(String jobName, String groupName) {
         try {
-            return scheduler.getTriggerState(triggerKey);
+            return scheduler.getTriggersOfJob(jobName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public List<? extends Trigger> getTriggersOfJob(JobKey jobKey) {
+    public boolean interrupt(String jobName, String groupName) {
         try {
-            return scheduler.getTriggersOfJob(jobKey);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public boolean interrupt(JobKey jobKey) {
-        try {
-            return scheduler.interrupt(jobKey);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public boolean interrupt(String fireInstanceId) {
-        try {
-            return scheduler.interrupt(fireInstanceId);
+            return scheduler.interrupt(jobName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -245,41 +338,41 @@ public class SchedulerTemplate {
         }
     }
 
-    public void pauseJob(JobKey jobKey) {
+    public void pauseJob(String jobName, String groupName) {
         try {
-            scheduler.pauseJob(jobKey);
+            scheduler.pauseJob(jobName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public void pauseJobs(GroupMatcher<JobKey> groupMatcher) {
+    public void pauseJobGroup(String groupName) {
         try {
-            scheduler.pauseJobs(groupMatcher);
+            scheduler.pauseJobGroup(groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public void pauseTrigger(TriggerKey triggerKey) {
+    public void pauseTrigger(String jobName, String groupName) {
         try {
-            scheduler.pauseTrigger(triggerKey);
+            scheduler.pauseTrigger(jobName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public void pauseTriggers(GroupMatcher<TriggerKey> groupMatcher) {
+    public void pauseTriggerGroup(String groupName) {
         try {
-            scheduler.pauseTriggers(groupMatcher);
+            scheduler.pauseTriggerGroup(groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public Date rescheduleJob(TriggerKey triggerKey, Trigger trigger) {
+    public Date rescheduleJob(String triggerName, String groupName, Trigger newTrigger) {
         try {
-            return scheduler.rescheduleJob(triggerKey, trigger);
+            return scheduler.rescheduleJob(triggerName, groupName, newTrigger);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -293,41 +386,33 @@ public class SchedulerTemplate {
         }
     }
 
-    public void resumeJob(JobKey jobKey) {
+    public void resumeJob(String jobName, String groupName) {
         try {
-            scheduler.resumeJob(jobKey);
+            scheduler.resumeJob(jobName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public void resumeJobs(GroupMatcher<JobKey> groupMatcher) {
+    public void resumeJobGroup(String groupName) {
         try {
-            scheduler.resumeJobs(groupMatcher);
+            scheduler.resumeJobGroup(groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public void resumeTrigger(TriggerKey triggerKey) {
+    public void resumeTrigger(String triggerName, String groupName) {
         try {
-            scheduler.resumeTrigger(triggerKey);
+            scheduler.resumeTrigger(triggerName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public void resumeTriggers(GroupMatcher<TriggerKey> groupMatcher) {
+    public void resumeTriggerGroup(String groupName) {
         try {
-            scheduler.resumeTriggers(groupMatcher);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public void scheduleJobs(Map<JobDetail, List<Trigger>> triggersAndJobs, boolean replace) {
-        try {
-            scheduler.scheduleJobs(triggersAndJobs, replace);
+            scheduler.resumeTriggerGroup(groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -381,39 +466,23 @@ public class SchedulerTemplate {
         }
     }
 
-    public void triggerJob(JobKey jobKey, JobDataMap jobDataMap) {
+    public void triggerJob(String jobName, String groupName){
         try {
-            scheduler.triggerJob(jobKey, jobDataMap);
+            scheduler.triggerJob(jobName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public void triggerJob(JobKey jobKey) {
+    public boolean unscheduleJob(String triggerName, String groupName) {
         try {
-            scheduler.triggerJob(jobKey);
+            return scheduler.unscheduleJob(triggerName, groupName);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public boolean unscheduleJob(TriggerKey triggerKey) {
-        try {
-            return scheduler.unscheduleJob(triggerKey);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public boolean unscheduleJobs(List<TriggerKey> triggerKeys) {
-        try {
-            return scheduler.unscheduleJobs(triggerKeys);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public List<String> getCalendarNames() {
+    public String[] getCalendarNames() {
         try {
             return scheduler.getCalendarNames();
         } catch (SchedulerException e) {
@@ -456,7 +525,7 @@ public class SchedulerTemplate {
 
     public Date scheduleJob(JobDetail jobDetail, Trigger trigger) {
         try {
-            return scheduler.scheduleJob(jobDetail, trigger);
+            return  scheduler.scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -494,14 +563,6 @@ public class SchedulerTemplate {
         }
     }
 
-    public ListenerManager getListenerManager() {
-        try {
-            return scheduler.getListenerManager();
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
     public void addJob(JobDetail job, boolean replace) {
         try {
             scheduler.addJob(job, replace);
@@ -510,7 +571,7 @@ public class SchedulerTemplate {
         }
     }
 
-    public List<JobExecutionContext> getCurrentlyExecutingJobs() {
+    public List<?> getCurrentlyExecutingJobs() {
         try {
             return scheduler.getCurrentlyExecutingJobs();
         } catch (SchedulerException e) {
@@ -518,36 +579,66 @@ public class SchedulerTemplate {
         }
     }
 
+    public String[] getJobNames(String groupName) {
+        try {
+            return scheduler.getJobNames(groupName);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+
+    }
+
+    public void addGlobalJobListener(JobListener listener) {
+        try {
+            scheduler.addGlobalJobListener(listener);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void addGlobalTriggerListener(TriggerListener listener) {
+        try {
+            scheduler.addGlobalTriggerListener(listener);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void addSchedulerListener(SchedulerListener schedulerListener) {
+        try {
+            scheduler.addSchedulerListener(schedulerListener);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void removeSchedulerListener(SchedulerListener schedulerListener) {
+        try {
+            scheduler.removeSchedulerListener(schedulerListener);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void addJobListener(JobListener listener) {
+        try {
+            scheduler.addJobListener(listener);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void addTriggerListener(TriggerListener listener) {
+        try {
+            scheduler.addTriggerListener(listener);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
 
     // ======================================
     // Additional methods for easy scheduling
     // ======================================
-
-    @SuppressWarnings("unchecked")
-    public void addJobListener(JobListener listener) {
-        try {
-            scheduler.getListenerManager().addJobListener(listener);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void addTriggerListener(TriggerListener listener) {
-        try {
-            scheduler.getListenerManager().addTriggerListener(listener);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public void addSchedulerListener(SchedulerListener listener) {
-        try {
-            scheduler.getListenerManager().addSchedulerListener(listener);
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
 
     /**
      * Start scheduler, wait for some times, then shutdown scheduler to wait for all jobs to be complete.
@@ -557,7 +648,7 @@ public class SchedulerTemplate {
     public void startAndShutdown(long waitTimeInMillis) {
         start();
         if (waitTimeInMillis > 0) {
-            synchronized (this) {
+            synchronized(this) {
                 try {
                     this.wait(waitTimeInMillis);
                 } catch (InterruptedException e) {
@@ -571,7 +662,7 @@ public class SchedulerTemplate {
 
     /**
      * Start the scheduler and put this template instance into wait state until notified or interrupted.
-     * <p/>
+     *
      * <p>Note this method will block main thread execution!
      */
     public void startAndWait() {
@@ -581,7 +672,7 @@ public class SchedulerTemplate {
     /**
      * Start the scheduler with a delay time, and put this template instance into wait state until notified or
      * interrupted.
-     * <p/>
+     *
      * <p>Note this method will block main thread execution!
      *
      * @param startDelayInSeconds
@@ -592,7 +683,7 @@ public class SchedulerTemplate {
         } else {
             startDelayed(startDelayInSeconds);
         }
-        synchronized (this) {
+        synchronized(this) {
             try {
                 this.wait();
             } catch (InterruptedException e) {
@@ -604,32 +695,15 @@ public class SchedulerTemplate {
     public List<JobDetail> getAllJobDetails() {
         try {
             List<JobDetail> jobs = new ArrayList<JobDetail>();
-            List<String> groups = scheduler.getJobGroupNames();
+            String[] groups = scheduler.getJobGroupNames();
             for (String group : groups) {
-                Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.jobGroupEquals(group));
-                for (JobKey key : keys) {
-                    JobDetail jobDetail = scheduler.getJobDetail(key);
+                String[] names = scheduler.getJobNames(group);
+                for (String name : names) {
+                    JobDetail jobDetail = scheduler.getJobDetail(name, group);
                     jobs.add(jobDetail);
                 }
             }
             return jobs;
-        } catch (SchedulerException e) {
-            throw new QuartzRuntimeException(e);
-        }
-    }
-
-    public List<Trigger> getAllTriggers() {
-        try {
-            List<Trigger> triggers = new ArrayList<Trigger>();
-            List<String> groups = scheduler.getTriggerGroupNames();
-            for (String group : groups) {
-                Set<TriggerKey> keys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(group));
-                for (TriggerKey key : keys) {
-                    Trigger trigger = scheduler.getTrigger(key);
-                    triggers.add(trigger);
-                }
-            }
-            return triggers;
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -641,7 +715,7 @@ public class SchedulerTemplate {
      */
     public List<Date> getNextFireTimes(Trigger trigger, Date startTime, int maxCount) {
         // We will clone the original trigger so we may call its triggered() to get a proper fireTime.
-        OperableTrigger clonedTrigger = (OperableTrigger) ((OperableTrigger) trigger).clone();
+        Trigger clonedTrigger = (Trigger)trigger.clone();
         Calendar cal = null;
 
         if (clonedTrigger.getNextFireTime() == null) {
@@ -651,7 +725,7 @@ public class SchedulerTemplate {
         List<Date> list = new ArrayList<Date>();
         Date nextDate = startTime;
         int count = 0;
-        while (count++ < maxCount) {
+        while(count++ < maxCount) {
             nextDate = clonedTrigger.getFireTimeAfter(nextDate);
             if (nextDate == null)
                 break;
@@ -683,12 +757,10 @@ public class SchedulerTemplate {
         return result;
     }
 
-    /**
-     * Update existing job with newJobDetail and return the old one.
-     */
+    /** Update existing job with newJobDetail and return the old one. */
     public JobDetail updateJobDetail(JobDetail newJobDetail) {
         try {
-            JobDetail oldJob = scheduler.getJobDetail(newJobDetail.getKey());
+            JobDetail oldJob = scheduler.getJobDetail(newJobDetail.getName(), newJobDetail.getGroup());
             scheduler.addJob(newJobDetail, true);
             return oldJob;
         } catch (SchedulerException e) {
@@ -696,28 +768,25 @@ public class SchedulerTemplate {
         }
     }
 
-    /**
-     * Update existing trigger with newTrigger and return the old one.
-     */
+    /** Update existing trigger with newTrigger and return the old one. */
     public Trigger updateTrigger(Trigger newTrigger) {
         try {
-            Trigger oldTrigger = scheduler.getTrigger(newTrigger.getKey());
-            scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
+            Trigger oldTrigger = scheduler.getTrigger(newTrigger.getName(), newTrigger.getGroup());
+            scheduler.rescheduleJob(oldTrigger.getName(), oldTrigger.getGroup(), newTrigger);
             return oldTrigger;
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    /**
-     * Remove a trigger and its JobDetail if it's not set durable.
-     */
-    public Trigger uncheduleJob(TriggerKey triggerKey) {
+    /** Remove a trigger and its JobDetail if it's not set durable. */
+    public Trigger uncheduleJob(String triggerName, String triggerGroup) {
         try {
-            Trigger trigger = scheduler.getTrigger(triggerKey);
-            boolean success = scheduler.unscheduleJob(trigger.getKey());
+            Trigger trigger = scheduler.getTrigger(triggerName, triggerGroup);
+            boolean success = scheduler.unscheduleJob(triggerName, triggerGroup);
             if (!success)
-                throw new SchedulerException("Failed to unschedule job with trigger key " + triggerKey);
+                throw new SchedulerException("Failed to unschedule job with trigger " +
+                        triggerName + "." + triggerGroup);
             return trigger;
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
@@ -727,12 +796,12 @@ public class SchedulerTemplate {
     public List<Trigger> getPausedTriggers() {
         try {
             List<Trigger> result = new ArrayList<Trigger>();
-            List<String> groups = scheduler.getTriggerGroupNames();
+            String[] groups = scheduler.getTriggerGroupNames();
             for (String group : groups) {
-                Set<TriggerKey> triggerKeys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(group));
-                for (TriggerKey key : triggerKeys) {
-                    if (scheduler.getTriggerState(key) == TriggerState.PAUSED) {
-                        result.add(scheduler.getTrigger(key));
+                String[] names = scheduler.getTriggerNames(group);
+                for (String name : names) {
+                    if (scheduler.getTriggerState(name, group) == Trigger.STATE_PAUSED) {
+                        result.add(scheduler.getTrigger(name, group));
                     }
                 }
             }
@@ -742,80 +811,76 @@ public class SchedulerTemplate {
         }
     }
 
-    /**
-     * Remove a JobDetail and all the triggers associated with it.
-     */
-    public List<? extends Trigger> deleteJobAndGetTriggers(JobKey key) {
+    /** Remove a JobDetail and all the triggers associated with it. */
+    public List<? extends Trigger> deleteJobAndGetTriggers(String jobName, String jobGroup) {
         try {
-            List<? extends Trigger> triggers = scheduler.getTriggersOfJob(key);
-            boolean success = scheduler.deleteJob(key);
+            Trigger[] triggers = scheduler.getTriggersOfJob(jobName, jobGroup);
+            boolean success = scheduler.deleteJob(jobName, jobGroup);
             if (!success)
-                throw new SchedulerException("Unable to delete job " + key);
-            return triggers;
+                throw new SchedulerException("Unable to delete job " + jobName + "." + jobGroup);
+            return Arrays.asList(triggers);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
     public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass) {
-        return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, null, new Date(), null);
+        return scheduleCronJob(name, Scheduler.DEFAULT_GROUP, cron, jobClass, null, new Date(), null);
     }
 
     public Date scheduleCronJob(String name, String cron, Class<? extends Job> jobClass, Map<String, Object> dataMap) {
-        return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, dataMap, new Date(), null);
+        return scheduleCronJob(name, Scheduler.DEFAULT_GROUP, cron, jobClass, dataMap, new Date(), null);
     }
 
 
     public Date scheduleCronJob(
             String name, String cron, Class<? extends Job> jobClass, Map<String, Object> dataMap, Date startTime) {
-        return scheduleCronJob(JobKey.jobKey(name), cron, jobClass, dataMap, startTime, null);
+        return scheduleCronJob(name, Scheduler.DEFAULT_GROUP, cron, jobClass, dataMap, startTime, null);
     }
 
     public Date scheduleCronJob(
-            JobKey jobKey, String cron,
+            String jobName, String jobGroup, String cron,
             Class<? extends Job> jobClass, Map<String, Object> dataMap,
             Date startTime, Date endTime) {
-        JobDetail job = createJobDetail(jobKey, jobClass, false, dataMap);
-        TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
-        Trigger trigger = createCronTrigger(triggerKey, cron, startTime, endTime);
+        JobDetail job = createJobDetail(jobName, jobGroup, jobClass, false, dataMap);
+        Trigger trigger = createCronTrigger(jobName, jobGroup, cron, startTime, endTime);
         return scheduleJob(job, trigger);
     }
 
     public Date scheduleSimpleJob(
             String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass) {
         return
-                scheduleSimpleJob(JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, null, null, null);
+                scheduleSimpleJob(name, Scheduler.DEFAULT_GROUP,
+                        repeatTotalCount, repeatInterval, jobClass, null, null, null);
     }
 
     public Date scheduleSimpleJob(
             String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass,
             Map<String, Object> dataMap) {
         return
-                scheduleSimpleJob(JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, dataMap, null, null);
+                scheduleSimpleJob(name, Scheduler.DEFAULT_GROUP,
+                        repeatTotalCount, repeatInterval, jobClass, dataMap, null, null);
     }
 
     public Date scheduleSimpleJob(
             String name, int repeatTotalCount, long repeatInterval, Class<? extends Job> jobClass,
             Map<String, Object> dataMap, Date startTime) {
         return
-                scheduleSimpleJob(
-                        JobKey.jobKey(name), repeatTotalCount, repeatInterval, jobClass, dataMap, startTime, null);
+                scheduleSimpleJob(name, Scheduler.DEFAULT_GROUP,
+                        repeatTotalCount, repeatInterval, jobClass, dataMap, startTime, null);
     }
 
     public Date scheduleSimpleJob(
-            JobKey jobKey, int repeatTotalCount, long repeatInterval,
+            String jobName, String jobGroup, int repeatTotalCount, long repeatInterval,
             Class<? extends Job> jobClass, Map<String, Object> dataMap, Date startTime, Date endTime) {
-        JobDetail job = createJobDetail(jobKey, jobClass, false, dataMap);
-        TriggerKey triggerKey = TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup());
-        Trigger trigger = createSimpleTrigger(triggerKey, repeatTotalCount, repeatInterval, startTime, endTime);
+        JobDetail job = createJobDetail(jobName, jobGroup, jobClass, false, dataMap);
+        Trigger trigger = createSimpleTrigger(jobName, jobGroup, repeatTotalCount, repeatInterval, startTime, endTime);
         return scheduleJob(job, trigger);
     }
 
-    /**
-     * This method is fail-safe (eg: good for toString and logging use.) that it should not throw any exception in
+    /** This method is fail-safe (eg: good for toString and logging use.) that it should not throw any exception in
      * getting the scheduler name. If name is not available (eg: a remote scheduler conn is broken), then simply
-     * return the underlying scheduler class name and identity hash code.
-     */
+     * return the underlying scheduler class name and identity hash code. */
     public String getSchedulerNameAndId() {
         String result = null;
         try {
@@ -832,56 +897,56 @@ public class SchedulerTemplate {
     //
 
     public static JobDetail createJobDetail(String name, Class<? extends Job> jobClass) {
-        return createJobDetail(JobKey.jobKey(name), jobClass, false, null);
+        return createJobDetail(name, Scheduler.DEFAULT_GROUP, jobClass, false, null);
     }
 
-    public static JobDetail createJobDetail(JobKey jobKey, Class<? extends Job> jobClass,
+    public static JobDetail createJobDetail(String jobName, String jobGroup, Class<? extends Job> jobClass,
                                             boolean durable, Map<String, Object> dataMap) {
-        JobDetail jobDetail = newJob(jobClass).withIdentity(jobKey).storeDurably(durable).build();
+        JobDetail jobDetail = new JobDetail(jobName, jobGroup, jobClass);
+        jobDetail.setDurability(durable);
         if (dataMap != null)
             jobDetail.getJobDataMap().putAll(dataMap);
         return jobDetail;
     }
 
-    public static MutableTrigger createCronTrigger(String name, String cron) {
-        return createCronTrigger(TriggerKey.triggerKey(name), cron, new Date(), null);
+    public static CronTrigger createCronTrigger(String name, String cron) {
+        return createCronTrigger(name, Scheduler.DEFAULT_GROUP, cron, new Date(), null);
     }
 
-    public static MutableTrigger createCronTrigger(String name, String cron, Date startTime) {
-        return createCronTrigger(TriggerKey.triggerKey(name), cron, startTime, null);
+    public static CronTrigger createCronTrigger(String name, String cron, Date startTime) {
+        return createCronTrigger(name, Scheduler.DEFAULT_GROUP, cron, startTime, null);
     }
 
-    public static MutableTrigger createCronTrigger(TriggerKey triggerKey, String cron, Date startTime, Date endTime) {
+    public static CronTrigger createCronTrigger(
+            String triggerName, String triggerGroup, String cron, Date startTime, Date endTime) {
         if (startTime == null)
             startTime = new Date();
 
         try {
-            CronTrigger trigger = newTrigger()
-                    .withIdentity(triggerKey)
-                    .startAt(startTime).endAt(endTime)
-                    .withSchedule(cronSchedule(cron))
-                    .build();
-            return (MutableTrigger) trigger;
-        } catch (RuntimeException e) {
-            // The Quartz-2.1.1 doesn't throw ParseException but RuntimeException instead.
+            CronTrigger trigger = new CronTrigger(triggerName, triggerGroup, cron);
+            trigger.setStartTime(startTime);
+            trigger.setEndTime(endTime);
+            return trigger;
+        } catch (ParseException e) {
             throw new QuartzRuntimeException(e);
         }
     }
 
-    public static MutableTrigger createSimpleTrigger(String name) {
+    public static SimpleTrigger createSimpleTrigger(String name) {
         return createSimpleTrigger(name, 1, 0);
     }
 
-    public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval) {
+    public static SimpleTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval) {
         return createSimpleTrigger(name, repeatTotalCount, interval, new Date());
     }
 
-    public static MutableTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval, Date startTime) {
-        return createSimpleTrigger(TriggerKey.triggerKey(name), repeatTotalCount, interval, startTime, null);
+    public static SimpleTrigger createSimpleTrigger(String name, int repeatTotalCount, int interval, Date startTime) {
+        return createSimpleTrigger(name, Scheduler.DEFAULT_GROUP, repeatTotalCount, interval, startTime, null);
     }
 
-    public static MutableTrigger createSimpleTrigger(
-            TriggerKey triggerKey, int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
+    public static SimpleTrigger createSimpleTrigger(
+            String triggerName, String triggerGroup,
+            int repeatTotalCount, long repeatInterval, Date startTime, Date endTime) {
         if (startTime == null)
             startTime = new Date();
 
@@ -890,18 +955,15 @@ public class SchedulerTemplate {
         if (repeatTotalCount < 0)
             repeatCount = SimpleTrigger.REPEAT_INDEFINITELY;
 
-        SimpleTrigger trigger = newTrigger()
-                .withIdentity(triggerKey)
-                .startAt(startTime).endAt(endTime)
-                .withSchedule(
-                        simpleSchedule()
-                                .withRepeatCount(repeatCount)
-                                .withIntervalInMilliseconds(repeatInterval))
-                .build();
-        return (MutableTrigger) trigger;
+        SimpleTrigger trigger = new SimpleTrigger(triggerName, triggerGroup);
+        trigger.setStartTime(startTime);
+        trigger.setEndTime(endTime);
+        trigger.setRepeatCount(repeatCount);
+        trigger.setRepeatInterval(repeatInterval);
+        return trigger;
     }
 
-    public static Map<String, Object> mkMap(Object... dataArray) {
+    public static Map<String, Object> mkMap(Object ... dataArray) {
         Map<String, Object> map = new HashMap<String, Object>();
         if (dataArray.length % 2 != 0) {
             throw new IllegalArgumentException("Data must come in pair: key and value.");
@@ -912,7 +974,7 @@ public class SchedulerTemplate {
             if (!(keyObj instanceof String)) {
                 throw new IllegalArgumentException("Key must be a String type, but got: " + keyObj.getClass());
             }
-            String key = (String) keyObj;
+            String key = (String)keyObj;
             Object value = dataArray[++i];
             map.put(key, value);
         }
@@ -922,5 +984,17 @@ public class SchedulerTemplate {
     @Override
     public String toString() {
         return "QuartzScheduler[" + getSchedulerNameAndId() + "]";
+    }
+
+    public List<Trigger> getAllTriggers() {
+        List<Trigger> result = new ArrayList<Trigger>();
+        try {
+            for (String group : scheduler.getTriggerGroupNames())
+                for (String name : scheduler.getTriggerNames(group))
+                    result.add(scheduler.getTrigger(name, group));
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException("Failed to get all triggers.", e);
+        }
+        return result;
     }
 }

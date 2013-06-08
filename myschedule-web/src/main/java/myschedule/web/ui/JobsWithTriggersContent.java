@@ -11,9 +11,8 @@ import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
 import org.quartz.Trigger;
-import org.quartz.TriggerKey;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -61,7 +60,7 @@ public class JobsWithTriggersContent extends VerticalLayout {
         pauseOrResumeButton = createPauseOrResumeButton();
         tableRowActionButtonsGroup.addComponent(pauseOrResumeButton);
 
-        disableToolbarIfNeeded(Trigger.TriggerState.NORMAL.toString());
+        disableToolbarIfNeeded("STATE_NORMAL");
     }
 
     private void disableToolbarIfNeeded(String triggerStateName) {
@@ -69,13 +68,44 @@ public class JobsWithTriggersContent extends VerticalLayout {
             tableRowActionButtonsGroup.setEnabled(false);
         } else {
             // Check and ensure Pause/Resume button has the right label.
-            Trigger.TriggerState triggerState = Trigger.TriggerState.valueOf(triggerStateName);
-            if (triggerState == Trigger.TriggerState.PAUSED)
+            int triggerState = getTriggerStateFromName(triggerStateName);
+            if (triggerState == Trigger.STATE_PAUSED)
                 pauseOrResumeButton.setCaption("Resume");
             else
                 pauseOrResumeButton.setCaption("Pause");
             tableRowActionButtonsGroup.setEnabled(true);
         }
+    }
+
+    private int getTriggerStateFromName(String triggerStateName) {
+        if("NORMAL".equals(triggerStateName))
+            return Trigger.STATE_NORMAL;
+        else if("BLOCKED".equals(triggerStateName))
+            return Trigger.STATE_BLOCKED;
+        else if("COMPLETE".equals(triggerStateName))
+            return Trigger.STATE_COMPLETE;
+        else if("ERROR".equals(triggerStateName))
+            return Trigger.STATE_ERROR;
+        else if("NONE".equals(triggerStateName))
+            return Trigger.STATE_NONE;
+        else if("PAUSED".equals(triggerStateName))
+            return Trigger.STATE_PAUSED;
+        return -1;
+    }
+    private String getTriggerStateName(int triggerState) {
+        if(triggerState == Trigger.STATE_NORMAL)
+            return "NORMAL";
+        else if(triggerState == Trigger.STATE_BLOCKED)
+            return "BLOCKED";
+        else if(triggerState == Trigger.STATE_COMPLETE)
+            return "COMPLETE";
+        else if(triggerState == Trigger.STATE_ERROR)
+            return "ERROR";
+        else if(triggerState == Trigger.STATE_NONE)
+            return "NONE";
+        else if(triggerState == Trigger.STATE_PAUSED)
+            return "PAUSED";
+        return "UNKONWN";
     }
 
     private Button createRefreshButton() {
@@ -109,9 +139,9 @@ public class JobsWithTriggersContent extends VerticalLayout {
                         new ConfirmDialog.Listener() {
                             public void onClose(ConfirmDialog dialog) {
                                 if (dialog.isConfirmed()) {
-                                    TriggerKey triggerKey = getSelectedTriggerKey();
+                                    Key triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    scheduler.unscheduleJob(triggerKey);
+                                    scheduler.unscheduleJob(triggerKey.getName(), triggerKey.getGroup());
 
                                     reloadTableContent();
                                 }
@@ -132,10 +162,10 @@ public class JobsWithTriggersContent extends VerticalLayout {
                         new ConfirmDialog.Listener() {
                             public void onClose(ConfirmDialog dialog) {
                                 if (dialog.isConfirmed()) {
-                                    TriggerKey triggerKey = getSelectedTriggerKey();
+                                    Key triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    Trigger trigger = scheduler.getTrigger(triggerKey);
-                                    scheduler.triggerJob(trigger.getJobKey());
+                                    Trigger trigger = scheduler.getTrigger(triggerKey.getName(), triggerKey.getGroup());
+                                    scheduler.triggerJob(trigger.getJobName(), trigger.getJobGroup());
 
                                     reloadTableContent();
                                 }
@@ -160,12 +190,12 @@ public class JobsWithTriggersContent extends VerticalLayout {
                         new ConfirmDialog.Listener() {
                             public void onClose(ConfirmDialog dialog) {
                                 if (dialog.isConfirmed()) {
-                                    TriggerKey triggerKey = getSelectedTriggerKey();
+                                    Key triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
                                     if (caption.equals("Pause")) {
-                                        scheduler.pauseTrigger(triggerKey);
+                                        scheduler.pauseTrigger(triggerKey.getName(), triggerKey.getGroup());
                                     } else {
-                                        scheduler.resumeTrigger(triggerKey);
+                                        scheduler.resumeTrigger(triggerKey.getName(), triggerKey.getGroup());
                                     }
                                     reloadTableContent();
                                 }
@@ -229,37 +259,37 @@ public class JobsWithTriggersContent extends VerticalLayout {
         List<Trigger> triggers = scheduler.getAllTriggers();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (Trigger trigger : triggers) {
-            TriggerKey triggerKey = trigger.getKey();
-            JobKey jobKey = trigger.getJobKey();
-            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            Key triggerKey = trigger.getKey();
+            Key jobKey = new Key(trigger.getJobName(), trigger.getJobGroup());
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey.getName(), jobKey.getGroup());
             Date nextFireTime = trigger.getNextFireTime();
             Date previousFireTime = trigger.getPreviousFireTime();
             String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
-            Trigger.TriggerState triggerState = scheduler.getTriggerState(triggerKey);
+            String triggerStateName = getTriggerStateName(scheduler.getTriggerState(trigger.getJobName(), trigger.getJobGroup()));
             Object[] row = new Object[]{
                     triggerKeyName,
                     jobKey.getName() + "/" + jobKey.getGroup(),
                     trigger.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName(),
                     (nextFireTime == null) ? "" : df.format(nextFireTime),
                     (previousFireTime == null) ? "" : df.format(previousFireTime),
-                    triggerState.toString()
+                    triggerStateName
             };
             table.addItem(row, triggerKeyName);
         }
     }
 
     private void showJobsWithTriggersWindow() {
-        TriggerKey triggerKey = getSelectedTriggerKey();
+        Key triggerKey = getSelectedTriggerKey();
         JobsWithTriggersWindow window = new JobsWithTriggersWindow(myScheduleUi, schedulerSettingsName, triggerKey);
         myScheduleUi.addWindow(window);
     }
 
-    private TriggerKey getSelectedTriggerKey() {
+    private Key getSelectedTriggerKey() {
         String[] names = StringUtils.split(selectedTriggerKeyName, "/");
         if (names.length != 2)
             throw new RuntimeException("Unable to retrieve trigger: invalid trigger name/group format used.");
 
-        TriggerKey triggerKey = new TriggerKey(names[0], names[1]);
+        Key triggerKey = new Key(names[0], names[1]);
         return triggerKey;
     }
 }

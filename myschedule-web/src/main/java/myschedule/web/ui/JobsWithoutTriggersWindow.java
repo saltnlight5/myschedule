@@ -4,11 +4,11 @@ import com.vaadin.ui.Table;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
+import org.quartz.StatefulJob;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -21,9 +21,9 @@ public class JobsWithoutTriggersWindow extends AbstractWindow {
     private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
-    private JobKey jobDetailKey;
+    private Key jobDetailKey;
 
-    public JobsWithoutTriggersWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, JobKey jobDetailKey) {
+    public JobsWithoutTriggersWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, Key jobDetailKey) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
         this.jobDetailKey = jobDetailKey;
@@ -43,15 +43,15 @@ public class JobsWithoutTriggersWindow extends AbstractWindow {
         // Fill table data
         LOGGER.debug("Loading jobDetail={} from scheduler {}", jobDetailKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        JobDetail job = scheduler.getJobDetail(jobDetailKey);
+        JobDetail job = scheduler.getJobDetail(jobDetailKey.getName(), jobDetailKey.getGroup());
 
         int index = 1;
         addTableItem(table, index++, "Job Key", "" + jobDetailKey);
         addTableItem(table, index++, "Description", "" + toStr(job.getDescription()));
         addTableItem(table, index++, "Class", "" + job.getJobClass());
-        addTableItem(table, index++, "ConcurrentExecutionDisallowed", "" + toStr(job.isConcurrentExectionDisallowed()));
+        addTableItem(table, index++, "Stateful", "" + toStr(job instanceof StatefulJob));
         addTableItem(table, index++, "Durable", "" + toStr(job.isDurable()));
-        addTableItem(table, index++, "PersistJobDataAfterExecution", "" + toStr(job.isPersistJobDataAfterExecution()));
+        addTableItem(table, index++, "Volatile", "" + toStr(job.isVolatile()));
         addTableItem(table, index++, "RequestRecovery", "" + toStr(job.requestsRecovery()));
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(job.getJobDataMap()));
 

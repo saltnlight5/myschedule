@@ -10,6 +10,7 @@ import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -97,11 +98,11 @@ public class JobsRunningContent extends VerticalLayout {
                         new ConfirmDialog.Listener() {
                             public void onClose(ConfirmDialog dialog) {
                                 if (dialog.isConfirmed()) {
-                                    TriggerKey triggerKey = getSelectedTriggerKey();
+                                    Key triggerKey = getSelectedTriggerKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    Trigger trigger = scheduler.getTrigger(triggerKey);
+                                    Trigger trigger = scheduler.getTrigger(triggerKey.getName(), triggerKey.getGroup());
                                     try {
-                                        scheduler.interrupt(trigger.getJobKey());
+                                        scheduler.interrupt(trigger.getJobName(), trigger.getJobGroup());
                                         myScheduleUi.loadSchedulerScreen(schedulerSettingsName);
                                     } catch (RuntimeException e) {
                                         myScheduleUi.addWindow(new ErrorWindow(e));
@@ -159,13 +160,14 @@ public class JobsRunningContent extends VerticalLayout {
         LOGGER.debug("Loading current running jobs from scheduler {}", schedulerSettingsName);
         MySchedule mySchedule = MySchedule.getInstance();
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        List<JobExecutionContext> jobs = scheduler.getCurrentlyExecutingJobs();
+        List<?> jobs = scheduler.getCurrentlyExecutingJobs();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        for (JobExecutionContext job : jobs) {
+        for (Object jobObj : jobs) {
+            JobExecutionContext job = (JobExecutionContext)jobObj;
             Trigger trigger = job.getTrigger();
-            TriggerKey triggerKey = trigger.getKey();
-            JobKey jobKey = trigger.getJobKey();
-            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            Key triggerKey = trigger.getKey();
+            Key jobKey = new Key(trigger.getJobName(), trigger.getJobGroup());
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey.getName(), jobKey.getGroup());
             Date nextFireTime = trigger.getNextFireTime();
             Date previousFireTime = trigger.getPreviousFireTime();
             String triggerKeyName = triggerKey.getName() + "/" + triggerKey.getGroup();
@@ -181,17 +183,17 @@ public class JobsRunningContent extends VerticalLayout {
     }
 
     private void showJobsWithTriggersWindow() {
-        TriggerKey triggerKey = getSelectedTriggerKey();
+        Key triggerKey = getSelectedTriggerKey();
         JobsWithTriggersWindow window = new JobsWithTriggersWindow(myScheduleUi, schedulerSettingsName, triggerKey);
         myScheduleUi.addWindow(window);
     }
 
-    private TriggerKey getSelectedTriggerKey() {
+    private Key getSelectedTriggerKey() {
         String[] names = StringUtils.split(selectedTriggerKeyName, "/");
         if (names.length != 2)
             throw new RuntimeException("Unable to retrieve trigger: invalid trigger name/group format used.");
 
-        TriggerKey triggerKey = new TriggerKey(names[0], names[1]);
+        Key triggerKey = new Key(names[0], names[1]);
         return triggerKey;
     }
 }

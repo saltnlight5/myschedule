@@ -1,7 +1,6 @@
 package myschedule.quartz.extra;
 
 import org.quartz.*;
-import org.quartz.Trigger.CompletedExecutionInstruction;
 import org.quartz.spi.SchedulerPlugin;
 import org.quartz.utils.DBConnectionManager;
 import org.slf4j.Logger;
@@ -269,8 +268,8 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
         this.schedulerNameAndId = retrieveSchedulerNameAndId();
 
         // Register listeners
-        scheduler.getListenerManager().addTriggerListener(new HistoryTriggerListener());
-        scheduler.getListenerManager().addSchedulerListener(new HistorySchedulerListener());
+        scheduler.addTriggerListener(new HistoryTriggerListener());
+        scheduler.addSchedulerListener(new HistorySchedulerListener());
 
         // Store this plugin instance into scheduler context map
         if (schedulerContextKey == null)
@@ -327,7 +326,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
                     "jobScheduled",
                     new Date(),
                     trigger.getKey().toString(),
-                    trigger.getJobKey().toString(),
+                    trigger.getFullJobName(),
                     null,
                     null,
                     null
@@ -336,7 +335,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
         }
 
         @Override
-        public void jobUnscheduled(TriggerKey triggerKey) {
+        public void jobUnscheduled(String triggerName, String triggerGroup) {
             Object[] params = new Object[]{
                     localIp,
                     localHost,
@@ -344,79 +343,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
                     "SchedulerListener",
                     "jobUnscheduled",
                     new Date(),
-                    triggerKey.toString(),
-                    null,
-                    null,
-                    null,
-                    null
-            };
-            insertHistory(insertSql, params);
-        }
-
-        @Override
-        public void triggerPaused(TriggerKey triggerKey) {
-            Object[] params = new Object[]{
-                    localIp,
-                    localHost,
-                    schedulerNameAndId,
-                    "SchedulerListener",
-                    "triggerPaused",
-                    new Date(),
-                    triggerKey.toString(),
-                    null,
-                    null,
-                    null,
-                    null
-            };
-            insertHistory(insertSql, params);
-        }
-
-        @Override
-        public void triggersPaused(String triggerGroup) {
-            Object[] params = new Object[]{
-                    localIp,
-                    localHost,
-                    schedulerNameAndId,
-                    "SchedulerListener",
-                    "triggersPaused",
-                    new Date(),
-                    triggerGroup,
-                    null,
-                    null,
-                    null,
-                    null
-            };
-            insertHistory(insertSql, params);
-        }
-
-        @Override
-        public void triggerResumed(TriggerKey triggerKey) {
-            Object[] params = new Object[]{
-                    localIp,
-                    localHost,
-                    schedulerNameAndId,
-                    "SchedulerListener",
-                    "triggerResumed",
-                    new Date(),
-                    triggerKey.toString(),
-                    null,
-                    null,
-                    null,
-                    null
-            };
-            insertHistory(insertSql, params);
-        }
-
-        @Override
-        public void triggersResumed(String triggerGroup) {
-            Object[] params = new Object[]{
-                    localIp,
-                    localHost,
-                    schedulerNameAndId,
-                    "SchedulerListener",
-                    "triggersResumed",
-                    new Date(),
-                    triggerGroup,
+                    triggerName + "." + triggerGroup,
                     null,
                     null,
                     null,
@@ -482,21 +409,19 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
             if (deleteIntervalInSecs > 0) {
                 try {
                     String jobName = "JobHistoryRemovalJob";
-                    if (scheduler.checkExists(TriggerKey.triggerKey(jobName))) {
-                        scheduler.unscheduleJob(TriggerKey.triggerKey(jobName));
+                    try {
+                        scheduler.unscheduleJob(jobName, "DEFAULT");
                         logger.info("The JobHistoryRemovalJob already exist. Removed it from scheduler first.");
+                    } catch (SchedulerException e) {
+                        // Job doesn't exist. do nothing.
                     }
-                    JobDetail job = JobBuilder.newJob(JobHistoryRemovalJob.class).
-                            withIdentity(jobName).
-                            usingJobData(JobHistoryRemovalJob.PLUGIN_KEY_NAME, schedulerContextKey).
-                            build();
-                    Trigger trigger = TriggerBuilder.newTrigger().withIdentity(jobName).
-                            withSchedule(
-                                    SimpleScheduleBuilder.repeatSecondlyForever((int) deleteIntervalInSecs).
-                                            withMisfireHandlingInstructionNextWithRemainingCount()
-                            ).
-                            startAt(new Date(System.currentTimeMillis() + (deleteIntervalInSecs * 1000))).
-                            build();
+                    JobDetail job = new JobDetail(jobName, JobHistoryRemovalJob.class);
+                    job.getJobDataMap().put(JobHistoryRemovalJob.PLUGIN_KEY_NAME, schedulerContextKey);
+                    SimpleTrigger trigger = new SimpleTrigger(jobName);
+                    trigger.setRepeatCount(-1);
+                    trigger.setRepeatInterval((int) deleteIntervalInSecs);
+                    trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT);
+                    trigger.setStartTime(new Date(System.currentTimeMillis() + (deleteIntervalInSecs * 1000)));
                     scheduler.scheduleJob(job, trigger);
                     logger.info("Added JobHistoryRemovalJob that runs every {} secs.", deleteIntervalInSecs);
                 } catch (SchedulerException e) {
@@ -545,35 +470,122 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
         }
 
         @Override
-        public void schedulingDataCleared() {
-        }
-
-        @Override
         public void jobAdded(JobDetail jobDetail) {
         }
 
         @Override
-        public void jobDeleted(JobKey jobKey) {
+        public void jobDeleted(String jobName, String groupName) {
         }
 
         @Override
-        public void jobPaused(JobKey jobKey) {
+        public void jobsPaused(String jobName, String groupName) {
+            Object[] params = new Object[]{
+                    localIp,
+                    localHost,
+                    schedulerNameAndId,
+                    "SchedulerListener",
+                    "jobsPaused",
+                    new Date(),
+                    jobName + "." + groupName,
+                    null,
+                    null,
+                    null,
+                    null
+            };
+            insertHistory(insertSql, params);
         }
 
+        /**
+         * <p>
+         * Called by the <code>{@link org.quartz.Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
+         * or group of <code>{@link org.quartz.JobDetail}s</code> has been
+         * un-paused.
+         * </p>
+         * <p/>
+         * <p>
+         * If a group was resumed, then the <code>jobName</code> parameter will
+         * be null. If all jobs were paused, then both parameters will be null.
+         * </p>
+         */
         @Override
-        public void jobsPaused(String jobGroup) {
-        }
-
-        @Override
-        public void jobResumed(JobKey jobKey) {
-        }
-
-        @Override
-        public void jobsResumed(String jobGroup) {
+        public void jobsResumed(String jobName, String jobGroup) {
+            Object[] params = new Object[]{
+                    localIp,
+                    localHost,
+                    schedulerNameAndId,
+                    "SchedulerListener",
+                    "jobsResumed",
+                    new Date(),
+                    jobName + "." + jobGroup,
+                    null,
+                    null,
+                    null,
+                    null
+            };
+            insertHistory(insertSql, params);
         }
 
         @Override
         public void triggerFinalized(Trigger trigger) {
+        }
+
+        /**
+         * <p>
+         * Called by the <code>{@link org.quartz.Scheduler}</code> when a <code>{@link org.quartz.Trigger}</code>
+         * or group of <code>{@link org.quartz.Trigger}s</code> has been paused.
+         * </p>
+         * <p/>
+         * <p>
+         * If a group was paused, then the <code>triggerName</code> parameter
+         * will be null.
+         * </p>
+         */
+        @Override
+        public void triggersPaused(String triggerName, String triggerGroup) {
+            Object[] params = new Object[]{
+                    localIp,
+                    localHost,
+                    schedulerNameAndId,
+                    "SchedulerListener",
+                    "triggersPaused",
+                    new Date(),
+                    triggerName + "." + triggerGroup,
+                    null,
+                    null,
+                    null,
+                    null
+            };
+            insertHistory(insertSql, params);
+        }
+
+        /**
+         * <p>
+         * Called by the <code>{@link org.quartz.Scheduler}</code> when a <code>{@link org.quartz.Trigger}</code>
+         * or group of <code>{@link org.quartz.Trigger}s</code> has been un-paused.
+         * </p>
+         * <p/>
+         * <p>
+         * If a group was resumed, then the <code>triggerName</code> parameter
+         * will be null.
+         * </p>
+         */
+        @Override
+        public void triggersResumed(String triggerName, String triggerGroup) {
+            Object[] params = new Object[]{
+                    localIp,
+                    localHost,
+                    schedulerNameAndId,
+                    "SchedulerListener",
+                    "triggersResumed",
+                    new Date(),
+                    triggerName + "." + triggerGroup,
+                    null,
+                    null,
+                    null,
+                    null
+            };
+            insertHistory(insertSql, params);
+
         }
     }
 
@@ -593,8 +605,8 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
                     "triggerFired",
                     new Date(),
                     trigger.getKey().toString(),
-                    trigger.getJobKey().toString(),
-                    context.getFireInstanceId(),
+                    trigger.getFullJobName(),
+                    null,
                     context.getFireTime(),
                     null
             };
@@ -618,7 +630,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
                     "triggerMisfired",
                     new Date(),
                     trigger.getKey().toString(),
-                    trigger.getJobKey().toString(),
+                    trigger.getFullJobName(),
                     null,
                     null,
                     null
@@ -629,7 +641,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 
         @Override
         public void triggerComplete(Trigger trigger, JobExecutionContext context,
-                                    CompletedExecutionInstruction triggerInstructionCode) {
+                                    int triggerInstructionCode) {
             Object[] params = new Object[]{
                     localIp,
                     localHost,
@@ -638,10 +650,10 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
                     "triggerComplete",
                     new Date(),
                     trigger.getKey().toString(),
-                    trigger.getJobKey().toString(),
-                    context.getFireInstanceId(),
+                    trigger.getFullJobName(),
+                    null,
                     context.getFireTime(),
-                    triggerInstructionCode.toString()
+                    "" + triggerInstructionCode
             };
 
             insertHistory(insertSql, params);

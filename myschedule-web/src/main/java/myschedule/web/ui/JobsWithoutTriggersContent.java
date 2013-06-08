@@ -10,7 +10,7 @@ import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -30,7 +30,7 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
     HorizontalLayout toolbar;
     HorizontalLayout tableRowActionButtonsGroup;
     Table table;
-    String selectedJobKeyName;
+    String selectedKeyName;
 
     public JobsWithoutTriggersContent(MyScheduleUi myScheduleUi, String schedulerSettingsName) {
         this.myScheduleUi = myScheduleUi;
@@ -56,7 +56,7 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
     }
 
     private void disableToolbarIfNeeded() {
-        if (selectedJobKeyName == null) {
+        if (selectedKeyName == null) {
             tableRowActionButtonsGroup.setEnabled(false);
         } else {
             tableRowActionButtonsGroup.setEnabled(true);
@@ -94,9 +94,9 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
                         new ConfirmDialog.Listener() {
                             public void onClose(ConfirmDialog dialog) {
                                 if (dialog.isConfirmed()) {
-                                    JobKey jobKey = getSelectedJobKey();
+                                    Key key = getSelectedKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    scheduler.deleteJob(jobKey);
+                                    scheduler.deleteJob(key.getName(), key.getGroup());
 
                                     reloadTableContent();
                                 }
@@ -117,9 +117,9 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
                         new ConfirmDialog.Listener() {
                             public void onClose(ConfirmDialog dialog) {
                                 if (dialog.isConfirmed()) {
-                                    JobKey jobKey = getSelectedJobKey();
+                                    Key key = getSelectedKey();
                                     SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-                                    scheduler.triggerJob(jobKey);
+                                    scheduler.triggerJob(key.getName(), key.getGroup());
 
                                     reloadTableContent();
                                 }
@@ -147,7 +147,7 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
         table.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                selectedJobKeyName = (String) event.getProperty().getValue();
+                selectedKeyName = (String) event.getProperty().getValue();
                 disableToolbarIfNeeded();
             }
         });
@@ -157,7 +157,7 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
             @Override
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick()) {
-                    selectedJobKeyName = (String) event.getItemId();
+                    selectedKeyName = (String) event.getItemId();
                     showJobsWithoutTriggersWindow();
                 }
             }
@@ -174,32 +174,32 @@ public class JobsWithoutTriggersContent extends VerticalLayout {
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
         List<JobDetail> jobDetails = scheduler.getAllJobDetails();
         for (JobDetail jobDetail : jobDetails) {
-            if (scheduler.getTriggersOfJob(jobDetail.getKey()).size() > 0) {
+            if (scheduler.getTriggersOfJob(jobDetail.getName(), jobDetail.getGroup()).length > 0) {
                 continue;
             }
-            JobKey jobKey = jobDetail.getKey();
-            String jobKeyName = jobKey.getName() + "/" + jobKey.getGroup();
+            Key Key = jobDetail.getKey();
+            String KeyName = Key.getName() + "/" + Key.getGroup();
             Object[] row = new Object[]{
-                    jobKeyName,
+                    KeyName,
                     jobDetail.getClass().getSimpleName() + "/" + jobDetail.getJobClass().getSimpleName()
             };
-            table.addItem(row, jobKeyName);
+            table.addItem(row, KeyName);
         }
 
     }
 
     private void showJobsWithoutTriggersWindow() {
-        JobKey jobKey = getSelectedJobKey();
-        JobsWithoutTriggersWindow window = new JobsWithoutTriggersWindow(myScheduleUi, schedulerSettingsName, jobKey);
+        Key Key = getSelectedKey();
+        JobsWithoutTriggersWindow window = new JobsWithoutTriggersWindow(myScheduleUi, schedulerSettingsName, Key);
         myScheduleUi.addWindow(window);
     }
 
-    private JobKey getSelectedJobKey() {
-        String[] names = StringUtils.split(selectedJobKeyName, "/");
+    private Key getSelectedKey() {
+        String[] names = StringUtils.split(selectedKeyName, "/");
         if (names.length != 2)
             throw new RuntimeException("Unable to retrieve trigger: invalid trigger name/group format used.");
 
-        JobKey jobKey = new JobKey(names[0], names[1]);
-        return jobKey;
+        Key Key = new Key(names[0], names[1]);
+        return Key;
     }
 }

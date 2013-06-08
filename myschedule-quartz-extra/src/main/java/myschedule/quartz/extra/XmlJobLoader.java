@@ -1,9 +1,9 @@
 package myschedule.quartz.extra;
 
 import org.quartz.JobDetail;
+import org.quartz.Trigger;
 import org.quartz.simpl.CascadingClassLoadHelper;
 import org.quartz.spi.ClassLoadHelper;
-import org.quartz.spi.MutableTrigger;
 import org.quartz.xml.XMLSchedulingDataProcessor;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -64,7 +64,7 @@ public class XmlJobLoader extends XMLSchedulingDataProcessor {
      * Expose getter with public access.
      */
     @Override
-    public List<MutableTrigger> getLoadedTriggers() {
+    public List<Trigger> getLoadedTriggers() {
         return super.getLoadedTriggers();
     }
 

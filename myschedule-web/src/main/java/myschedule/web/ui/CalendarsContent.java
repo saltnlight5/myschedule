@@ -42,7 +42,7 @@ public class CalendarsContent extends VerticalLayout {
         // Fill table data
         LOGGER.debug("Loading calendars status table for %s", schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        List<String> calendarNames = scheduler.getCalendarNames();
+        String[] calendarNames = scheduler.getCalendarNames();
 
         int index = 1;
         for (String name : calendarNames) {

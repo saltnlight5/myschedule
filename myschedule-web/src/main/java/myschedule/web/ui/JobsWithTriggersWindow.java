@@ -1,10 +1,10 @@
 package myschedule.web.ui;
 
 import com.vaadin.ui.Table;
-import myschedule.quartz.extra.QuartzExtraUtils;
 import myschedule.quartz.extra.SchedulerTemplate;
 import myschedule.web.MySchedule;
 import org.quartz.*;
+import org.quartz.utils.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +24,10 @@ public class JobsWithTriggersWindow extends AbstractWindow {
     private static final long serialVersionUID = 1L;
     private String schedulerSettingsName;
     private MySchedule mySchedule = MySchedule.getInstance();
-    private TriggerKey triggerKey;
-    private JobKey jobDetailKey;
+    private Key triggerKey;
+    private Key jobDetailKey;
 
-    public JobsWithTriggersWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, TriggerKey triggerKey) {
+    public JobsWithTriggersWindow(MyScheduleUi myScheduleUi, String schedulerSettingsName, Key triggerKey) {
         this.myScheduleUi = myScheduleUi;
         this.schedulerSettingsName = schedulerSettingsName;
         this.triggerKey = triggerKey;
@@ -49,9 +49,9 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         // Fill table data
         LOGGER.debug("Loading triggerKey={} from scheduler {}", triggerKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        Trigger trigger = scheduler.getTrigger(triggerKey);
-        Trigger.TriggerState triggerState = scheduler.getTriggerState(triggerKey);
-        jobDetailKey = trigger.getJobKey();
+        Trigger trigger = scheduler.getTrigger(triggerKey.getName(), triggerKey.getGroup());
+        int triggerState = scheduler.getTriggerState(triggerKey.getName(), triggerKey.getGroup());
+        jobDetailKey = new Key(trigger.getJobName(), trigger.getJobGroup());
         SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
         String misfireInstructionName = getMisfireInstructionName(trigger);
         String extraInfo;
@@ -63,21 +63,6 @@ public class JobsWithTriggersWindow extends AbstractWindow {
             SimpleTrigger t = ((SimpleTrigger)trigger);
             extraInfo = "RepeatCount=" + t.getRepeatCount() +
                     ", RepeatInterval=" + t.getRepeatInterval() +
-                    ", TimesTriggered=" + t.getTimesTriggered();
-        } else if (trigger instanceof CalendarIntervalTrigger) {
-            CalendarIntervalTrigger t = ((CalendarIntervalTrigger)trigger);
-            extraInfo = "RepeatInterval=" + t.getRepeatInterval() +
-                    ", RepeatIntervalUnit=" + t.getRepeatIntervalUnit() +
-                    ", TimesTriggered=" + t.getTimesTriggered() +
-                    ", TimeZone=" + t.getTimeZone().getDisplayName();
-        } else if (trigger instanceof DailyTimeIntervalTrigger) {
-            DailyTimeIntervalTrigger t = ((DailyTimeIntervalTrigger)trigger);
-            extraInfo = "StartTimeOfDay=" + t.getStartTimeOfDay() +
-                    ", EndTimeOfDay=" + t.getEndTimeOfDay() +
-                    ", DaysOfWeek=" + t.getDaysOfWeek() +
-                    ", RepeatIntervalUnit=" + t.getRepeatCount() +
-                    ", RepeatInterval=" + t.getRepeatInterval() +
-                    ", RepeatIntervalUnit=" + t.getRepeatIntervalUnit() +
                     ", TimesTriggered=" + t.getTimesTriggered();
         } else {
             extraInfo = "";
@@ -115,16 +100,16 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         // Fill table data
         LOGGER.debug("Loading jobDetail={} from scheduler {}", jobDetailKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        JobDetail job = scheduler.getJobDetail(jobDetailKey);
+        JobDetail job = scheduler.getJobDetail(jobDetailKey.getName(), jobDetailKey.getGroup());
         SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 
         int index = 1;
         addTableItem(table, index++, "Job Key", "" + jobDetailKey);
         addTableItem(table, index++, "Description", "" + toStr(job.getDescription()));
         addTableItem(table, index++, "Class", "" + job.getJobClass());
-        addTableItem(table, index++, "ConcurrentExecutionDisallowed", "" + toStr(job.isConcurrentExectionDisallowed()));
+        addTableItem(table, index++, "Stateful", "" + toStr(job instanceof StatefulJob));
         addTableItem(table, index++, "Durable", "" + toStr(job.isDurable()));
-        addTableItem(table, index++, "PersistJobDataAfterExecution", "" + toStr(job.isPersistJobDataAfterExecution()));
+        addTableItem(table, index++, "Volatile", "" + toStr(job.isVolatile()));
         addTableItem(table, index++, "RequestRecovery", "" + toStr(job.requestsRecovery()));
         addTableItem(table, index++, "JobDataMap", "" + toMapStr(job.getJobDataMap()));
 
@@ -144,7 +129,7 @@ public class JobsWithTriggersWindow extends AbstractWindow {
         // Fill table data
         LOGGER.debug("Loading nextFireTimes preview from triggerKey={} scheduler={}", triggerKey, schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        Trigger trigger = scheduler.getTrigger(triggerKey);
+        Trigger trigger = scheduler.getTrigger(triggerKey.getName(), triggerKey.getGroup());
         int maxCount = mySchedule.getMyScheduleSettings().getNumOfFiretimesPreview();
         List<Date> nextFireTimes = scheduler.getNextFireTimes(trigger, new Date(), maxCount);
 
@@ -194,9 +179,7 @@ public class JobsWithTriggersWindow extends AbstractWindow {
     private String getMisfireInstructionName(Trigger trigger) {
         int code = trigger.getMisfireInstruction();
 
-        if (code == Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY) {
-            return "MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY(" + code + ")";
-        } else if (code == Trigger.MISFIRE_INSTRUCTION_SMART_POLICY) {
+        if (code == Trigger.MISFIRE_INSTRUCTION_SMART_POLICY) {
             return "MISFIRE_INSTRUCTION_SMART_POLICY(" + code + ")";
         }
 
@@ -216,18 +199,6 @@ public class JobsWithTriggersWindow extends AbstractWindow {
             if (code == CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING) {
                 return "MISFIRE_INSTRUCTION_DO_NOTHING(" + code + ")";
             } else if (code == CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) {
-                return "MISFIRE_INSTRUCTION_FIRE_ONCE_NOW(" + code + ")";
-            }
-        } else if (trigger instanceof CalendarIntervalTrigger) {
-            if (code == CalendarIntervalTrigger.MISFIRE_INSTRUCTION_DO_NOTHING) {
-                return "MISFIRE_INSTRUCTION_DO_NOTHING(" + code + ")";
-            } else if (code == CalendarIntervalTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) {
-                return "MISFIRE_INSTRUCTION_FIRE_ONCE_NOW(" + code + ")";
-            }
-        } else if (trigger instanceof DailyTimeIntervalTrigger) {
-            if (code == DailyTimeIntervalTrigger.MISFIRE_INSTRUCTION_DO_NOTHING) {
-                return "MISFIRE_INSTRUCTION_DO_NOTHING(" + code + ")";
-            } else if (code == DailyTimeIntervalTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW) {
                 return "MISFIRE_INSTRUCTION_FIRE_ONCE_NOW(" + code + ")";
             }
         }
