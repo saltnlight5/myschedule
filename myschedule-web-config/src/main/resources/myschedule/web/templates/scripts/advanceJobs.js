@@ -2,16 +2,17 @@
 
 // Create some durable jobs without triggers.
 importClass(Packages.myschedule.quartz.extra.job.LoggerJob);
+importClass(Packages.myschedule.quartz.extra.job.ScriptingJob);
 importPackage(Packages.org.quartz);
+importPackage(Packages.java.util);
 job = scheduler.createJobDetail("durableJob1", "DEFAULT", LoggerJob, true, null);
-scheduler.addJob(job, false);
+scheduler.addJob(job, true);
 
 job = scheduler.createJobDetail("durableJob2", "DEFAULT", LoggerJob, true, null);
-scheduler.addJob(job, false);
+scheduler.addJob(job, true);
 
 job = scheduler.createJobDetail("durableJob3", "DEFAULT", LoggerJob, true, null);
-scheduler.addJob(job, false);
-
+scheduler.addJob(job, true);
 
 // Create a job that takes 15 secs to run.
 dataMap = HashMap();
@@ -22,4 +23,4 @@ dataMap.put('ScriptText',
 		'logger.info("I am done.");\n');
 scheduler.scheduleSimpleJob("15secJob", -1, 60 * 60 * 1000, ScriptingJob,
 		dataMap,
-		Packages.java.util.Date(System.currentTimeMillis() + 20 * 1000));
+		Packages.java.util.Date(java.lang.System.currentTimeMillis() + 20 * 1000));
