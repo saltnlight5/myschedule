@@ -35,7 +35,7 @@ public class SimpleTriggerListener implements TriggerListener {
     }
 
     @Override
-    public void triggerComplete(Trigger trigger, JobExecutionContext context, Trigger.CompletedExecutionInstruction triggerInstructionCode) {
+    public void triggerComplete(Trigger trigger, JobExecutionContext context, int triggerInstructionCode) {
         logger.debug("triggerComplete trigger={}, context={}, triggerInstructionCode={}",
                 new Object[]{trigger, context, triggerInstructionCode});
     }

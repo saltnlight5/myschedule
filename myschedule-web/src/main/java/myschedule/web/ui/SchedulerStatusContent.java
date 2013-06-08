@@ -86,15 +86,17 @@ public class SchedulerStatusContent extends VerticalLayout {
         // Fill table data
         LOGGER.debug("Loading listeners information table for %s", schedulerSettingsName);
         SchedulerTemplate scheduler = mySchedule.getScheduler(schedulerSettingsName);
-        ListenerManager listenerManager = scheduler.getListenerManager();
         int index = 1;
-        for (SchedulerListener listener : listenerManager.getSchedulerListeners()) {
+        for (Object listener_ : scheduler.getSchedulerListeners()) {
+            SchedulerListener listener = (SchedulerListener)listener_;
             addTableItem(table, index++, "Scheduler Listener", listener.getClass().getName(), listener.toString());
         }
-        for (TriggerListener listener : listenerManager.getTriggerListeners()) {
+        for (Object name : scheduler.getTriggerListenerNames()) {
+            TriggerListener listener = scheduler.getTriggerListener((String)name);
             addTableItem(table, index++, "Trigger Listener/" + listener.getName(), listener.getClass().getName(), listener.toString());
         }
-        for (JobListener listener : listenerManager.getJobListeners()) {
+        for (Object name : scheduler.getJobListenerNames()) {
+            JobListener listener = scheduler.getJobListener((String)name);
             addTableItem(table, index++, "Job Listener/" + listener.getName(), listener.getClass().getName(), listener.toString());
         }
 
