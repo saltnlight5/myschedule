@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>myschedule</groupId>
 	<artifactId>myschedule</artifactId>
-	<version>3.2.0.0</version>
+	<version>3.2.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
