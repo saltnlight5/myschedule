@@ -4,6 +4,7 @@ import myschedule.quartz.extra.util.ScriptingUtils;
 import myschedule.quartz.extra.util.Utils;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.SchedulerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,7 @@ public class ScriptingSchedulerPlugin implements SchedulerPlugin {
     }
 
     @Override
-    public void initialize(String name, Scheduler scheduler) throws SchedulerException {
+    public void initialize(String name, Scheduler scheduler, ClassLoadHelper loadHelper) throws SchedulerException {
         this.name = name;
         this.scheduler = scheduler;
 

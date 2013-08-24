@@ -94,6 +94,11 @@ public class SimpleSchedulerListener implements SchedulerListener {
     }
 
     @Override
+    public void schedulerStarting() {
+        logger.debug("schedulerStarting");
+    }
+
+    @Override
     public void schedulerShutdown() {
         logger.debug("schedulerShutdown");
     }
