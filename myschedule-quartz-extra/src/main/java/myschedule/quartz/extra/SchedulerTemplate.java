@@ -325,9 +325,17 @@ public class SchedulerTemplate {
         }
     }
 
-    public void scheduleJobs(Map<JobDetail, List<Trigger>> triggersAndJobs, boolean replace) {
+    public void scheduleJobs(Map<JobDetail, Set<? extends Trigger>> triggersAndJobs, boolean replace) {
         try {
             scheduler.scheduleJobs(triggersAndJobs, replace);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void scheduleJob(JobDetail jobDetail, Set<? extends Trigger> triggers, boolean replace) {
+        try {
+            scheduler.scheduleJob(jobDetail, triggers, replace);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }
@@ -505,6 +513,14 @@ public class SchedulerTemplate {
     public void addJob(JobDetail job, boolean replace) {
         try {
             scheduler.addJob(job, replace);
+        } catch (SchedulerException e) {
+            throw new QuartzRuntimeException(e);
+        }
+    }
+
+    public void addJob(JobDetail job, boolean replace, boolean storeNonDurableWhileAwaitingScheduling) {
+        try {
+            scheduler.addJob(job, replace, storeNonDurableWhileAwaitingScheduling);
         } catch (SchedulerException e) {
             throw new QuartzRuntimeException(e);
         }

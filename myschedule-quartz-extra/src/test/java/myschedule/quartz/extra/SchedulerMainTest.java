@@ -5,6 +5,7 @@ import myschedule.quartz.extra.util.ResultFile;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.SchedulerPlugin;
 
 import java.util.Date;
@@ -70,7 +71,7 @@ public class SchedulerMainTest {
         }
 
         @Override
-        public void initialize(String name, Scheduler scheduler) throws SchedulerException {
+        public void initialize(String name, Scheduler scheduler, ClassLoadHelper loadHelper) throws SchedulerException {
             RESULT_FILE.appendLine("name: " + name);
             RESULT_FILE.appendLine("initialize: " + new Date());
         }

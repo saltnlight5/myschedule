@@ -2,6 +2,7 @@ package myschedule.quartz.extra;
 
 import org.quartz.*;
 import org.quartz.Trigger.CompletedExecutionInstruction;
+import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.SchedulerPlugin;
 import org.quartz.utils.DBConnectionManager;
 import org.slf4j.Logger;
@@ -261,7 +262,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void initialize(String name, Scheduler scheduler) throws SchedulerException {
+    public void initialize(String name, Scheduler scheduler, ClassLoadHelper loadHelper) throws SchedulerException {
         this.name = name;
         this.scheduler = scheduler;
         this.localIp = retrieveLocalIp();
@@ -315,7 +316,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
     // Listeners
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private class HistorySchedulerListener implements SchedulerListener {
+    private class HistorySchedulerListener extends SimpleSchedulerListener {
 
         @Override
         public void jobScheduled(Trigger trigger) {
@@ -505,11 +506,11 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
             }
         }
 
-        @Override
-        public void schedulerShutdown() {
-            // TODO: We can not insert SQL data here yet. See QTZ-257.
-            //       For now, the workaround is use schedulerShuttingdown(), which called before all pending jobs are
-            //       completed.
+//        @Override
+//        public void schedulerShutdown() {
+//            // TODO: We can not insert SQL data here yet. See QTZ-257.
+//            //       For now, the workaround is use schedulerShuttingdown(), which called before all pending jobs are
+//            //       completed.
 //			Object[] params = new Object[] {
 //				localIp,
 //				localHost,
@@ -524,7 +525,7 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
 //				null
 //			};
 //			insertHistory(insertSql, params);
-        }
+//        }
 
         @Override
         public void schedulerShuttingdown() {
@@ -542,38 +543,6 @@ public class JdbcSchedulerHistoryPlugin implements SchedulerPlugin {
                     null
             };
             insertHistory(insertSql, params);
-        }
-
-        @Override
-        public void schedulingDataCleared() {
-        }
-
-        @Override
-        public void jobAdded(JobDetail jobDetail) {
-        }
-
-        @Override
-        public void jobDeleted(JobKey jobKey) {
-        }
-
-        @Override
-        public void jobPaused(JobKey jobKey) {
-        }
-
-        @Override
-        public void jobsPaused(String jobGroup) {
-        }
-
-        @Override
-        public void jobResumed(JobKey jobKey) {
-        }
-
-        @Override
-        public void jobsResumed(String jobGroup) {
-        }
-
-        @Override
-        public void triggerFinalized(Trigger trigger) {
         }
     }
 
