@@ -89,7 +89,7 @@ public class SchedulerSettingsStore extends AbstractService {
             SchedulerSettings settings = new SchedulerSettings(settingsName, settingsFile.getPath());
             return settings;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to read scheduler settings file=" + settingsFile);
+            throw new RuntimeException("Failed to read scheduler settings file=" + settingsFile, e);
         }
     }
 

@@ -79,17 +79,26 @@ public class ClasspathURLStreamHandler extends URLStreamHandler {
      * @return URL instance.
      */
     public static URL createURL(String url, ClassLoader classLoader) {
-        URL context = null;
+    	// Retry with file:// protocol first. If we don't and if user has multiple Drives on Windows, the URL with context below
+    	// will load without error, but yet we will not able to find the file!
+    	// See BUG: http://code.google.com/p/myschedule/issues/detail?id=116
         URL urlObj = null;
+        File urlFile = new File(url);
+        if (urlFile.exists()) {
+	        try {
+	            urlObj = urlFile.toURI().toURL();
+	            return urlObj;
+	        } catch (MalformedURLException e) {
+	            throw new IllegalArgumentException("Failed to create local file URL from " + url, e);
+	        }
+        }
+        
+        // If given url string is not a local file, try load from classpath or URL stream.
+        URL context = null;
         try {
             urlObj = new URL(context, url, new ClasspathURLStreamHandler(classLoader));
         } catch (MalformedURLException e) {
-            // Retry with file:// protocol.
-            try {
-                urlObj = new File(url).toURI().toURL();
-            } catch (MalformedURLException e2) {
-                throw new IllegalArgumentException("Failed to parse " + url, e); // we report first "e".
-            }
+            throw new IllegalArgumentException("Failed to create URL from " + url, e);
         }
         return urlObj;
     }
