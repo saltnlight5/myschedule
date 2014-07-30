@@ -42,7 +42,7 @@ public class ScriptingSchedulerPluginTest {
         try {
             RESULT_FILE.resetFile();
             SchedulerTemplate st = new SchedulerTemplate(
-                    "myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-filenotfound.properties");
+                    "file://myschedule/quartz/extra/ScriptingSchedulerPluginTest-quartz-filenotfound.properties");
             st.startAndShutdown(700);
             Assert.fail("We should fail with file not found.");
         } catch (QuartzRuntimeException e) {
