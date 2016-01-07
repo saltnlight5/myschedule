@@ -1,0 +1,1 @@
+The MySchedule is a Java based web application for managing Quartz Schedulers.

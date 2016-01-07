@@ -1,0 +1,1 @@
+You may find a copy of `myschedule-quartz-extra` library javadoc API here: http://myschedule.googlecode.com/hg/docs/quartz-extra-apidocs/index.html
